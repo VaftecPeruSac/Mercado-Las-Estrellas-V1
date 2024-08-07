@@ -25,7 +25,7 @@ import {
 import { Edit, Search as SearchIcon } from "@mui/icons-material";
 
 interface Column {
-  id: keyof Data;
+  id: keyof Data | 'accion';
   label: string;
   minWidth?: number;
   align?: "right";
@@ -34,50 +34,62 @@ interface Column {
 
 interface Data {
   id: number;
-  ncodigo: number;
-  empleado: string;
-  movil: string;
-  email: string;
-  direccion: string;
-  estatus: string;
-  accion: string;
+  socio: string;
+  puesto: string;
+  dni: string;
+  block: string;
+  giro: string;
+  telefono: string;
+  correo: string;
+  ano: number;
+  status: string;
+  monto_actual: string;
 }
 
 const columns: readonly Column[] = [
-  { id: "id", label: "#", minWidth: 70 },
-  { id: "ncodigo", label: "Nº Codigo", minWidth: 90 },
-  { id: "empleado", label: "Empleado", minWidth: 130 },
-  { id: "movil", label: "Movil", minWidth: 130 },
-  { id: "email", label: "Email", minWidth: 130 },
-  { id: "direccion", label: "Direccion", minWidth: 130 },
-  { id: "estatus", label: "Estatus", minWidth: 130 },
-  { id: "accion", label: "Acción", minWidth: 130 },
+  { id: "socio", label: "Socio", minWidth: 70 },
+  { id: "puesto", label: "Puesto", minWidth: 90 },
+  { id: "dni", label: "DNI", minWidth: 130 },
+  { id: "block", label: "Block", minWidth: 130 },
+  { id: "giro", label: "Giro", minWidth: 130 },
+  { id: "telefono", label: "Telefono", minWidth: 130 },
+  { id: "correo", label: "Correo", minWidth: 130 },
+  { id: "ano", label: "Año", minWidth: 130 },
+  { id: "monto_actual", label: "Monto Actual", minWidth: 130 },
+  { id: "status", label: "Status", minWidth: 130 },
+  { id: "accion", label: "Accion", minWidth: 130 },
 ];
 
 const rows: Data[] = [
   {
     id: 1,
-    ncodigo: 12345,
-    empleado: "Juan Perez",
-    movil: "555-1234",
-    email: "juan.perez@example.com",
-    direccion: "Calle Falsa 123",
-    estatus: "Activo",
-    accion: "eliminar",
+    socio: "Juan Ramiro",
+    puesto: "A-4",
+    dni: "772834491",
+    block: "1",
+    giro: "carne",
+    telefono: "eliminar",
+    correo: "juan.perez@example.com",
+    ano: 2012,
+    status: "Activo",
+    monto_actual: "1200",
   },
   {
     id: 2,
-    ncodigo: 67890,
-    empleado: "Maria Lopez",
-    movil: "555-5678",
-    email: "maria.lopez@example.com",
-    direccion: "Avenida Siempreviva 456",
-    estatus: "Inactivo",
-    accion: "editar",
+    socio: "Alberth Gonzales",
+    puesto: "A-3",
+    dni: "772834491",
+    block: "2",
+    giro: "abarrotes",
+    telefono: "eliminar",
+    correo: "juan.perez@example.com",
+    ano: 2013,
+    status: "inactivo",
+    monto_actual: "2300",
   },
 ];
 
-export default function StickyHeadTable() {
+export default function   StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchValue, setSearchValue] = React.useState("");
@@ -274,10 +286,23 @@ export default function StickyHeadTable() {
                   return (
                     <TableRow hover role="checkbox" tabIndex={0} key={row.id}>
                       {columns.map((column) => {
+                        if (column.id === 'accion') {
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              <IconButton
+                                sx={{
+                                  backgroundColor: "#3e70f9de"
+                                }}
+                              >
+                                <Edit />
+                              </IconButton>
+                            </TableCell>
+                          );
+                        }
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.id === "estatus" ? (
+                            {column.id === "status" ? (
                               <Button
                                 variant="contained"
                                 sx={{
@@ -289,14 +314,6 @@ export default function StickyHeadTable() {
                               >
                                 {value}
                               </Button>
-                            ) : column.id === "accion" ? (
-                              <IconButton
-                                sx={{
-                                  backgroundColor: "#3e70f9de"
-                                }}
-                              >
-                                <Edit />
-                              </IconButton>
                             ) : column.format && typeof value === "number" ? (
                               column.format(value)
                             ) : (

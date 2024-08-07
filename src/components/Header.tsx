@@ -14,6 +14,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Sidebar from "./Sidebar";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 interface HeaderProps {
   open: boolean;
@@ -38,45 +39,11 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
         position="fixed"
         sx={{
           backgroundColor: "#004d00",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          zIndex: (theme) => theme.zIndex.drawer - 1,
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between", paddingRight: 0 }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: "#FFFFFF",
-                color: "#000000",
-                padding: "0.5rem 2rem",
-                height: "62px",
-                marginRight: "0px",
-                marginLeft: "0px",
-              }}
-            >
-              <Box sx={{ textAlign: "center" }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    lineHeight: 1,
-                  }}
-                >
-                  SISTEMA
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    lineHeight: 1,
-                  }}
-                >
-                  COMERCIAL
-                </Typography>
-              </Box>
-              <ShoppingCartIcon sx={{ ml: 1 }} />
-            </Box>
             <IconButton
               edge="start"
               color="inherit"
@@ -102,9 +69,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             }}
             onClick={handleMenuClick}
           >
-            <Typography sx={{ fontWeight: "bold" }}>
-              RICARDO GALINDO MERCADO
-            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>MERCADO</Typography>
             <ExpandMoreIcon />
           </Box>
           <Menu
@@ -117,29 +82,50 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
         </Toolbar>
+        <Drawer
+          variant="persistent"
+          anchor="left"
+          open={open}
+          sx={{
+            // zIndex: (theme) => theme.zIndex.appBar + 1,
+            // width: 220,
+            // flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              backgroundColor: "#404040",
+              color: "#FFFFFF",
+              height: "100vh",
+              transition: "width 0.3s",
+              overflowX: "hidden",
+            },
+          }}
+        >
+          <Sidebar open={open} />
+        </Drawer>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "855px",
+            left: open ? "225px" : "0px",
+            borderRadius: '16px',
+            transition: "left 0.3s, opacity 0.3s",
+            opacity: open ? 1 : 0,
+            pointerEvents: open ? "auto" : "none",
+            display: "flex",
+            alignItems: "center",
+            bgcolor: "#404040",
+            zIndex: "modal",
+          }}
+        >
+          <IconButton
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer}
+          >
+            <ArrowBackIosNewIcon />
+          </IconButton>
+        </Box>
       </AppBar>
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={open}
-        sx={{
-          zIndex: (theme) => theme.zIndex.appBar + 1,
-          width: 240,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: 240,
-            boxSizing: "border-box",
-            backgroundColor: "#404040",
-            color: "#FFFFFF",
-            height: "100vh",
-            marginTop: "64px",
-            transition: "width 0.3s",
-            overflowX: "hidden",
-          },
-        }}
-      >
-        <Sidebar open={open} />
-      </Drawer>
     </Box>
   );
 };
