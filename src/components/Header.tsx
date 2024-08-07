@@ -74,9 +74,10 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             </Grid>
             <Box
               sx={{
-                borderRadius: "16px",
+                borderRadius: "20px",
                   bgcolor:"#f3f3f3",
                   ml:'340px',
+                  pl:'10px'
               }}
             >
               <TextField
@@ -90,7 +91,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                   ),
                 }}
                 variant="standard"  sx={{
-                  border: "white",
+                    border: "white",
                   "& .MuiInput-underline:before": {
                     borderBottom: "none"
                   },
@@ -114,7 +115,6 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               padding: "0.5rem 1rem",
               borderRadius: "4px",
               cursor: "pointer",
-              height: "4px",
               boxSizing: "border-box",
             }}
             onClick={handleMenuClick}
@@ -124,8 +124,8 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               src="/images/image-avatar.jpeg"
               sx={{ width: 35, height: 35, mr: 2 }}
             />
-            <Typography sx={{  color:'black',fontWeight: "bold" }}>Ottoniel Yauri</Typography>
-            <ExpandMoreIcon />
+            <Typography sx={{  color:'black',fontWeight: "bold"}}>Ottoniel Yauri</Typography>
+            <ExpandMoreIcon sx={{mr:'20px', color:'black'}} />
           </Box>
           <Menu
             anchorEl={anchorEl}
