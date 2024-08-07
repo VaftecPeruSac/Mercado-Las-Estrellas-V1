@@ -41,12 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column",
     bgcolor: "#1f2022",pl:2,pr:2 }}>
-      <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl:2}}>
-        {/* <Avatar
-          alt="Comercial"
-          src="/images/image-avatar.jpeg"
-          sx={{ width: 56, height: 56 }}
-        /> */}            
+      <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl:2}}>         
         <BackupTableIcon/>
           <Typography
             variant="subtitle1"
