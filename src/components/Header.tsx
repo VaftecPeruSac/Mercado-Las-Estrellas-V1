@@ -9,11 +9,19 @@ import {
   CssBaseline,
   Menu,
   MenuItem,
+  Avatar,
+  Grid,
+  Autocomplete,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Sidebar from "./Sidebar";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { GridSearchIcon } from "@mui/x-data-grid";
+import { Notifications, NotificationsNone } from "@mui/icons-material";
 
 interface HeaderProps {
   open: boolean;
@@ -30,82 +38,94 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#004d00",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: "white",
+          zIndex: (theme) => theme.zIndex.drawer - 1,
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between", paddingRight: 0 }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: "#FFFFFF",
-                color: "#000000",
-                padding: "0.5rem 2rem",
-                height: "62px",
-                marginRight: "0px",
-                marginLeft: "0px",
-              }}
-            >
-              <Box sx={{ textAlign: "center" }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    lineHeight: 1,
-                  }}
-                >
-                  SISTEMA
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    lineHeight: 1,
-                  }}
-                >
-                  COMERCIAL
-                </Typography>
-              </Box>
-              <ShoppingCartIcon sx={{ ml: 1 }} />
-            </Box>
             <IconButton
               edge="start"
-              color="inherit"
               aria-label="menu"
               onClick={toggleDrawer}
               sx={{ ml: "0.5rem" }}
             >
               <MenuIcon />
             </IconButton>
+            <Grid container>
+              <Grid item xs={12}>
+                <Typography
+                  sx={{ color:'black', fontWeight: "bold", text: "center", ml: 30, mb: -5 }}
+                >
+                  <h2>Bienvenido al Sistema, Administrador</h2>
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography sx={{ color:'#b3b3b3', fontWeight: "bold", text: "center", ml: 30 }}>
+                  <h5>Sitema Intranet Mercado las Estrellas versopm 2.0</h5>
+                </Typography>
+              </Grid>
+            </Grid>
+            <Box
+              sx={{
+                borderRadius: "20px",
+                  bgcolor:"#f3f3f3",
+                  ml:'340px',
+                  pl:'10px'
+              }}
+            >
+              <TextField
+                id="input-with-icon-textfield"
+                placeholder="Buscar"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <GridSearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="standard"  sx={{
+                    border: "white",
+                  "& .MuiInput-underline:before": {
+                    borderBottom: "none"
+                  },
+                  "& .MuiInput-underline:hover:before": {
+                    borderBottom: "none"
+                  },
+                  "& .MuiInput-underline:after": {
+                    borderBottom: "none"
+                  }
+                }}
+              />
+            </Box>
+              <NotificationsNone sx={{ color:'black'}}/>
           </Box>
           <Box sx={{ flexGrow: 1 }} />
           <Box
             sx={{
-              backgroundColor: "#000000",
               color: "#FFFFFF",
               display: "flex",
               alignItems: "center",
               padding: "0.5rem 1rem",
               borderRadius: "4px",
               cursor: "pointer",
-              height: "64px",
               boxSizing: "border-box",
             }}
             onClick={handleMenuClick}
           >
-            <Typography sx={{ fontWeight: "bold" }}>
-              RICARDO GALINDO MERCADO
-            </Typography>
-            <ExpandMoreIcon />
+            <Avatar
+              alt="Comercial"
+              src="/images/image-avatar.jpeg"
+              sx={{ width: 35, height: 35, mr: 2 }}
+            />
+            <Typography sx={{  color:'black',fontWeight: "bold"}}>Ottoniel Yauri</Typography>
+            <ExpandMoreIcon sx={{mr:'20px', color:'black'}} />
           </Box>
           <Menu
             anchorEl={anchorEl}
@@ -117,29 +137,46 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
         </Toolbar>
+        <Drawer
+          variant="persistent"
+          anchor="left"
+          open={open}
+          sx={{
+            // zIndex: (theme) => theme.zIndex.appBar + 1,
+            // width: 220,
+            // flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              backgroundColor: "#404040",
+              color: "#FFFFFF",
+              height: "100vh",
+              transition: "width 0.3s",
+              overflowX: "hidden",
+            },
+          }}
+        >
+          <Sidebar open={open} />
+        </Drawer>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "855px",
+            left: open ? "225px" : "0px",
+            borderRadius: "16px",
+            transition: "left 0.3s, opacity 0.3s",
+            opacity: open ? 1 : 0,
+            pointerEvents: open ? "auto" : "none",
+            display: "flex",
+            alignItems: "center",
+            bgcolor: "#404040",
+            zIndex: "modal",
+          }}
+        >
+          <IconButton color="inherit" aria-label="menu" onClick={toggleDrawer}>
+            <ArrowBackIosNewIcon />
+          </IconButton>
+        </Box>
       </AppBar>
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={open}
-        sx={{
-          zIndex: (theme) => theme.zIndex.appBar + 1,
-          width: 240,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: 240,
-            boxSizing: "border-box",
-            backgroundColor: "#404040",
-            color: "#FFFFFF",
-            height: "100vh",
-            marginTop: "64px",
-            transition: "width 0.3s",
-            overflowX: "hidden",
-          },
-        }}
-      >
-        <Sidebar open={open} />
-      </Drawer>
     </Box>
   );
 };
