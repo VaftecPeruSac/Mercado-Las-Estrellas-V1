@@ -1,16 +1,15 @@
 import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
   Button,
   IconButton,
-  Stack,
   Typography,
   Box,
   Divider,
@@ -20,9 +19,14 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  SelectChangeEvent,
+  useMediaQuery,
+  Modal,
+  Grid,
+  Container,
 } from "@mui/material";
 import { Edit, Search as SearchIcon } from "@mui/icons-material";
+import { GridAddIcon } from "@mui/x-data-grid";
+import { useTheme } from '@mui/material/styles';
 
 interface Column {
   id: keyof Data;
@@ -81,12 +85,15 @@ export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchValue, setSearchValue] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: SelectChangeEvent<number>) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<{ value: unknown }>) => {
     setRowsPerPage(Number(event.target.value));
     setPage(0); // Reset page to 0 when changing rows per page
   };
@@ -95,14 +102,17 @@ export default function StickyHeadTable() {
     setSearchValue(event.target.value);
   };
 
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <Box
       sx={{
         flexGrow: 1,
-        p: 5,
-        pt: 10,
+        p: 3,
+        pt: 10, // Espacio adicional en la parte superior para crear un margen con el Header
         backgroundColor: "#f0f0f0",
-        minHeight: "100vh",
+        minHeight: "50vh",
         display: "flex",
         flexDirection: "column",
       }}
@@ -110,115 +120,78 @@ export default function StickyHeadTable() {
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          mb: 2,
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: { xs: 2, sm: 0 } }}>
+          MANTENIMIENTO DE SOCIOS
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: "bold",
+          }}
+        >
+          <Button
+            variant="outlined"
+            startIcon={<GridAddIcon />}
+            sx={{
+              color: "white",
+              boxShadow: 1,
+              backgroundColor: "#d32f2f",
+              "&:hover": {
+                backgroundColor: "darkred",
+              },
+              height: "40px",
+              minWidth: "120px",
+              marginRight: 2,
+            }}
+            onClick={handleOpen}
+          >
+            Nuevo Registro
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<Edit />}
+            sx={{
+              color: "black",
+              boxShadow: 1,
+              height: "60px",
+              minWidth: "150px",
+              backgroundColor: "rgb(255 215 0)",
+              "&:hover": {
+                backgroundColor: "white",
+              },
+            }}
+          >
+            Relacion de Puestos
+          </Button>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
           flexDirection: "column",
           mb: 3,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h4">MANTENIMIENTO DE SOCIOS</Typography>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              fontWeight: "bold",
-            }}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<Edit />}
-              sx={{
-                color: "white",
-                boxShadow: 1,
-                backgroundColor: "#d32f2f",
-                "&:hover": {
-                  backgroundColor: "darkred",
-                },
-                height: "40px",
-                minWidth: "120px",
-                marginRight: 2,
-              }}
-            >
-              Nuevo Registro
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<Edit />}
-              sx={{
-                color: "black",
-                boxShadow: 1,
-                height: "60px",
-                minWidth: "150px",
-                backgroundColor: "rgb(255 215 0)",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-            >
-              Relacion de Puestos
-            </Button>
-          </Box>
-        </Box>
         <Divider sx={{ mb: 2, mt: 1 }} />
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: { xs: "flex-start", sm: "space-between" },
+            alignItems: { xs: "flex-start", sm: "center" },
             mb: 3,
             mt: 1,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", minWidth: 250 }}>
-            <Typography sx={{ mr: 1, fontWeight: "bold" }}>Mostrar</Typography>
-            <FormControl
-              sx={{
-                minWidth: 80, // Reducción del ancho mínimo para que el Select sea más corto
-                mr: 2,
-                "& .MuiSelect-root": {
-                  padding: "8px 12px", // Ajuste del padding para que coincida con el TextField
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "rgba(0, 0, 0, 0.23)", // Color del borde
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "rgba(0, 0, 0, 0.87)", // Color del borde en hover
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "rgba(0, 0, 0, 0.87)", // Color del borde cuando está enfocado
-                  },
-                },
-              }}
-            >
-              <Select
-                id="rows-per-page-select"
-                value={rowsPerPage}
-                onChange={handleChangeRowsPerPage}
-                inputProps={{ "aria-label": "Mostrar registros" }}
-                variant="outlined" // Para que coincida con el TextField
-                sx={{
-                  "& .MuiSelect-select": {
-                    padding: "8px 12px", // Ajuste de padding para el Select
-                  },
-                }}
-              >
-                {[5, 10, 20].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Typography sx={{ ml: -1, fontWeight: "bold" }}>
-              Registros
-            </Typography>
-          </Box>
+          <Box sx={{ flexGrow: 1 }} />
           <TextField
             variant="outlined"
             placeholder="Buscar..."
@@ -235,9 +208,9 @@ export default function StickyHeadTable() {
               },
             }}
             sx={{
-              width: "350px",
+              width: { xs: "100%", sm: "350px" },
               display: "inline-flex",
-
+              mb: { xs: 2, sm: 0 },
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
                   borderColor: "rgba(0, 0, 0, 0.23)",
@@ -312,19 +285,56 @@ export default function StickyHeadTable() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 20]}
+          rowsPerPageOptions={[5, 10, 15]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          onRowsPerPageChange={() => {}} // No usar onRowsPerPageChange aquí, ya que el manejo está en el Select
-          labelRowsPerPage="Mostrar"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${from}–${to} de ${count !== -1 ? count : `más de ${to}`}`
-          }
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{ backgroundColor: "white", fontSize: "14px" }}
         />
       </Paper>
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: { xs: "90%", sm: 400 },
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            Nuevo Registro
+          </Typography>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <TextField label="Nombre" />
+          </FormControl>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <TextField label="Email" />
+          </FormControl>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <TextField label="Teléfono" />
+          </FormControl>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Estatus</InputLabel>
+            <Select label="Estatus">
+              <MenuItem value="Activo">Activo</MenuItem>
+              <MenuItem value="Inactivo">Inactivo</MenuItem>
+            </Select>
+          </FormControl>
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            <Button variant="contained" onClick={handleClose}>
+              Guardar
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 }
