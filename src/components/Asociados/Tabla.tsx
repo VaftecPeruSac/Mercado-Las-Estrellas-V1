@@ -3,33 +3,29 @@ import {
   Paper,
   Table,
   TableBody,
-  TableCell,
+  TableCell,	
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Button,
   IconButton,
   Typography,
   Box,
-  Divider,
-  TextField,
-  InputAdornment,
+  Card,
+  Stack,
+  Pagination,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  useMediaQuery,
+  useTheme,
   Modal,
-  Grid,
-  Container,
 } from "@mui/material";
-import { Edit, Search as SearchIcon } from "@mui/icons-material";
+import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
-import { useTheme } from '@mui/material/styles';
 
 interface Column {
-  id: keyof Data | 'accion';
+  id: keyof Data | "accion";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -37,7 +33,6 @@ interface Column {
 }
 
 interface Data {
-  id: number;
   socio: string;
   puesto: string;
   dni: string;
@@ -45,9 +40,11 @@ interface Data {
   giro: string;
   telefono: string;
   correo: string;
-  ano: number;
-  status: string;
-  monto_actual: string;
+  inquilino: string;
+  cuotas_extra: string;
+  fecha: string;
+  pagar: string;
+  deuda_total: string;
 }
 
 const columns: readonly Column[] = [
@@ -56,77 +53,71 @@ const columns: readonly Column[] = [
   { id: "dni", label: "DNI", minWidth: 130 },
   { id: "block", label: "Block", minWidth: 130 },
   { id: "giro", label: "Giro", minWidth: 130 },
-  { id: "telefono", label: "Telefono", minWidth: 130 },
+  { id: "telefono", label: "Teléfono", minWidth: 130 },
   { id: "correo", label: "Correo", minWidth: 130 },
-  { id: "ano", label: "Año", minWidth: 130 },
-  { id: "monto_actual", label: "Monto Actual", minWidth: 130 },
-  { id: "status", label: "Status", minWidth: 130 },
-  { id: "accion", label: "Accion", minWidth: 130 },
+  { id: "inquilino", label: "Inquilino", minWidth: 130 },
+  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 130 },
+  { id: "fecha", label: "Fecha", minWidth: 130 },
+  { id: "pagar", label: "Pagar", minWidth: 130 },
+  { id: "deuda_total", label: "Deuda Total", minWidth: 130 },
+  { id: "accion", label: "Acción", minWidth: 130 },
 ];
 
 const rows: Data[] = [
   {
-    id: 1,
     socio: "Juan Ramiro",
     puesto: "A-4",
     dni: "772834491",
     block: "1",
-    giro: "carne",
-    telefono: "eliminar",
+    giro: "Carne",
+    telefono: "912345678",
     correo: "juan.perez@example.com",
-    ano: 2012,
-    status: "Activo",
-    monto_actual: "1200",
+    inquilino: "Sí",
+    cuotas_extra: "500",
+    fecha: "2024-07-04",
+    pagar: "No",
+    deuda_total: "1200",
   },
   {
-    id: 2,
     socio: "Alberth Gonzales",
     puesto: "A-3",
-    dni: "772834491",
+    dni: "772834492",
     block: "2",
-    giro: "abarrotes",
-    telefono: "eliminar",
-    correo: "juan.perez@example.com",
-    ano: 2013,
-    status: "inactivo",
-    monto_actual: "2300",
+    giro: "Abarrotes",
+    telefono: "912345679",
+    correo: "alberth.gonzales@example.com",
+    inquilino: "No",
+    cuotas_extra: "300",
+    fecha: "2024-07-05",
+    pagar: "Sí",
+    deuda_total: "2300",
   },
 ];
 
-export default function   StickyHeadTable() {
+export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchValue, setSearchValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setRowsPerPage(Number(event.target.value));
-    setPage(0); // Reset page to 0 when changing rows per page
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
-  };
+  const [exportFormat, setExportFormat] = React.useState("");
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleExport = () => {
+    // Implement your export logic here
+    console.log(`Exporting as ${exportFormat}`);
+  };
 
   return (
     <Box
       sx={{
         flexGrow: 1,
         p: 3,
-        pt: 10, // Espacio adicional en la parte superior para crear un margen con el Header
+        pt: 10,
         backgroundColor: "#f0f0f0",
-        minHeight: "50vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
+        overflowX: "auto",
       }}
     >
       <Box
@@ -135,219 +126,210 @@ export default function   StickyHeadTable() {
           flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
           alignItems: { xs: "flex-start", sm: "center" },
-          mb: 2,
-        }}
-      >
-        <Typography variant="h4" sx={{ mb: { xs: 2, sm: 0 } }}>
-          MANTENIMIENTO DE SOCIOS
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            fontWeight: "bold",
-          }}
-        >
-          <Button
-            variant="outlined"
-            startIcon={<GridAddIcon />}
-            sx={{
-              color: "white",
-              boxShadow: 1,
-              backgroundColor: "#d32f2f",
-              "&:hover": {
-                backgroundColor: "darkred",
-              },
-              height: "40px",
-              minWidth: "120px",
-              marginRight: 2,
-            }}
-            onClick={handleOpen}
-          >
-            Nuevo Registro
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Edit />}
-            sx={{
-              color: "black",
-              boxShadow: 1,
-              height: "60px",
-              minWidth: "150px",
-              backgroundColor: "rgb(255 215 0)",
-              "&:hover": {
-                backgroundColor: "white",
-              },
-            }}
-          >
-            Relacion de Puestos
-          </Button>
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
           mb: 3,
         }}
       >
-        <Divider sx={{ mb: 2, mt: 1 }} />
+        {/* Título opcional */}
+      </Box>
+
+      <Card
+        sx={{
+          backgroundColor: "#ffffff",
+          borderRadius: "30px",
+          width: "100%",
+          height: "100%",
+          textAlign: "left",
+          position: "relative",
+          transition: "all 0.3s ease",
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          p: 3,
+          overflow: "auto",
+          margin: "0 auto", // Centra el Card horizontalmente y añade espacio a los lados
+
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
-            justifyContent: { xs: "flex-start", sm: "space-between" },
-            alignItems: { xs: "flex-start", sm: "center" },
+            justifyContent: "space-between",
+            alignItems: "center",
             mb: 3,
-            mt: 1,
           }}
         >
-          <Box sx={{ flexGrow: 1 }} />
-          <TextField
-            variant="outlined"
-            placeholder="Buscar..."
-            value={searchValue}
-            onChange={handleSearchChange}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-              sx: {
-                padding: "8px 12px",
-              },
-            }}
+          <Button
+            variant="contained"
+            startIcon={<GridAddIcon />}
             sx={{
-              width: { xs: "100%", sm: "350px" },
-              display: "inline-flex",
-              mb: { xs: 2, sm: 0 },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "rgba(0, 0, 0, 0.23)",
-                },
-                "& input": {
-                  padding: "1px ",
-                },
+              backgroundColor: "#388e3c",
+              "&:hover": {
+                backgroundColor: "#2c6d33",
               },
+              height: "40px",
+              minWidth: "120px",
+              marginBottom: { xs: 2, sm: 0 },
+              borderRadius: "30px",
             }}
-          />
+            onClick={handleOpen}
+          >
+            Agregar Socio
+          </Button>
+
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              ml: "auto",
+            }}
+          >
+            <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+              <InputLabel>Exportar</InputLabel>
+              <Select
+                value={exportFormat}
+                onChange={(e) => setExportFormat(e.target.value)}
+                label="Exportar"
+                sx={{
+                  backgroundColor: "#e0e0e0",
+                  "&:hover": {
+                    backgroundColor: "#d0d0d0",
+                  },
+                  borderRadius: "30px",
+                }}
+              >
+                <MenuItem value="pdf">PDF</MenuItem>
+                <MenuItem value="word">Word</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Button
+              variant="contained"
+              startIcon={<Print />}
+              sx={{
+                backgroundColor: "#1976d2",
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+                height: "40px",
+                minWidth: "120px",
+                borderRadius: "30px",
+              }}
+            >
+              Imprimir
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      <Paper sx={{ width: "100%", overflow: "hidden", mt: -3 }}>
-        <TableContainer sx={{ maxHeight: 450, borderRadius: "5px" }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                    sx={{ backgroundColor: "green", color: "white" }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return (
-                    <TableRow hover role="checkbox" tabIndex={0} key={row.id}>
-                      {columns.map((column) => {
-                        if (column.id === 'accion') {
+        <Paper sx={{ width: "100%", overflow: "hidden", p: 2 }}>
+          <TableContainer sx={{ maxHeight: "100%", borderRadius: "5px", padding: "10px" }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}
+                      sx={{
+                        backgroundColor: "#e8f5e20",
+                        color: "#000",
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                      }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.socio}>
+                        {columns.map((column) => {
+                          const value =
+                            column.id === "accion"
+                              ? ""
+                              : (row as any)[column.id];
                           return (
                             <TableCell key={column.id} align={column.align}>
-                              <IconButton
-                                sx={{
-                                  backgroundColor: "#3e70f9de"
-                                }}
-                              >
-                                <Edit />
-                              </IconButton>
+                              {column.id === "cuotas_extra" ? (
+                                <IconButton>
+                                  <PictureAsPdf />
+                                </IconButton>
+                              ) : column.id === "pagar" ? (
+                                <IconButton>
+                                  <Download />
+                                </IconButton>
+                              ) : column.id === "accion" ? (
+                                <Box sx={{ display: "flex", gap: 1 }}>
+                                  <IconButton aria-label="edit">
+                                    <Edit />
+                                  </IconButton>
+                                  <IconButton aria-label="copy">
+                                    <FileCopy />
+                                  </IconButton>
+                                  <IconButton aria-label="whatsapp">
+                                    <WhatsApp />
+                                  </IconButton>
+                                </Box>
+                              ) : (
+                                value
+                              )}
                             </TableCell>
                           );
-                        }
-                        const value = row[column.id];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.id === "status" ? (
-                              <Button
-                                variant="contained"
-                                sx={{
-                                  backgroundColor:
-                                    value === "Activo" ? "green" : "red",
-                                  color: "white",
-                                  pointerEvents: "none",
-                                }}
-                              >
-                                {value}
-                              </Button>
-                            ) : column.format && typeof value === "number" ? (
-                              column.format(value)
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 15]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{ backgroundColor: "white", fontSize: "14px" }}
-        />
-      </Paper>
-      <Modal open={open} onClose={handleClose}>
+                        })}
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+            <Pagination
+              // count={Math.ceil(rows.length / rowsPerPage)}
+              count={10}
+              color="primary"
+              // onChange={(event, newPage) => setPage(10)}
+              sx={{ margin: "auto" }}
+            />
+          </Box>
+        </Paper>
+      </Card>
+
+      {/* Modal */}
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         <Box
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: { xs: "90%", sm: 400 },
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
+            bgcolor: 'background.paper',
             p: 4,
+            borderRadius: 2,
+            boxShadow: 24,
+            width: '80%',
+            maxWidth: 600,
           }}
         >
-          <Typography variant="h6" component="h2">
-            Nuevo Registro
-          </Typography>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <TextField label="Nombre" />
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <TextField label="Email" />
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <TextField label="Teléfono" />
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel>Estatus</InputLabel>
-            <Select label="Estatus">
-              <MenuItem value="Activo">Activo</MenuItem>
-              <MenuItem value="Inactivo">Inactivo</MenuItem>
-            </Select>
-          </FormControl>
-          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-            <Button variant="contained" onClick={handleClose}>
-              Guardar
+          <Typography variant="h6">Exportar Datos</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', mt: 2 }}>
+            <FormControl variant="outlined" sx={{ mb: 2 }}>
+              <InputLabel>Formato</InputLabel>
+              <Select
+                value={exportFormat}
+                onChange={(e) => setExportFormat(e.target.value)}
+                label="Formato"
+              >
+                <MenuItem value="pdf">PDF</MenuItem>
+                <MenuItem value="excel">Excel</MenuItem>
+                <MenuItem value="csv">CSV</MenuItem>
+              </Select>
+            </FormControl>
+            <Button onClick={handleExport} sx={{ mt: 2 }}>
+              Exportar
             </Button>
           </Box>
         </Box>
