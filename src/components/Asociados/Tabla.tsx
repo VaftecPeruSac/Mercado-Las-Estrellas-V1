@@ -3,7 +3,7 @@ import {
   Paper,
   Table,
   TableBody,
-  TableCell,	
+  TableCell,
   TableContainer,
   TableHead,
   TableRow,
@@ -21,7 +21,7 @@ import {
   useTheme,
   Modal,
 } from "@mui/material";
-import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print } from "@mui/icons-material";
+import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print, Upload, FolderShared, Payments, Plagiarism, SaveAlt, SaveAs } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 
 interface Column {
@@ -183,20 +183,25 @@ export default function StickyHeadTable() {
               ml: "auto",
             }}
           >
-            <FormControl variant="outlined" sx={{ minWidth: 120 }}>
-              <InputLabel>Exportar</InputLabel>
+            <FormControl variant="outlined" sx={{ minWidth: 130, height: "40px" }}>
               <Select
                 value={exportFormat}
                 onChange={(e) => setExportFormat(e.target.value)}
-                label="Exportar"
+                displayEmpty
                 sx={{
-                  backgroundColor: "#e0e0e0",
+                  backgroundColor: "white", // Color de fondo suave y clásico
                   "&:hover": {
-                    backgroundColor: "#d0d0d0",
+                    backgroundColor: "#e0e0e0", // Cambio sutil al hacer hover
                   },
+                  height: "40px",
+                  minWidth: "135px",
                   borderRadius: "30px",
+                  color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
                 }}
               >
+                <MenuItem disabled value="">
+                  Exportar
+                </MenuItem>
                 <MenuItem value="pdf">PDF</MenuItem>
                 <MenuItem value="word">Word</MenuItem>
               </Select>
@@ -211,7 +216,7 @@ export default function StickyHeadTable() {
                   backgroundColor: "#1565c0",
                 },
                 height: "40px",
-                minWidth: "120px",
+                minWidth: "150px", // Botón más largo que el Select
                 borderRadius: "30px",
               }}
             >
@@ -254,22 +259,27 @@ export default function StickyHeadTable() {
                           return (
                             <TableCell key={column.id} align={column.align}>
                               {column.id === "cuotas_extra" ? (
-                                <IconButton>
-                                  <PictureAsPdf />
-                                </IconButton>
+                                <Box sx={{ display: "flex" }}>
+                                  <IconButton aria-label="edit" sx={{ color: "black" }}>
+                                    <SaveAs />
+                                  </IconButton>
+                                  <IconButton aria-label="edit" sx={{ color: "black" }}>
+                                    <Plagiarism />
+                                  </IconButton>
+                                </Box>
                               ) : column.id === "pagar" ? (
-                                <IconButton>
-                                  <Download />
+                                <IconButton aria-label="payment" sx={{ color: "green" }}>
+                                  <Payments />
                                 </IconButton>
                               ) : column.id === "accion" ? (
-                                <Box sx={{ display: "flex", gap: 1 }}>
-                                  <IconButton aria-label="edit">
-                                    <Edit />
+                                <Box sx={{ display: "flex" }}>
+                                  <IconButton aria-label="edit" sx={{ color: "black" }}>
+                                    <Plagiarism />
                                   </IconButton>
-                                  <IconButton aria-label="copy">
-                                    <FileCopy />
+                                  <IconButton aria-label="copy" sx={{ color: "black" }}>
+                                    <Download />
                                   </IconButton>
-                                  <IconButton aria-label="whatsapp">
+                                  <IconButton aria-label="whatsapp" sx={{ color: "green" }}>
                                     <WhatsApp />
                                   </IconButton>
                                 </Box>
@@ -334,6 +344,6 @@ export default function StickyHeadTable() {
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </Box >
   );
 }

@@ -41,16 +41,16 @@ interface PieData {
 }
 const Dashboard: React.FC = () => {
   const [itemData, setItemData] = React.useState<PieData | null>(null);
-
+  const formatTooltipValue = (value: number) => `${value}%`;
   return (
     <Box
       sx={{
         flexGrow: 1,
         p: 5,
-        pt: 10, // Espacio adicional en la parte superior para crear un margen con el Header
+        pt: 15, // Espacio adicional en la parte superior para crear un margen con el Header
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
-        display: "flex",
+        display: "-ms-flexbox",
         flexDirection: "column",
       }}
     >
@@ -60,7 +60,9 @@ const Dashboard: React.FC = () => {
           justifyContent: "space-between",
           flexWrap: "wrap",
           mb: 3,
-          gap: "1rem",
+          gap: "1rem  ",
+          marginLeft: "1rem", // Ajusta el margen izquierdo
+          marginRight: "1rem",
         }}
       >
         <Box
@@ -68,12 +70,12 @@ const Dashboard: React.FC = () => {
             backgroundColor: "#ffffff", // Fondo blanco
             color: "black", // Letra negra
             "&:hover": {
-              backgroundColor: "#00c853", // Fondo verde al pasar el cursor
+              backgroundColor: "#008001", // Fondo verde al pasar el cursor
               color: "white", // Letra blanca al pasar el cursor
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "350px",
+            width: "400px",
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease", // Suaviza la transición de colores
@@ -134,12 +136,12 @@ const Dashboard: React.FC = () => {
             backgroundColor: "#ffffff",
             color: "black",
             "&:hover": {
-              backgroundColor: "#00c853",
+              backgroundColor: "#008001",
               color: "white",
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "350px",
+            width: "400px",
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -198,12 +200,12 @@ const Dashboard: React.FC = () => {
             backgroundColor: "#ffffff",
             color: "black",
             "&:hover": {
-              backgroundColor: "#00c853",
+              backgroundColor: "#008001",
               color: "white",
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "350px",
+            width: "400px",
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -261,10 +263,20 @@ const Dashboard: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start", // Alinea ambos cards en la parte superior
+          flexWrap: "wrap",
+          mb: 3,
           gap: "1rem",
+
+
         }}
       >
-        <Card sx={{ width: "80%", borderRadius: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+        <Card sx={{
+          width: "70%",
+          borderRadius: '30px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          position: "relative",
+          textAlign: "left",
+        }}>
           <CardContent>
             <Box sx={{ textAlign: 'left', mb: 2 }}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', marginLeft: "30px" }}>
@@ -290,7 +302,7 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card sx={{ width: "18%", borderRadius: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+        <Card sx={{ width: "350px", borderRadius: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: "-ms-inline-flexbox" }}>
           <CardContent>
             <Box sx={{ textAlign: 'center', mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -306,14 +318,14 @@ const Dashboard: React.FC = () => {
                   cy="50%"
                   outerRadius={80}
                   fill="#8884d8"
-                  label
-                  onClick={(clickedData) => setItemData(clickedData.payload)}
+                  label={({ value }) => `${value}%`}
+                  onClick={(clickedData) => setItemData(clickedData.payload as PieData)}
                 >
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip formatter={formatTooltipValue} />
                 <Legend verticalAlign="bottom" />
               </PieChart>
             </ResponsiveContainer>
@@ -348,7 +360,7 @@ const Dashboard: React.FC = () => {
             {itemData && (
               <Box sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '8px' }}>
                 <Typography variant="body2">
-                  {`Label: ${itemData.name}, Value: ${itemData.value}`}
+                  {`${itemData.value}%`}
                 </Typography>
               </Box>
             )}
