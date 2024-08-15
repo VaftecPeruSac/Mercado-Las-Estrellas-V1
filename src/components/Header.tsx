@@ -61,13 +61,13 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             <Grid container>
               <Grid item xs={12}>
                 <Typography
-                  sx={{ color:'black', fontWeight: "bold", text: "center", ml: 30, mb: -5 }}
+                  sx={{ color: 'black', fontWeight: "bold", text: "center", ml: 30, mb: -5 }}
                 >
                   <h2>Bienvenido al Sistema, Administrador</h2>
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <Typography sx={{ color:'#b3b3b3', fontWeight: "bold", text: "center", ml: 30 }}>
+                <Typography sx={{ color: '#b3b3b3', fontWeight: "bold", text: "center", ml: 30 }}>
                   <h5>Sitema Intranet Mercado las Estrellas versopm 2.0</h5>
                 </Typography>
               </Grid>
@@ -75,9 +75,9 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             <Box
               sx={{
                 borderRadius: "20px",
-                  bgcolor:"#f3f3f3",
-                  ml:'340px',
-                  pl:'10px'
+                bgcolor: "#f3f3f3",
+                ml: '340px',
+                pl: '10px'
               }}
             >
               <TextField
@@ -90,8 +90,8 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     </InputAdornment>
                   ),
                 }}
-                variant="standard"  sx={{
-                    border: "white",
+                variant="standard" sx={{
+                  border: "white",
                   "& .MuiInput-underline:before": {
                     borderBottom: "none"
                   },
@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                 }}
               />
             </Box>
-              <NotificationsNone sx={{ color:'black'}}/>
+            <NotificationsNone sx={{ color: 'black' }} />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
           <Box
@@ -124,8 +124,8 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               src="/images/image-avatar.jpeg"
               sx={{ width: 35, height: 35, mr: 2 }}
             />
-            <Typography sx={{  color:'black',fontWeight: "bold"}}>Ottoniel Yauri</Typography>
-            <ExpandMoreIcon sx={{mr:'20px', color:'black'}} />
+            <Typography sx={{ color: 'black', fontWeight: "bold" }}>Ottoniel Yauri</Typography>
+            <ExpandMoreIcon sx={{ mr: '20px', color: 'black' }} />
           </Box>
           <Menu
             anchorEl={anchorEl}

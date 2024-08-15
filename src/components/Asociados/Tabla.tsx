@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -23,6 +24,11 @@ import {
 } from "@mui/material";
 import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print, Upload, FolderShared, Payments, Plagiarism, SaveAlt, SaveAs } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
+import axios from "axios";
+import Agregar from "./Agregar";
+import Pagar from "./Pagar";
+
+
 
 interface Column {
   id: keyof Data | "accion";
@@ -48,19 +54,19 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  { id: "socio", label: "Socio", minWidth: 70 },
-  { id: "puesto", label: "Puesto", minWidth: 90 },
-  { id: "dni", label: "DNI", minWidth: 130 },
-  { id: "block", label: "Block", minWidth: 130 },
-  { id: "giro", label: "Giro", minWidth: 130 },
-  { id: "telefono", label: "Teléfono", minWidth: 130 },
-  { id: "correo", label: "Correo", minWidth: 130 },
-  { id: "inquilino", label: "Inquilino", minWidth: 130 },
-  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 130 },
-  { id: "fecha", label: "Fecha", minWidth: 130 },
-  { id: "pagar", label: "Pagar", minWidth: 130 },
-  { id: "deuda_total", label: "Deuda Total", minWidth: 130 },
-  { id: "accion", label: "Acción", minWidth: 130 },
+  { id: "socio", label: "Socio", minWidth: 50 },  // Reduce el minWidth
+  { id: "puesto", label: "Puesto", minWidth: 50 },
+  { id: "dni", label: "DNI", minWidth: 50 },
+  { id: "block", label: "Block", minWidth: 50 },
+  { id: "giro", label: "Giro", minWidth: 50 },
+  { id: "telefono", label: "Teléfono", minWidth: 50 },
+  { id: "correo", label: "Correo", minWidth: 50 }, // Puedes reducir aún más si es necesario
+  { id: "inquilino", label: "Inquilino", minWidth: 50 },
+  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 50 },
+  { id: "fecha", label: "Fecha", minWidth: 50 },
+  { id: "pagar", label: "Pagar", minWidth: 50 },
+  { id: "deuda_total", label: "Deuda Total", minWidth: 50 },
+  { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
 const rows: Data[] = [
@@ -71,10 +77,10 @@ const rows: Data[] = [
     block: "1",
     giro: "Carne",
     telefono: "912345678",
-    correo: "juan.perez@example.com",
+    correo: "juan1123@example.com",
     inquilino: "Sí",
     cuotas_extra: "500",
-    fecha: "2024-07-04",
+    fecha: "2024",
     pagar: "No",
     deuda_total: "1200",
   },
@@ -85,26 +91,48 @@ const rows: Data[] = [
     block: "2",
     giro: "Abarrotes",
     telefono: "912345679",
-    correo: "alberth.gonzales@example.com",
+    correo: "gonzales123@example.com",
     inquilino: "No",
     cuotas_extra: "300",
-    fecha: "2024-07-05",
+    fecha: "2024",
     pagar: "Sí",
     deuda_total: "2300",
   },
 ];
 
 export default function StickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchValue, setSearchValue] = useState("");
+  const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
+  const [openPagar, setOpenPagar] = useState<boolean>(false);
 
   const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const handleExport = () => {
     // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
+  };
+
+
+  const handleOpenPagar = () => setOpenPagar(true);
+  const handleClosePagar = () => setOpenPagar(false);
+
+  const [socios, setSocios] = useState<Data[]>([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("https://rickandmortyapi.com/api/character/14");
+      setSocios(response.data);
+      console.log("Los datos son", response.data)
+    } catch (error) {
+      console.error("Error al traer dato", error);
+    }
   };
 
   return (
@@ -144,7 +172,9 @@ export default function StickyHeadTable() {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           p: 3,
           overflow: "auto",
-          margin: "0 auto", // Centra el Card horizontalmente y añade espacio a los lados
+          display: "-ms-inline-flexbox",
+          margin: "0 auto",
+          // Centra el Card horizontalmente y añade espacio a los lados
 
         }}
       >
@@ -155,6 +185,7 @@ export default function StickyHeadTable() {
             justifyContent: "space-between",
             alignItems: "center",
             mb: 3,
+            P: 0
           }}
         >
           <Button
@@ -174,7 +205,7 @@ export default function StickyHeadTable() {
           >
             Agregar Socio
           </Button>
-
+          <Agregar open={open} handleClose={handleClose} />
           <Box
             sx={{
               display: "flex",
@@ -183,7 +214,25 @@ export default function StickyHeadTable() {
               ml: "auto",
             }}
           >
-            <FormControl variant="outlined" sx={{ minWidth: 130, height: "40px" }}>
+            <FormControl
+              variant="outlined"
+              sx={{
+                minWidth: 130,
+                height: "37px",
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#dcdcdc', // Color del borde inicial (gris claro)
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#dcdcdc', // Color del borde al hacer hover (gris claro)
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#dcdcdc', // Color del borde cuando está enfocado (gris claro)
+                    boxShadow: 'none', // Elimina la sombra del enfoque
+                  },
+                },
+              }}
+            >
               <Select
                 value={exportFormat}
                 onChange={(e) => setExportFormat(e.target.value)}
@@ -193,17 +242,20 @@ export default function StickyHeadTable() {
                   "&:hover": {
                     backgroundColor: "#e0e0e0", // Cambio sutil al hacer hover
                   },
-                  height: "40px",
-                  minWidth: "135px",
+                  height: "37px",
+                  minWidth: "120px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
+                  '& .MuiSelect-icon': {
+                    color: '#000', // Color del icono del menú desplegable
+                  },
                 }}
               >
                 <MenuItem disabled value="">
                   Exportar
                 </MenuItem>
                 <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="word">Word</MenuItem>
+                <MenuItem value="word">Excel</MenuItem>
               </Select>
             </FormControl>
 
@@ -211,12 +263,12 @@ export default function StickyHeadTable() {
               variant="contained"
               startIcon={<Print />}
               sx={{
-                backgroundColor: "#1976d2",
+                backgroundColor: "#388e3c",
                 "&:hover": {
-                  backgroundColor: "#1565c0",
+                  backgroundColor: "#2c6d33",
                 },
                 height: "40px",
-                minWidth: "150px", // Botón más largo que el Select
+                minWidth: "170px", // Botón más largo que el Select
                 borderRadius: "30px",
               }}
             >
@@ -224,8 +276,8 @@ export default function StickyHeadTable() {
             </Button>
           </Box>
         </Box>
-        <Paper sx={{ width: "100%", overflow: "hidden", p: 2 }}>
-          <TableContainer sx={{ maxHeight: "100%", borderRadius: "5px", padding: "10px" }}>
+        <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: 'none' }}>
+          <TableContainer sx={{ maxHeight: '100%', borderRadius: '5px', border: 'none' }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -235,9 +287,9 @@ export default function StickyHeadTable() {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        backgroundColor: "#e8f5e20",
-                        color: "#000",
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
+                        color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                        fontWeight: 'bold',
                       }}
                     >
                       {column.label}
@@ -248,102 +300,63 @@ export default function StickyHeadTable() {
               <TableBody>
                 {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.socio}>
-                        {columns.map((column) => {
-                          const value =
-                            column.id === "accion"
-                              ? ""
-                              : (row as any)[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.id === "cuotas_extra" ? (
-                                <Box sx={{ display: "flex" }}>
-                                  <IconButton aria-label="edit" sx={{ color: "black" }}>
-                                    <SaveAs />
-                                  </IconButton>
-                                  <IconButton aria-label="edit" sx={{ color: "black" }}>
-                                    <Plagiarism />
-                                  </IconButton>
-                                </Box>
-                              ) : column.id === "pagar" ? (
-                                <IconButton aria-label="payment" sx={{ color: "green" }}>
-                                  <Payments />
+                  .map((row) => (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.socio}>
+                      {columns.map((column) => {
+                        const value = column.id === 'accion' ? '' : (row as any)[column.id];
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            sx={{
+                              backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
+                              color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                            }}
+                          >
+                            {column.id === 'cuotas_extra' ? (
+                              <Box sx={{ display: 'flex' }}>
+                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                                  <SaveAs />
                                 </IconButton>
-                              ) : column.id === "accion" ? (
-                                <Box sx={{ display: "flex" }}>
-                                  <IconButton aria-label="edit" sx={{ color: "black" }}>
-                                    <Plagiarism />
-                                  </IconButton>
-                                  <IconButton aria-label="copy" sx={{ color: "black" }}>
-                                    <Download />
-                                  </IconButton>
-                                  <IconButton aria-label="whatsapp" sx={{ color: "green" }}>
-                                    <WhatsApp />
-                                  </IconButton>
-                                </Box>
-                              ) : (
-                                value
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
+                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                                  <Plagiarism />
+                                </IconButton>
+                              </Box>
+                            ) : column.id === 'pagar' ? (
+                              <IconButton aria-label="payment" sx={{ color: 'green' }} onClick={handleOpenPagar}>
+                                <Payments />
+                              </IconButton>
+                            ) : column.id === 'accion' ? (
+                              <Box sx={{ display: 'flex' }}>
+                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                                  <Plagiarism />
+                                </IconButton>
+                                <IconButton aria-label="copy" sx={{ color: 'black' }}>
+                                  <Download />
+                                </IconButton>
+                                <IconButton aria-label="whatsapp" sx={{ color: 'green' }}>
+                                  <WhatsApp />
+                                </IconButton>
+                              </Box>
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            <Pagination
-              // count={Math.ceil(rows.length / rowsPerPage)}
-              count={10}
-              color="primary"
-              // onChange={(event, newPage) => setPage(10)}
-              sx={{ margin: "auto" }}
-            />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: 3 }}>
+            <Pagination count={10} color="primary" sx={{ marginLeft: '25%' }} />
           </Box>
         </Paper>
-      </Card>
+        <Pagar open={openPagar} handleClose={handleClosePagar} />
+      </Card >
 
-      {/* Modal */}
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            p: 4,
-            borderRadius: 2,
-            boxShadow: 24,
-            width: '80%',
-            maxWidth: 600,
-          }}
-        >
-          <Typography variant="h6">Exportar Datos</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', mt: 2 }}>
-            <FormControl variant="outlined" sx={{ mb: 2 }}>
-              <InputLabel>Formato</InputLabel>
-              <Select
-                value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value)}
-                label="Formato"
-              >
-                <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="excel">Excel</MenuItem>
-                <MenuItem value="csv">CSV</MenuItem>
-              </Select>
-            </FormControl>
-            <Button onClick={handleExport} sx={{ mt: 2 }}>
-              Exportar
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
     </Box >
   );
 }
