@@ -14,8 +14,11 @@ import {
     IconButton,
     FormHelperText
 } from "@mui/material";
-import { AccountCircle, Dns, Phone, Email, Home, Event, Business, Person, Add, MonetizationOn } from "@mui/icons-material";
+import { AccountCircle, Dns, Phone, Email, Home, Business, Person, Event, Add, MonetizationOn } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from "@mui/x-date-pickers";
 
 interface AgregarProps {
     open: boolean;
@@ -31,15 +34,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const [correo, setCorreo] = useState("");
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
+    const [fecha, setFecha] = useState("");
+
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-    const handleEstadoChange = (event: SelectChangeEvent<string>) => {
-        setEstado(event.target.value);
-    };
-
-    const handleCuotaChange = (event: SelectChangeEvent<string>) => {
-        setCuota(event.target.value);
-    };
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
@@ -52,6 +49,16 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
+    const handleEstadoChange = (event: SelectChangeEvent<string>) => {
+        setEstado(event.target.value);
+    };
+
+    const handleCuotaChange = (event: SelectChangeEvent<string>) => {
+        setCuota(event.target.value);
+    };
+
+
 
     const handleSubmit = () => {
         if (validateForm()) {
@@ -112,6 +119,15 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
         setNombre("");
         setDireccion("");
         setErrors({});
+        setFecha("")
+    };
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const valor = e.target.value;
+        // Validar el formato de fecha YYYY-MM-DD
+        if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+            setFecha(valor);
+        }
     };
 
 
@@ -170,11 +186,17 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                             <TextField
                                 fullWidth
                                 label="Fecha de Registro"
+                                type="date"
+                                value={fecha}
+                                onChange={handleDateChange}
                                 sx={{ mt: 2 }}
                                 InputProps={{
                                     startAdornment: (
                                         <Event sx={{ mr: 1, color: 'gray' }} />
                                     ),
+                                }}
+                                InputLabelProps={{
+                                    shrink: true,
                                 }}
                             />
                             <TextField
