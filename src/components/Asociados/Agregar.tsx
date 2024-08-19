@@ -127,7 +127,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 sx={{
                     width: "900px",
                     p: 3,
-                    bgcolor: "background.paper",
+                    bgcolor: "#f0f0f0",
                     boxShadow: 24,
                     borderRadius: 2,
                     display: "flex",

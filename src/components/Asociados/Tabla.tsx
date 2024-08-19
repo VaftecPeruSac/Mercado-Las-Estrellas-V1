@@ -29,6 +29,28 @@ import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
 
+interface Puestos {
+  id: number;
+  nombre: string;
+  id_socio: number;
+  id_block: number;
+  area: number;
+  estado: number;
+  socio: {
+    id: number;
+    correo: string;
+    id_persona: number;
+    estado: string;
+  };
+  persona: {
+    id: number;
+    nombre: string;
+    apellidoP: string;
+    apellidoM: string;
+    dni: number;
+    estado: number;
+  };
+}
 
 interface Column {
   id: keyof Data | "accion";
@@ -62,7 +84,7 @@ const columns: readonly Column[] = [
   { id: "telefono", label: "Teléfono", minWidth: 50 },
   { id: "correo", label: "Correo", minWidth: 50 }, // Puedes reducir aún más si es necesario
   { id: "inquilino", label: "Inquilino", minWidth: 50 },
-  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 50 },
+  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 },
   { id: "fecha", label: "Fecha", minWidth: 50 },
   { id: "pagar", label: "Pagar", minWidth: 50 },
   { id: "deuda_total", label: "Deuda Total", minWidth: 50 },
@@ -100,7 +122,8 @@ const rows: Data[] = [
   },
 ];
 
-export default function StickyHeadTable() {
+const TablaAsociados: React.FC = () => {
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchValue, setSearchValue] = useState("");
@@ -119,7 +142,7 @@ export default function StickyHeadTable() {
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
 
-  const [socios, setSocios] = useState<Data[]>([]);
+  const [puestos, setPuestos] = useState<Data[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -127,11 +150,25 @@ export default function StickyHeadTable() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("https://rickandmortyapi.com/api/character/14");
-      setSocios(response.data);
-      console.log("Los datos son", response.data)
+      const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
+      const data = response.data.data.map((item: Puestos) => ({
+        socio: item.persona.nombre,
+        puesto: item.nombre,
+        dni: item.persona.dni,
+        block: item.id_block.toString(),
+        // giro: "", // No hay información de giro en la API
+        // telefono: "", // No hay información de teléfono en la API
+        correo: item.socio.correo,
+        // inquilino: "", // No hay información de inquilino en la API
+        // cuotas_extra: "", // No hay información de cuotas_extra en la API
+        // fecha: "", // No hay información de fecha en la API
+        // pagar: "", // No hay información de pagar en la API
+        // deuda_total: "", // No hay información de deuda_total en la API
+      }));
+      setPuestos(data);
+      console.log("la data es", response.data)
     } catch (error) {
-      console.error("Error al traer dato", error);
+      console.error("Error al traer datos", error);
     }
   };
 
@@ -200,9 +237,11 @@ export default function StickyHeadTable() {
               minWidth: "120px",
               marginBottom: { xs: 2, sm: 0 },
               borderRadius: "30px",
+              // textTransform: "none",
             }}
             onClick={handleOpen}
           >
+
             Agregar Socio
           </Button>
           <Agregar open={open} handleClose={handleClose} />
@@ -298,10 +337,10 @@ export default function StickyHeadTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
+                {puestos
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.socio}>
+                  .map((row, index) => (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => {
                         const value = column.id === 'accion' ? '' : (row as any)[column.id];
                         return (
@@ -354,9 +393,10 @@ export default function StickyHeadTable() {
             <Pagination count={10} color="primary" sx={{ marginLeft: '25%' }} />
           </Box>
         </Paper>
-        <Pagar open={openPagar} handleClose={handleClosePagar} />
+        <Pagar open={openPagar} onClose={handleClosePagar} />
       </Card >
 
     </Box >
   );
 }
+export default TablaAsociados;
