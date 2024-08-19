@@ -22,12 +22,19 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers";
 
+
+
 interface AgregarProps {
     open: boolean;
     handleClose: () => void;
 }
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
+
+    // Estado para el contenido de las pestañas
+    const [activeTab, setActiveTab] = useState(0);
+
+    // Datos del formulario
     const [estado, setEstado] = useState("Activo");
     const [cuota, setCuota] = useState("");
     const [dni, setDni] = useState("");
@@ -132,6 +139,261 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
         }
     };
 
+    // Cambiar entre pestañas
+    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => setActiveTab(newValue);
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 0:
+                return (
+                    <>
+                        <Typography sx={{ mt: 2, mb: 2, color: "#333", textAlign: 'center' }}>
+                            Leer detenidamente los campos obligatorios antes de escribir. (*)
+                        </Typography>
+                        <Box component="form" noValidate autoComplete="off">
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        fullWidth
+                                        label="Escribir nombre y apellido (*)"
+                                        required
+                                        value={nombre}
+                                        onChange={manejarNombreCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <AccountCircle sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.nombre}
+                                        helperText={errors.nombre}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Fecha de Registro"
+                                        type="date"
+                                        value={fecha}
+                                        onChange={handleDateChange}
+                                        sx={{ mt: 2 }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Event sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Correo"
+                                        sx={{ mt: 2 }}
+                                        value={correo}
+                                        onChange={manejarCambioCorreo}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Email sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.correo}
+                                        helperText={errors.correo}
+                                    />
+                                    <FormControl fullWidth required sx={{ mt: 2 }}>
+                                        <InputLabel id="estado-label">Estado</InputLabel>
+                                        <Select
+                                            labelId="estado-label"
+                                            label="Estado"
+                                            value={estado}
+                                            onChange={handleEstadoChange}
+                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Activo">Activo</MenuItem>
+                                            <MenuItem value="Inactivo">Inactivo</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        fullWidth
+                                        label="DNI (*)"
+                                        required
+                                        value={dni}
+                                        onChange={manejarDniCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Dns sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.dni}
+                                        helperText={errors.dni}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Teléfono (*)"
+                                        sx={{ mt: 2 }}
+                                        required
+                                        value={telefono}
+                                        onChange={manejarTelefonoCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Phone sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.telefono}
+                                        helperText={errors.telefono}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Dirección (*)"
+                                        sx={{ mt: 2 }}
+                                        required
+                                        value={direccion}
+                                        onChange={(e) => setDireccion(e.target.value)}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Home sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.direccion}
+                                        helperText={errors.direccion}
+                                    />
+                                    <FormControl fullWidth sx={{ mt: 2 }}>
+                                        <InputLabel id="cuota-label">Agregar Cuota Extraordinaria</InputLabel>
+                                        <Select
+                                            labelId="cuota-label"
+                                            label="Agregar Cuota Extraordinaria"
+                                            value={cuota}
+                                            onChange={handleCuotaChange}
+                                            startAdornment={<MonetizationOn sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Fumigacion">Fumigación - S/65</MenuItem>
+                                            <MenuItem value="Luz">Luz - S/20</MenuItem>
+                                            <MenuItem value="Agua">Agua - S/18</MenuItem>
+                                            <MenuItem value="Limpieza">Limpieza - S/15</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+
+                                <Grid item xs={12} sm={4}>
+                                    <FormControl fullWidth required>
+                                        <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
+                                        <Select
+                                            labelId="tipo-persona-label"
+                                            label="Tipo Persona"
+                                            value=""
+                                            onChange={() => { }}
+                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Natural">Natural</MenuItem>
+                                            <MenuItem value="Juridica">Jurídica</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        fullWidth
+                                        label="Sexo"
+                                        sx={{ mt: 2 }}
+                                        required
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Person sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Inquilino"
+                                        sx={{ mt: 2 }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Person sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Block"
+                                        sx={{ mt: 2 }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Business sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Giro de Negocio"
+                                        sx={{ mt: 2 }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Business sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Monto Actual"
+                                        value="S/ 158.00"
+                                        InputProps={{
+                                            readOnly: true,
+                                            startAdornment: (
+                                                <MonetizationOn sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        sx={{ bgcolor: "#F0F0F0", mt: 2 }}
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    color: "#4CAF50",
+                                    borderColor: "#4CAF50",
+                                    width: "100px",
+                                    mr: 1,
+                                    '&:hover': {
+                                        backgroundColor: "#e0f2f1",
+                                    },
+                                }}
+                                onClick={handleCloseModal}
+                            >
+                                Cerrar
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: "#4CAF50",
+                                    color: "#fff",
+                                    width: "100px",
+                                    '&:hover': {
+                                        backgroundColor: "#388E3C",
+                                    },
+                                }}
+                                onClick={handleSubmit}
+                            >
+                                Registrar
+                            </Button>
+                        </Box> */}
+                        </Box>
+                    </>
+
+                );
+            case 1:
+                return (
+                    <Typography>Contenido de la pestaña 2</Typography>
+                );
+            case 2:
+                return (
+                    <Typography>Contenido de la pestaña 3</Typography>
+                );
+            default:
+                return <Typography>Seleccione una pestaña</Typography>;
+        }
+    };
 
     return (
         <Modal
@@ -164,247 +426,48 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     </Typography>
                 </Box>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs aria-label="basic tabs example">
-                        <Tab label="Registro Socios" />
-                        <Tab label="Realizar pago" />
-                        {/* <Tab label="Item Three" /> */}
+                    <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+                        <Tab label="Registro Usuario" />
+                        <Tab label="Asignar Puesto" />
+                        <Tab label="Registrar Cuota Extraordinaria" />
+                        <Tab label="Registro pagos" />
                     </Tabs>
                 </Box>
+                {renderTabContent()}
 
-
-                <Typography sx={{ mt: 2, mb: 2, color: "#333", textAlign: 'center' }}>
-                    Leer detenidamente los campos obligatorios antes de escribir. (*)
-                </Typography>
-
-                <Box component="form" noValidate autoComplete="off">
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Escribir nombre y apellido (*)"
-                                required
-                                value={nombre}
-                                onChange={manejarNombreCambio}
-                                InputProps={{
-                                    startAdornment: (
-                                        <AccountCircle sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                error={!!errors.nombre}
-                                helperText={errors.nombre}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Fecha de Registro"
-                                type="date"
-                                value={fecha}
-                                onChange={handleDateChange}
-                                sx={{ mt: 2 }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Event sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Correo"
-                                sx={{ mt: 2 }}
-                                value={correo}
-                                onChange={manejarCambioCorreo}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Email sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                error={!!errors.correo}
-                                helperText={errors.correo}
-                            />
-                            <FormControl fullWidth required sx={{ mt: 2 }}>
-                                <InputLabel id="estado-label">Estado</InputLabel>
-                                <Select
-                                    labelId="estado-label"
-                                    label="Estado"
-                                    value={estado}
-                                    onChange={handleEstadoChange}
-                                    startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
-                                >
-                                    <MenuItem value="Activo">Activo</MenuItem>
-                                    <MenuItem value="Inactivo">Inactivo</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="DNI (*)"
-                                required
-                                value={dni}
-                                onChange={manejarDniCambio}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Dns sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                error={!!errors.dni}
-                                helperText={errors.dni}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Teléfono (*)"
-                                sx={{ mt: 2 }}
-                                required
-                                value={telefono}
-                                onChange={manejarTelefonoCambio}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Phone sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                error={!!errors.telefono}
-                                helperText={errors.telefono}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Dirección (*)"
-                                sx={{ mt: 2 }}
-                                required
-                                value={direccion}
-                                onChange={(e) => setDireccion(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Home sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                error={!!errors.direccion}
-                                helperText={errors.direccion}
-                            />
-                            <FormControl fullWidth sx={{ mt: 2 }}>
-                                <InputLabel id="cuota-label">Agregar Cuota Extraordinaria</InputLabel>
-                                <Select
-                                    labelId="cuota-label"
-                                    label="Agregar Cuota Extraordinaria"
-                                    value={cuota}
-                                    onChange={handleCuotaChange}
-                                    startAdornment={<MonetizationOn sx={{ mr: 1, color: 'gray' }} />}
-                                >
-                                    <MenuItem value="Fumigacion">Fumigación - S/65</MenuItem>
-                                    <MenuItem value="Luz">Luz - S/20</MenuItem>
-                                    <MenuItem value="Agua">Agua - S/18</MenuItem>
-                                    <MenuItem value="Limpieza">Limpieza - S/15</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} sm={4}>
-                            <FormControl fullWidth required>
-                                <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
-                                <Select
-                                    labelId="tipo-persona-label"
-                                    label="Tipo Persona"
-                                    value=""
-                                    onChange={() => { }}
-                                    startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
-                                >
-                                    <MenuItem value="Natural">Natural</MenuItem>
-                                    <MenuItem value="Juridica">Jurídica</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <TextField
-                                fullWidth
-                                label="Sexo"
-                                sx={{ mt: 2 }}
-                                required
-                                InputProps={{
-                                    startAdornment: (
-                                        <Person sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Inquilino"
-                                sx={{ mt: 2 }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Person sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Block"
-                                sx={{ mt: 2 }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Business sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Giro de Negocio"
-                                sx={{ mt: 2 }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <Business sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Monto Actual"
-                                value="S/ 158.00"
-                                InputProps={{
-                                    readOnly: true,
-                                    startAdornment: (
-                                        <MonetizationOn sx={{ mr: 1, color: 'gray' }} />
-                                    ),
-                                }}
-                                sx={{ bgcolor: "#F0F0F0", mt: 2 }}
-                            />
-                        </Grid>
-                    </Grid>
-
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                color: "#4CAF50",
-                                borderColor: "#4CAF50",
-                                width: "100px",
-                                mr: 1,
-                                '&:hover': {
-                                    backgroundColor: "#e0f2f1",
-                                },
-                            }}
-                            onClick={handleCloseModal}
-                        >
-                            Cerrar
-                        </Button>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#4CAF50",
-                                color: "#fff",
-                                width: "100px",
-                                '&:hover': {
-                                    backgroundColor: "#388E3C",
-                                },
-                            }}
-                            onClick={handleSubmit}
-                        >
-                            Registrar
-                        </Button>
-                    </Box>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            color: "#4CAF50",
+                            borderColor: "#4CAF50",
+                            width: "100px",
+                            mr: 1,
+                            '&:hover': {
+                                backgroundColor: "#e0f2f1",
+                            },
+                        }}
+                        onClick={handleCloseModal}
+                    >
+                        Cerrar
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#4CAF50",
+                            color: "#fff",
+                            width: "100px",
+                            '&:hover': {
+                                backgroundColor: "#388E3C",
+                            },
+                        }}
+                        onClick={handleSubmit}
+                    >
+                        Registrar
+                    </Button>
                 </Box>
+
+
             </Card>
         </Modal>
     );
