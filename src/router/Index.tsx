@@ -8,7 +8,7 @@ import { TablaContratos } from "../components/Contratos/TablaContratos";
 import { TablaAperturarDeuda } from "../components/aperturarDeuda/TablaAperturarDeuda";
 import { TablaVerDeuda } from "../components/verDeuda/TablaVerDeuda";
 import { TablaEmpleados } from "../components/Empleados/TablaEmpleados";
-import TablaServicios from "../components/Servicios/TablaServicios";
+import TablaServicios from "../components/servicios/TablaServicios";
 
 export const router = createBrowserRouter([
   {
