@@ -5,10 +5,10 @@ import Tabla from "../components/Asociados/Tabla";
 import Dashboard from "../components/Dashboard";
 import { TablaInquilinos } from "../components/Inquilinos/TablaInquilinos";
 import { TablaContratos } from "../components/Contratos/TablaContratos";
-import { TablaServicios } from "../components/servicios/TablaServicios";
-import { TablaAperturarDeuda } from "../components/aperturarDeuda/TablaAperturarDeuda";
-import { TablaVerDeuda } from "../components/verDeuda/TablaVerDeuda";
 import { TablaEmpleados } from "../components/Empleados/TablaEmpleados";
+import TablaServicios from "../components/servicios/TablaServicios";
+import TablaAperturarDeuda from "../components/AperturarDeuda/TablaAperturarDeuda";
+import TablaPagos from "../components/Pagos/TablaPagos";
 
 export const router = createBrowserRouter([
   {
@@ -24,14 +24,6 @@ export const router = createBrowserRouter([
         element: <Tabla />,
       },
       {
-        path: "/inquilinos",
-        element: <TablaInquilinos />,
-      },
-      {
-        path: "/contratos",
-        element: <TablaContratos />,
-      },
-      {
         path: "/servicios",
         element: <TablaServicios />,
       },
@@ -40,12 +32,8 @@ export const router = createBrowserRouter([
         element: <TablaAperturarDeuda />,
       },
       {
-        path: "/ver-deuda",
-        element: <TablaVerDeuda />,
-      },
-      {
-        path: "/empleados",
-        element: <TablaEmpleados />,
+        path: "/pagos",
+        element: <TablaPagos />,
       },
 
     ],
