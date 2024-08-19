@@ -39,7 +39,9 @@ interface Puestos {
   socio: {
     id: number;
     correo: string;
+    telefono: number;
     id_persona: number;
+    fecha_registro: string
     estado: string;
   };
   persona: {
@@ -49,6 +51,32 @@ interface Puestos {
     apellidoM: string;
     dni: number;
     estado: number;
+  };
+  giro_negocio: {
+    id: number;
+    nombre: string;
+  };
+  block: {
+    id: number;
+    nombre: string;
+  };
+  inquilino: {
+    id: number;
+    nombre: string;
+    apellidoP: string;
+    apellidoM: string;
+    dni: number;
+    estado: number;
+  };
+  deuda: {
+    id_deuda: number;
+    id_cuota: number;
+    id_puesto: number;
+    id_socio: number;
+    id_servicio: number;
+    importe: number;
+    fecha_registro: string; // formato de fecha en string
+    id_usuarioregistro: number;
   };
 }
 
@@ -91,37 +119,6 @@ const columns: readonly Column[] = [
   { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
-const rows: Data[] = [
-  {
-    socio: "Juan Ramiro",
-    puesto: "A-4",
-    dni: "772834491",
-    block: "1",
-    giro: "Carne",
-    telefono: "912345678",
-    correo: "juan1123@example.com",
-    inquilino: "Sí",
-    cuotas_extra: "500",
-    fecha: "2024",
-    pagar: "No",
-    deuda_total: "1200",
-  },
-  {
-    socio: "Alberth Gonzales",
-    puesto: "A-3",
-    dni: "772834492",
-    block: "2",
-    giro: "Abarrotes",
-    telefono: "912345679",
-    correo: "gonzales123@example.com",
-    inquilino: "No",
-    cuotas_extra: "300",
-    fecha: "2024",
-    pagar: "Sí",
-    deuda_total: "2300",
-  },
-];
-
 const TablaAsociados: React.FC = () => {
 
   const [page, setPage] = useState(0);
@@ -148,6 +145,23 @@ const TablaAsociados: React.FC = () => {
     fetchData();
   }, []);
 
+  const formatDate = (fecha: string): string => {
+    // Crear un objeto Date a partir de la cadena de fecha
+    const date = new Date(fecha);
+
+    // Obtener el día, mes y año
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    const year = date.getFullYear();
+
+    // Formatear a dos dígitos para el día y el mes si es necesario
+    const formattedDay = day.toString().padStart(2, '0');
+    const formattedMonth = month.toString().padStart(2, '0');
+
+    // Retornar la fecha en el formato "día mes año"
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  };
+
   const fetchData = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
@@ -155,15 +169,15 @@ const TablaAsociados: React.FC = () => {
         socio: item.persona.nombre,
         puesto: item.nombre,
         dni: item.persona.dni,
-        block: item.id_block.toString(),
-        // giro: "", // No hay información de giro en la API
-        // telefono: "", // No hay información de teléfono en la API
+        block: item.block.nombre,
+        giro: item.giro_negocio.nombre, // No hay información de giro en la API
+        telefono: item.socio.telefono, // No hay información de teléfono en la API
         correo: item.socio.correo,
-        // inquilino: "", // No hay información de inquilino en la API
+        inquilino: item.inquilino.nombre,
         // cuotas_extra: "", // No hay información de cuotas_extra en la API
-        // fecha: "", // No hay información de fecha en la API
+        fecha: formatDate(item.socio.fecha_registro), // No hay información de fecha en la API
         // pagar: "", // No hay información de pagar en la API
-        // deuda_total: "", // No hay información de deuda_total en la API
+        deuda_total: item.deuda.importe, // No hay i nformación de deuda_total en la API
       }));
       setPuestos(data);
       console.log("la data es", response.data)

@@ -12,7 +12,9 @@ import {
     InputLabel,
     FormControl,
     IconButton,
-    FormHelperText
+    FormHelperText,
+    Tabs,
+    Tab
 } from "@mui/material";
 import { AccountCircle, Dns, Phone, Email, Home, Event, Business, Person, Add, MonetizationOn } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
@@ -145,6 +147,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         Registrar Nuevo Socio
                     </Typography>
                 </Box>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs aria-label="basic tabs example">
+                        <Tab label="Registro Socios" />
+                        <Tab label="Realizar pago" />
+                        {/* <Tab label="Item Three" /> */}
+                    </Tabs>
+                </Box>
+
 
                 <Typography sx={{ mt: 2, mb: 2, color: "#333", textAlign: 'center' }}>
                     Leer detenidamente los campos obligatorios antes de escribir. (*)
