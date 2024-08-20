@@ -14,9 +14,18 @@ import {
     IconButton,
     FormHelperText,
     Tabs,
-    Tab
+    Tab,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    FormControlLabel,
+    Checkbox
 } from "@mui/material";
-import { AccountCircle, Dns, Phone, Email, Home, Business, Person, Event, Add, MonetizationOn } from "@mui/icons-material";
+import { AccountCircle, Dns, Phone, Email, Home, Business, Person, Event, Add, MonetizationOn, CheckCircle } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -30,6 +39,11 @@ interface AgregarProps {
 }
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
+
+
+    const [anio, setAnio] = useState<string>('');
+    const [mes, setMes] = useState<string>('');
+    const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
 
     // Estado para el contenido de las pestañas
     const [activeTab, setActiveTab] = useState(0);
@@ -46,6 +60,10 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const [fecha, setFecha] = useState("");
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+    const [openPagar, setOpenPagar] = useState<boolean>(false);
+    const handleOpenPagar = () => setOpenPagar(true);
+    const handleClosePagar = () => setOpenPagar(false);
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
@@ -141,6 +159,20 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
     // Cambiar entre pestañas
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => setActiveTab(newValue);
+
+    const manejarCheckCambio = (servicio: string) => {
+        setItemsSeleccionados(prev =>
+            prev.includes(servicio) ? prev.filter(item => item !== servicio) : [...prev, servicio]
+        );
+    };
+
+    const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
+        setAnio(evento.target.value as string);
+    };
+
+    const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
+        setMes(evento.target.value as string);
+    };
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -257,7 +289,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         error={!!errors.direccion}
                                         helperText={errors.direccion}
                                     />
-                                    <FormControl fullWidth sx={{ mt: 2 }}>
+                                    {/* <FormControl fullWidth sx={{ mt: 2 }}>
                                         <InputLabel id="cuota-label">Agregar Cuota Extraordinaria</InputLabel>
                                         <Select
                                             labelId="cuota-label"
@@ -271,7 +303,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                             <MenuItem value="Agua">Agua - S/18</MenuItem>
                                             <MenuItem value="Limpieza">Limpieza - S/15</MenuItem>
                                         </Select>
-                                    </FormControl>
+                                    </FormControl> */}
+
+                                    <TextField
+                                        fullWidth
+                                        label="Giro de Negocio"
+                                        sx={{ mt: 2 }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Business sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                    />
                                 </Grid>
 
                                 <Grid item xs={12} sm={4}>
@@ -319,16 +362,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                             ),
                                         }}
                                     />
-                                    <TextField
-                                        fullWidth
-                                        label="Giro de Negocio"
-                                        sx={{ mt: 2 }}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Business sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                    />
+
                                 </Grid>
 
                                 <Grid item xs={12}>
@@ -384,7 +418,106 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 );
             case 1:
                 return (
-                    <Typography>Contenido de la pestaña 2</Typography>
+                    <>
+                        <Box sx={{
+                            width: '80%',
+                            maxWidth: 800,
+                            padding: 3,
+                            bgcolor: '#f0f0f0',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2
+                        }}>
+                            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <TextField
+                                    label="Buscar Socio"
+                                    variant="outlined"
+                                    fullWidth
+                                />
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        backgroundColor: 'white',
+                                        border: '1px solid #ccc',
+                                        borderRadius: 1,
+                                        padding: '4px 8px'
+                                    }}
+                                >
+                                    <Typography variant="body2" color="textSecondary">
+                                        Todos
+                                    </Typography>
+                                    <CheckCircle sx={{ ml: 1, color: '#4caf50' }} />
+                                </Box>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                                <Grid container spacing={2} justifyContent="center">
+                                    <Grid item xs={6} md={3}>
+                                        <FormControl fullWidth>
+                                            <InputLabel>Año</InputLabel>
+                                            <Select
+                                                value={anio}
+                                                onChange={manejarAnioCambio}
+                                                label="Año"
+                                            >
+                                                {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012].map(año => (
+                                                    <MenuItem key={año} value={año}>{año}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6} md={3}>
+                                        <FormControl fullWidth>
+                                            <InputLabel>Mes</InputLabel>
+                                            <Select
+                                                value={mes}
+                                                onChange={manejarMesCambio}
+                                                label="Mes"
+                                            >
+                                                {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map(mesNombre => (
+                                                    <MenuItem key={mesNombre} value={mesNombre}>{mesNombre}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                            <Box>
+                                <TableContainer component={Paper} sx={{ boxShadow: 'none', border: 'none' }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow sx={{ backgroundColor: 'black' }}>
+                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Servicio</TableCell>
+                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Monto</TableCell>
+                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Seleccionar</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {['Servicio 1', 'Servicio 2', 'Servicio 3'].map(servicio => (
+                                                <TableRow key={servicio}>
+                                                    <TableCell>{servicio}</TableCell>
+                                                    <TableCell>$100</TableCell>
+                                                    <TableCell>
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Checkbox
+                                                                    checked={itemsSeleccionados.includes(servicio)}
+                                                                    onChange={() => manejarCheckCambio(servicio)}
+                                                                />
+                                                            }
+                                                            label=""
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Box>
+                        </Box>
+
+                    </>
+
                 );
             case 2:
                 return (
