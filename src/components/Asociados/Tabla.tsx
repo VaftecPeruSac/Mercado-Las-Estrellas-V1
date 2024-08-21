@@ -28,55 +28,60 @@ import axios from "axios";
 import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
-
 interface Puestos {
   id: number;
-  nombre: string;
   id_socio: number;
+  id_gironegocio: number;
   id_block: number;
-  area: number;
-  estado: number;
+  area: string;
+  id_inquilino: number;
+  estado: string;
+  fecha_registro: string;
   socio: {
-    id: number;
-    correo: string;
-    telefono: number;
-    id_persona: number;
-    fecha_registro: string
-    estado: string;
-  };
-  persona: {
-    id: number;
-    nombre: string;
-    apellidoP: string;
-    apellidoM: string;
-    dni: number;
-    estado: number;
-  };
-  giro_negocio: {
-    id: number;
-    nombre: string;
-  };
-  block: {
-    id: number;
-    nombre: string;
-  };
-  inquilino: {
-    id: number;
-    nombre: string;
-    apellidoP: string;
-    apellidoM: string;
-    dni: number;
-    estado: number;
+    id_socio: number;
+    id_usuario: number;
+    saldo: string;
+    fecha_registro: string;
+    usuario: {
+      id_persona: number;
+      nombre_usuario: string;
+      contrasenia: string;
+      rol: string;
+      estado: string;
+      fecha_registro: string;
+      persona: {
+        nombre: string;
+        apellido_paterno: string;
+        apellido_materno: string;
+        dni: string;
+        correo: string;
+        telefono: string;
+        estado: string;
+        fecha_registro: string;
+      };
+    };
+   
   };
   deuda: {
     id_deuda: number;
-    id_cuota: number;
-    id_puesto: number;
-    id_socio: number;
-    id_servicio: number;
-    importe: number;
-    fecha_registro: string; // formato de fecha en string
-    id_usuarioregistro: number;
+    total_deuda: number;
+    fecha_registro: string;
+  };
+  gironegocio: {
+    id_gironegocio: number;
+    nombre: string;
+  };
+  block: {
+    id_block: number;
+    nombre: string;
+  };
+  inquilino: {
+    id_inquilino: number;
+    nombre_completo: string;
+    apellido_paterno: string;
+    apellido_materno: string;
+    dni: string;
+    telefono: string;
   };
 }
 
@@ -127,7 +132,7 @@ const TablaAsociados: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
   const [openPagar, setOpenPagar] = useState<boolean>(false);
-
+  // const [letra, numero] = puestos.block.nombre.split('-');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleExport = () => {
@@ -166,18 +171,18 @@ const TablaAsociados: React.FC = () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
       const data = response.data.data.map((item: Puestos) => ({
-        socio: item.persona.nombre,
-        puesto: item.nombre,
-        dni: item.persona.dni,
+        socio: item.socio.usuario.persona.nombre,
+        puesto: item.block.nombre,
+        dni: item.socio.usuario.persona.dni,
         block: item.block.nombre,
-        giro: item.giro_negocio.nombre, // No hay información de giro en la API
-        telefono: item.socio.telefono, // No hay información de teléfono en la API
-        correo: item.socio.correo,
-        inquilino: item.inquilino.nombre,
+        giro: item.gironegocio.nombre, // No hay información de giro en la API
+        telefono:  item.socio.usuario.persona.telefono, // No hay información de teléfono en la API
+        correo: item.socio.usuario.persona.correo,
+        inquilino: item.inquilino.nombre_completo,
         // cuotas_extra: "", // No hay información de cuotas_extra en la API
         fecha: formatDate(item.socio.fecha_registro), // No hay información de fecha en la API
         // pagar: "", // No hay información de pagar en la API
-        deuda_total: item.deuda.importe, // No hay i nformación de deuda_total en la API
+        deuda: item.deuda.total_deuda, // No hay i nformación de deuda_total en la API
       }));
       setPuestos(data);
       console.log("la data es", response.data)
