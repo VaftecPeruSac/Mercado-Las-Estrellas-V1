@@ -105,7 +105,7 @@ interface Data {
   cuotas_extra: string;
   fecha: string;
   pagar: string;
-  deuda_total: string;
+  total_deuda: any;
 }
 
 const columns: readonly Column[] = [
@@ -120,7 +120,7 @@ const columns: readonly Column[] = [
   { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 },
   { id: "fecha", label: "Fecha", minWidth: 50 },
   { id: "pagar", label: "Pagar", minWidth: 50 },
-  { id: "deuda_total", label: "Deuda Total", minWidth: 50 },
+  { id: "total_deuda", label: "Deuda Total", minWidth: 50 },
   { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
@@ -178,11 +178,11 @@ const TablaAsociados: React.FC = () => {
         giro: item.gironegocio.nombre, // No hay información de giro en la API
         telefono:  item.socio.usuario.persona.telefono, // No hay información de teléfono en la API
         correo: item.socio.usuario.persona.correo,
-        inquilino: item.inquilino.nombre_completo,
+        inquilino: item.inquilino.nombre_completo + item.inquilino.apellido_paterno + item.inquilino.apellido_materno ,
         // cuotas_extra: "", // No hay información de cuotas_extra en la API
         fecha: formatDate(item.socio.fecha_registro), // No hay información de fecha en la API
         // pagar: "", // No hay información de pagar en la API
-        deuda: item.deuda.total_deuda, // No hay i nformación de deuda_total en la API
+        // deuda: item.deuda.total_deuda, // No hay i nformación de total_deuda en la API
       }));
       setPuestos(data);
       console.log("la data es", response.data)
@@ -345,8 +345,8 @@ const TablaAsociados: React.FC = () => {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                        color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                        backgroundColor: column.id === 'total_deuda' ? '#f8d7da' : undefined,
+                        color: column.id === 'total_deuda' ? '#721c24' : undefined,
                         fontWeight: 'bold',
                       }}
                     >
@@ -367,8 +367,8 @@ const TablaAsociados: React.FC = () => {
                             key={column.id}
                             align={column.align}
                             sx={{
-                              backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                              color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                              backgroundColor: column.id === 'total_deuda' ? '#f8d7da' : undefined,
+                              color: column.id === 'total_deuda' ? '#721c24' : undefined,
                             }}
                           >
                             {column.id === 'cuotas_extra' ? (
