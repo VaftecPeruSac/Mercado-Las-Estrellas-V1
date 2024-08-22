@@ -153,6 +153,7 @@ const TablaAsociados: React.FC = () => {
 
   const formatDate = (fecha: string): string => {
     // Crear un objeto Date a partir de la cadena de fecha
+
     const date = new Date(fecha);
 
     // Obtener el día, mes y año
