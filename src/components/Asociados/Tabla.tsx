@@ -106,7 +106,7 @@ interface Data {
   cuotas_extra: string;
   fecha: string;
   pagar: string;
-  deuda_total: string;
+  total_deuda: any;
 }
 
 const columns: readonly Column[] = [
@@ -121,7 +121,7 @@ const columns: readonly Column[] = [
   { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 },
   { id: "fecha", label: "Fecha", minWidth: 50 },
   { id: "pagar", label: "Pagar", minWidth: 50 },
-  { id: "deuda_total", label: "Deuda Total", minWidth: 50 },
+  { id: "total_deuda", label: "Deuda Total", minWidth: 50 },
   { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
@@ -350,8 +350,8 @@ const TablaAsociados: React.FC = () => {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                        color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                        backgroundColor: column.id === 'total_deuda' ? '#f8d7da' : undefined,
+                        color: column.id === 'total_deuda' ? '#721c24' : undefined,
                         fontWeight: 'bold',
                       }}
                     >
@@ -372,8 +372,8 @@ const TablaAsociados: React.FC = () => {
                             key={column.id}
                             align={column.align}
                             sx={{
-                              backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                              color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                              backgroundColor: column.id === 'total_deuda' ? '#f8d7da' : undefined,
+                              color: column.id === 'total_deuda' ? '#721c24' : undefined,
                             }}
                           >
                             {column.id === 'cuotas_extra' ? (
