@@ -185,6 +185,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         <Box component="form" noValidate autoComplete="off">
                             <Grid container spacing={3}>
                                 <Grid item xs={12} sm={4}>
+                                    
                                     <TextField
                                         fullWidth
                                         label="Escribir nombre y apellido (*)"
@@ -318,7 +319,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                 </Grid>
 
                                 <Grid item xs={12} sm={4}>
-                                    <FormControl fullWidth required>
+                                    {/* <FormControl fullWidth required>
                                         <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
                                         <Select
                                             labelId="tipo-persona-label"
@@ -330,7 +331,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                             <MenuItem value="Natural">Natural</MenuItem>
                                             <MenuItem value="Juridica">Jurídica</MenuItem>
                                         </Select>
-                                    </FormControl>
+                                    </FormControl> */}
                                     <TextField
                                         fullWidth
                                         label="Sexo"

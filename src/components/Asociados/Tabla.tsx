@@ -83,6 +83,7 @@ interface Puestos {
     dni: string;
     telefono: string;
   };
+  
 }
 
 interface Column {
@@ -170,27 +171,31 @@ const TablaAsociados: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
-      const data = response.data.data.map((item: Puestos) => ({
-        socio: item.socio.usuario.persona.nombre,
-        puesto: item.block.nombre,
-        dni: item.socio.usuario.persona.dni,
-        block: item.block.nombre,
-        giro: item.gironegocio.nombre, // No hay información de giro en la API
-        telefono:  item.socio.usuario.persona.telefono, // No hay información de teléfono en la API
-        correo: item.socio.usuario.persona.correo,
-        inquilino: item.inquilino.nombre_completo,
-        // cuotas_extra: "", // No hay información de cuotas_extra en la API
-        fecha: formatDate(item.socio.fecha_registro), // No hay información de fecha en la API
-        // pagar: "", // No hay información de pagar en la API
-        deuda: item.deuda.total_deuda, // No hay i nformación de deuda_total en la API
-      }));
+  
+      const data = response.data.data.map((item: Puestos) => {
+        // Separar el block.nombre en dos partes: letra y número
+        const [blockLetra, blockNumero] = item.block.nombre.split("-");
+  
+        return {
+          socio: item.socio.usuario.persona.nombre,
+          puesto: blockLetra, // Primer valor antes del "-"
+          dni: item.socio.usuario.persona.dni,
+          block: blockNumero, // Valor después del "-"
+          giro: item.gironegocio.nombre,
+          telefono: item.socio.usuario.persona.telefono,
+          correo: item.socio.usuario.persona.correo,
+          inquilino: item.inquilino.nombre_completo,
+          fecha: formatDate(item.socio.fecha_registro), 
+          deuda: item.deuda.total_deuda, 
+        };
+      });
+  
       setPuestos(data);
-      console.log("la data es", response.data)
+      console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
-
   return (
     <Box
       sx={{
