@@ -183,25 +183,26 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                             Leer detenidamente los campos obligatorios antes de escribir. (*)
                         </Typography>
                         <Box component="form" noValidate autoComplete="off">
-                            <Grid container spacing={3}>
+                            <Grid container spacing={2}>
                                 <Grid item xs={12} sm={6}>
                                     <FormControl fullWidth required>
                                         <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
                                         <Select
                                             labelId="tipo-persona-label"
                                             label="Tipo Persona"
-                                            value=""
-                                            onChange={() => { }}
+                                            // value={tipoPersona}
+                                            // onChange={handleTipoPersonaChange}
                                             startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
                                         >
                                             <MenuItem value="Natural">Natural</MenuItem>
                                             <MenuItem value="Juridica">Jurídica</MenuItem>
                                         </Select>
                                     </FormControl>
-
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
-                                        label="Escribir nombre y apellido (*)"
+                                        label="Nombre y Apellido (*)"
                                         required
                                         value={nombre}
                                         onChange={manejarNombreCambio}
@@ -213,26 +214,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         error={!!errors.nombre}
                                         helperText={errors.nombre}
                                     />
-                                    {/* <TextField
-                                        fullWidth
-                                        label="Fecha de Registro"
-                                        type="date"
-                                        value={fecha}
-                                        onChange={handleDateChange}
-                                        sx={{ mt: 2 }}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Event sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                    /> */}
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
                                         label="Correo"
-                                        sx={{ mt: 2 }}
+                                        sx={{ mt: 0 }}
                                         value={correo}
                                         onChange={manejarCambioCorreo}
                                         InputProps={{
@@ -243,7 +230,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         error={!!errors.correo}
                                         helperText={errors.correo}
                                     />
-                                    <FormControl fullWidth required sx={{ mt: 2 }}>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <FormControl fullWidth required>
                                         <InputLabel id="estado-label">Estado</InputLabel>
                                         <Select
                                             labelId="estado-label"
@@ -256,114 +245,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                             <MenuItem value="Inactivo">Inactivo</MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid>
-
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="DNI (*)"
-                                        required
-                                        value={dni}
-                                        onChange={manejarDniCambio}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Dns sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                        error={!!errors.dni}
-                                        helperText={errors.dni}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        label="Teléfono (*)"
-                                        sx={{ mt: 2 }}
-                                        required
-                                        value={telefono}
-                                        onChange={manejarTelefonoCambio}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Phone sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                        error={!!errors.telefono}
-                                        helperText={errors.telefono}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        label="Dirección (*)"
-                                        sx={{ mt: 2 }}
-                                        required
-                                        value={direccion}
-                                        onChange={(e) => setDireccion(e.target.value)}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Home sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                        error={!!errors.direccion}
-                                        helperText={errors.direccion}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        label="Giro de Negocio"
-                                        sx={{ mt: 2 }}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Business sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-
-                                <Grid item xs={12} sm={4}>
-
-                                    <TextField
-                                        fullWidth
-                                        label="Sexo"
-                                        sx={{ mt: 2 }}
-                                        required
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Person sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        label="Inquilino"
-                                        sx={{ mt: 2 }}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Person sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        label="Block"
-                                        sx={{ mt: 2 }}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Business sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                    />
-
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                    <TextField
-                                        fullWidth
-                                        label="Monto Actual"
-                                        value="S/ 158.00"
-                                        InputProps={{
-                                            readOnly: true,
-                                            startAdornment: (
-                                                <MonetizationOn sx={{ mr: 1, color: 'gray' }} />
-                                            ),
-                                        }}
-                                        sx={{ bgcolor: "#F0F0F0", mt: 2 }}
-                                    />
                                 </Grid>
                             </Grid>
 
