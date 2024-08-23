@@ -34,12 +34,13 @@ interface Puestos {
   id_gironegocio: number;
   id_block: number;
   area: string;
+  numero_puesto: string;
   id_inquilino: number;
   estado: string;
   fecha_registro: string;
   socio: {
-    id_socio: number;
     id_usuario: number;
+    tipo_persona: string;
     saldo: string;
     fecha_registro: string;
     usuario: {
@@ -56,16 +57,18 @@ interface Puestos {
         dni: string;
         correo: string;
         telefono: string;
+        direccion: string;
+        sexo: string;
         estado: string;
         fecha_registro: string;
       };
     };
-   
-  };
-  deuda: {
-    id_deuda: number;
-    total_deuda: number;
-    fecha_registro: string;
+    deuda: {
+      id_deuda: number;
+      total_deuda: number;
+      fecha_registro: string;
+    };
+
   };
   gironegocio: {
     id_gironegocio: number;
@@ -83,7 +86,7 @@ interface Puestos {
     dni: string;
     telefono: string;
   };
-  
+
 }
 
 interface Column {
@@ -106,7 +109,7 @@ interface Data {
   cuotas_extra: string;
   fecha: string;
   pagar: string;
-  total_deuda: any;
+  deuda: any;
 }
 
 const columns: readonly Column[] = [
@@ -121,7 +124,7 @@ const columns: readonly Column[] = [
   { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 },
   { id: "fecha", label: "Fecha", minWidth: 50 },
   { id: "pagar", label: "Pagar", minWidth: 50 },
-  { id: "total_deuda", label: "Deuda Total", minWidth: 50 },
+  { id: "deuda", label: "Deuda Total", minWidth: 50 },
   { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
@@ -172,27 +175,20 @@ const TablaAsociados: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
-  
-      const data = response.data.data.map((item: Puestos) => {
-        // Separar el block.nombre en dos partes: letra y número
-        const [blockLetra, blockNumero] = item.block.nombre.split("-");
-  
-        return {
-          socio: item.socio.usuario.persona.nombre,
-          puesto: blockLetra, // Primer valor antes del "-"
-          dni: item.socio.usuario.persona.dni,
-          block: blockNumero, // Valor después del "-"
-          giro: item.gironegocio.nombre,
-          telefono: item.socio.usuario.persona.telefono,
-          correo: item.socio.usuario.persona.correo,
-          inquilino: item.inquilino.nombre_completo,
-          fecha: formatDate(item.socio.fecha_registro), 
-          deuda: item.deuda.total_deuda, 
-        };
-      });
-  
+      const data = response.data.data.map((item: Puestos) => ({
+        socio: item.socio.usuario.persona.nombre,
+        puesto: item.numero_puesto, // Primer valor antes del "-"
+        dni: item.socio.usuario.persona.dni,
+        block: item.block.nombre, // Valor después del "-"
+        giro: item.gironegocio.nombre,
+        telefono: item.socio.usuario.persona.telefono,
+        correo: item.socio.usuario.persona.correo,
+        inquilino: item.inquilino.nombre_completo,
+        fecha: formatDate(item.socio.fecha_registro),
+        deuda: item.socio.deuda.total_deuda,
+      }));
       setPuestos(data);
-      console.log("la data es", response.data);
+      console.log("la data es", response.data)
     } catch (error) {
       console.error("Error al traer datos", error);
     }
@@ -351,8 +347,8 @@ const TablaAsociados: React.FC = () => {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        backgroundColor: column.id === 'total_deuda' ? '#f8d7da' : undefined,
-                        color: column.id === 'total_deuda' ? '#721c24' : undefined,
+                        backgroundColor: column.id === 'deuda' ? '#f8d7da' : undefined,
+                        color: column.id === 'deuda' ? '#721c24' : undefined,
                         fontWeight: 'bold',
                       }}
                     >
@@ -373,8 +369,8 @@ const TablaAsociados: React.FC = () => {
                             key={column.id}
                             align={column.align}
                             sx={{
-                              backgroundColor: column.id === 'total_deuda' ? '#f8d7da' : undefined,
-                              color: column.id === 'total_deuda' ? '#721c24' : undefined,
+                              backgroundColor: column.id === 'deuda' ? '#f8d7da' : undefined,
+                              color: column.id === 'deuda' ? '#721c24' : undefined,
                             }}
                           >
                             {column.id === 'cuotas_extra' ? (

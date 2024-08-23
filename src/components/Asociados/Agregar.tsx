@@ -184,8 +184,21 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         </Typography>
                         <Box component="form" noValidate autoComplete="off">
                             <Grid container spacing={3}>
-                                <Grid item xs={12} sm={4}>
-                                    
+                                <Grid item xs={12} sm={6}>
+                                    <FormControl fullWidth required>
+                                        <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
+                                        <Select
+                                            labelId="tipo-persona-label"
+                                            label="Tipo Persona"
+                                            value=""
+                                            onChange={() => { }}
+                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Natural">Natural</MenuItem>
+                                            <MenuItem value="Juridica">Jurídica</MenuItem>
+                                        </Select>
+                                    </FormControl>
+
                                     <TextField
                                         fullWidth
                                         label="Escribir nombre y apellido (*)"
@@ -200,7 +213,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         error={!!errors.nombre}
                                         helperText={errors.nombre}
                                     />
-                                    <TextField
+                                    {/* <TextField
                                         fullWidth
                                         label="Fecha de Registro"
                                         type="date"
@@ -215,7 +228,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
-                                    />
+                                    /> */}
                                     <TextField
                                         fullWidth
                                         label="Correo"
@@ -290,22 +303,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         error={!!errors.direccion}
                                         helperText={errors.direccion}
                                     />
-                                    {/* <FormControl fullWidth sx={{ mt: 2 }}>
-                                        <InputLabel id="cuota-label">Agregar Cuota Extraordinaria</InputLabel>
-                                        <Select
-                                            labelId="cuota-label"
-                                            label="Agregar Cuota Extraordinaria"
-                                            value={cuota}
-                                            onChange={handleCuotaChange}
-                                            startAdornment={<MonetizationOn sx={{ mr: 1, color: 'gray' }} />}
-                                        >
-                                            <MenuItem value="Fumigacion">Fumigación - S/65</MenuItem>
-                                            <MenuItem value="Luz">Luz - S/20</MenuItem>
-                                            <MenuItem value="Agua">Agua - S/18</MenuItem>
-                                            <MenuItem value="Limpieza">Limpieza - S/15</MenuItem>
-                                        </Select>
-                                    </FormControl> */}
-
                                     <TextField
                                         fullWidth
                                         label="Giro de Negocio"
@@ -319,19 +316,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                 </Grid>
 
                                 <Grid item xs={12} sm={4}>
-                                    {/* <FormControl fullWidth required>
-                                        <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
-                                        <Select
-                                            labelId="tipo-persona-label"
-                                            label="Tipo Persona"
-                                            value=""
-                                            onChange={() => { }}
-                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
-                                        >
-                                            <MenuItem value="Natural">Natural</MenuItem>
-                                            <MenuItem value="Juridica">Jurídica</MenuItem>
-                                        </Select>
-                                    </FormControl> */}
+
                                     <TextField
                                         fullWidth
                                         label="Sexo"
@@ -419,105 +404,107 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 );
             case 1:
                 return (
-                    <>
-                        <Box sx={{
-                            width: '80%',
-                            maxWidth: 800,
-                            padding: 3,
-                            bgcolor: '#f0f0f0',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 2
-                        }}>
-                            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <TextField
-                                    label="Buscar Socio"
-                                    variant="outlined"
-                                    fullWidth
-                                />
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        backgroundColor: 'white',
-                                        border: '1px solid #ccc',
-                                        borderRadius: 1,
-                                        padding: '4px 8px'
-                                    }}
-                                >
-                                    <Typography variant="body2" color="textSecondary">
-                                        Todos
-                                    </Typography>
-                                    <CheckCircle sx={{ ml: 1, color: '#4caf50' }} />
-                                </Box>
-                            </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                                <Grid container spacing={2} justifyContent="center">
-                                    <Grid item xs={6} md={3}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Año</InputLabel>
-                                            <Select
-                                                value={anio}
-                                                onChange={manejarAnioCambio}
-                                                label="Año"
-                                            >
-                                                {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012].map(año => (
-                                                    <MenuItem key={año} value={año}>{año}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={6} md={3}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Mes</InputLabel>
-                                            <Select
-                                                value={mes}
-                                                onChange={manejarMesCambio}
-                                                label="Mes"
-                                            >
-                                                {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map(mesNombre => (
-                                                    <MenuItem key={mesNombre} value={mesNombre}>{mesNombre}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                            <Box>
-                                <TableContainer component={Paper} sx={{ boxShadow: 'none', border: 'none' }}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow sx={{ backgroundColor: 'black' }}>
-                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Servicio</TableCell>
-                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Monto</TableCell>
-                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Seleccionar</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {['Servicio 1', 'Servicio 2', 'Servicio 3'].map(servicio => (
-                                                <TableRow key={servicio}>
-                                                    <TableCell>{servicio}</TableCell>
-                                                    <TableCell>$100</TableCell>
-                                                    <TableCell>
-                                                        <FormControlLabel
-                                                            control={
-                                                                <Checkbox
-                                                                    checked={itemsSeleccionados.includes(servicio)}
-                                                                    onChange={() => manejarCheckCambio(servicio)}
-                                                                />
-                                                            }
-                                                            label=""
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Box>
-                        </Box>
+                    <Typography>Contenido de la pestaña 3</Typography>
 
-                    </>
+                    // <>
+                    //     <Box sx={{
+                    //         width: '80%',
+                    //         maxWidth: 800,
+                    //         padding: 3,
+                    //         bgcolor: '#f0f0f0',
+                    //         display: 'flex',
+                    //         flexDirection: 'column',
+                    //         gap: 2
+                    //     }}>
+                    //         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+                    //             <TextField
+                    //                 label="Buscar Socio"
+                    //                 variant="outlined"
+                    //                 fullWidth
+                    //             />
+                    //             <Box
+                    //                 sx={{
+                    //                     display: 'flex',
+                    //                     alignItems: 'center',
+                    //                     backgroundColor: 'white',
+                    //                     border: '1px solid #ccc',
+                    //                     borderRadius: 1,
+                    //                     padding: '4px 8px'
+                    //                 }}
+                    //             >
+                    //                 <Typography variant="body2" color="textSecondary">
+                    //                     Todos
+                    //                 </Typography>
+                    //                 <CheckCircle sx={{ ml: 1, color: '#4caf50' }} />
+                    //             </Box>
+                    //         </Box>
+                    //         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                    //             <Grid container spacing={2} justifyContent="center">
+                    //                 <Grid item xs={6} md={3}>
+                    //                     <FormControl fullWidth>
+                    //                         <InputLabel>Año</InputLabel>
+                    //                         <Select
+                    //                             value={anio}
+                    //                             onChange={manejarAnioCambio}
+                    //                             label="Año"
+                    //                         >
+                    //                             {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012].map(año => (
+                    //                                 <MenuItem key={año} value={año}>{año}</MenuItem>
+                    //                             ))}
+                    //                         </Select>
+                    //                     </FormControl>
+                    //                 </Grid>
+                    //                 <Grid item xs={6} md={3}>
+                    //                     <FormControl fullWidth>
+                    //                         <InputLabel>Mes</InputLabel>
+                    //                         <Select
+                    //                             value={mes}
+                    //                             onChange={manejarMesCambio}
+                    //                             label="Mes"
+                    //                         >
+                    //                             {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map(mesNombre => (
+                    //                                 <MenuItem key={mesNombre} value={mesNombre}>{mesNombre}</MenuItem>
+                    //                             ))}
+                    //                         </Select>
+                    //                     </FormControl>
+                    //                 </Grid>
+                    //             </Grid>
+                    //         </Box>
+                    //         <Box>
+                    //             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: 'none' }}>
+                    //                 <Table>
+                    //                     <TableHead>
+                    //                         <TableRow sx={{ backgroundColor: 'black' }}>
+                    //                             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Servicio</TableCell>
+                    //                             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Monto</TableCell>
+                    //                             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Seleccionar</TableCell>
+                    //                         </TableRow>
+                    //                     </TableHead>
+                    //                     <TableBody>
+                    //                         {['Servicio 1', 'Servicio 2', 'Servicio 3'].map(servicio => (
+                    //                             <TableRow key={servicio}>
+                    //                                 <TableCell>{servicio}</TableCell>
+                    //                                 <TableCell>$100</TableCell>
+                    //                                 <TableCell>
+                    //                                     <FormControlLabel
+                    //                                         control={
+                    //                                             <Checkbox
+                    //                                                 checked={itemsSeleccionados.includes(servicio)}
+                    //                                                 onChange={() => manejarCheckCambio(servicio)}
+                    //                                             />
+                    //                                         }
+                    //                                         label=""
+                    //                                     />
+                    //                                 </TableCell>
+                    //                             </TableRow>
+                    //                         ))}
+                    //                     </TableBody>
+                    //                 </Table>
+                    //             </TableContainer>
+                    //         </Box>
+                    //     </Box>
+
+                    // </>
 
                 );
             case 2:
@@ -561,10 +548,10 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 </Box>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
-                        <Tab label="Registro Usuario" />
-                        <Tab label="Asignar Puesto" />
-                        <Tab label="Registrar Cuota Extraordinaria" />
-                        <Tab label="Registro pagos" />
+                        <Tab label="Registrar Socios" />
+                        <Tab label="Registrar Inquilinos" />
+                        {/* <Tab label="Registrar Cuota Extraordinaria" />
+                        <Tab label="Registro pagos" /> */}
                     </Tabs>
                 </Box>
                 {renderTabContent()}
