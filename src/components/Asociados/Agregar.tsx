@@ -179,17 +179,78 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             case 0:
                 return (
                     <>
-                        <Typography sx={{ mt: 2, mb: 2, color: "#333", textAlign: 'center' }}>
-                            Leer detenidamente los campos obligatorios antes de escribir. (*)
+                        <Typography sx={{ mb: 1, color: "#333", textAlign: 'center', fontSize: '0.8rem' }}>
+                            Recuerde leer los campos obligatorios antes de escribir. (*)
                         </Typography>
+
+                        <Grid container spacing={3} sx={{ mt: -4 }} >
+                            <Grid item xs={12} sm={6}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: 'bold',
+
+                                        fontSize: '0.8rem',
+                                        color: 'black',
+                                        textAlign: 'center',
+                                        mb: 0, // Reduce el margen inferior
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        '&::before': {
+                                            content: '""',
+                                            flexGrow: 1,
+                                            borderBottom: '1px solid #333',
+                                            marginRight: '8px',
+                                        },
+                                        '&::after': {
+                                            content: '""',
+                                            flexGrow: 1,
+                                            borderBottom: '1px solid #333',
+                                            marginLeft: '8px',
+                                        },
+                                    }}
+                                >
+                                    DATOS PERSONALES
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        fontSize: '0.8rem',
+                                        color: 'black',
+                                        textAlign: 'center',
+                                        mb: 0, // Reduce el margen inferior
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        '&::before': {
+                                            content: '""',
+                                            flexGrow: 1,
+                                            borderBottom: '1px solid #333',
+                                            marginRight: '8px',
+                                        },
+                                        '&::after': {
+                                            content: '""',
+                                            flexGrow: 1,
+                                            borderBottom: '1px solid #333',
+                                            marginLeft: '8px',
+                                        },
+                                    }}
+                                >
+                                    CONTACTO
+                                </Typography>
+                            </Grid>
+                        </Grid>
+
                         <Box component="form" noValidate autoComplete="off">
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2}> {/* Reducción del espaciado */}
                                 <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth required>
+                                    <FormControl fullWidth required >
                                         <InputLabel id="tipo-persona-label">Tipo Persona</InputLabel>
                                         <Select
                                             labelId="tipo-persona-label"
-                                            label="Tipo Persona"
+                                            label="Tipo Persona (*)"
                                             // value={tipoPersona}
                                             // onChange={handleTipoPersonaChange}
                                             startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
@@ -202,8 +263,22 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                 <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
-                                        label="Nombre y Apellido (*)"
-                                        required
+                                        label="Nro. Telefono (*)"
+                                        value={telefono}
+                                        onChange={manejarTelefonoCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <AccountCircle sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.telefono}
+                                        helperText={errors.telefono}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Nombre (*)"
                                         value={nombre}
                                         onChange={manejarNombreCambio}
                                         InputProps={{
@@ -218,7 +293,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                 <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
-                                        label="Correo"
+                                        label="Correo (*)"
                                         sx={{ mt: 0 }}
                                         value={correo}
                                         onChange={manejarCambioCorreo}
@@ -231,23 +306,86 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         helperText={errors.correo}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth required>
-                                        <InputLabel id="estado-label">Estado</InputLabel>
-                                        <Select
-                                            labelId="estado-label"
-                                            label="Estado"
-                                            value={estado}
-                                            onChange={handleEstadoChange}
-                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
-                                        >
-                                            <MenuItem value="Activo">Activo</MenuItem>
-                                            <MenuItem value="Inactivo">Inactivo</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
                             </Grid>
 
+                            <Grid container spacing={2} sx={{ mt: 0 }}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Apellido Paterno (*)"
+                                        // value={apellidoPaterno}
+                                        // onChange={manejarApellidoPaternoCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <AccountCircle sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.apellidoPaterno}
+                                        helperText={errors.apellidoPaterno}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6} sx={{ mt: -1 }}>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            fontSize: '0.8rem',
+                                            color: 'black',
+                                            textAlign: 'center',
+                                            mb: 0, // Reduce el margen inferior para acercar el campo "Bloque"
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            '&::before': {
+                                                content: '""',
+                                                flexGrow: 1,
+                                                borderBottom: '1px solid #333',
+                                                marginRight: '8px',
+                                            },
+                                            '&::after': {
+                                                content: '""',
+                                                flexGrow: 1,
+                                                borderBottom: '1px solid #333',
+                                                marginLeft: '8px',
+                                            },
+                                        }}
+                                    >
+                                        ASIGNAR PUESTO
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <TextField
+                                        fullWidth
+                                        label="Apellido Materno (*)"
+                                        // value={apellidoMaterno}
+                                        // onChange={manejarApellidoMaternoCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <AccountCircle sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.apellidoMaterno}
+                                        helperText={errors.apellidoMaterno}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6} sx={{ mt: -6, }}>
+                                    <TextField
+                                        fullWidth
+                                        label="Bloque"
+                                        // value={apellidoMaterno}
+                                        // onChange={manejarApellidoMaternoCambio}
+                                        InputProps={{
+
+                                            startAdornment: (
+                                                <AccountCircle sx={{ mr: 1, color: 'gray', }} />
+                                            ),
+
+                                        }}
+                                        error={!!errors.apellidoMaterno}
+                                        helperText={errors.apellidoMaterno}
+
+                                    />
+                                </Grid>
+                            </Grid>
                             {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
                             <Button
                                 variant="outlined"
@@ -281,6 +419,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         </Box> */}
                         </Box>
                     </>
+
+
 
                 );
             case 1:
@@ -407,7 +547,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
         >
             <Card
                 sx={{
-                    width: "900px",
+                    width: "600px",
                     p: 3,
                     bgcolor: "#f0f0f0",
                     boxShadow: 24,
@@ -422,17 +562,40 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         id="modal-title"
                         variant="h6"
                         component="h2"
-                        sx={{ textAlign: 'center' }}
+                        sx={{ textAlign: 'center', fontSize: '0.9rem', }}
                     >
-                        Registrar Nuevo Socio
+                        REGISTRAR NUEVO SOCIO
                     </Typography>
                 </Box>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
-                        <Tab label="Registrar Socios" />
-                        <Tab label="Registrar Inquilinos" />
-                        {/* <Tab label="Registrar Cuota Extraordinaria" />
-                        <Tab label="Registro pagos" /> */}
+
+                <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 0, mt: -1 }}> {/* Reduce el margen inferior */}
+                    <Tabs
+                        value={activeTab}
+                        onChange={handleTabChange}
+                        sx={{
+                            '& .MuiTabs-flexContainer': {
+                                minHeight: '36px', // Reduce la altura del contenedor de tabs
+                            },
+                            '& .MuiTab-root': {
+                                fontSize: '0.8rem',       // Tamaño de fuente más pequeño
+                                fontWeight: 'normal',     // Peso de fuente normal
+                                color: 'gray',            // Color gris para tabs no seleccionados
+                                textTransform: 'none',    // Mantener el texto tal cual
+                                minWidth: 'auto',         // Quitar el ancho mínimo
+                                px: 2,                    // Padding horizontal
+                            },
+                            '& .Mui-selected': {
+                                fontWeight: 'bold',       // Negrita para el tab seleccionado
+                                color: 'black',           // Color negro para el tab seleccionado
+                            },
+                            '& .MuiTabs-indicator': {
+                                display: 'none', // Ocultar el indicador de línea predeterminado
+                            },
+                            mb: -1, // Reduce el margen inferior para acercar el divider a los tabs
+                        }}
+                    >
+                        <Tab label="REGISTRAR SOCIO" />
+                        <Tab label="REGISTRAR INQUILINO" />
                     </Tabs>
                 </Box>
                 {renderTabContent()}
@@ -468,8 +631,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         Registrar
                     </Button>
                 </Box>
-
-
             </Card>
         </Modal>
     );
