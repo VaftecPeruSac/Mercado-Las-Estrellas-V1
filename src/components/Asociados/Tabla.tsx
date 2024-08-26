@@ -22,7 +22,20 @@ import {
   useTheme,
   Modal,
 } from "@mui/material";
-import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print, Upload, FolderShared, Payments, Plagiarism, SaveAlt, SaveAs } from "@mui/icons-material";
+import {
+  Edit,
+  Download,
+  FileCopy,
+  WhatsApp,
+  PictureAsPdf,
+  Print,
+  Upload,
+  FolderShared,
+  Payments,
+  Plagiarism,
+  SaveAlt,
+  SaveAs,
+} from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import Agregar from "./Agregar";
@@ -68,7 +81,6 @@ interface Puestos {
       total_deuda: number;
       fecha_registro: string;
     };
-
   };
   gironegocio: {
     id_gironegocio: number;
@@ -86,7 +98,6 @@ interface Puestos {
     dni: string;
     telefono: string;
   };
-
 }
 
 interface Column {
@@ -113,7 +124,7 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  { id: "socio", label: "Socio", minWidth: 50 },  // Reduce el minWidth
+  { id: "socio", label: "Socio", minWidth: 50 }, // Reduce el minWidth
   { id: "puesto", label: "Puesto", minWidth: 50 },
   { id: "dni", label: "DNI", minWidth: 50 },
   { id: "block", label: "Block", minWidth: 50 },
@@ -129,7 +140,6 @@ const columns: readonly Column[] = [
 ];
 
 const TablaAsociados: React.FC = () => {
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchValue, setSearchValue] = useState("");
@@ -143,7 +153,6 @@ const TablaAsociados: React.FC = () => {
     // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
   };
-
 
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
@@ -165,8 +174,8 @@ const TablaAsociados: React.FC = () => {
     const year = date.getFullYear();
 
     // Formatear a dos dígitos para el día y el mes si es necesario
-    const formattedDay = day.toString().padStart(2, '0');
-    const formattedMonth = month.toString().padStart(2, '0');
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
 
     // Retornar la fecha en el formato "día mes año"
     return `${formattedDay}/${formattedMonth}/${year}`;
@@ -188,7 +197,7 @@ const TablaAsociados: React.FC = () => {
         deuda: item.socio.deuda.total_deuda,
       }));
       setPuestos(data);
-      console.log("la data es", response.data)
+      console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
@@ -227,13 +236,12 @@ const TablaAsociados: React.FC = () => {
           textAlign: "left",
           position: "relative",
           transition: "all 0.3s ease",
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           p: 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
           // Centra el Card horizontalmente y añade espacio a los lados
-
         }}
       >
         <Box
@@ -243,7 +251,7 @@ const TablaAsociados: React.FC = () => {
             justifyContent: "space-between",
             alignItems: "center",
             mb: 3,
-            P: 0
+            P: 0,
           }}
         >
           <Button
@@ -262,10 +270,11 @@ const TablaAsociados: React.FC = () => {
             }}
             onClick={handleOpen}
           >
-
             Agregar Socio
           </Button>
+
           <Agregar open={open} handleClose={handleClose} />
+
           <Box
             sx={{
               display: "flex",
@@ -279,16 +288,16 @@ const TablaAsociados: React.FC = () => {
               sx={{
                 minWidth: 130,
                 height: "37px",
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#dcdcdc', // Color del borde inicial (gris claro)
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#dcdcdc", // Color del borde inicial (gris claro)
                   },
-                  '&:hover fieldset': {
-                    borderColor: '#dcdcdc', // Color del borde al hacer hover (gris claro)
+                  "&:hover fieldset": {
+                    borderColor: "#dcdcdc", // Color del borde al hacer hover (gris claro)
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#dcdcdc', // Color del borde cuando está enfocado (gris claro)
-                    boxShadow: 'none', // Elimina la sombra del enfoque
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#dcdcdc", // Color del borde cuando está enfocado (gris claro)
+                    boxShadow: "none", // Elimina la sombra del enfoque
                   },
                 },
               }}
@@ -306,8 +315,8 @@ const TablaAsociados: React.FC = () => {
                   minWidth: "120px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
-                  '& .MuiSelect-icon': {
-                    color: '#000', // Color del icono del menú desplegable
+                  "& .MuiSelect-icon": {
+                    color: "#000", // Color del icono del menú desplegable
                   },
                 }}
               >
@@ -336,8 +345,10 @@ const TablaAsociados: React.FC = () => {
             </Button>
           </Box>
         </Box>
-        <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: 'none' }}>
-          <TableContainer sx={{ maxHeight: '100%', borderRadius: '5px', border: 'none' }}>
+        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+          <TableContainer
+            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+          >
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -347,9 +358,10 @@ const TablaAsociados: React.FC = () => {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        backgroundColor: column.id === 'deuda' ? '#f8d7da' : undefined,
-                        color: column.id === 'deuda' ? '#721c24' : undefined,
-                        fontWeight: 'bold',
+                        backgroundColor:
+                          column.id === "deuda" ? "#f8d7da" : undefined,
+                        color: column.id === "deuda" ? "#721c24" : undefined,
+                        fontWeight: "bold",
                       }}
                     >
                       {column.label}
@@ -363,38 +375,60 @@ const TablaAsociados: React.FC = () => {
                   .map((row, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => {
-                        const value = column.id === 'accion' ? '' : (row as any)[column.id];
+                        const value =
+                          column.id === "accion" ? "" : (row as any)[column.id];
                         return (
                           <TableCell
                             key={column.id}
                             align={column.align}
                             sx={{
-                              backgroundColor: column.id === 'deuda' ? '#f8d7da' : undefined,
-                              color: column.id === 'deuda' ? '#721c24' : undefined,
+                              backgroundColor:
+                                column.id === "deuda" ? "#f8d7da" : undefined,
+                              color:
+                                column.id === "deuda" ? "#721c24" : undefined,
                             }}
                           >
-                            {column.id === 'cuotas_extra' ? (
-                              <Box sx={{ display: 'flex' }}>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                            {column.id === "cuotas_extra" ? (
+                              <Box sx={{ display: "flex" }}>
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
                                   <SaveAs />
                                 </IconButton>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
                                   <Plagiarism />
                                 </IconButton>
                               </Box>
-                            ) : column.id === 'pagar' ? (
-                              <IconButton aria-label="payment" sx={{ color: 'green' }} onClick={handleOpenPagar}>
+                            ) : column.id === "pagar" ? (
+                              <IconButton
+                                aria-label="payment"
+                                sx={{ color: "green" }}
+                                onClick={handleOpenPagar}
+                              >
                                 <Payments />
                               </IconButton>
-                            ) : column.id === 'accion' ? (
-                              <Box sx={{ display: 'flex' }}>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                            ) : column.id === "accion" ? (
+                              <Box sx={{ display: "flex" }}>
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
                                   <Plagiarism />
                                 </IconButton>
-                                <IconButton aria-label="copy" sx={{ color: 'black' }}>
+                                <IconButton
+                                  aria-label="copy"
+                                  sx={{ color: "black" }}
+                                >
                                   <Download />
                                 </IconButton>
-                                <IconButton aria-label="whatsapp" sx={{ color: 'green' }}>
+                                <IconButton
+                                  aria-label="whatsapp"
+                                  sx={{ color: "green" }}
+                                >
                                   <WhatsApp />
                                 </IconButton>
                               </Box>
@@ -410,14 +444,15 @@ const TablaAsociados: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: 3 }}>
-            <Pagination count={10} color="primary" sx={{ marginLeft: '25%' }} />
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
+          >
+            <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} />
           </Box>
         </Paper>
         <Pagar open={openPagar} onClose={handleClosePagar} />
-      </Card >
-
-    </Box >
+      </Card>
+    </Box>
   );
-}
+};
 export default TablaAsociados;
