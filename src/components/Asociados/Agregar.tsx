@@ -324,6 +324,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         helperText={errors.apellidoPaterno}
                                     />
                                 </Grid>
+
                                 <Grid item xs={12} sm={6} sx={{ mt: -1 }}>
                                     <Typography
                                         variant="h6"
@@ -352,6 +353,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         ASIGNAR PUESTO
                                     </Typography>
                                 </Grid>
+
                                 <Grid item xs={12} sm={6} >
                                     <TextField
                                         fullWidth
@@ -367,56 +369,145 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                         helperText={errors.apellidoMaterno}
                                     />
                                 </Grid>
+
                                 <Grid item xs={12} sm={6} sx={{ mt: -6, }}>
+                                    <FormControl fullWidth required >
+                                        <InputLabel id="tipo-persona-label">Bloque</InputLabel>
+                                        <Select
+                                            labelId="tipo-persona-label"
+                                            label="Bloque (*)"
+                                            // value={tipoPersona}
+                                            // onChange={handleTipoPersonaChange}
+                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Natural">Natural</MenuItem>
+                                            <MenuItem value="Juridica">Jurídica</MenuItem>
+                                        </Select>
+                                    </FormControl>
+
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <FormControl fullWidth required >
+                                        <InputLabel id="tipo-persona-label">Nro. Puesto</InputLabel>
+                                        <Select
+                                            labelId="tipo-persona-label"
+                                            label="Bloque (*)"
+                                            // value={tipoPersona}
+                                            // onChange={handleTipoPersonaChange}
+                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Natural">Natural</MenuItem>
+                                            <MenuItem value="Juridica">Jurídica</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} sm={6} sx={{ mt: -6, }}>
+                                    <FormControl fullWidth required >
+                                        <InputLabel id="tipo-persona-label">Nro. Puesto</InputLabel>
+                                        <Select
+                                            labelId="tipo-persona-label"
+                                            label="Bloque (*)"
+                                            // value={tipoPersona}
+                                            // onChange={handleTipoPersonaChange}
+                                            startAdornment={<Person sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Natural">Natural</MenuItem>
+                                            <MenuItem value="Juridica">Jurídica</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
                                     <TextField
                                         fullWidth
-                                        label="Bloque"
-                                        // value={apellidoMaterno}
-                                        // onChange={manejarApellidoMaternoCambio}
+                                        label="DNI (*)"
+                                        required
+                                        value={dni}
+                                        onChange={manejarDniCambio}
                                         InputProps={{
-
                                             startAdornment: (
-                                                <AccountCircle sx={{ mr: 1, color: 'gray', }} />
+                                                <Dns sx={{ mr: 1, color: 'gray' }} />
                                             ),
-
                                         }}
-                                        error={!!errors.apellidoMaterno}
-                                        helperText={errors.apellidoMaterno}
-
+                                        error={!!errors.dni}
+                                        helperText={errors.dni}
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={6} sx={{ mt: -7 }}>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            fontSize: '0.8rem',
+                                            color: 'black',
+                                            textAlign: 'center',
+                                            mb: 0, // Reduce el margen inferior para acercar el campo "Bloque"
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            '&::before': {
+                                                content: '""',
+                                                flexGrow: 1,
+                                                borderBottom: '1px solid #333',
+                                                marginRight: '8px',
+                                            },
+                                            '&::after': {
+                                                content: '""',
+                                                flexGrow: 1,
+                                                borderBottom: '1px solid #333',
+                                                marginLeft: '8px',
+                                            },
+                                        }}
+                                    >
+                                        ASIGNAR PUESTO
+                                    </Typography>
+                                </Grid>
+                                {/* <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        fullWidth
+                                        label="Teléfono (*)"
+                                        sx={{ mt: 2 }}
+                                        required
+                                        value={telefono}
+                                        onChange={manejarTelefonoCambio}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Phone sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.telefono}
+                                        helperText={errors.telefono}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Dirección (*)"
+                                        sx={{ mt: 2 }}
+                                        required
+                                        value={direccion}
+                                        onChange={(e) => setDireccion(e.target.value)}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Home sx={{ mr: 1, color: 'gray' }} />
+                                            ),
+                                        }}
+                                        error={!!errors.direccion}
+                                        helperText={errors.direccion}
+                                    />
+                                    <FormControl fullWidth sx={{ mt: 2 }}>
+                                        <InputLabel id="cuota-label">Agregar Cuota Extraordinaria</InputLabel>
+                                        <Select
+                                            labelId="cuota-label"
+                                            label="Agregar Cuota Extraordinaria"
+                                            value={cuota}
+                                            onChange={handleCuotaChange}
+                                            startAdornment={<MonetizationOn sx={{ mr: 1, color: 'gray' }} />}
+                                        >
+                                            <MenuItem value="Fumigacion">Fumigación - S/65</MenuItem>
+                                            <MenuItem value="Luz">Luz - S/20</MenuItem>
+                                            <MenuItem value="Agua">Agua - S/18</MenuItem>
+                                            <MenuItem value="Limpieza">Limpieza - S/15</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid> */}
                             </Grid>
-                            {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-                            <Button
-                                variant="outlined"
-                                sx={{
-                                    color: "#4CAF50",
-                                    borderColor: "#4CAF50",
-                                    width: "100px",
-                                    mr: 1,
-                                    '&:hover': {
-                                        backgroundColor: "#e0f2f1",
-                                    },
-                                }}
-                                onClick={handleCloseModal}
-                            >
-                                Cerrar
-                            </Button>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: "#4CAF50",
-                                    color: "#fff",
-                                    width: "100px",
-                                    '&:hover': {
-                                        backgroundColor: "#388E3C",
-                                    },
-                                }}
-                                onClick={handleSubmit}
-                            >
-                                Registrar
-                            </Button>
-                        </Box> */}
                         </Box>
                     </>
 
@@ -426,106 +517,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             case 1:
                 return (
                     <Typography>Contenido de la pestaña 3</Typography>
-
-                    // <>
-                    //     <Box sx={{
-                    //         width: '80%',
-                    //         maxWidth: 800,
-                    //         padding: 3,
-                    //         bgcolor: '#f0f0f0',
-                    //         display: 'flex',
-                    //         flexDirection: 'column',
-                    //         gap: 2
-                    //     }}>
-                    //         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-                    //             <TextField
-                    //                 label="Buscar Socio"
-                    //                 variant="outlined"
-                    //                 fullWidth
-                    //             />
-                    //             <Box
-                    //                 sx={{
-                    //                     display: 'flex',
-                    //                     alignItems: 'center',
-                    //                     backgroundColor: 'white',
-                    //                     border: '1px solid #ccc',
-                    //                     borderRadius: 1,
-                    //                     padding: '4px 8px'
-                    //                 }}
-                    //             >
-                    //                 <Typography variant="body2" color="textSecondary">
-                    //                     Todos
-                    //                 </Typography>
-                    //                 <CheckCircle sx={{ ml: 1, color: '#4caf50' }} />
-                    //             </Box>
-                    //         </Box>
-                    //         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                    //             <Grid container spacing={2} justifyContent="center">
-                    //                 <Grid item xs={6} md={3}>
-                    //                     <FormControl fullWidth>
-                    //                         <InputLabel>Año</InputLabel>
-                    //                         <Select
-                    //                             value={anio}
-                    //                             onChange={manejarAnioCambio}
-                    //                             label="Año"
-                    //                         >
-                    //                             {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012].map(año => (
-                    //                                 <MenuItem key={año} value={año}>{año}</MenuItem>
-                    //                             ))}
-                    //                         </Select>
-                    //                     </FormControl>
-                    //                 </Grid>
-                    //                 <Grid item xs={6} md={3}>
-                    //                     <FormControl fullWidth>
-                    //                         <InputLabel>Mes</InputLabel>
-                    //                         <Select
-                    //                             value={mes}
-                    //                             onChange={manejarMesCambio}
-                    //                             label="Mes"
-                    //                         >
-                    //                             {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map(mesNombre => (
-                    //                                 <MenuItem key={mesNombre} value={mesNombre}>{mesNombre}</MenuItem>
-                    //                             ))}
-                    //                         </Select>
-                    //                     </FormControl>
-                    //                 </Grid>
-                    //             </Grid>
-                    //         </Box>
-                    //         <Box>
-                    //             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: 'none' }}>
-                    //                 <Table>
-                    //                     <TableHead>
-                    //                         <TableRow sx={{ backgroundColor: 'black' }}>
-                    //                             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Servicio</TableCell>
-                    //                             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Monto</TableCell>
-                    //                             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Seleccionar</TableCell>
-                    //                         </TableRow>
-                    //                     </TableHead>
-                    //                     <TableBody>
-                    //                         {['Servicio 1', 'Servicio 2', 'Servicio 3'].map(servicio => (
-                    //                             <TableRow key={servicio}>
-                    //                                 <TableCell>{servicio}</TableCell>
-                    //                                 <TableCell>$100</TableCell>
-                    //                                 <TableCell>
-                    //                                     <FormControlLabel
-                    //                                         control={
-                    //                                             <Checkbox
-                    //                                                 checked={itemsSeleccionados.includes(servicio)}
-                    //                                                 onChange={() => manejarCheckCambio(servicio)}
-                    //                                             />
-                    //                                         }
-                    //                                         label=""
-                    //                                     />
-                    //                                 </TableCell>
-                    //                             </TableRow>
-                    //                         ))}
-                    //                     </TableBody>
-                    //                 </Table>
-                    //             </TableContainer>
-                    //         </Box>
-                    //     </Box>
-
-                    // </>
 
                 );
             case 2:
@@ -549,7 +540,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 sx={{
                     width: "600px",
                     p: 3,
-                    bgcolor: "#f0f0f0",
+                    bgcolor: "white",
                     boxShadow: 24,
                     borderRadius: 2,
                     display: "flex",
@@ -568,7 +559,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     </Typography>
                 </Box>
 
-                <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 0, mt: -1 }}> {/* Reduce el margen inferior */}
+                <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 0 }}> {/* Reduce el margen inferior */}
                     <Tabs
                         value={activeTab}
                         onChange={handleTabChange}
@@ -578,7 +569,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                             },
                             '& .MuiTab-root': {
                                 fontSize: '0.8rem',       // Tamaño de fuente más pequeño
-                                fontWeight: 'normal',     // Peso de fuente normal
+                                fontWeight: 'black',     // Peso de fuente normal
                                 color: 'gray',            // Color gris para tabs no seleccionados
                                 textTransform: 'none',    // Mantener el texto tal cual
                                 minWidth: 'auto',         // Quitar el ancho mínimo
