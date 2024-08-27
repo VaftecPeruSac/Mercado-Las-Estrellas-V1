@@ -7,8 +7,8 @@ import { TablaInquilinos } from "../components/Inquilinos/TablaInquilinos";
 import { TablaContratos } from "../components/Contratos/TablaContratos";
 import { TablaEmpleados } from "../components/Empleados/TablaEmpleados";
 import TablaServicios from "../components/servicios/TablaServicios";
-import TablaAperturarDeuda from "../components/AperturarDeuda/TablaAperturarDeuda";
 import TablaPagos from "../components/Pagos/TablaPagos";
+import TablaCuota from "../components/AperturarDeuda/TablaCuota";
 
 export const router = createBrowserRouter([
   {
@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/aperturar-deuda",
-        element: <TablaAperturarDeuda />,
+        element: <TablaCuota />,
       },
       {
         path: "/pagos",

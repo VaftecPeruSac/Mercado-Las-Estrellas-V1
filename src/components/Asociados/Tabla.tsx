@@ -22,61 +22,81 @@ import {
   useTheme,
   Modal,
 } from "@mui/material";
-import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print, Upload, FolderShared, Payments, Plagiarism, SaveAlt, SaveAs } from "@mui/icons-material";
+import {
+  Edit,
+  Download,
+  FileCopy,
+  WhatsApp,
+  PictureAsPdf,
+  Print,
+  Upload,
+  FolderShared,
+  Payments,
+  Plagiarism,
+  SaveAlt,
+  SaveAs,
+} from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
-
 interface Puestos {
   id: number;
-  nombre: string;
   id_socio: number;
+  id_gironegocio: number;
   id_block: number;
-  area: number;
-  estado: number;
+  area: string;
+  numero_puesto: string;
+  id_inquilino: number;
+  estado: string;
+  fecha_registro: string;
   socio: {
-    id: number;
-    correo: string;
-    telefono: number;
-    id_persona: number;
-    fecha_registro: string
-    estado: string;
+    id_usuario: number;
+    tipo_persona: string;
+    saldo: string;
+    fecha_registro: string;
+    usuario: {
+      id_persona: number;
+      nombre_usuario: string;
+      contrasenia: string;
+      rol: string;
+      estado: string;
+      fecha_registro: string;
+      persona: {
+        nombre: string;
+        apellido_paterno: string;
+        apellido_materno: string;
+        dni: string;
+        correo: string;
+        telefono: string;
+        direccion: string;
+        sexo: string;
+        estado: string;
+        fecha_registro: string;
+      };
+    };
+    deuda: {
+      id_deuda: number;
+      total_deuda: number;
+      fecha_registro: string;
+    };
   };
-  persona: {
-    id: number;
-    nombre: string;
-    apellidoP: string;
-    apellidoM: string;
-    dni: number;
-    estado: number;
-  };
-  giro_negocio: {
-    id: number;
+  gironegocio: {
+    id_gironegocio: number;
     nombre: string;
   };
   block: {
-    id: number;
+    id_block: number;
     nombre: string;
   };
   inquilino: {
-    id: number;
-    nombre: string;
-    apellidoP: string;
-    apellidoM: string;
-    dni: number;
-    estado: number;
-  };
-  deuda: {
-    id_deuda: number;
-    id_cuota: number;
-    id_puesto: number;
-    id_socio: number;
-    id_servicio: number;
-    importe: number;
-    fecha_registro: string; // formato de fecha en string
-    id_usuarioregistro: number;
+    id_inquilino: number;
+    nombre_completo: string;
+    apellido_paterno: string;
+    apellido_materno: string;
+    dni: string;
+    telefono: string;
   };
 }
 
@@ -100,11 +120,11 @@ interface Data {
   cuotas_extra: string;
   fecha: string;
   pagar: string;
-  deuda_total: string;
+  deuda: any;
 }
 
 const columns: readonly Column[] = [
-  { id: "socio", label: "Socio", minWidth: 50 },  // Reduce el minWidth
+  { id: "socio", label: "Socio", minWidth: 50 }, // Reduce el minWidth
   { id: "puesto", label: "Puesto", minWidth: 50 },
   { id: "dni", label: "DNI", minWidth: 50 },
   { id: "block", label: "Block", minWidth: 50 },
@@ -115,26 +135,24 @@ const columns: readonly Column[] = [
   { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 },
   { id: "fecha", label: "Fecha", minWidth: 50 },
   { id: "pagar", label: "Pagar", minWidth: 50 },
-  { id: "deuda_total", label: "Deuda Total", minWidth: 50 },
+  { id: "deuda", label: "Deuda Total", minWidth: 50 },
   { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
 const TablaAsociados: React.FC = () => {
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
   const [openPagar, setOpenPagar] = useState<boolean>(false);
-
+  // const [letra, numero] = puestos.block.nombre.split('-');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleExport = () => {
     // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
   };
-
 
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
@@ -147,6 +165,7 @@ const TablaAsociados: React.FC = () => {
 
   const formatDate = (fecha: string): string => {
     // Crear un objeto Date a partir de la cadena de fecha
+
     const date = new Date(fecha);
 
     // Obtener el día, mes y año
@@ -155,8 +174,8 @@ const TablaAsociados: React.FC = () => {
     const year = date.getFullYear();
 
     // Formatear a dos dígitos para el día y el mes si es necesario
-    const formattedDay = day.toString().padStart(2, '0');
-    const formattedMonth = month.toString().padStart(2, '0');
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
 
     // Retornar la fecha en el formato "día mes año"
     return `${formattedDay}/${formattedMonth}/${year}`;
@@ -164,28 +183,25 @@ const TablaAsociados: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
+      const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/puestos");
       const data = response.data.data.map((item: Puestos) => ({
-        socio: item.persona.nombre,
-        puesto: item.nombre,
-        dni: item.persona.dni,
-        block: item.block.nombre,
-        giro: item.giro_negocio.nombre, // No hay información de giro en la API
-        telefono: item.socio.telefono, // No hay información de teléfono en la API
-        correo: item.socio.correo,
-        inquilino: item.inquilino.nombre,
-        // cuotas_extra: "", // No hay información de cuotas_extra en la API
-        fecha: formatDate(item.socio.fecha_registro), // No hay información de fecha en la API
-        // pagar: "", // No hay información de pagar en la API
-        deuda_total: item.deuda.importe, // No hay i nformación de deuda_total en la API
+        socio: item.socio.usuario.persona.nombre,
+        puesto: item.numero_puesto, // Primer valor antes del "-"
+        dni: item.socio.usuario.persona.dni,
+        block: item.block.nombre, // Valor después del "-"
+        giro: item.gironegocio.nombre,
+        telefono: item.socio.usuario.persona.telefono,
+        correo: item.socio.usuario.persona.correo,
+        inquilino: item.inquilino.nombre_completo,
+        fecha: formatDate(item.socio.fecha_registro),
+        deuda: item.socio.deuda.total_deuda,
       }));
       setPuestos(data);
-      console.log("la data es", response.data)
+      console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
-
   return (
     <Box
       sx={{
@@ -220,13 +236,12 @@ const TablaAsociados: React.FC = () => {
           textAlign: "left",
           position: "relative",
           transition: "all 0.3s ease",
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           p: 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
           // Centra el Card horizontalmente y añade espacio a los lados
-
         }}
       >
         <Box
@@ -236,7 +251,7 @@ const TablaAsociados: React.FC = () => {
             justifyContent: "space-between",
             alignItems: "center",
             mb: 3,
-            P: 0
+            P: 0,
           }}
         >
           <Button
@@ -255,10 +270,11 @@ const TablaAsociados: React.FC = () => {
             }}
             onClick={handleOpen}
           >
-
             Agregar Socio
           </Button>
+
           <Agregar open={open} handleClose={handleClose} />
+
           <Box
             sx={{
               display: "flex",
@@ -272,16 +288,16 @@ const TablaAsociados: React.FC = () => {
               sx={{
                 minWidth: 130,
                 height: "37px",
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#dcdcdc', // Color del borde inicial (gris claro)
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#dcdcdc", // Color del borde inicial (gris claro)
                   },
-                  '&:hover fieldset': {
-                    borderColor: '#dcdcdc', // Color del borde al hacer hover (gris claro)
+                  "&:hover fieldset": {
+                    borderColor: "#dcdcdc", // Color del borde al hacer hover (gris claro)
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#dcdcdc', // Color del borde cuando está enfocado (gris claro)
-                    boxShadow: 'none', // Elimina la sombra del enfoque
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#dcdcdc", // Color del borde cuando está enfocado (gris claro)
+                    boxShadow: "none", // Elimina la sombra del enfoque
                   },
                 },
               }}
@@ -299,8 +315,8 @@ const TablaAsociados: React.FC = () => {
                   minWidth: "120px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
-                  '& .MuiSelect-icon': {
-                    color: '#000', // Color del icono del menú desplegable
+                  "& .MuiSelect-icon": {
+                    color: "#000", // Color del icono del menú desplegable
                   },
                 }}
               >
@@ -329,8 +345,10 @@ const TablaAsociados: React.FC = () => {
             </Button>
           </Box>
         </Box>
-        <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: 'none' }}>
-          <TableContainer sx={{ maxHeight: '100%', borderRadius: '5px', border: 'none' }}>
+        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+          <TableContainer
+            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+          >
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -340,9 +358,10 @@ const TablaAsociados: React.FC = () => {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                        color: column.id === 'deuda_total' ? '#721c24' : undefined,
-                        fontWeight: 'bold',
+                        backgroundColor:
+                          column.id === "deuda" ? "#f8d7da" : undefined,
+                        color: column.id === "deuda" ? "#721c24" : undefined,
+                        fontWeight: "bold",
                       }}
                     >
                       {column.label}
@@ -356,38 +375,60 @@ const TablaAsociados: React.FC = () => {
                   .map((row, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => {
-                        const value = column.id === 'accion' ? '' : (row as any)[column.id];
+                        const value =
+                          column.id === "accion" ? "" : (row as any)[column.id];
                         return (
                           <TableCell
                             key={column.id}
                             align={column.align}
                             sx={{
-                              backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                              color: column.id === 'deuda_total' ? '#721c24' : undefined,
+                              backgroundColor:
+                                column.id === "deuda" ? "#f8d7da" : undefined,
+                              color:
+                                column.id === "deuda" ? "#721c24" : undefined,
                             }}
                           >
-                            {column.id === 'cuotas_extra' ? (
-                              <Box sx={{ display: 'flex' }}>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                            {column.id === "cuotas_extra" ? (
+                              <Box sx={{ display: "flex" }}>
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
                                   <SaveAs />
                                 </IconButton>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
                                   <Plagiarism />
                                 </IconButton>
                               </Box>
-                            ) : column.id === 'pagar' ? (
-                              <IconButton aria-label="payment" sx={{ color: 'green' }} onClick={handleOpenPagar}>
+                            ) : column.id === "pagar" ? (
+                              <IconButton
+                                aria-label="payment"
+                                sx={{ color: "green" }}
+                                onClick={handleOpenPagar}
+                              >
                                 <Payments />
                               </IconButton>
-                            ) : column.id === 'accion' ? (
-                              <Box sx={{ display: 'flex' }}>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
+                            ) : column.id === "accion" ? (
+                              <Box sx={{ display: "flex" }}>
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
                                   <Plagiarism />
                                 </IconButton>
-                                <IconButton aria-label="copy" sx={{ color: 'black' }}>
+                                <IconButton
+                                  aria-label="copy"
+                                  sx={{ color: "black" }}
+                                >
                                   <Download />
                                 </IconButton>
-                                <IconButton aria-label="whatsapp" sx={{ color: 'green' }}>
+                                <IconButton
+                                  aria-label="whatsapp"
+                                  sx={{ color: "green" }}
+                                >
                                   <WhatsApp />
                                 </IconButton>
                               </Box>
@@ -403,14 +444,15 @@ const TablaAsociados: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: 3 }}>
-            <Pagination count={10} color="primary" sx={{ marginLeft: '25%' }} />
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
+          >
+            <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} />
           </Box>
         </Paper>
         <Pagar open={openPagar} onClose={handleClosePagar} />
-      </Card >
-
-    </Box >
+      </Card>
+    </Box>
   );
-}
+};
 export default TablaAsociados;
