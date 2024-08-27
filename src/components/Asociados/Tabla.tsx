@@ -183,7 +183,7 @@ const TablaAsociados: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
+      const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/puestos");
       const data = response.data.data.map((item: Puestos) => ({
         socio: item.socio.usuario.persona.nombre,
         puesto: item.numero_puesto, // Primer valor antes del "-"
