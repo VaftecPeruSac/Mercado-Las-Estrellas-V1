@@ -1,10 +1,8 @@
 import React from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import {
-  Avatar,
   Divider,
   List,
-  ListItem,
   ListItemText,
   ListItemIcon,
   Typography,
@@ -12,26 +10,18 @@ import {
   ListItemButton,
 } from "@mui/material";
 import {
-  Home,
-  Group,
   Assignment,
-  Build,
-  AccountBalance,
   MonetizationOn,
-  People,
   ExpandMore,
-  Store,
-  ShoppingBagSharp,
   ShoppingBasket,
-  GroupWork,
   Article,
   Settings,
   Description,
+  Storefront,
+  Groups,
 } from "@mui/icons-material";
-import { link } from "fs";
 import BackupTableIcon from '@mui/icons-material/BackupTable';
 import { Link } from "react-router-dom";
-import { GridFilterAltIcon } from "@mui/x-data-grid";
 import LoginIcon from '@mui/icons-material/Login';
 interface SidebarProps {
   open: boolean;
@@ -49,10 +39,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           variant="subtitle1"
           color="#FFFFFF"
           sx={{ ml: 1, }}
-        ><h3><b>
-          SISTEM MERCADO</b>
-
-          </h3>
+        >
+          <h3><b>SISTEM MERCADO</b></h3>
         </Typography>
       </Box>
       <List>
@@ -80,11 +68,26 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
-            <GridFilterAltIcon />
+            <Groups />
           </ListItemIcon>
           {open && (
             <ListItemText
               primary="Socios"
+              sx={{ ml: -3 }}
+            />
+          )}
+        </ListItemButton>
+        <ListItemButton
+          component={Link}
+          to="/puestos"
+          sx={listItemStyle}
+        >
+          <ListItemIcon sx={{ color: "inherit" }}>
+            <Storefront />
+          </ListItemIcon>
+          {open && (
+            <ListItemText
+              primary="Puestos"
               sx={{ ml: -3 }}
             />
           )}
@@ -99,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           </ListItemIcon>
           {open && (
             <ListItemText
-              primary="servicios"
+              primary="Servicios"
               sx={{ ml: -3 }}
             />
           )}
@@ -125,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
-            <Group />
+            <MonetizationOn />
           </ListItemIcon>
           {open && (
             <ListItemText
@@ -184,7 +187,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
             />
           )}
         </ListItemButton>
-        <br />
         <br />
         <br />
         <br />

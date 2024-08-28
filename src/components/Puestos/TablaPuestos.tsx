@@ -1,38 +1,7 @@
-import * as React from "react";
-import { useState } from "react";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  IconButton,
-  Box,
-  Card,
-  Pagination,
-  Select,
-  MenuItem,
-  FormControl,
-  useTheme,
-  InputLabel,
-  SelectChangeEvent,
-  Typography,
-} from "@mui/material";
-import {
-  Edit,
-  Download,
-  SaveAs,
-  Delete,
-  DeleteForever,
-  MonetizationOn,
-  Print,
-  Search,
-} from "@mui/icons-material";
-import { GridAddIcon } from "@mui/x-data-grid";
-import GenerarCuota from "./GenerarCuota";
+import { DeleteForever, Print, SaveAs } from '@mui/icons-material';
+import { Box, Button, Card, FormControl, IconButton, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { GridAddIcon } from '@mui/x-data-grid';
+import React, { useState } from 'react'
 
 interface Column {
   id: keyof Data | "accion";
@@ -42,99 +11,100 @@ interface Column {
 }
 
 interface Data {
-  numero_cuota: string;
-  fecha_emision: string;
-  fecha_vencimiento: string;
-  importe: string;
+  bloque: string;
+  numero_puesto: string;
+  area: string;
+  giro_negocio: string;
+  socio: string;
+  inquilino: string;
+  estado: string;
+  fecha_registro: string;
 }
 
 const columns: readonly Column[] = [
-  { 
-    id: "numero_cuota", 
-    label: "#ID", 
+  {
+    id: "bloque", 
+    label: "Bloque", 
     minWidth: 50, 
     align: "center" 
   },
   {
-    
-    id: "fecha_emision",
-    label: "Fecha de Emisión",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "fecha_vencimiento",
-    label: "Fecha de Vencimiento",
-    minWidth: 50,
-    align: "center",
-  },
-  { 
-    id: "importe", 
-    label: "Importe", 
+    id: "numero_puesto", 
+    label: "N° Puesto", 
     minWidth: 50, 
     align: "center" 
   },
-  { 
+  {
+    id: "area", 
+    label: "Área", 
+    minWidth: 50, 
+    align: "center" 
+  },
+  {
+    id: "giro_negocio", 
+    label: "Giro de Negocio", 
+    minWidth: 50, 
+    align: "center" 
+  },
+  {
+    id: "socio", 
+    label: "Socio", 
+    minWidth: 50, 
+    align: "center" 
+  },
+  {
+    id: "inquilino", 
+    label: "Inquilino", 
+    minWidth: 50, 
+    align: "center" 
+  },
+  {
+    id: "estado", 
+    label: "Estado", 
+    minWidth: 50, 
+    align: "center" 
+  },
+  {
+    id: "fecha_registro", 
+    label: "Fecha Registro", 
+    minWidth: 50, 
+    align: "center" 
+  },
+  {
     id: "accion", 
     label: "Acciones", 
-    minWidth: 120,
+    minWidth: 50, 
     align: "center" 
   },
-];
+]
 
 const initialRows: Data[] = [
   {
-    numero_cuota: "1",
-    fecha_emision: "22-08-2024",
-    fecha_vencimiento: "22-09-2024",
-    importe: "120",
-  },
-  {
-    numero_cuota: "2",
-    fecha_emision: "22-08-2024",
-    fecha_vencimiento: "22-09-2024",
-    importe: "160",
-  },
-];
+    bloque: "1er Piso",
+    numero_puesto: "A-1",
+    area: "16m2",
+    giro_negocio: "venta de abarrotes",
+    socio: "Juanito Gomez",
+    inquilino: "No",
+    estado: "Ocupado",
+    fecha_registro: "28-08-2024"
+  }
+]
 
-const TablaCuota: React.FC = () => {
+const TablaPuestos: React.FC = () => {
 
   // Para la tabla
   const [rows, setRows] = useState<Data[]>(initialRows);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
-
-  // Para exportar
-  const [exportFormat, setExportFormat] = useState<string>("");
-
-  // Para la buscar por fecha
-  const [anio, setAnio] = useState<string>("");
-  const [mes, setMes] = useState<string>("");
 
   // Para el modal
   const [open, setOpen] = useState(false);
-  const [openPagar, setOpenPagar] = useState<boolean>(false);
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // Para manejar los cambios
-  const manejarCheckCambio = (servicio: string) => {
-    setItemsSeleccionados((prev) =>
-      prev.includes(servicio)
-        ? prev.filter((item) => item !== servicio)
-        : [...prev, servicio]
-    );
-  };
-
-  const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
-    setAnio(evento.target.value as string);
-  };
-
-  const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
-    setMes(evento.target.value as string);
-  };
+  // Para exportar la información
+  const [exportFormat, setExportFormat] = useState<string>("");
 
   const handleExport = () => {
     console.log(`Exporting as ${exportFormat}`);
@@ -161,15 +131,16 @@ const TablaCuota: React.FC = () => {
           alignItems: { xs: "flex-start", sm: "center" },
           mb: 3,
         }}
-      />
-
+      >
+      </Box>
+      
       <Card
         sx={{
           backgroundColor: "#ffffff",
           borderRadius: "30px",
           width: "100%",
           height: "100%",
-          textAlign: "left",
+          textAlign: "center",
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
@@ -177,6 +148,7 @@ const TablaCuota: React.FC = () => {
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
+          // Centra el Card horizontalmente y añade espacio a los lados
         }}
       >
         <Box
@@ -186,10 +158,10 @@ const TablaCuota: React.FC = () => {
             justifyContent: "space-between",
             alignItems: "center",
             mb: 3,
-            p: 0,
+            P: 0,
           }}
         >
-          {/* Botón "Generar Cuota" */}
+          {/* Botón "Agregar Puesto" */}
           <Button
             variant="contained"
             startIcon={<GridAddIcon />}
@@ -204,10 +176,10 @@ const TablaCuota: React.FC = () => {
             }}
             onClick={handleOpen}
           >
-            Generar Cuota
+            Agregar Puesto
           </Button>
 
-          <GenerarCuota open={open} handleClose={handleClose} />
+          {/* <RegistrarPuesto open={open} handleClose={handleClose} /> */}
 
           <Box
             sx={{
@@ -285,85 +257,6 @@ const TablaCuota: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Buscar cuotas */}
-        <Box
-          sx={{
-            padding: "15px 35px",
-            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
-            Buscar por:
-          </Typography>
-
-          {/* Seleccionar año */}
-          <FormControl sx={{ minWidth: 250, mr: 1 }}>
-            <InputLabel id="cuota-anio-label">Año</InputLabel>
-            <Select value={anio} onChange={manejarAnioCambio} label="Año">
-              {[
-                2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
-                2014, 2013, 2012,
-              ].map((año) => (
-                <MenuItem
-                  sx={{ padding: "10px 25px !important" }}
-                  key={año}
-                  value={año}
-                >
-                  {año}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Seleccionar mes */}
-          <FormControl sx={{ minWidth: 250, mr: 1 }}>
-            <InputLabel id="cuota-mes-label">Mes</InputLabel>
-            <Select value={mes} onChange={manejarMesCambio} label="Mes">
-              {[
-                "Enero",
-                "Febrero",
-                "Marzo",
-                "Abril",
-                "Mayo",
-                "Junio",
-                "Julio",
-                "Agosto",
-                "Septiembre",
-                "Octubre",
-                "Noviembre",
-                "Diciembre",
-              ].map((mesNombre) => (
-                <MenuItem key={mesNombre} value={mesNombre}>
-                  {mesNombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Boton Buscar */}
-          <Button
-            variant="contained"
-            startIcon={<Search />}
-            sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: "170px",
-              marginLeft: "25px",
-              borderRadius: "30px",
-            }}
-            onClick={handleExport}
-          >
-            Buscar
-          </Button>
-        </Box>
-
         {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -394,13 +287,12 @@ const TablaCuota: React.FC = () => {
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.numero_cuota}
                     >
                       {columns.map((column) => {
-                        const value =
-                          column.id === "accion" ? "" : (row as any)[column.id];
+                        const value = column.id === "accion" ? "" : (row as any)[column.id];
                         return (
                           <TableCell key={column.id} align="center">
+                            {/* Acciones */}
                             {column.id === "accion" ? (
                               <Box
                                 sx={{
@@ -411,13 +303,13 @@ const TablaCuota: React.FC = () => {
                               >
                                 <IconButton
                                   aria-label="save "
-                                  sx={{ color: "green" }}
+                                  sx={{ color: "#0478E3" }}
                                 >
                                   <SaveAs />
                                 </IconButton>
                                 <IconButton
                                   aria-label="delete"
-                                  sx={{ color: "black" }}
+                                  sx={{ color: "red" }}
                                 >
                                   <DeleteForever />
                                 </IconButton>
@@ -440,7 +332,7 @@ const TablaCuota: React.FC = () => {
         </Paper>
       </Card>
     </Box>
-  );
-};
+  )
+}
 
-export default TablaCuota;
+export default TablaPuestos;
