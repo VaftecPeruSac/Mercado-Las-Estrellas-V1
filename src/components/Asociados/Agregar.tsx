@@ -11,38 +11,22 @@ import {
   Select,
   InputLabel,
   FormControl,
-  IconButton,
-  FormHelperText,
   Tabs,
   Tab,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import {
   AccountCircle,
-  Dns,
   Phone,
   Email,
   Home,
   Business,
   Person,
   Event,
-  Add,
-  MonetizationOn,
-  CheckCircle,
+  Badge,
+  Abc,
+  Wc,
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers";
-
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
@@ -57,25 +41,39 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   // Datos del formulario
-  const [estado, setEstado] = useState("Activo");
-  const [cuota, setCuota] = useState("");
-  const [dni, setDni] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [gmail, setGmail] = useState("");
-  const [correo, setCorreo] = useState("");
+  // Persona
+  const [tipoPersona, setTipoPersona] = useState("");
   const [nombre, setNombre] = useState("");
+  const [apellidoPaterno, setApellidoPaterno] = useState("");
+  const [apellidoMaterno, setApellidoMaterno] = useState("");
+  const [dni, setDni] = useState("");
   const [direccion, setDireccion] = useState("");
+  const [sexo, setSexo] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [estado, setEstado] = useState("Activo");
   const [fecha, setFecha] = useState("");
 
+  const [cuota, setCuota] = useState("");
+  
+  // Error Formulario
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [openPagar, setOpenPagar] = useState<boolean>(false);
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
 
+  // Validaciones del formulario
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!nombre) newErrors.nombre = "Nombre y apellido son obligatorios";
+    if (!tipoPersona)
+      newErrors.tipoPersona = "Tipo de Persona es obligatorio";
+    if (!nombre) 
+      newErrors.nombre = "Nombre es obligatorio";
+    if (!apellidoPaterno)
+      newErrors.apellidoPaterno = "Apellido Paterno es obligatorio";
+    if (!apellidoMaterno)
+      newErrors.apellidoMaterno = "Apellido Materno es obligatorio";
     if (!dni || !/^\d{8}$/.test(dni))
       newErrors.dni = "DNI debe ser numérico y tener 8 caracteres";
     if (!telefono || !/^\d{9}$/.test(telefono))
@@ -147,12 +145,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
   const limpiarCampos = () => {
+    setDni("");
+    setNombre("");
+    setApellidoPaterno("");
+    setApellidoMaterno("");
     setEstado("Activo");
     setCuota("");
-    setDni("");
     setTelefono("");
     setCorreo("");
-    setNombre("");
     setDireccion("");
     setErrors({});
     setFecha("");
@@ -188,7 +188,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 0:
+      case 0: // REGISTRAR SOCIO
         return (
           <>
             <Typography
@@ -274,6 +274,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <Select
                       labelId="tipo-persona-label"
                       label="Tipo Persona (*)"
+                      error={!!errors.tipoPersona}
                       // value={tipoPersona}
                       // onChange={handleTipoPersonaChange}
                       startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
@@ -397,7 +398,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       label="Bloque (*)"
                       // value={tipoPersona}
                       // onChange={handleTipoPersonaChange}
-                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                      startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                     >
                       <MenuItem value="Natural">Natural</MenuItem>
                       <MenuItem value="Juridica">Jurídica</MenuItem>
@@ -412,7 +413,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     value={dni}
                     onChange={manejarDniCambio}
                     InputProps={{
-                      startAdornment: <Dns sx={{ mr: 1, color: "gray" }} />,
+                      startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
                     }}
                     error={!!errors.dni}
                     helperText={errors.dni}
@@ -420,13 +421,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} sx={{ mt: -6 }}>
                   <FormControl fullWidth required>
-                    <InputLabel id="tipo-persona-label">Nro. Puesto</InputLabel>
+                    <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
                     <Select
-                      labelId="tipo-persona-label"
-                      label="Bloque (*)"
+                      labelId="nro-puesto-label"
+                      label="Nro Puesto (*)"
                       // value={tipoPersona}
                       // onChange={handleTipoPersonaChange}
-                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                      startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
                     >
                       <MenuItem value="Natural">Natural</MenuItem>
                       <MenuItem value="Juridica">Jurídica</MenuItem>
@@ -452,7 +453,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     fullWidth
                     label="Sexo"
                     InputProps={{
-                      startAdornment: <Person sx={{ mr: 1, color: "gray" }} />,
+                      startAdornment: <Wc sx={{ mr: 1, color: "gray" }} />,
                     }}
                   />
                 </Grid>
@@ -525,10 +526,225 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             </Box>
           </>
         );
-      case 1:
-        return <Typography>Contenido de la pestaña 3</Typography>;
-      case 2:
-        return <Typography>Contenido de la pestaña 3</Typography>;
+      case 1: // REGISTRAR INQUILINO
+        return (
+          <>
+            <Typography
+              sx={{
+                mb: 1,
+                color: "#333",
+                textAlign: "center",
+                fontSize: "0.8rem",
+              }}
+            >
+              Recuerde leer los campos obligatorios antes de escribir. (*)
+            </Typography>
+
+            <Grid container spacing={3} sx={{ mt: -4 }}>
+              <Grid item xs={12} sm={6}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "bold",
+
+                    fontSize: "0.8rem",
+                    color: "black",
+                    textAlign: "center",
+                    mb: 0, // Reduce el margen inferior
+                    display: "flex",
+                    alignItems: "center",
+                    "&::before": {
+                      content: '""',
+                      flexGrow: 1,
+                      borderBottom: "1px solid #333",
+                      marginRight: "8px",
+                    },
+                    "&::after": {
+                      content: '""',
+                      flexGrow: 1,
+                      borderBottom: "1px solid #333",
+                      marginLeft: "8px",
+                    },
+                  }}
+                >
+                  DATOS PERSONALES
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "0.8rem",
+                    color: "black",
+                    textAlign: "center",
+                    mb: 0, // Reduce el margen inferior
+                    display: "flex",
+                    alignItems: "center",
+                    "&::before": {
+                      content: '""',
+                      flexGrow: 1,
+                      borderBottom: "1px solid #333",
+                      marginRight: "8px",
+                    },
+                    "&::after": {
+                      content: '""',
+                      flexGrow: 1,
+                      borderBottom: "1px solid #333",
+                      marginLeft: "8px",
+                    },
+                  }}
+                >
+                  CONTACTO
+                </Typography>
+              </Grid>
+            </Grid>
+            <Box component="form" noValidate autoComplete="off">
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Nombre"
+                    required
+                    value={nombre}
+                    onChange={manejarNombreCambio}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    error={!!errors.nombre}
+                    helperText={errors.nombre}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Nro. Telefono"
+                    required
+                    value={telefono}
+                    onChange={manejarTelefonoCambio}
+                    InputProps={{
+                      startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
+                    }}
+                    error={!!errors.telefono}
+                    helperText={errors.telefono}
+                  />
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={2} sx={{ mt: 0 }}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Apellido Paterno"
+                    required
+                    // value={apellidoPaterno}
+                    // onChange={manejarApellidoPaternoCambio}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    error={!!errors.apellidoPaterno}
+                    helperText={errors.apellidoPaterno}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} sx={{ mt: -1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                      color: "black",
+                      textAlign: "center",
+                      mb: 0, // Reduce el margen inferior para acercar el campo "Bloque"
+                      display: "flex",
+                      alignItems: "center",
+                      "&::before": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginRight: "8px",
+                      },
+                      "&::after": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginLeft: "8px",
+                      },
+                    }}
+                  >
+                    ASIGNAR PUESTO
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Apellido Materno"
+                    required
+                    // value={apellidoMaterno}
+                    // onChange={manejarApellidoMaternoCambio}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    error={!!errors.apellidoMaterno}
+                    helperText={errors.apellidoMaterno}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} sx={{ mt: -6 }}>
+                  <FormControl fullWidth required>
+                    <InputLabel id="bloque-label">Bloque</InputLabel>
+                    <Select
+                      labelId="bloque-label"
+                      label="Bloque"
+                      // value={tipoPersona}
+                      // onChange={handleTipoPersonaChange}
+                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      <MenuItem value="Natural">Natural</MenuItem>
+                      <MenuItem value="Juridica">Jurídica</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="DNI"
+                    required
+                    value={dni}
+                    onChange={manejarDniCambio}
+                    InputProps={{
+                      startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
+                    }}
+                    error={!!errors.dni}
+                    helperText={errors.dni}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ mt: -6 }}>
+                  <FormControl fullWidth required>
+                    <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
+                    <Select
+                      labelId="nro-puesto-label"
+                      label="Nro Puesto"
+                      // value={tipoPersona}
+                      // onChange={handleTipoPersonaChange}
+                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      <MenuItem value="Natural">Natural</MenuItem>
+                      <MenuItem value="Juridica">Jurídica</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </Box>
+          </>
+        );
       default:
         return <Typography>Seleccione una pestaña</Typography>;
     }
@@ -544,7 +760,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     >
       <Card
         sx={{
-          width: "600px",
+          width: "720px",
           p: 3,
           bgcolor: "white",
           boxShadow: 24,
