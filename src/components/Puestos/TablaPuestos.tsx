@@ -115,10 +115,10 @@ const TablaPuestos: React.FC = () => {
         area: item.area,
         estado: item.estado,
         fecha_registro: formatDate(item.fecha_registro),
-        socio: item.socio,
-        gironegocio_nombre: item.gironegocio_nombre,
-        block_nombre: item.block_nombre,
-        inquilino: item.inquilino
+        // socio: item.socio,
+        // gironegocio_nombre: item.gironegocio_nombre,
+        // block_nombre: item.block_nombre,
+        // inquilino: item.inquilino
       }));
       setRows(data);
       console.log("Datos recuperados con exito", response.data)
