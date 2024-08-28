@@ -1,100 +1,72 @@
 import { DeleteForever, Print, SaveAs } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, IconButton, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  FormControl,
+  IconButton,
+  MenuItem,
+  Pagination,
+  Paper,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { GridAddIcon } from '@mui/x-data-grid';
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+
+interface Puestos {
+  numero_puesto: string;
+  area: string;
+  estado: string;
+  fecha_registro: string;
+  socio: string;
+  gironegocio_nombre: string;
+  block_nombre: string;
+  inquilino: string;
+}
 
 interface Column {
   id: keyof Data | "accion";
   label: string;
   minWidth?: number;
   align?: "center";
+  format?: (value: any) => string;
 }
 
 interface Data {
-  bloque: string;
   numero_puesto: string;
   area: string;
-  giro_negocio: string;
-  socio: string;
-  inquilino: string;
   estado: string;
   fecha_registro: string;
+  socio: string;
+  gironegocio_nombre: string;
+  block_nombre: string;
+  inquilino: string;
 }
 
 const columns: readonly Column[] = [
-  {
-    id: "bloque", 
-    label: "Bloque", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "numero_puesto", 
-    label: "N° Puesto", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "area", 
-    label: "Área", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "giro_negocio", 
-    label: "Giro de Negocio", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "socio", 
-    label: "Socio", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "inquilino", 
-    label: "Inquilino", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "estado", 
-    label: "Estado", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "fecha_registro", 
-    label: "Fecha Registro", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    id: "accion", 
-    label: "Acciones", 
-    minWidth: 50, 
-    align: "center" 
-  },
+  { id: "block_nombre", label: "Bloque", minWidth: 50 },
+  { id: "numero_puesto", label: "N° Puesto", minWidth: 50 },
+  { id: "area", label: "Área", minWidth: 50 },
+  { id: "gironegocio_nombre", label: "Giro de Negocio", minWidth: 50 },
+  { id: "socio", label: "Socio", minWidth: 50 },
+  { id: "inquilino", label: "Inquilino",  minWidth: 50},
+  { id: "estado", label: "Estado", minWidth: 50},
+  { id: "fecha_registro",  label: "Fecha Registro",  minWidth: 50 },
+  { id: "accion", label: "Acciones", minWidth: 50 },
 ]
 
-const initialRows: Data[] = [
-  {
-    bloque: "1er Piso",
-    numero_puesto: "A-1",
-    area: "16m2",
-    giro_negocio: "venta de abarrotes",
-    socio: "Juanito Gomez",
-    inquilino: "No",
-    estado: "Ocupado",
-    fecha_registro: "28-08-2024"
-  }
-]
 
 const TablaPuestos: React.FC = () => {
 
   // Para la tabla
-  const [rows, setRows] = useState<Data[]>(initialRows);
+  const [rows, setRows] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -109,6 +81,51 @@ const TablaPuestos: React.FC = () => {
   const handleExport = () => {
     console.log(`Exporting as ${exportFormat}`);
   };
+
+  // Formato de fecha
+  const formatDate = (fecha: string): string => {
+    // Crear un objeto Date a partir de la cadena de fecha
+
+    const date = new Date(fecha);
+
+    // Obtener el día, mes y año
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    const year = date.getFullYear();
+
+    // Formatear a dos dígitos para el día y el mes si es necesario
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
+
+    // Retornar la fecha en el formato "día mes año"
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try{
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos"); //publico
+      // const response = await axios.get("http://127.0.0.1:8000/v1/puestos"); //local
+
+      const data = response.data.data.map((item: Puestos) => ({
+        numero_puesto: item.numero_puesto,
+        area: item.area,
+        estado: item.estado,
+        fecha_registro: formatDate(item.fecha_registro),
+        socio: item.socio,
+        gironegocio_nombre: item.gironegocio_nombre,
+        block_nombre: item.block_nombre,
+        inquilino: item.inquilino
+      }));
+      setRows(data);
+      console.log("Datos recuperados con exito", response.data)
+    } catch (error) {
+      console.error("Error al traer datos", error);
+    }
+  }
 
   return (
     <Box
