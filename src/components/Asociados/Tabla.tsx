@@ -41,64 +41,18 @@ import axios from "axios";
 import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
-interface Puestos {
-  id: number;
-  id_socio: number;
-  id_gironegocio: number;
-  id_block: number;
-  area: string;
-  numero_puesto: string;
-  id_inquilino: number;
-  estado: string;
-  fecha_registro: string;
-  socio: {
-    id_usuario: number;
-    tipo_persona: string;
-    saldo: string;
-    fecha_registro: string;
-    usuario: {
-      id_persona: number;
-      nombre_usuario: string;
-      contrasenia: string;
-      rol: string;
-      estado: string;
-      fecha_registro: string;
-      persona: {
-        nombre: string;
-        apellido_paterno: string;
-        apellido_materno: string;
-        dni: string;
-        correo: string;
-        telefono: string;
-        direccion: string;
-        sexo: string;
-        estado: string;
-        fecha_registro: string;
-      };
-    };
-    deuda: {
-      id_deuda: number;
-      total_deuda: number;
-      fecha_registro: string;
-    };
-  };
-  gironegocio: {
-    id_gironegocio: number;
-    nombre: string;
-  };
-  block: {
-    id_block: number;
-    nombre: string;
-  };
-  inquilino: {
-    id_inquilino: number;
-    nombre_completo: string;
-    apellido_paterno: string;
-    apellido_materno: string;
+  interface Socios {
+    socio: string;        // Nombre del socio
     dni: string;
+    block_nombre: string;
+    numero_puesto: string;
+    gironegocio_nombre: string;
     telefono: string;
-  };
-}
+    correo: string;
+    inquilino: string;  
+    fecha_registro: string;
+    deuda: string;         // Indica si tiene deuda o no ("no" o "yes")
+  }
 
 interface Column {
   id: keyof Data | "accion";
@@ -107,37 +61,38 @@ interface Column {
   align?: "right";
   format?: (value: any) => string;
 }
-
 interface Data {
-  socio: string;
-  puesto: string;
+  socio: string;          // Nombre del socio
   dni: string;
-  block: string;
-  giro: string;
+  block_nombre: string;   // Nombre del bloque
+  numero_puesto: string;  // Número del puesto
+  gironegocio_nombre: string; // Nombre del giro de negocio
   telefono: string;
   correo: string;
-  inquilino: string;
-  cuotas_extra: string;
-  fecha: string;
-  pagar: string;
-  deuda: any;
+  inquilino: string;  
+  fecha_registro: string;
+  deuda: string;          // Indica si tiene deuda o no ("no" o "yes")
+  cuotas_extra: string;   // Cuotas extraordinarias
+  pagar: string;          // Pagar
 }
 
 const columns: readonly Column[] = [
-  { id: "socio", label: "Socio", minWidth: 50 }, // Reduce el minWidth
-  { id: "puesto", label: "Puesto", minWidth: 50 },
-  { id: "dni", label: "DNI", minWidth: 50 },
-  { id: "block", label: "Block", minWidth: 50 },
-  { id: "giro", label: "Giro", minWidth: 50 },
-  { id: "telefono", label: "Teléfono", minWidth: 50 },
-  { id: "correo", label: "Correo", minWidth: 50 }, // Puedes reducir aún más si es necesario
-  { id: "inquilino", label: "Inquilino", minWidth: 50 },
-  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 },
-  { id: "fecha", label: "Fecha", minWidth: 50 },
-  { id: "pagar", label: "Pagar", minWidth: 50 },
-  { id: "deuda", label: "Deuda Total", minWidth: 50 },
-  { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
+  { id: "socio", label: "Nombre", minWidth: 50 }, // Nombre del socio
+  { id: "dni", label: "DNI", minWidth: 50 },      // DNI
+  { id: "block_nombre", label: "Block", minWidth: 50 }, // Nombre del bloque
+  { id: "numero_puesto", label: "Puesto", minWidth: 50 }, // Número del puesto
+  { id: "gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
+  { id: "telefono", label: "Teléfono", minWidth: 50 },  // Teléfono
+  { id: "correo", label: "Correo", minWidth: 50 },      // Correo
+  { id: "inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
+  { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
+  { id: "deuda", label: "Deuda Total", minWidth: 50 }, // Deuda total
+  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 }, // Cuotas extraordinarias
+  { id: "pagar", label: "Pagar", minWidth: 50 },      // Pagar
+  { id: "accion", label: "Acción", minWidth: 20 },    // Acción
 ];
+
+
 
 const TablaAsociados: React.FC = () => {
   const [page, setPage] = useState(0);
@@ -183,18 +138,20 @@ const TablaAsociados: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/puestos");
-      const data = response.data.data.map((item: Puestos) => ({
-        socio: item.socio.usuario.persona.nombre,
-        puesto: item.numero_puesto, // Primer valor antes del "-"
-        dni: item.socio.usuario.persona.dni,
-        block: item.block.nombre, // Valor después del "-"
-        giro: item.gironegocio.nombre,
-        telefono: item.socio.usuario.persona.telefono,
-        correo: item.socio.usuario.persona.correo,
-        inquilino: item.inquilino.nombre_completo,
-        fecha: formatDate(item.socio.fecha_registro),
-        deuda: item.socio.deuda.total_deuda,
+      const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
+      // const response = await axios.get("http://127.0.0.1:8000/v1/socios"); //local
+
+      const data = response.data.data.map((item: Socios) => ({
+        socio: item.socio,
+        dni: item.dni,
+        block_nombre: item.block_nombre,
+        numero_puesto: item.numero_puesto,
+        gironegocio_nombre: item.gironegocio_nombre,
+        telefono: item.telefono,
+        correo: item.correo,
+        inquilino: item.inquilino,
+        fecha_registro: formatDate(item.fecha_registro),
+        deuda: item.deuda
       }));
       setPuestos(data);
       console.log("la data es", response.data);

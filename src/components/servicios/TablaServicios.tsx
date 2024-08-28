@@ -27,8 +27,13 @@ import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 
 
-
-
+interface Servicios {
+  id_servicio: number;
+  descripcion: string;
+  costo_unitario: string;
+  tipo_servicio:string;
+  fecha_registro: string ;
+}
 
 interface Column {
   id: keyof Data | "accion";
@@ -40,34 +45,19 @@ interface Column {
 
 interface Data {
   numero: string;
-  cuota_extra: string;
-  costo_uni: string;
-  fecha: string;
+  descripcion: string;
+  costo_unitario: string;
+  fecha_registro: string;
+  tipo_servicio: string;
 }
 
 const columns: readonly Column[] = [
   { id: "numero", label: "#ID", minWidth: 50 },  // Reduce el minWidth
-  { id: "cuota_extra", label: "Cuota Extraordinaria", minWidth: 50 },
-  { id: "costo_uni", label: "Costo Unitario", minWidth: 50 },
-  { id: "fecha", label: "Fecha de Registro", minWidth: 50 },
-
+  { id: "descripcion", label: "Descripción", minWidth: 50 },
+  { id: "costo_unitario", label: "Costo Unitario", minWidth: 50 },
+  { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
+  { id: "tipo_servicio", label: "Tipo de Servicio", minWidth: 50 },
   { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
-];
-
-const rows: Data[] = [
-  {
-    numero: "1",
-    cuota_extra: "200",
-    costo_uni: "100",
-    fecha: "2024",
-
-  },
-  {
-    numero: "2",
-    cuota_extra: "300",
-    costo_uni: "100",
-    fecha: "2024",
-  },
 ];
 
 const TablaServicios: React.FC = () => {
@@ -89,35 +79,49 @@ const TablaServicios: React.FC = () => {
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
 
-  // const [puestos, setPuestos] = useState<Data[]>([]);
+  const [servicios, setServicios] = useState<Data[]>([]);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+ 
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await axios.get("http://127.0.0.1:8000/v1/puestos");
-  //     const data = response.data.data.map((item: Puestos) => ({
-  //       socio: item.persona.nombre,
-  //       puesto: item.nombre,
-  //       dni: item.persona.dni,
-  //       block: item.id_block.toString(),
-  //       // giro: "", // No hay información de giro en la API
-  //       // telefono: "", // No hay información de teléfono en la API
-  //       correo: item.socio.correo,
-  //       // inquilino: "", // No hay información de inquilino en la API
-  //       // cuotas_extra: "", // No hay información de cuotas_extra en la API
-  //       // fecha: "", // No hay información de fecha en la API
-  //       // pagar: "", // No hay información de pagar en la API
-  //       // deuda_total: "", // No hay información de deuda_total en la API
-  //     }));
-  //     setPuestos(data);
-  //     console.log("la data es", response.data)
-  //   } catch (error) {
-  //     console.error("Error al traer datos", error);
-  //   }
-  // };
+  const formatDate = (fecha: string): string => {
+    // Crear un objeto Date a partir de la cadena de fecha
+
+    const date = new Date(fecha);
+
+    // Obtener el día, mes y año
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    const year = date.getFullYear();
+
+    // Formatear a dos dígitos para el día y el mes si es necesario
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
+
+    // Retornar la fecha en el formato "día mes año"
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  };
+
+  const fetchData = async () => {
+    try {
+      // const response = await axios.get("http://127.0.0.1:8000/v1/servicios"); //local
+      const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/servicios"); //publico
+
+      const data = response.data.data.map((item: Servicios) => ({
+        id_servicio: item.id_servicio,
+        descripcion: item.descripcion,
+        costo_unitario:item.costo_unitario,
+        tipo_servicio: item.tipo_servicio,
+        fecha_registro: formatDate(item.fecha_registro)
+      }));
+      setServicios(data);
+      console.log("la data es", response.data);
+    } catch (error) {
+      console.error("Error al traer datos", error);
+    }
+  };
 
   return (
     <Box
@@ -283,56 +287,43 @@ const TablaServicios: React.FC = () => {
                   ))}
                 </TableRow>
               </TableHead>
-              {/* <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.numero}>
-                      {columns.map((column) => {
-                        const value = column.id === 'accion' ? '' : (row as any)[column.id];
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                          // sx={{
-                          //   backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                          //   color: column.id === 'deuda_total' ? '#721c24' : undefined,
-                          // }}
-                          >
-                            {column.id === 'cuotas_extra' ? (
-                              <Box sx={{ display: 'flex' }}>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
-                                  <SaveAs />
-                                </IconButton>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
-                                  <Plagiarism />
-                                </IconButton>
-                              </Box>
-                            ) : column.id === 'pagar' ? (
-                              <IconButton aria-label="payment" sx={{ color: 'green' }} onClick={handleOpenPagar}>
-                                <Payments />
-                              </IconButton>
-                            ) : column.id === 'accion' ? (
-                              <Box sx={{ display: 'flex' }}>
-                                <IconButton aria-label="edit" sx={{ color: 'black' }}>
-                                  <Plagiarism />
-                                </IconButton>
-                                <IconButton aria-label="copy" sx={{ color: 'black' }}>
-                                  <Download />
-                                </IconButton>
-                                <IconButton aria-label="whatsapp" sx={{ color: 'green' }}>
-                                  <WhatsApp />
-                                </IconButton>
-                              </Box>
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-              </TableBody> */}
+              <TableBody>
+  {servicios
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    .map((row, index) => (
+      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+        {columns.map((column) => {
+          const value = (row as any)[column.id];
+
+          // Renderización específica para la columna "accion"
+          if (column.id === "accion") {
+            return (
+              <TableCell key={column.id} align={column.align}>
+                <Box sx={{ display: "flex" }}>
+                  <IconButton aria-label="edit" sx={{ color: "black" }}>
+                    <SaveAs />
+                  </IconButton>
+                  <IconButton aria-label="copy" sx={{ color: "black" }}>
+                    <Download />
+                  </IconButton>
+                  <IconButton aria-label="whatsapp" sx={{ color: "green" }}>
+                    <WhatsApp />
+                  </IconButton>
+                </Box>
+              </TableCell>
+            );
+          }
+
+          // Renderización por defecto para otras columnas
+          return (
+            <TableCell key={column.id} align={column.align}>
+              {value}
+            </TableCell>
+          );
+        })}
+      </TableRow>
+    ))}
+</TableBody>
             </Table>
           </TableContainer>
 
