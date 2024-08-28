@@ -1,14 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import Principal from "../Layout/Principal";
-import Home from "../pages/Home";
 import Tabla from "../components/Asociados/Tabla";
 import Dashboard from "../components/Dashboard";
-import { TablaInquilinos } from "../components/Inquilinos/TablaInquilinos";
-import { TablaContratos } from "../components/Contratos/TablaContratos";
-import { TablaEmpleados } from "../components/Empleados/TablaEmpleados";
 import TablaServicios from "../components/servicios/TablaServicios";
 import TablaPagos from "../components/Pagos/TablaPagos";
 import TablaCuota from "../components/AperturarDeuda/TablaCuota";
+import TablaPuestos from "../components/Puestos/TablaPuestos";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +19,10 @@ export const router = createBrowserRouter([
       {
         path: "/asociados",
         element: <Tabla />,
+      },
+      {
+        path: "/puestos",
+        element: <TablaPuestos />,
       },
       {
         path: "/servicios",
