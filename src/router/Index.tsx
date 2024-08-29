@@ -6,6 +6,8 @@ import TablaServicios from "../components/servicios/TablaServicios";
 import TablaPagos from "../components/Pagos/TablaPagos";
 import TablaCuota from "../components/AperturarDeuda/TablaCuota";
 import TablaPuestos from "../components/Puestos/TablaPuestos";
+import TablaReportePagos from "../components/ReportePagos/TablaReportePagos";
+import TablaReporteDeudas from "../components/ReporteDeudas/TablaReporteDeudas";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +19,7 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "/asociados",
+        path: "/socios",
         element: <Tabla />,
       },
       {
@@ -29,14 +31,21 @@ export const router = createBrowserRouter([
         element: <TablaServicios />,
       },
       {
-        path: "/aperturar-deuda",
+        path: "/cuotas",
         element: <TablaCuota />,
       },
       {
         path: "/pagos",
         element: <TablaPagos />,
       },
-
+      {
+        path: "/reporte-pagos",
+        element: <TablaReportePagos />,
+      },
+      {
+        path: "/reporte-deudas",
+        element: <TablaReporteDeudas />,
+      },
     ],
   },
 ]);
