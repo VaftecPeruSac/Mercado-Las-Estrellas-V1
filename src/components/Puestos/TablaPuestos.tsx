@@ -230,7 +230,7 @@ const TablaPuestos: React.FC = () => {
             >
               <Select
                 value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value as string)}
+                onChange={(e) => setExportFormat(e.target.value)}
                 displayEmpty
                 sx={{
                   backgroundColor: "white",

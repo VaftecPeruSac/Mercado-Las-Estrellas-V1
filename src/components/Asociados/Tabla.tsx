@@ -215,15 +215,13 @@ const TablaAsociados: React.FC = () => {
             variant="contained"
             startIcon={<GridAddIcon />}
             sx={{
-              backgroundColor: "#388e3c",
+              backgroundColor: "#008001",
               "&:hover": {
                 backgroundColor: "#2c6d33",
               },
-              height: "40px",
-              minWidth: "120px",
-              marginBottom: { xs: 2, sm: 0 },
+              height: "50px",
+              width: "230px",
               borderRadius: "30px",
-              // textTransform: "none",
             }}
             onClick={handleOpen}
           >
@@ -243,8 +241,8 @@ const TablaAsociados: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                minWidth: 130,
-                height: "37px",
+                minWidth: "150px",
+                height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
                     borderColor: "#dcdcdc", // Color del borde inicial (gris claro)
@@ -268,8 +266,9 @@ const TablaAsociados: React.FC = () => {
                   "&:hover": {
                     backgroundColor: "#e0e0e0", // Cambio sutil al hacer hover
                   },
-                  height: "37px",
+                  height: "50px",
                   minWidth: "120px",
+                  padding: "0 15px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
                   "& .MuiSelect-icon": {
@@ -289,12 +288,12 @@ const TablaAsociados: React.FC = () => {
               variant="contained"
               startIcon={<Print />}
               sx={{
-                backgroundColor: "#388e3c",
+                backgroundColor: "#008001",
                 "&:hover": {
                   backgroundColor: "#2c6d33",
                 },
-                height: "40px",
-                minWidth: "170px", // Botón más largo que el Select
+                height: "50px",
+                width: "200px",
                 borderRadius: "30px",
               }}
             >
