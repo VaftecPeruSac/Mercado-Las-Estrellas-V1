@@ -41,18 +41,18 @@ import axios from "axios";
 import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
-  interface Socios {
-    socio: string;        // Nombre del socio
-    dni: string;
-    block_nombre: string;
-    numero_puesto: string;
-    gironegocio_nombre: string;
-    telefono: string;
-    correo: string;
-    inquilino: string;  
-    fecha_registro: string;
-    deuda: string;         // Indica si tiene deuda o no ("no" o "yes")
-  }
+interface Socios {
+  socio: string; // Nombre del socio
+  dni: string;
+  block_nombre: string;
+  numero_puesto: string;
+  gironegocio_nombre: string;
+  telefono: string;
+  correo: string;
+  inquilino: string;
+  fecha_registro: string;
+  deuda: string; // Indica si tiene deuda o no ("no" o "yes")
+}
 
 interface Column {
   id: keyof Data | "accion";

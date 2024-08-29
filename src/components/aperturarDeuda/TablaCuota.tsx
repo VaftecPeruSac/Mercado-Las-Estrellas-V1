@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Paper,
   Table,
@@ -30,77 +30,47 @@ import {
   MonetizationOn,
   Print,
   Search,
+  Plagiarism,
+  WhatsApp,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import GenerarCuota from "./GenerarCuota";
+import axios from "axios";
+
+interface Cuotas {
+  id_cuota: string; // Nombre del socio
+  fecha_registro: string;
+  fecha_vencimiento: string;
+  importe: string;
+}
 
 interface Column {
   id: keyof Data | "accion";
   label: string;
   minWidth?: number;
-  align?: "center";
+  align?: "right";
+  format?: (value: any) => string;
 }
 
 interface Data {
-  numero_cuota: string;
-  fecha_emision: string;
+  id_cuota: string;
+  fecha_registro: string;
   fecha_vencimiento: string;
   importe: string;
 }
 
 const columns: readonly Column[] = [
-  { 
-    id: "numero_cuota", 
-    label: "#ID", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  {
-    
-    id: "fecha_emision",
-    label: "Fecha de Emisión",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "fecha_vencimiento",
-    label: "Fecha de Vencimiento",
-    minWidth: 50,
-    align: "center",
-  },
-  { 
-    id: "importe", 
-    label: "Importe", 
-    minWidth: 50, 
-    align: "center" 
-  },
-  { 
-    id: "accion", 
-    label: "Acciones", 
-    minWidth: 120,
-    align: "center" 
-  },
-];
-
-const initialRows: Data[] = [
-  {
-    numero_cuota: "1",
-    fecha_emision: "22-08-2024",
-    fecha_vencimiento: "22-09-2024",
-    importe: "120",
-  },
-  {
-    numero_cuota: "2",
-    fecha_emision: "22-08-2024",
-    fecha_vencimiento: "22-09-2024",
-    importe: "160",
-  },
+  { id: "id_cuota", label: "# ID", minWidth: 50 }, // Nombre del socio
+  { id: "fecha_registro", label: "Fecha Emisión", minWidth: 50 }, // DNI
+  { id: "fecha_vencimiento", label: "fecha_vencimiento", minWidth: 50 }, // Nombre del bloque
+  { id: "importe", label: "Importe", minWidth: 50 }, // Número del puesto
+  { id: "accion", label: "Acción", minWidth: 20 },
+  // Acción
 ];
 
 const TablaCuota: React.FC = () => {
-
   // Para la tabla
-  const [rows, setRows] = useState<Data[]>(initialRows);
+  // const [rows, setRows] = useState<Data[]>(initialRows);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
@@ -138,6 +108,48 @@ const TablaCuota: React.FC = () => {
 
   const handleExport = () => {
     console.log(`Exporting as ${exportFormat}`);
+  };
+
+  const [cuotas, setCuotas] = useState<Data[]>([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const formatDate = (fecha: string): string => {
+    // Crear un objeto Date a partir de la cadena de fecha
+
+    const date = new Date(fecha);
+
+    // Obtener el día, mes y año
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    const year = date.getFullYear();
+
+    // Formatear a dos dígitos para el día y el mes si es necesario
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
+
+    // Retornar la fecha en el formato "día mes año"
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  };
+
+  const fetchData = async () => {
+    try {
+      // const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
+      const response = await axios.get("http://127.0.0.1:8000/v1/cuotas"); //local
+
+      const data = response.data.data.map((item: Cuotas) => ({
+        id_cuota: item.id_cuota,
+        fecha_registro: item.fecha_registro,
+        fecha_vencimiento: item.fecha_vencimiento,
+        importe: item.importe,
+      }));
+      setCuotas(data);
+      console.log("la data es", response.data);
+    } catch (error) {
+      console.error("Error al traer datos", error);
+    }
   };
 
   return (
@@ -217,7 +229,6 @@ const TablaCuota: React.FC = () => {
               ml: "auto",
             }}
           >
-
             {/* Formulario para el Select "Exportar" */}
             <FormControl
               variant="outlined"
@@ -373,28 +384,29 @@ const TablaCuota: React.FC = () => {
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                      sx={{
-                        fontWeight: "bold",
-                      }}
-                    >
+                <TableCell
+                key={column.id}
+                align={column.align}
+                style={{ minWidth: column.minWidth }}
+                sx={{
+                 
+                  fontWeight: "bold",
+                }}
+              >
                       {column.label}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {rows
+              {/* <TableBody>
+                {cuotas
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map((row, index) => (
                     <TableRow
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.numero_cuota}
+                      key={index}
                     >
                       {columns.map((column) => {
                         const value =
@@ -424,6 +436,47 @@ const TablaCuota: React.FC = () => {
                               </Box>
                             ) : (
                               value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+              </TableBody> */}
+              <TableBody>
+                {cuotas
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                      {columns.map((column) => {
+                        const value =
+                          column.id === "accion" ? "" : (row as any)[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === "number"
+                              ? column.format(value)
+                              : value}
+                            {column.id === "accion" && (
+                              <Box sx={{ display: "flex" }}>
+                              <IconButton
+                                aria-label="edit"
+                                sx={{ color: "black" }}
+                              >
+                                <Plagiarism />
+                              </IconButton>
+                              <IconButton
+                                aria-label="copy"
+                                sx={{ color: "black" }}
+                              >
+                                <Download />
+                              </IconButton>
+                              <IconButton
+                                aria-label="whatsapp"
+                                sx={{ color: "green" }}
+                              >
+                                <WhatsApp />
+                              </IconButton>
+                            </Box>
                             )}
                           </TableCell>
                         );
