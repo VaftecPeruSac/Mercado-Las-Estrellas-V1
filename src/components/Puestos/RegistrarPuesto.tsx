@@ -1,6 +1,7 @@
 import { Abc, 
   AddBusiness, 
   Business, 
+  DomainDisabled, 
   Event, 
   Straighten 
 } from '@mui/icons-material';
@@ -70,7 +71,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     variant="h6"
                     sx={{
                       fontWeight: "bold",
-
                       fontSize: "0.8rem",
                       color: "black",
                       textAlign: "center",
@@ -210,6 +210,21 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     INFORMACION DE REGISTRO
                   </Typography>
+                  {/* Seleccionar estado del servicio */}
+                  <FormControl fullWidth required sx={{ mb: 2 }}>
+                    <InputLabel id="estado-servicio-label">Estado</InputLabel>
+                    <Select
+                      labelId="estado-servicio-label"
+                      label="Tipo de servicio"
+                      // value={estadoServicio}
+                      // onChange={handleEstadoServicio}
+                      startAdornment={<DomainDisabled sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      <MenuItem value="1">Activo</MenuItem>
+                      <MenuItem value="2">Inactivo</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* Ingresar fecha de registro */}
                   <TextField
                     fullWidth
                     label="Fecha de Registro"
@@ -243,7 +258,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     variant="h6"
                     sx={{
                       fontWeight: "bold",
-
                       fontSize: "0.8rem",
                       color: "black",
                       textAlign: "center",
@@ -390,7 +404,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     // onChange={manejarBloque}
                     InputProps={{
                       startAdornment: (
-                        <AddBusiness sx={{ mr: 1, color: "gray" }} />
+                        <Business sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
                     // error={!!errors.bloque}

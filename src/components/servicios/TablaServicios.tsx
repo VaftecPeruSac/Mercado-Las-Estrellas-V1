@@ -25,6 +25,7 @@ import {
 import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print, Upload, FolderShared, Payments, Plagiarism, SaveAlt, SaveAs } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
+import RegistrarServicio from "./RegistrarServicio";
 
 
 interface Servicios {
@@ -195,7 +196,9 @@ const TablaServicios: React.FC = () => {
 
             Agregar Servicio
           </Button>
-          {/* <Agregar open={open} handleClose={handleClose} /> */}
+
+          <RegistrarServicio open={open} handleClose={handleClose} />
+
           <Box
             sx={{
               display: "flex",
