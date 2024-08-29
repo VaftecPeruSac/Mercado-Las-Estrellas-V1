@@ -210,18 +210,19 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     INFORMACION DE REGISTRO
                   </Typography>
-                  {/* Seleccionar estado del servicio */}
+                  {/* Seleccionar estado del puesto */}
                   <FormControl fullWidth required sx={{ mb: 2 }}>
-                    <InputLabel id="estado-servicio-label">Estado</InputLabel>
+                    <InputLabel id="estado-puesto-label">Estado</InputLabel>
                     <Select
-                      labelId="estado-servicio-label"
-                      label="Tipo de servicio"
-                      // value={estadoServicio}
-                      // onChange={handleEstadoServicio}
+                      labelId="estado-puesto-label"
+                      label="Estado"
+                      // value={estadoPuesto}
+                      // onChange={handleEstadoPuesto}
                       startAdornment={<DomainDisabled sx={{ mr: 1, color: "gray" }} />}
                     >
-                      <MenuItem value="1">Activo</MenuItem>
-                      <MenuItem value="2">Inactivo</MenuItem>
+                      <MenuItem value="1">Disponible</MenuItem>
+                      <MenuItem value="2">Ocupado</MenuItem>
+                      <MenuItem value="2">En mantenimiento</MenuItem>
                     </Select>
                   </FormControl>
                   {/* Ingresar fecha de registro */}
