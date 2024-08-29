@@ -34,8 +34,8 @@ import {
   WhatsApp,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
-import GenerarCuota from "./GenerarCuota";
 import axios from "axios";
+import GenerarCuota from "./GenerarCuota";
 
 interface Cuotas {
   id_cuota: string; // Nombre del socio
@@ -136,8 +136,8 @@ const TablaCuota: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      // const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
-      const response = await axios.get("http://127.0.0.1:8000/v1/cuotas"); //local
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas"); //publico
+      // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas"); //local
 
       const data = response.data.data.map((item: Cuotas) => ({
         id_cuota: item.id_cuota,
@@ -384,65 +384,19 @@ const TablaCuota: React.FC = () => {
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                <TableCell
-                key={column.id}
-                align={column.align}
-                style={{ minWidth: column.minWidth }}
-                sx={{
-                 
-                  fontWeight: "bold",
-                }}
-              >
+                    <TableCell
+                      key={column.id}
+                      align={column.id === "accion" ? "center" : column.align} // Alinear 'accion' a la derecha
+                      style={{ minWidth: column.minWidth }}
+                      sx={{
+                        fontWeight: "bold",
+                      }}
+                    >
                       {column.label}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
-              {/* <TableBody>
-                {cuotas
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={index}
-                    >
-                      {columns.map((column) => {
-                        const value =
-                          column.id === "accion" ? "" : (row as any)[column.id];
-                        return (
-                          <TableCell key={column.id} align="center">
-                            {column.id === "accion" ? (
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  gap: 1,
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <IconButton
-                                  aria-label="save "
-                                  sx={{ color: "green" }}
-                                >
-                                  <SaveAs />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="delete"
-                                  sx={{ color: "black" }}
-                                >
-                                  <DeleteForever />
-                                </IconButton>
-                              </Box>
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-              </TableBody> */}
               <TableBody>
                 {cuotas
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -452,31 +406,43 @@ const TablaCuota: React.FC = () => {
                         const value =
                           column.id === "accion" ? "" : (row as any)[column.id];
                         return (
-                          <TableCell key={column.id} align={column.align}>
+                          <TableCell
+                            key={column.id}
+                            align={
+                              column.id === "accion" ? "center" : column.align
+                            }
+                          >
                             {column.format && typeof value === "number"
                               ? column.format(value)
                               : value}
                             {column.id === "accion" && (
-                              <Box sx={{ display: "flex" }}>
-                              <IconButton
-                                aria-label="edit"
-                                sx={{ color: "black" }}
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
                               >
-                                <Plagiarism />
-                              </IconButton>
-                              <IconButton
-                                aria-label="copy"
-                                sx={{ color: "black" }}
-                              >
-                                <Download />
-                              </IconButton>
-                              <IconButton
-                                aria-label="whatsapp"
-                                sx={{ color: "green" }}
-                              >
-                                <WhatsApp />
-                              </IconButton>
-                            </Box>
+                                {" "}
+                                {/* Alinea los íconos a la derecha */}
+                                <IconButton
+                                  aria-label="edit"
+                                  sx={{ color: "black" }}
+                                >
+                                  <Plagiarism />
+                                </IconButton>
+                                <IconButton
+                                  aria-label="copy"
+                                  sx={{ color: "black" }}
+                                >
+                                  <Download />
+                                </IconButton>
+                                <IconButton
+                                  aria-label="whatsapp"
+                                  sx={{ color: "green" }}
+                                >
+                                  <WhatsApp />
+                                </IconButton>
+                              </Box>
                             )}
                           </TableCell>
                         );

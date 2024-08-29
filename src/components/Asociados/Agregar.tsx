@@ -546,7 +546,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   variant="h6"
                   sx={{
                     fontWeight: "bold",
-
                     fontSize: "0.8rem",
                     color: "black",
                     textAlign: "center",

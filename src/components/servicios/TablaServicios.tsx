@@ -107,7 +107,7 @@ const TablaServicios: React.FC = () => {
   const fetchData = async () => {
     try {
       // const response = await axios.get("http://127.0.0.1:8000/v1/servicios"); //local
-      const response = await axios.get("http://mercadolasestrellas.online/intranet/public/v1/servicios"); //publico
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios"); //publico
 
       const data = response.data.data.map((item: Servicios) => ({
         id_servicio: item.id_servicio,
