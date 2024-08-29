@@ -10,19 +10,19 @@ import {
   TableRow,
   Button,
   IconButton,
-  Typography,
   Box,
   Card,
-  Stack,
   Pagination,
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
-  useTheme,
-  Modal,
 } from "@mui/material";
-import { Edit, Download, FileCopy, WhatsApp, PictureAsPdf, Print, Upload, FolderShared, Payments, Plagiarism, SaveAlt, SaveAs } from "@mui/icons-material";
+import { 
+  Download, 
+  WhatsApp, 
+  Print, 
+  SaveAs 
+} from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
@@ -76,13 +76,8 @@ const TablaServicios: React.FC = () => {
     console.log(`Exporting as ${exportFormat}`);
   };
 
-
-  const handleOpenPagar = () => setOpenPagar(true);
-  const handleClosePagar = () => setOpenPagar(false);
-
   const [servicios, setServicios] = useState<Data[]>([]);
 
- 
   useEffect(() => {
     fetchData();
   }, []);
