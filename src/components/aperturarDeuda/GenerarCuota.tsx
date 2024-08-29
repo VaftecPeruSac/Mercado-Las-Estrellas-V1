@@ -17,6 +17,10 @@ import {
   TableCell,
   TableRow,
   IconButton,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
@@ -163,18 +167,19 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    label="Seleccionar Servicio"
-                    required
-                    // value={servicio}
-                    // onChange={manejarServicioCambio}
-                    InputProps={{
-                      startAdornment: <Bolt sx={{ mr: 1, color: "gray" }} />,
-                    }}
-                    // error={!!errors.servicio}
-                    // helperText={errors.servicio}
-                  />
+                  <FormControl fullWidth required>
+                    <InputLabel id="servicio-label">Seleccionar Servicio</InputLabel>
+                    <Select
+                      labelId="servicio-label"
+                      label="Nro Puesto (*)"
+                      // value={servicio}
+                      // onChange={handleServicio}
+                      startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      <MenuItem value="1">Luz</MenuItem>
+                      <MenuItem value="2">Agua</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
                 {/* Tabla servicios */}
                 <Grid item xs={12} sm={12}>
@@ -247,7 +252,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     </TableContainer>
                   </Paper>
                 </Grid>
-
                 {/* Importe */}
                 <Grid item xs={12} sm={6} sx={{m: "auto auto 0 auto"}}>
                   <TextField
@@ -255,9 +259,10 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     label="Importe (S/)"
                     required
                     // value={importe}
-                    // onChange={manejarImporteCambio}
+                    // onChange={manejarImporte}
                     InputProps={{
                       startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
+                      readOnly: true
                     }}
                     // error={!!errors.importe}
                     // helperText={errors.importe}
@@ -268,7 +273,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
           </>
         );
       default:
-        return "";
+        return <Typography>Seleccione una pestaña</Typography>;
     }
   };
 

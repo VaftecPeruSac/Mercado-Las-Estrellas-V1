@@ -19,6 +19,7 @@ import {
 import { GridAddIcon } from '@mui/x-data-grid';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import RegistrarPuesto from './RegistrarPuesto';
 
 interface Puestos {
   numero_puesto: string;
@@ -35,7 +36,7 @@ interface Column {
   id: keyof Data | "accion";
   label: string;
   minWidth?: number;
-  align?: "right";
+  align?: "center";
   format?: (value: any) => string;
 }
 
@@ -196,7 +197,7 @@ const TablaPuestos: React.FC = () => {
             Agregar Puesto
           </Button>
 
-          {/* <RegistrarPuesto open={open} handleClose={handleClose} /> */}
+          <RegistrarPuesto open={open} handleClose={handleClose} />
 
           <Box
             sx={{
@@ -308,7 +309,7 @@ const TablaPuestos: React.FC = () => {
                       {columns.map((column) => {
                         const value = column.id === "accion" ? "" : (row as any)[column.id];
                         return (
-                          <TableCell key={column.id} align="center">
+                          <TableCell key={column.id} align={column.align}>
                             {/* Acciones */}
                             {column.id === "accion" ? (
                               <Box

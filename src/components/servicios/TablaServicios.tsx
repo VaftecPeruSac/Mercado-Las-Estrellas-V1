@@ -44,7 +44,7 @@ interface Column {
 }
 
 interface Data {
-  numero: string;
+  id_servicio: string;
   descripcion: string;
   costo_unitario: string;
   fecha_registro: string;
@@ -52,7 +52,7 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  { id: "numero", label: "#ID", minWidth: 50 },  // Reduce el minWidth
+  { id: "id_servicio", label: "#ID", minWidth: 50 },  // Reduce el minWidth
   { id: "descripcion", label: "Descripción", minWidth: 50 },
   { id: "costo_unitario", label: "Costo Unitario", minWidth: 50 },
   { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
