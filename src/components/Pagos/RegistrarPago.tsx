@@ -95,7 +95,7 @@ const initialRows: Data[] = [
   {
     id_cuota: "3",
     anio: "2024",
-    mes: "Agosto",
+    mes: "Septiembre",
     total: 200.0,
     a_cuenta: 50.0,
     pago: 0,
@@ -128,7 +128,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     [key: string]: boolean;
   }>({});
 
-  const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState(0);
 
   // Cerrar modal
@@ -154,14 +153,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
-
-  const manejarCheckCambio = (servicio: string) => {
-    setItemsSeleccionados((prev) =>
-      prev.includes(servicio)
-        ? prev.filter((item) => item !== servicio)
-        : [...prev, servicio]
-    );
-  };
 
   // Contenido del modal
   const renderTabContent = () => {
@@ -207,7 +198,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     <TableContainer
                       sx={{
-                        maxHeight: "230px",
+                        maxHeight: "235px",
                         borderRadius: "10px",
                         border: "1px solid #202123",
                       }}
@@ -240,15 +231,12 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                               return (
                                 <TableRow
                                   hover
-                                  role="checkbox"
                                   tabIndex={-1}
                                   key={row.id_cuota}
                                   sx={{
                                     // Cambiara el color de la linea si el valor de pago es 0
                                     backgroundColor: pagado ? "#0AB544" : "inherit",
-                                    "&:hover": {
-                                      backgroundColor: pagado ? "#0AB544 !important" : "inherit",
-                                    },
+                                    "&:hover": { backgroundColor: pagado ? "#0AB544 !important" : "inherit" },
                                   }}
                                 >
                                   {columns.map((column) => {
@@ -260,7 +248,11 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                     }
 
                                     return (
-                                      <TableCell key={column.id} align="center">
+                                      <TableCell 
+                                      key={column.id} 
+                                      align="center"
+                                      padding="checkbox"
+                                    >
                                         {column.id === "accion" ? (
                                           <Box
                                             sx={{
@@ -299,11 +291,11 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </Paper>
                 </Grid>
 
-                {/* Total a pagar */}
-                <Grid item xs={12} sm={6} sx={{ m: "10px 0 0 auto" }}>
+                {/* Monto a pagar */}
+                <Grid item xs={12} sm={3} sx={{ m: "10px 0 0 auto" }}>
                   <TextField
                     fullWidth
-                    label="Total a pagar (S/)"
+                    label="Monto a pagar (S/)"
                     value={totalPagar}
                     required
                     InputProps={{
