@@ -10,15 +10,11 @@ interface Column {
 }
 
 interface Data {
-  id_deuda: string;
-  numero_puesto: string;
-  nombre_socio: string;
-  dni: string;
-  fecha: string;
-  telefono: string;
-  correo: string;
-  saldo_a_cuenta: string;
-  monto_actual: string;
+  fecha_pago: string;
+  numero_recibo: string;
+  aporte: string;
+  servicios: string;
+  total: string;
 }
 
 const TablaReportePagos: React.FC = () => {
