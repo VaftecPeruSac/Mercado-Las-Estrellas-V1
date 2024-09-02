@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import {
   Box,
   Button,
@@ -27,12 +27,33 @@ import {
   Wc,
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
+import axios from "axios";
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
 }
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
+  const [formData, setFormData] = useState({
+    tipoPersona: '',
+    telefono: '',
+    nombre: '',
+    correo: '',
+    apellidoPaterno: '',
+    apellidoMaterno: '',
+    dni: '',
+    sexo: '',
+    bloque: '',
+    numeroPuesto: '',
+    estado: '',
+    fechaRegistro: '',
+    direccion: ''
+  });
+
+  const [puestos, setPuestos] = useState([]);
+  const [selectedPuesto, setSelectedPuesto] = useState('');
+
+
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
   const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
@@ -41,7 +62,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   // Datos del formulario
-  // Persona
   const [tipoPersona, setTipoPersona] = useState("");
   const [nombre, setNombre] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
@@ -55,11 +75,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [fecha, setFecha] = useState("");
 
   const [cuota, setCuota] = useState("");
-  
+
   // Error Formulario
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [openPagar, setOpenPagar] = useState<boolean>(false);
+
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
 
@@ -68,7 +89,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const newErrors: { [key: string]: string } = {};
     if (!tipoPersona)
       newErrors.tipoPersona = "Tipo de Persona es obligatorio";
-    if (!nombre) 
+    if (!nombre)
       newErrors.nombre = "Nombre es obligatorio";
     if (!apellidoPaterno)
       newErrors.apellidoPaterno = "Apellido Paterno es obligatorio";
@@ -158,6 +179,38 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     setFecha("");
   };
 
+  useEffect(() => {
+    // Obtener los datos desde la API cuando el componente se monte
+    const fetchPuestos = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/v1/puestos/select');
+        setPuestos(response.data); // Almacenar los datos en el estado
+      } catch (error) {
+        console.error('Error al obtener los puestos', error);
+      }
+    };
+
+    fetchPuestos();
+  }, []);
+
+  // const manejarCambio = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value
+  //   });
+  // };
+
+  const registrarSocio = async () => {
+    try {
+      const response = await axios.post('http://mercadolasestrellas.online/intranet/public/v1/socios', formData);
+      console.log('Socio registrado:', response.data);
+      // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
+    } catch (error) {
+      console.error('Error al registrar el socio', error);
+      // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje de error
+    }
+  };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     // Validar el formato de fecha YYYY-MM-DD
@@ -185,6 +238,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
     setMes(evento.target.value as string);
   };
+
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -501,9 +556,17 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   <TextField
                     fullWidth
                     label="Fecha de Registro"
+                    type="date"
+                    value={fecha}
+                    onChange={handleDateChange}
                     sx={{ mt: 2 }}
                     InputProps={{
-                      startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
+                      startAdornment: (
+                        <Event sx={{ mr: 1, color: 'gray' }} />
+                      ),
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                   />
                 </Grid>
