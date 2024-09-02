@@ -33,26 +33,18 @@ interface AgregarProps {
   handleClose: () => void;
 }
 
+interface Puesto {
+  id_puesto: number;
+  id_block: number;
+  numero_puesto: string;
+}
+
+
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
-  const [formData, setFormData] = useState({
-    tipoPersona: '',
-    telefono: '',
-    nombre: '',
-    correo: '',
-    apellidoPaterno: '',
-    apellidoMaterno: '',
-    dni: '',
-    sexo: '',
-    bloque: '',
-    numeroPuesto: '',
-    estado: '',
-    fechaRegistro: '',
-    direccion: ''
-  });
-
-  const [puestos, setPuestos] = useState([]);
-  const [selectedPuesto, setSelectedPuesto] = useState('');
-
+  const [pues, setPues] = useState<Puesto[]>([]);
+  const [selectedBloque, setSelectedBloque] = useState<number | ''>('');
+  const [filteredPuestos, setFilteredPuestos] = useState<Puesto[]>([]);
+  const [selectedPuesto, setSelectedPuesto] = useState<string>('');
 
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
@@ -83,6 +75,22 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
+
+  const [formData, setFormData] = useState({
+    tipoPersona: '',
+    telefono: '',
+    nombre: '',
+    correo: '',
+    apellidoPaterno: '',
+    apellidoMaterno: '',
+    dni: '',
+    sexo: '',
+    bloque: '',
+    numeroPuesto: '',
+    estado: '',
+    fechaRegistro: '',
+    direccion: ''
+  });
 
   // Validaciones del formulario
   const validateForm = () => {
@@ -180,37 +188,43 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
   useEffect(() => {
-    // Obtener los datos desde la API cuando el componente se monte
     const fetchPuestos = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/v1/puestos/select');
-        setPuestos(response.data); // Almacenar los datos en el estado
+        console.log("Puestos cargados:", response.data);
+        setPues(response.data); // Almacenar los datos en el estado
       } catch (error) {
         console.error('Error al obtener los puestos', error);
       }
     };
-
     fetchPuestos();
   }, []);
 
-  // const manejarCambio = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value
-  //   });
-  // };
-
-  const registrarSocio = async () => {
-    try {
-      const response = await axios.post('http://mercadolasestrellas.online/intranet/public/v1/socios', formData);
-      console.log('Socio registrado:', response.data);
-      // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
-    } catch (error) {
-      console.error('Error al registrar el socio', error);
-      // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje de error
+  useEffect(() => {
+    if (selectedBloque) {
+      const puestosFiltrados = pues.filter(puesto => puesto.id_block === selectedBloque);
+      setFilteredPuestos(puestosFiltrados);
     }
+  }, [selectedBloque, pues]);
+
+  const manejarCambio = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
   };
+
+  // const registrarSocio = async () => {
+  //   try {
+  //     const response = await axios.post('http://mercadolasestrellas.online/intranet/public/v1/socios', formData);
+  //     console.log('Socio registrado:', response.data);
+  //     // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
+  //   } catch (error) {
+  //     console.error('Error al registrar el socio', error);
+  //     // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje de error
+  //   }
+  // };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     // Validar el formato de fecha YYYY-MM-DD
@@ -238,8 +252,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
     setMes(evento.target.value as string);
   };
-
-
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -356,8 +368,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   <TextField
                     fullWidth
                     label="Nombre (*)"
-                    value={nombre}
-                    onChange={manejarNombreCambio}
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: (
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
@@ -372,8 +385,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     fullWidth
                     label="Correo (*)"
                     sx={{ mt: 0 }}
-                    value={correo}
-                    onChange={manejarCambioCorreo}
+                    name="correo"
+                    value={formData.correo}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <Email sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -447,16 +461,23 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
                 <Grid item xs={12} sm={6} sx={{ mt: -6 }}>
                   <FormControl fullWidth required>
-                    <InputLabel id="tipo-persona-label">Bloque</InputLabel>
+                    <InputLabel id="bloque-label">Bloque</InputLabel>
                     <Select
-                      labelId="tipo-persona-label"
-                      label="Bloque (*)"
-                      // value={tipoPersona}
-                      // onChange={handleTipoPersonaChange}
-                      startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                      labelId="bloque-label"
+                      id="select-bloque"
+                      value={selectedBloque}
+                      onChange={(e) => {
+                        const value = e.target.value as number;
+                        setSelectedBloque(value);
+                        setFormData({ ...formData, bloque: value.toString() });
+                      }}
+                      label="Bloque"
                     >
-                      <MenuItem value="Natural">Natural</MenuItem>
-                      <MenuItem value="Juridica">Jurídica</MenuItem>
+                      {pues.map((puesto: Puesto) => (
+                        <MenuItem key={puesto.id_block} value={puesto.id_block}>
+                          {`Bloque ${puesto.id_block}`}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -479,13 +500,20 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
                     <Select
                       labelId="nro-puesto-label"
-                      label="Nro Puesto (*)"
-                      // value={tipoPersona}
-                      // onChange={handleTipoPersonaChange}
-                      startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
+                      id="select-puesto"
+                      value={selectedPuesto}
+                      onChange={(e) => {
+                        const value = e.target.value as string;
+                        setSelectedPuesto(value);
+                        setFormData({ ...formData, numeroPuesto: value });
+                      }}
+                      label="Puesto"
                     >
-                      <MenuItem value="Natural">Natural</MenuItem>
-                      <MenuItem value="Juridica">Jurídica</MenuItem>
+                      {filteredPuestos.map((puesto: Puesto) => (
+                        <MenuItem key={puesto.id_puesto} value={puesto.numero_puesto}>
+                          {puesto.numero_puesto}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
