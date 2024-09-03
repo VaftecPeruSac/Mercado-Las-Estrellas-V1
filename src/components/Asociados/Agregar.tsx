@@ -39,12 +39,11 @@ interface Puesto {
   numero_puesto: string;
 }
 
-
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [pues, setPues] = useState<Puesto[]>([]);
-  const [selectedBloque, setSelectedBloque] = useState<number | ''>('');
+  const [selectedBloque, setSelectedBloque] = useState<number | "">("");
   const [filteredPuestos, setFilteredPuestos] = useState<Puesto[]>([]);
-  const [selectedPuesto, setSelectedPuesto] = useState<string>('');
+  const [selectedPuesto, setSelectedPuesto] = useState<string>("");
 
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
@@ -77,28 +76,25 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleClosePagar = () => setOpenPagar(false);
 
   const [formData, setFormData] = useState({
-    tipoPersona: '',
-    telefono: '',
-    nombre: '',
-    correo: '',
-    apellidoPaterno: '',
-    apellidoMaterno: '',
-    dni: '',
-    sexo: '',
-    bloque: '',
-    numeroPuesto: '',
-    estado: '',
-    fechaRegistro: '',
-    direccion: ''
+    telefono: "",
+    nombre: "",
+    correo: "",
+    apellido_paterno: "",
+    apellido_materno: "",
+    dni: "",
+    sexo: "",
+    bloque: "",
+    id_puesto: "", // Usa id_puesto en lugar de numeroPuesto
+    estado: "",
+    fecha_registro: "",
+    direccion: "",
   });
 
   // Validaciones del formulario
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!tipoPersona)
-      newErrors.tipoPersona = "Tipo de Persona es obligatorio";
-    if (!nombre)
-      newErrors.nombre = "Nombre es obligatorio";
+    if (!tipoPersona) newErrors.tipoPersona = "Tipo de Persona es obligatorio";
+    if (!nombre) newErrors.nombre = "Nombre es obligatorio";
     if (!apellidoPaterno)
       newErrors.apellidoPaterno = "Apellido Paterno es obligatorio";
     if (!apellidoMaterno)
@@ -121,15 +117,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const handleCuotaChange = (event: SelectChangeEvent<string>) => {
     setCuota(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (validateForm()) {
-      // Aquí iría la lógica para enviar los datos
-      console.log("Formulario válido");
-      limpiarCampos();
-      handleClose();
-    }
   };
 
   const manejarDniCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,11 +177,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/v1/puestos/select');
+        // const response = await axios.get("http://127.0.0.1:8000/v1/puestos/select"); // local
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/select"); // publico
         console.log("Puestos cargados:", response.data);
         setPues(response.data); // Almacenar los datos en el estado
       } catch (error) {
-        console.error('Error al obtener los puestos', error);
+        console.error("Error al obtener los puestos", error);
       }
     };
     fetchPuestos();
@@ -202,16 +190,22 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   useEffect(() => {
     if (selectedBloque) {
-      const puestosFiltrados = pues.filter(puesto => puesto.id_block === selectedBloque);
+      const puestosFiltrados = pues.filter(
+        (puesto) => puesto.id_block === selectedBloque
+      );
       setFilteredPuestos(puestosFiltrados);
     }
   }, [selectedBloque, pues]);
 
-  const manejarCambio = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const manejarCambio = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -253,6 +247,54 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     setMes(evento.target.value as string);
   };
 
+  const handlePuestoChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const selectedIdPuesto = event.target.value as string;
+    setFormData((prevData) => ({
+      ...prevData,
+      id_puesto: selectedIdPuesto, // Actualiza id_puesto
+    }));
+  };
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Evita el comportamiento por defecto del clic
+
+    // Construye el objeto de datos a enviar excluyendo el campo 'bloque'
+    const { bloque, ...dataToSend } = formData;
+
+    try {
+      // const response = await axios.post("http://127.0.0.1:8000/v1/socios",dataToSend //local
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios/consin-puestos",dataToSend //publico
+      );
+
+      // Manejar la respuesta del servidor
+      if (response.status === 201) {
+        alert("Registro exitoso");
+        // Limpiar los campos del formulario
+        setFormData({
+          telefono: "",
+          nombre: "",
+          correo: "",
+          apellido_paterno: "",
+          apellido_materno: "",
+          dni: "",
+          sexo: "",
+          bloque: "", // Limpiar el campo bloque
+          id_puesto: "", // Asegúrate de limpiar id_puesto
+          estado: "",
+          fecha_registro: "",
+          direccion: "",
+        });
+        // Cerrar el formulario o hacer otra acción según sea necesario
+        handleClose();
+      } else {
+        alert("No se pudo registrar el socio. Inténtalo nuevamente.");
+      }
+    } catch (error) {
+      console.error("Error al registrar el socio:", error);
+      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0: // REGISTRAR SOCIO
@@ -268,6 +310,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             >
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
+
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Grid container spacing={3} sx={{ mt: -4 }}>
               <Grid item xs={12} sm={6}>
@@ -333,30 +377,32 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
               <Grid container spacing={2}>
                 {" "}
                 {/* Reducción del espaciado */}
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <FormControl fullWidth required>
                     <InputLabel id="tipo-persona-label">
                       Tipo Persona
                     </InputLabel>
                     <Select
                       labelId="tipo-persona-label"
+                      fullWidth
                       label="Tipo Persona (*)"
-                      error={!!errors.tipoPersona}
-                      // value={tipoPersona}
-                      // onChange={handleTipoPersonaChange}
+                      name="tipoPersona"
+                      value={formData.tipoPersona}
+                      onChange={manejarCambio}
                       startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
                     >
                       <MenuItem value="Natural">Natural</MenuItem>
                       <MenuItem value="Juridica">Jurídica</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Nro. Telefono (*)"
-                    value={telefono}
-                    onChange={manejarTelefonoCambio}
+                    name="telefono"
+                    value={formData.telefono}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -402,8 +448,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   <TextField
                     fullWidth
                     label="Apellido Paterno (*)"
-                    // value={apellidoPaterno}
-                    // onChange={manejarApellidoPaternoCambio}
+                    name="apellido_paterno"
+                    value={formData.apellido_paterno}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: (
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
@@ -447,8 +494,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   <TextField
                     fullWidth
                     label="Apellido Materno (*)"
-                    // value={apellidoMaterno}
-                    // onChange={manejarApellidoMaternoCambio}
+                    name="apellido_materno"
+                    value={formData.apellido_materno}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: (
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
@@ -486,8 +534,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     fullWidth
                     label="DNI (*)"
                     required
-                    value={dni}
-                    onChange={manejarDniCambio}
+                    name="dni"
+                    value={formData.dni}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -501,16 +550,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <Select
                       labelId="nro-puesto-label"
                       id="select-puesto"
-                      value={selectedPuesto}
+                      value={formData.id_puesto}
                       onChange={(e) => {
                         const value = e.target.value as string;
-                        setSelectedPuesto(value);
-                        setFormData({ ...formData, numeroPuesto: value });
+                        setFormData({ ...formData, id_puesto: value });
                       }}
                       label="Puesto"
                     >
                       {filteredPuestos.map((puesto: Puesto) => (
-                        <MenuItem key={puesto.id_puesto} value={puesto.numero_puesto}>
+                        <MenuItem
+                          key={puesto.id_puesto}
+                          value={puesto.id_puesto} // Usa id_puesto aquí
+                        >
                           {puesto.numero_puesto}
                         </MenuItem>
                       ))}
@@ -518,27 +569,21 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {/* <TextField
-                            fullWidth
-                            label="DNI (*)"
-                            required
-                            value={dni}
-                            onChange={manejarDniCambio}
-                            InputProps={{
-                              startAdornment: (
-                                <Dns sx={{ mr: 1, color: "gray" }} />
-                              ),
-                            }}
-                            error={!!errors.dni}
-                            helperText={errors.dni}
-                          /> */}
-                  <TextField
-                    fullWidth
-                    label="Sexo"
-                    InputProps={{
-                      startAdornment: <Wc sx={{ mr: 1, color: "gray" }} />,
-                    }}
-                  />
+                  <FormControl fullWidth required>
+                    <InputLabel id="sexo-label">Sexo</InputLabel>
+                    <Select
+                      labelId="sexo-label"
+                      fullWidth
+                      label="Sexo (*)"
+                      name="sexo"
+                      value={formData.sexo}
+                      onChange={manejarCambio}
+                      startAdornment={<Wc sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      <MenuItem value="Masculino">Masculino</MenuItem>
+                      <MenuItem value="Femenino">Femenino</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6} sx={{ mt: -7 }}>
@@ -573,8 +618,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <Select
                       labelId="estado-label"
                       label="Estado"
-                      value={estado}
-                      onChange={handleEstadoChange}
+                      name="estado"
+                      value={formData.estado}
+                      onChange={manejarCambio}
                       startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
                     >
                       <MenuItem value="Activo">Activo</MenuItem>
@@ -582,16 +628,15 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     </Select>
                   </FormControl>
                   <TextField
-                    fullWidth
+                    fullWidth 
                     label="Fecha de Registro"
                     type="date"
-                    value={fecha}
-                    onChange={handleDateChange}
+                    name="fecha_registro"
+                    value={formData.fecha_registro}
+                    onChange={manejarCambio}
                     sx={{ mt: 2 }}
                     InputProps={{
-                      startAdornment: (
-                        <Event sx={{ mr: 1, color: 'gray' }} />
-                      ),
+                      startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -604,8 +649,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     label="Dirección (*)"
                     sx={{ mt: 2 }}
                     required
-                    value={direccion}
-                    onChange={(e) => setDireccion(e.target.value)}
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <Home sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -770,7 +816,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </Typography>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Apellido Materno"
@@ -785,7 +831,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     error={!!errors.apellidoMaterno}
                     helperText={errors.apellidoMaterno}
                   />
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12} sm={6} sx={{ mt: -6 }}>
                   <FormControl fullWidth required>
@@ -938,7 +984,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#388E3C",
               },
             }}
-            onClick={handleSubmit}
+            onClick={handleSubmit} // Usa onClick para manejar el clic
           >
             Registrar
           </Button>

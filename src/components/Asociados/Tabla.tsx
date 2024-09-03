@@ -143,7 +143,7 @@ const TablaAsociados: React.FC = () => {
 
       const data = response.data.data.map((item: Socios) => ({
         socio: item.socio,
-        dni: item.dni,
+        dni: item.dni, 
         block_nombre: item.block_nombre,
         numero_puesto: item.numero_puesto,
         gironegocio_nombre: item.gironegocio_nombre,
