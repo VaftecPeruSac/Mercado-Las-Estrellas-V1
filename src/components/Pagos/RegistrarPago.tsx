@@ -23,7 +23,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface AgregarProps {
   open: boolean;
@@ -38,7 +38,7 @@ interface Column {
 }
 
 interface Data {
-  id_cuota: string;
+  id_cuota: number;
   anio: string;
   mes: string;
   total: number;
@@ -93,7 +93,7 @@ const columns: readonly Column[] = [
 
 const initialRows: Data[] = [
   {
-    id_cuota: "3",
+    id_cuota: 3,
     anio: "2024",
     mes: "Septiembre",
     total: 200.0,
@@ -101,7 +101,7 @@ const initialRows: Data[] = [
     pago: 0,
   },
   {
-    id_cuota: "2",
+    id_cuota: 2,
     anio: "2024",
     mes: "Agosto",
     total: 200.0,
@@ -109,7 +109,7 @@ const initialRows: Data[] = [
     pago: 0,
   },
   {
-    id_cuota: "1",
+    id_cuota: 1,
     anio: "2024",
     mes: "Junio",
     total: 120.0,
@@ -124,9 +124,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [rowsPage, setRowsPage] = useState(5);
 
   const [totalPagar, setTotalPagar] = useState(0);
-  const [filasSeleccionadas, setFilasSeleccionadas] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const [filasSeleccionadas, setFilasSeleccionadas] = useState<({[key: string]: boolean;})>({});
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -135,18 +133,29 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     handleClose();
   };
 
-  // Calcular el total a pagar
-  const handleCheckBoxChange = (
-    checked: boolean,
-    payment: number,
-    id: string
-  ) => {
-    const total_pagar = checked ? totalPagar + payment : totalPagar - payment;
-    setTotalPagar(total_pagar);
+  // Calcular el total a pagar de las filas seleccionadas
+  const calcularTotalSeleccionado = () => {
+    let total = 0;
+    Object.keys(filasSeleccionadas).forEach((id_cuota) => {
+      if(filasSeleccionadas[id_cuota]){
+        const fila = rows.find((row) => row.id_cuota === parseInt(id_cuota));
+        if(fila){
+          total += fila.total - fila.a_cuenta;
+        }
+      }
+    });
+    setTotalPagar(total);
+  };
 
-    setFilasSeleccionadas({
-      ...filasSeleccionadas,
-      [id]: checked,
+  useEffect(() => {
+    calcularTotalSeleccionado();
+  }, [filasSeleccionadas]);
+
+  // Seleccionar filas
+  const handleCheckBoxChange = (seleccionado: boolean, montoPagar: number, idCuota: number) => {
+    setFilasSeleccionadas((estadoPrevio) => {
+      const nuevoEstado = {...estadoPrevio, [idCuota]: seleccionado};
+      return nuevoEstado;
     });
   };
 
@@ -179,10 +188,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       label="Seleccionar Socio"
                       startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
                     >
-
                       {/* Listado de socios */}
                       <MenuItem value="1">Juanito Perez</MenuItem>
-
                     </Select>
                   </FormControl>
                 </Grid>
@@ -292,18 +299,35 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 </Grid>
 
                 {/* Monto a pagar */}
-                <Grid item xs={12} sm={3} sx={{ m: "10px 0 0 auto" }}>
+                <Grid item xs={12} sm={8} sx={{ m: "10px 0 0 auto" }}>
                   <TextField
-                    fullWidth
-                    label="Monto a pagar (S/)"
+                    label="Total (S/)"
                     value={totalPagar}
                     required
+                    focused
                     InputProps={{
                       readOnly: true,
                       startAdornment: (
                         <AttachMoney sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
+                    sx={{
+                      mr: 2
+                    }}
+                  />
+                  <TextField
+                    color="success"
+                    label="Monto a pagar (S/)"
+                    value={totalPagar}
+                    required
+                    focused
+                    InputProps={{
+                      // Solo se puede editar cuando se selecciona una sola fila
+                      readOnly: Object.values(filasSeleccionadas).filter(Boolean).length !== 1,
+                      startAdornment: (<AttachMoney sx={{ mr: 1, color: "gray" }} />),
+                    }}
+                    // Para mostrar el monto a pagar
+                    onChange={(e) => setTotalPagar(Number(e.target.value))}
                   />
                 </Grid>
               </Grid>
