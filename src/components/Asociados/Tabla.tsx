@@ -10,30 +10,19 @@ import {
   TableRow,
   Button,
   IconButton,
-  Typography,
   Box,
   Card,
-  Stack,
   Pagination,
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
-  useTheme,
-  Modal,
 } from "@mui/material";
 import {
-  Edit,
   Download,
-  FileCopy,
   WhatsApp,
-  PictureAsPdf,
   Print,
-  Upload,
-  FolderShared,
   Payments,
   Plagiarism,
-  SaveAlt,
   SaveAs,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
@@ -42,15 +31,17 @@ import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
 interface Socios {
+  numero_puesto: string;
+  id_inquilino: string;
+  estado: string;
+  fecha_registro: string;
   socio: string;        // Nombre del socio
   dni: string;
-  block_nombre: string;
-  numero_puesto: string;
-  gironegocio_nombre: string;
   telefono: string;
   correo: string;
+  gironegocio_nombre: string;
+  block_nombre: string;
   inquilino: string;
-  fecha_registro: string;
   deuda: string;         // Indica si tiene deuda o no ("no" o "yes")
 }
 
@@ -62,19 +53,22 @@ interface Column {
   format?: (value: any) => string;
 }
 interface Data {
+  numero_puesto: string;
+  id_inquilino: string;
+  estado: string;
+  fecha_registro: string;
   socio: string;          // Nombre del socio
   dni: string;
-  block_nombre: string;   // Nombre del bloque
-  numero_puesto: string;  // Número del puesto
-  gironegocio_nombre: string; // Nombre del giro de negocio
   telefono: string;
   correo: string;
+  gironegocio_nombre: string;
+  block_nombre: string;
   inquilino: string;
-  fecha_registro: string;
   deuda: string;          // Indica si tiene deuda o no ("no" o "yes")
   cuotas_extra: string;   // Cuotas extraordinarias
   pagar: string;          // Pagar
 }
+
 
 const columns: readonly Column[] = [
   { id: "socio", label: "Nombre", minWidth: 50 }, // Nombre del socio
@@ -108,11 +102,11 @@ const TablaAsociados: React.FC = () => {
     // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
   };
-
+  
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
 
-  const [puestos, setPuestos] = useState<Data[]>([]);
+  const [socios, setSocios] = useState<Data[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -138,22 +132,24 @@ const TablaAsociados: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios/consin-puestos"); //publico
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/socios"); //local
 
       const data = response.data.data.map((item: Socios) => ({
+        numero_puesto: item.numero_puesto,
+        id_inquilino: item.id_inquilino,
+        estado: item.estado,
+        fecha_registro: formatDate(item.fecha_registro),
         socio: item.socio,
         dni: item.dni, 
-        block_nombre: item.block_nombre,
-        numero_puesto: item.numero_puesto,
-        gironegocio_nombre: item.gironegocio_nombre,
         telefono: item.telefono,
         correo: item.correo,
+        gironegocio_nombre: item.gironegocio_nombre,
+        block_nombre: item.block_nombre,
         inquilino: item.inquilino,
-        fecha_registro: formatDate(item.fecha_registro),
         deuda: item.deuda
       }));
-      setPuestos(data);
+      setSocios(data);
       console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
@@ -326,7 +322,7 @@ const TablaAsociados: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {puestos
+                {socios
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
