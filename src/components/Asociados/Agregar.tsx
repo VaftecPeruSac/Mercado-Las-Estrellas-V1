@@ -26,9 +26,15 @@ import {
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
+
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
+}
+
+interface Bloque {
+  id_block: number;
+  nombre: string;
 }
 
 interface Puesto {
@@ -38,10 +44,12 @@ interface Puesto {
 }
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
-  const [pues, setPues] = useState<Puesto[]>([]);
-  const [selectedBloque, setSelectedBloque] = useState<number | "">("");
-  const [filteredPuestos, setFilteredPuestos] = useState<Puesto[]>([]);
-  const [selectedPuesto, setSelectedPuesto] = useState<string>("");
+
+  // Para los select
+  const [bloques, setBloques] = useState<Bloque[]>([]);
+  const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
+  const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
 
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
@@ -172,13 +180,27 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     setFecha("");
   };
 
+  // Obtener bloques
+  useEffect(() => {
+    const fetchBloques = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
+        console.log("Bloques obtenidos:", response.data.data);
+        setBloques(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los bloques", error);
+      }
+    };
+    fetchBloques();
+  }, []);
+
+  // Obtener puestos
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
-        // const response = await axios.get("http://127.0.0.1:8000/v1/puestos/select"); // local
         const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/select"); // publico
         console.log("Puestos cargados:", response.data);
-        setPues(response.data); // Almacenar los datos en el estado
+        setPuestos(response.data); // Almacenar los datos en el estado
       } catch (error) {
         console.error("Error al obtener los puestos", error);
       }
@@ -186,15 +208,17 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     fetchPuestos();
   }, []);
 
+  // Filtrar puestos por bloque
   useEffect(() => {
-    if (selectedBloque) {
-      const puestosFiltrados = pues.filter(
-        (puesto) => puesto.id_block === selectedBloque
-      );
-      setFilteredPuestos(puestosFiltrados);
+    if (bloqueSeleccionado) {
+      const puestosFiltrados = puestos.filter((puesto) => puesto.id_block === bloqueSeleccionado);
+      setPuestosFiltrados(puestosFiltrados);
+    } else {
+      setPuestosFiltrados([]);
     }
-  }, [selectedBloque, pues]);
+  }, [bloqueSeleccionado, puestos]);
 
+  // Para manejar los cambios
   const manejarCambio = (
     e:
       | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -207,16 +231,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
     });
   };
 
-  // const registrarSocio = async () => {
-  //   try {
-  //     const response = await axios.post('http://mercadolasestrellas.online/intranet/public/v1/socios', formData);
-  //     console.log('Socio registrado:', response.data);
-  //     // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
-  //   } catch (error) {
-  //     console.error('Error al registrar el socio', error);
-  //     // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje de error
-  //   }
-  // };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     // Validar el formato de fecha YYYY-MM-DD
@@ -264,7 +278,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
 
       // Manejar la respuesta del servidor
-      if (response.status === 201) {
+      if (response.status === 200) {
         alert("Registro exitoso");
         // Limpiar los campos del formulario
         setFormData({
@@ -568,18 +582,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       <Select
                         labelId="bloque-label"
                         id="select-bloque"
-                        value={selectedBloque}
+                        value={bloqueSeleccionado}
                         onChange={(e) => {
                           const value = e.target.value as number;
-                          setSelectedBloque(value);
+                          setBloqueSeleccionado(value);
                           setFormData({ ...formData, bloque: value.toString() });
                         }}
                         label="Bloque"
                         sx={{mb: 2}}
                       >
-                        {pues.map((puesto: Puesto) => (
-                          <MenuItem key={puesto.id_block} value={puesto.id_block}>
-                            {`Bloque ${puesto.id_block}`}
+                        {bloques.map((bloque: Bloque) => (
+                          <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                            {bloque.nombre}
                           </MenuItem>
                         ))}
                       </Select>
@@ -596,13 +610,10 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                           const value = e.target.value as string;
                           setFormData({ ...formData, id_puesto: value });
                         }}
-                        label="Puesto"
+                        label="Nro. Puesto"
                       >
-                        {filteredPuestos.map((puesto: Puesto) => (
-                          <MenuItem
-                            key={puesto.id_puesto}
-                            value={puesto.id_puesto} // Usa id_puesto aquí
-                          >
+                        {puestosFiltrados.map((puesto: Puesto) => (
+                          <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
                             {puesto.numero_puesto}
                           </MenuItem>
                         ))}

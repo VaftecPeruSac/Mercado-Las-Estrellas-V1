@@ -1,7 +1,6 @@
 import { Abc, 
   AddBusiness, 
-  Business, 
-  DomainDisabled, 
+  Business,  
   Event, 
   Straighten 
 } from '@mui/icons-material';
@@ -15,30 +14,186 @@ import {
   MenuItem, 
   Modal, 
   Select, 
+  SelectChangeEvent, 
   Tab, 
   Tabs, 
   TextField, 
   Typography 
 } from '@mui/material';
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
 }
 
+interface GiroNegocio {
+  id_gironegocio: number;
+  nombre: string;
+}
+
+interface Bloque {
+  id_block: number;
+  nombre: string;
+}
+
 const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const [activeTab, setActiveTab] = useState(0);
+
+  // Para los select
+  const [bloques, setBloques] = useState<Bloque[]>([]);
+  const [girosNegocio, setGirosNegocio] = useState<GiroNegocio[]>([]);
+
+  // Datos para registrar el puesto
+  const [formDataPuesto, setFormDataPuesto] = useState({
+    id_gironegocio: "",
+    id_block: "",
+    numero_puesto: "",
+    area: "",
+    fecha_registro: "",
+  });
+
+  // Datos para registrar el bloque
+  const [formDataBloque, setFormDataBloque] = useState({
+    nombre: "",
+  });
+
+  // Obtener bloques
+  useEffect(() => {
+    const fetchBloques = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
+        console.log("Bloques obtenidos:", response.data.data);
+        setBloques(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los bloques", error);
+      }
+    };
+    fetchBloques();
+  }, []);
+
+  // Obtener giro de negocio
+  useEffect(() => {
+    const fechGiroNegocio = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios");
+        console.log("Giros de negocio obtenidos:", response.data.data);
+        setGirosNegocio(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los giro de negocio", error);
+      }
+    };
+    fechGiroNegocio();
+  }, []);
+
+  // Manejar los cambios del formulario Registrar Puesto
+  const manejarCambioPuesto = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
+  ) => {
+    const { name, value } = e.target;
+    setFormDataPuesto({
+      ...formDataPuesto,
+      [name]: value,
+    });
+  };
+
+  // Manejar los cambios del formulario Registrar Bloque
+  const manejarCambioBloque = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
+  ) => {
+    const { name, value } = e.target;
+    setFormDataBloque({
+      ...formDataBloque,
+      [name]: value,
+    });
+  };
+  
+  // Cambiar entre pestañas
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
+    setActiveTab(newValue);
 
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
   };
 
-  // Cambiar entre pestañas
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
-    setActiveTab(newValue);
+  // Registrar Puesto
+  const registrarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    // Evita el comportamiente por defecto del clic
+    e.preventDefault();
+
+    // Data a enviar
+    const { ...dataToSend } = formDataPuesto;
+
+    try {
+
+      // Conexión al servicio
+      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
+      const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
+
+      // Manejar la respuesta del servidor
+      if(response.status === 200) {
+        alert("Puesto registrado con exito");
+        // Limpiar los campos del formulario
+        setFormDataPuesto({
+          id_gironegocio: "",
+          id_block: "",
+          numero_puesto: "",
+          area: "",
+          fecha_registro: "",
+        });
+        // Cerrar el formulario
+        handleClose();
+      } else {
+        alert("No se pudo registrar el puesto. Intentelo nuevamente.")
+      }
+
+    } catch (error) {
+      console.error("Error al registrar el puesto:", error);
+      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+    }
+  }
+
+  // Registrar Bloque
+  const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    // Evita el comportamiente por defecto del clic
+    e.preventDefault();
+
+    // Data a enviar
+    const { ...dataToSend } = formDataBloque;
+
+    try {
+
+      // Conexión al servicio
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
+      // const response = await axios.post("http://127.0.0.1:8000/v1/blocks", dataToSend);
+
+      // Manejar la respuesta del servidor
+      if(response.status === 200) {
+        alert("Bloque registrado con exito");
+        // Limpiar los datos del formulario
+        setFormDataBloque({
+          nombre: ""
+        });
+        handleClose();
+      } else {
+        alert("No se pudo registrar el bloque. Intentelo nuevamente.")
+      }
+
+    } catch (error) {
+      console.error("Error al registrar el bloque:", error);
+      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+    }
+
+  }
 
   // Contenido del modal
   const renderTabContent = () => {
@@ -57,6 +212,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
             >
               Leer detenidamente los campos obligatorios antes de escribir. (*)
             </Typography>
+
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Box
               component="form"
@@ -98,37 +255,49 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <InputLabel id="bloque-label">Bloque</InputLabel>
                     <Select
                       labelId="bloque-label"
-                      label="Bloque (*)"
-                      // value={tipoPersona}
-                      // onChange={handleTipoPersonaChange}
+                      label="Bloque"
+                      id="select-bloque"
+                      value={formDataPuesto.id_block}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormDataPuesto({ ...formDataPuesto, id_block: value });
+                      }}
                       startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                     >
-                      <MenuItem value="1">1er Piso</MenuItem>
-                      <MenuItem value="2">2do Piso</MenuItem>
+                      {bloques.map((bloque: Bloque) => (
+                        <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                          {bloque.nombre}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
-                  {/* Seleccionar Puesto */}
-                  <FormControl fullWidth required sx={{ mt: 2 }}>
-                    <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                    <Select
-                      labelId="nro-puesto-label"
-                      label="Nro Puesto (*)"
-                      // value={nroPuesto}
-                      // onChange={handleNroPuesto}
-                      startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      <MenuItem value="1">A-1</MenuItem>
-                      <MenuItem value="2">A-2</MenuItem>
-                    </Select>
-                  </FormControl>
+                  {/* Nro. Puesto */}
+                  <TextField
+                    fullWidth
+                    required
+                    label="Nro. Puesto"
+                    name="numero_puesto"
+                    value={formDataPuesto.numero_puesto}
+                    onChange={manejarCambioPuesto}
+                    sx={{ mt: 2 }}
+                    InputProps={{
+                      startAdornment: (
+                        <Abc sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    // error={!!errors.area}
+                    // helperText={errors.area}
+                  />
+
                   {/* Ingresar el area */}
                   <TextField
-                    sx={{ mt: 2 }}
                     fullWidth
-                    label="Área"
                     required
-                    // value={area}
-                    // onChange={manejarArea}
+                    label="Área"
+                    name="area"
+                    value={formDataPuesto.area}
+                    onChange={manejarCambioPuesto}
+                    sx={{ mt: 2 }}
                     InputProps={{
                       startAdornment: (
                         <Straighten sx={{ mr: 1, color: "gray" }} />
@@ -137,9 +306,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     // error={!!errors.area}
                     // helperText={errors.area}
                   />
+
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
+
                   {/* Separador */}
                   <Typography
                     variant="h6"
@@ -167,21 +338,29 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     GIRO DE NEGOCIO
                   </Typography>
-                  {/* Ingresar giro de negocio */}
-                  <TextField
-                    fullWidth
-                    label="Giro de negocio"
-                    required
-                    // value={giroNegocio}
-                    // onChange={manejarGiroNegocio}
-                    InputProps={{
-                      startAdornment: (
-                        <AddBusiness sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    // error={!!errors.giroNegocio}
-                    // helperText={errors.giroNegocio}
-                  />
+
+                  {/* Seleccionar giro de negocio */}
+                  <FormControl fullWidth required>
+                    <InputLabel id="giro-label">Giro de negocio</InputLabel>
+                    <Select
+                      labelId="giro-label"
+                      label="Giro de negocio"
+                      id="select-giro-negocio"
+                      value={formDataPuesto.id_gironegocio}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormDataPuesto({ ...formDataPuesto, id_gironegocio: value });
+                      }}
+                      startAdornment={<AddBusiness sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      {girosNegocio.map((giroNegocio: GiroNegocio) => (
+                        <MenuItem key={giroNegocio.id_gironegocio} value={giroNegocio.id_gironegocio}>
+                          {giroNegocio.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
                   {/* Separador */}
                   <Typography
                     variant="h6"
@@ -210,34 +389,23 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     INFORMACION DE REGISTRO
                   </Typography>
-                  {/* Seleccionar estado del puesto */}
-                  <FormControl fullWidth required sx={{ mb: 2 }}>
-                    <InputLabel id="estado-puesto-label">Estado</InputLabel>
-                    <Select
-                      labelId="estado-puesto-label"
-                      label="Estado"
-                      // value={estadoPuesto}
-                      // onChange={handleEstadoPuesto}
-                      startAdornment={<DomainDisabled sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      <MenuItem value="1">Disponible</MenuItem>
-                      <MenuItem value="2">Ocupado</MenuItem>
-                      <MenuItem value="2">En mantenimiento</MenuItem>
-                    </Select>
-                  </FormControl>
+
                   {/* Ingresar fecha de registro */}
                   <TextField
                     fullWidth
                     label="Fecha de Registro"
+                    name="fecha_registro"
+                    type="date"
                     required
-                    // value={fechaRegistro}
-                    // onChange={manejarFechaRegistro}
+                    value={formDataPuesto.fecha_registro}
+                    onChange={manejarCambioPuesto}
                     InputProps={{
                       startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
                     }}
                     // error={!!errors.fechaRegistro}
                     // helperText={errors.fechaRegistro}
                   />
+
                 </Grid>
               </Grid>
             </Box>
@@ -399,10 +567,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Ingresar nombre del bloque */}
                   <TextField
                     fullWidth
-                    label="Nombre del bloque"
                     required
-                    // value={bloque}
-                    // onChange={manejarBloque}
+                    label="Nombre del bloque"
+                    name="nombre"
+                    value={formDataBloque.nombre}
+                    onChange={manejarCambioBloque}
                     InputProps={{
                       startAdornment: (
                         <Business sx={{ mr: 1, color: "gray" }} />
@@ -506,7 +675,14 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#388E3C",
               },
             }}
-            // onClick={}
+            onClick={(e) => {
+              if(activeTab === 0){
+                registrarPuesto(e);
+              }
+              if(activeTab === 2){
+                registrarBloque(e);
+              }
+            }}
           >
             Registrar
           </Button>
