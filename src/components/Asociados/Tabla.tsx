@@ -90,26 +90,31 @@ const columns: readonly Column[] = [
 
 const TablaAsociados: React.FC = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
   const [openPagar, setOpenPagar] = useState<boolean>(false);
   // const [letra, numero] = puestos.block.nombre.split('-');
+
+
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleExport = () => {
     // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
   };
-  
+
   const handleOpenPagar = () => setOpenPagar(true);
   const handleClosePagar = () => setOpenPagar(false);
 
   const [socios, setSocios] = useState<Data[]>([]);
+  const [totalPages, setTotalPages] = useState(1); // Total de páginas
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const [rowsPerPage] = useState(20); // Número de filas por página
 
   useEffect(() => {
-    fetchData();
+    fetchSocios();
   }, []);
 
   const formatDate = (fecha: string): string => {
@@ -129,11 +134,12 @@ const TablaAsociados: React.FC = () => {
     // Retornar la fecha en el formato "día mes año"
     return `${formattedDay}/${formattedMonth}/${year}`;
   };
+  // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
 
-  const fetchData = async () => {
+  const fetchSocios = async (page: number = 1) => {
     try {
+      // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
-      // const response = await axios.get("http://127.0.0.1:8000/v1/socios"); //local
 
       const data = response.data.data.map((item: Socios) => ({
         numero_puesto: item.numero_puesto,
@@ -141,7 +147,7 @@ const TablaAsociados: React.FC = () => {
         estado: item.estado,
         fecha_registro: formatDate(item.fecha_registro),
         socio: item.socio,
-        dni: item.dni, 
+        dni: item.dni,
         telefono: item.telefono,
         correo: item.correo,
         gironegocio_nombre: item.gironegocio_nombre,
@@ -149,12 +155,28 @@ const TablaAsociados: React.FC = () => {
         inquilino: item.inquilino,
         deuda: item.deuda
       }));
+
       setSocios(data);
-      console.log("la data es", response.data);
+      setTotalPages(response.data.meta.last_page); // Total de páginas
+      setCurrentPage(response.data.meta.current_page); // Página actual
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
+
+  const handleSocioRegistrado = () => {
+    fetchSocios();  // Actualiza la lista de socios
+  };
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+    fetchSocios(value); // Obtén los datos para la página seleccionada
+  };
+
+  useEffect(() => {
+    fetchSocios(currentPage); // Obtén los datos para la página inicial
+  }, [currentPage]);
+
   return (
     <Box
       sx={{
@@ -224,7 +246,8 @@ const TablaAsociados: React.FC = () => {
             Agregar Socio
           </Button>
 
-          <Agregar open={open} handleClose={handleClose} />
+          <Agregar open={open} handleClose={handleClose} onSocioRegistrado={handleSocioRegistrado}
+          />
 
           <Box
             sx={{
@@ -400,6 +423,13 @@ const TablaAsociados: React.FC = () => {
             sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
           >
             <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} />
+            <Pagination
+              count={totalPages} // Total de páginas
+              page={currentPage} // Página actual
+              onChange={handlePageChange} // Manejar el cambio de página
+              color="primary"
+              sx={{ marginLeft: "25%" }}
+            />
           </Box>
         </Paper>
         <Pagar open={openPagar} onClose={handleClosePagar} />

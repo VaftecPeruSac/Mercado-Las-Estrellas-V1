@@ -13,6 +13,7 @@ import {
   FormControl,
   Tabs,
   Tab,
+  CircularProgress,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -30,6 +31,7 @@ import axios from "axios";
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
+  onSocioRegistrado: () => void;  // Nuevo callback para actualizar la lista
 }
 
 interface Bloque {
@@ -43,7 +45,7 @@ interface Puesto {
   numero_puesto: string;
 }
 
-const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
+const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado }) => {
 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -78,8 +80,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const [openPagar, setOpenPagar] = useState<boolean>(false);
 
-  const handleOpenPagar = () => setOpenPagar(true);
-  const handleClosePagar = () => setOpenPagar(false);
+  const [loading, setLoading] = useState(false); // Estado de loading
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -268,19 +269,17 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // Evita el comportamiento por defecto del clic
+    e.preventDefault();
+    setLoading(true); // Activa el loading
 
-    // Construye el objeto de datos a enviar excluyendo el campo 'bloque'
     const { bloque, ...dataToSend } = formData;
 
     try {
-      // const response = await axios.post("http://127.0.0.1:8000/v1/socios",dataToSend); //local
+      // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
 
-      // Manejar la respuesta del servidor
       if (response.status === 200) {
-        alert("Registro exitoso");
-        // Limpiar los campos del formulario
+        // alert("Se registró correctamente");
         setFormData({
           nombre: "",
           apellido_paterno: "",
@@ -292,17 +291,20 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
           sexo: "",
           estado: "",
           fecha_registro: "",
-          bloque: "", // Limpiar el campo bloque
-          id_puesto: "", // Asegúrate de limpiar id_puesto
+          bloque: "",
+          id_puesto: "",
         });
-        // Cerrar el formulario o hacer otra acción según sea necesario
-        handleClose();
+        setLoading(false); // Desactiva el loading
+        onSocioRegistrado();
+        handleClose() // Actualiza la lista de socios en Tabla.tsx
       } else {
         alert("No se pudo registrar el socio. Inténtalo nuevamente.");
+        setLoading(false); // Desactiva el loading
       }
     } catch (error) {
       console.error("Error al registrar el socio:", error);
       alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+      setLoading(false); // Desactiva el loading
     }
   };
 
@@ -321,33 +323,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             >
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
-            
+
             {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Box component="form" noValidate autoComplete="off">
-              
-              <Grid container spacing={2}>
-                {" "}
-                {/* Reducción del espaciado */}
-                {/* <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="tipo-persona-label">
-                      Tipo Persona
-                    </InputLabel>
-                    <Select
-                      labelId="tipo-persona-label"
-                      fullWidth
-                      label="Tipo Persona (*)"
-                      name="tipoPersona"
-                      value={formData.tipoPersona}
-                      onChange={manejarCambio}
-                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      <MenuItem value="Natural">Natural</MenuItem>
-                      <MenuItem value="Juridica">Jurídica</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid> */}
+
+              <Grid container spacing={2}> {" "}
+
                 <Grid item xs={12} sm={6}>
 
                   {/* Nombre bloque */}
@@ -386,7 +368,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     name="nombre"
                     value={formData.nombre}
                     onChange={manejarCambio}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: (
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
@@ -403,7 +385,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     name="apellido_paterno"
                     value={formData.apellido_paterno}
                     onChange={manejarCambio}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: (
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
@@ -420,7 +402,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     name="apellido_materno"
                     value={formData.apellido_materno}
                     onChange={manejarCambio}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: (
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
@@ -440,7 +422,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       name="sexo"
                       value={formData.sexo}
                       onChange={manejarCambio}
-                      sx={{mb: 2}}
+                      sx={{ mb: 2 }}
                       startAdornment={<Wc sx={{ mr: 1, color: "gray" }} />}
                     >
                       <MenuItem value="Masculino">Masculino</MenuItem>
@@ -456,7 +438,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     name="dni"
                     value={formData.dni}
                     onChange={manejarCambio}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -472,7 +454,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     name="direccion"
                     value={formData.direccion}
                     onChange={manejarCambio}
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: <Home sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -485,7 +467,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={6}>
 
                   {/* CONTACTO */}
-                  <Grid item xs={12} sm={12} sx={{mb:2}}>
+                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
 
                     {/* Nombre bloque */}
                     <Typography
@@ -546,7 +528,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </Grid>
 
                   {/* ASIGNAR PUESTO */}
-                  <Grid item xs={12} sm={12} sx={{mb:2}}>
+                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
 
                     {/* Nombre bloque */}
                     <Typography
@@ -589,7 +571,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                           setFormData({ ...formData, bloque: value.toString() });
                         }}
                         label="Bloque"
-                        sx={{mb: 2}}
+                        sx={{ mb: 2 }}
                       >
                         {bloques.map((bloque: Bloque) => (
                           <MenuItem key={bloque.id_block} value={bloque.id_block}>
@@ -623,7 +605,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </Grid>
 
                   {/* Informacion de registro */}
-                  <Grid item xs={12} sm={12} sx={{mb:2}}>
+                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
 
                     {/* Nombre Bloque */}
                     <Typography
@@ -671,7 +653,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
                     {/* Fecha de registro */}
                     <TextField
-                      fullWidth 
+                      fullWidth
                       label="Fecha de Registro"
                       type="date"
                       name="fecha_registro"
@@ -719,6 +701,106 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Nombre bloque */}
                   <Typography
                     variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                      color: "black",
+                      textAlign: "center",
+                      mb: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      "&::before": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginRight: "8px",
+                      },
+                      "&::after": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginLeft: "8px",
+                      },
+                    }}
+                  >
+                    DATOS PERSONALES
+                  </Typography>
+
+                  {/* Nombre */}
+                  <TextField
+                    fullWidth
+                    label="Nombre"
+                    required
+                    value={nombre}
+                    onChange={manejarNombreCambio}
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    error={!!errors.nombre}
+                    helperText={errors.nombre}
+                  />
+
+                  {/* Apellido Paterno */}
+                  <TextField
+                    fullWidth
+                    label="Apellido Paterno"
+                    required
+                    // value={apellidoPaterno}
+                    // onChange={manejarApellidoPaternoCambio}
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    error={!!errors.apellidoPaterno}
+                    helperText={errors.apellidoPaterno}
+                  />
+
+                  {/* Apellido Materno */}
+                  <TextField
+                    fullWidth
+                    label="Apellido Materno"
+                    required
+                    // value={apellidoMaterno}
+                    // onChange={manejarApellidoMaternoCambio}
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
+                      ),
+                    }}
+                    error={!!errors.apellidoMaterno}
+                    helperText={errors.apellidoMaterno}
+                  />
+
+                  {/* DNI */}
+                  <TextField
+                    fullWidth
+                    label="DNI"
+                    required
+                    value={dni}
+                    onChange={manejarDniCambio}
+                    InputProps={{
+                      startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
+                    }}
+                    error={!!errors.dni}
+                    helperText={errors.dni}
+                  />
+
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+
+                  {/* CONTACTO */}
+                  <Grid item xs={12} sm={12}>
+
+                    {/* Nombre bloque */}
+                    <Typography
+                      variant="h6"
                       sx={{
                         fontWeight: "bold",
                         fontSize: "0.8rem",
@@ -741,191 +823,91 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         },
                       }}
                     >
-                      DATOS PERSONALES
+                      CONTACTO
                     </Typography>
 
-                    {/* Nombre */}
+                    {/* Nro. Telefono */}
                     <TextField
                       fullWidth
-                      label="Nombre"
+                      label="Nro. Telefono"
                       required
-                      value={nombre}
-                      onChange={manejarNombreCambio}
-                      sx={{mb:2}}
+                      value={telefono}
+                      onChange={manejarTelefonoCambio}
+                      sx={{ mb: 2 }}
                       InputProps={{
-                        startAdornment: (
-                          <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                        ),
+                        startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
                       }}
-                      error={!!errors.nombre}
-                      helperText={errors.nombre}
+                      error={!!errors.telefono}
+                      helperText={errors.telefono}
                     />
 
-                    {/* Apellido Paterno */}
-                    <TextField
-                      fullWidth
-                      label="Apellido Paterno"
-                      required
-                      // value={apellidoPaterno}
-                      // onChange={manejarApellidoPaternoCambio}
-                      sx={{mb:2}}
-                      InputProps={{
-                        startAdornment: (
-                          <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                        ),
-                      }}
-                      error={!!errors.apellidoPaterno}
-                      helperText={errors.apellidoPaterno}
-                    />
-
-                    {/* Apellido Materno */}
-                    <TextField
-                      fullWidth
-                      label="Apellido Materno"
-                      required
-                      // value={apellidoMaterno}
-                      // onChange={manejarApellidoMaternoCambio}
-                      sx={{mb:2}}
-                      InputProps={{
-                        startAdornment: (
-                          <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                        ),
-                      }}
-                      error={!!errors.apellidoMaterno}
-                      helperText={errors.apellidoMaterno}
-                    />
-
-                    {/* DNI */}
-                    <TextField
-                      fullWidth
-                      label="DNI"
-                      required
-                      value={dni}
-                      onChange={manejarDniCambio}
-                      InputProps={{
-                        startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
-                      }}
-                      error={!!errors.dni}
-                      helperText={errors.dni}
-                    />
-                  
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  {/* ASIGNAR PUESTO */}
+                  <Grid item xs={12} sm={12}>
 
-                    {/* CONTACTO */}
-                    <Grid item xs={12} sm={12}>
+                    {/* Nombre bloque */}
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "0.8rem",
+                        color: "black",
+                        textAlign: "center",
+                        mb: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        "&::before": {
+                          content: '""',
+                          flexGrow: 1,
+                          borderBottom: "1px solid #333",
+                          marginRight: "8px",
+                        },
+                        "&::after": {
+                          content: '""',
+                          flexGrow: 1,
+                          borderBottom: "1px solid #333",
+                          marginLeft: "8px",
+                        },
+                      }}
+                    >
+                      ASIGNAR PUESTO
+                    </Typography>
 
-                      {/* Nombre bloque */}
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "0.8rem",
-                          color: "black",
-                          textAlign: "center",
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          "&::before": {
-                            content: '""',
-                            flexGrow: 1,
-                            borderBottom: "1px solid #333",
-                            marginRight: "8px",
-                          },
-                          "&::after": {
-                            content: '""',
-                            flexGrow: 1,
-                            borderBottom: "1px solid #333",
-                            marginLeft: "8px",
-                          },
-                        }}
+                    {/* Seleccionar Bloque */}
+                    <FormControl fullWidth required>
+                      <InputLabel id="bloque-label">Bloque</InputLabel>
+                      <Select
+                        labelId="bloque-label"
+                        label="Bloque"
+                        // value={tipoPersona}
+                        // onChange={handleTipoPersonaChange}
+                        startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                        sx={{ mb: 2 }}
                       >
-                        CONTACTO
-                      </Typography>
+                        <MenuItem value="Natural">Natural</MenuItem>
+                        <MenuItem value="Juridica">Jurídica</MenuItem>
+                      </Select>
+                    </FormControl>
 
-                      {/* Nro. Telefono */}
-                      <TextField
-                        fullWidth
-                        label="Nro. Telefono"
-                        required
-                        value={telefono}
-                        onChange={manejarTelefonoCambio}
-                        sx={{mb:2}}
-                        InputProps={{
-                          startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
-                        }}
-                        error={!!errors.telefono}
-                        helperText={errors.telefono}
-                      />
-                    
-                    </Grid>
-
-                    {/* ASIGNAR PUESTO */}
-                    <Grid item xs={12} sm={12}>
-
-                      {/* Nombre bloque */}
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "0.8rem",
-                          color: "black",
-                          textAlign: "center",
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          "&::before": {
-                            content: '""',
-                            flexGrow: 1,
-                            borderBottom: "1px solid #333",
-                            marginRight: "8px",
-                          },
-                          "&::after": {
-                            content: '""',
-                            flexGrow: 1,
-                            borderBottom: "1px solid #333",
-                            marginLeft: "8px",
-                          },
-                        }}
+                    {/* Seleccionar Puesto */}
+                    <FormControl fullWidth required>
+                      <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
+                      <Select
+                        labelId="nro-puesto-label"
+                        label="Nro Puesto"
+                        // value={tipoPersona}
+                        // onChange={handleTipoPersonaChange}
+                        startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
                       >
-                        ASIGNAR PUESTO
-                      </Typography>
-
-                      {/* Seleccionar Bloque */}
-                      <FormControl fullWidth required>
-                        <InputLabel id="bloque-label">Bloque</InputLabel>
-                        <Select
-                          labelId="bloque-label"
-                          label="Bloque"
-                          // value={tipoPersona}
-                          // onChange={handleTipoPersonaChange}
-                          startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                          sx={{mb:2}}
-                        >
-                          <MenuItem value="Natural">Natural</MenuItem>
-                          <MenuItem value="Juridica">Jurídica</MenuItem>
-                        </Select>
-                      </FormControl>
-
-                      {/* Seleccionar Puesto */}
-                      <FormControl fullWidth required>
-                        <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                        <Select
-                          labelId="nro-puesto-label"
-                          label="Nro Puesto"
-                          // value={tipoPersona}
-                          // onChange={handleTipoPersonaChange}
-                          startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                        >
-                          <MenuItem value="Natural">Natural</MenuItem>
-                          <MenuItem value="Juridica">Jurídica</MenuItem>
-                        </Select>
-                      </FormControl>
-
-                    </Grid>
+                        <MenuItem value="Natural">Natural</MenuItem>
+                        <MenuItem value="Juridica">Jurídica</MenuItem>
+                      </Select>
+                    </FormControl>
 
                   </Grid>
+
+                </Grid>
 
               </Grid>
 
@@ -974,6 +956,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             REGISTRAR NUEVO SOCIO
           </Typography>
         </Box>
+        {loading && (
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <CircularProgress color="primary" />
+            <p>Cargando...</p>
+          </div>
+        )}
 
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 0 }}>
           <Tabs
@@ -1006,6 +994,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
           </Tabs>
         </Box>
         {renderTabContent()}
+        {/* <Agregar onSocioRegistrado={handleSocioRegistrado} />
+        <Tabla socios={socios} /> */}
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
           <Button
@@ -1029,16 +1019,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose }) => {
             sx={{
               width: "140px",
               height: "45px",
-              backgroundColor: "#008001",
+              backgroundColor: loading ? "#aaa" : "#008001",
               color: "#fff",
               "&:hover": {
-                backgroundColor: "#388E3C",
+                backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
             onClick={handleSubmit} // Usa onClick para manejar el clic
+            disabled={loading} // Deshabilita el botón cuando está en loading
           >
-            Registrar
+            {loading ? "Cargando..." : "Registrar"}
           </Button>
+
         </Box>
       </Card>
     </Modal>
