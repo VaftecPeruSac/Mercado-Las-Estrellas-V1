@@ -17,6 +17,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
     descripcion: "",
     costo_unitario: "",
     tipo_servicio: "",
+    estado: "1",
     fecha_registro: "",
   });
 
@@ -54,8 +55,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
     try {
 
       // Conexión al servicio
-      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
-      const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
+      // const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
 
       // Manejar la respuesta del servidor
       if(response.status === 200) {
@@ -65,6 +66,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
           descripcion: "",
           costo_unitario: "",
           tipo_servicio: "",
+          estado: "1",
           fecha_registro: "",
         });
         // Cerrar el formulario
@@ -98,7 +100,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
               Leer detenidamente los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            <pre>{JSON.stringify(formData, null, 2)}</pre>
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Box
               component="form"
