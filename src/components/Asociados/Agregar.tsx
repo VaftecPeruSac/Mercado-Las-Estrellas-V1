@@ -279,7 +279,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
 
       if (response.status === 200) {
-        // alert("Se registró correctamente");
+        alert("Se registró correctamente");
         setFormData({
           nombre: "",
           apellido_paterno: "",
