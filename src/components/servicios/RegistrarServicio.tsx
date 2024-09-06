@@ -1,5 +1,6 @@
 import { AttachMoney, Bolt, Event } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useState } from 'react'
 
 interface AgregarProps {
@@ -11,6 +12,14 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
   
   const [activeTab, setActiveTab] = useState(0);
 
+  // Datos para registrar el servicio
+  const [formData, setFormData] = useState({
+    descripcion: "",
+    costo_unitario: "",
+    tipo_servicio: "",
+    fecha_registro: "",
+  });
+
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
@@ -19,6 +28,57 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
+
+  // Manejar los cambios del formulario
+  const manejarCambio = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Registrar servicio
+  const registrarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    // Evita el comportamiente por defecto del clic
+    e.preventDefault();
+
+    // Data a enviar
+    const { ...dataToSend } = formData;
+
+    try {
+
+      // Conexión al servicio
+      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
+      const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
+
+      // Manejar la respuesta del servidor
+      if(response.status === 200) {
+        alert("Servicio registrado con exito");
+        // Limpiar los campos del formulario
+        setFormData({
+          descripcion: "",
+          costo_unitario: "",
+          tipo_servicio: "",
+          fecha_registro: "",
+        });
+        // Cerrar el formulario
+        handleClose();
+      } else {
+        alert("No se pudo registrar el servicio. Intentelo nuevamente.")
+      }
+
+    } catch (error) {
+      console.error("Error al registrar el servicio:", error);
+      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+    }
+
+  }
 
   // Contenido del modal
   const renderTabContent = () => {
@@ -37,6 +97,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
             >
               Leer detenidamente los campos obligatorios antes de escribir. (*)
             </Typography>
+
+            <pre>{JSON.stringify(formData, null, 2)}</pre>
 
             <Box
               component="form"
@@ -76,10 +138,11 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Ingresar nombre del servicio */}
                   <TextField
                     fullWidth
-                    label="Nombre del servicio"
                     required
-                    // value={fechaRegistro}
-                    // onChange={manejarFechaRegistro}
+                    label="Nombre del servicio"
+                    name="descripcion"
+                    value={formData.descripcion}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <Bolt sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -92,8 +155,11 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <Select
                       labelId="tipo-servicio-label"
                       label="Tipo de servicio"
-                      // value={tipoServicio}
-                      // onChange={handleTipoServicio}
+                      value={formData.tipo_servicio}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormData({ ...formData, tipo_servicio: value })
+                      }}
                       startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
                     >
                       <MenuItem value="1">Ordinario (Pagos Fijos)</MenuItem>
@@ -103,10 +169,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Ingresar costo unitario */}
                   <TextField
                     fullWidth
-                    label="Costo unitario"
                     required
-                    // value={costoUnitario}
-                    // onChange={manejarCostoUnitario}
+                    type="number"
+                    label="Costo unitario"
+                    name="costo_unitario"
+                    value={formData.costo_unitario}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -147,10 +215,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Ingresar fecha de registro */}
                   <TextField
                     fullWidth
-                    label="Fecha de Registro"
                     required
-                    // value={fechaRegistro}
-                    // onChange={manejarFechaRegistro}
+                    type="date"
+                    label="Fecha de Registro"
+                    name="fecha_registro"
+                    value={formData.fecha_registro}
+                    onChange={manejarCambio}
                     InputProps={{
                       startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -250,7 +320,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#388E3C",
               },
             }}
-            // onClick={}
+            onClick={registrarServicio}
           >
             Registrar
           </Button>
