@@ -135,8 +135,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
     try {
 
       // Conexión al servicio
-      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
-      const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
+      // const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
 
       // Manejar la respuesta del servidor
       if(response.status === 200) {
