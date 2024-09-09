@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -24,10 +24,20 @@ import {
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
+import axios from "axios";
 
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
+}
+
+interface Servicio {
+  id_servicio: string,
+  descripcion: string,
+  costo_unitario: string,
+  tipo_servicio: string,
+  estado: string,
+  fecha_registro: string
 }
 
 interface Column {
@@ -75,6 +85,10 @@ const initialRows: Data[] = [
 ];
 
 const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
+
+  // Para seleccionar servicios
+  const [servicios, setServicios] = useState<Servicio[]>([]);
+
   // Tabla servicios
   const [rows, setRows] = useState<Data[]>(initialRows);
   const [page, setPage] = useState(0);
@@ -85,17 +99,36 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Datos del formulario
   const [fechaEmision, setFechaEmision] = useState("");
+  const [fechaVencimiento, setFechaVencimiento] = useState("");
 
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
   };
 
-  // Manejar el cambio de los datos
-  const manejarFechaEmisionCambio = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    // setFechaEmision(event.target.value);
+  // Obtener los servicios para el SelectList
+  useEffect(() => {
+    const fetchServicios = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios");
+        console.log("Servicios obtenidos:", response.data.data);
+        setServicios(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los servicios", error);
+      }
+    }
+    fetchServicios();
+  }, []);
+
+  // Para calcular la fecha de vencimiento de la cuota (La cuota vence en 30 dias)
+  const manejarFechaEmisionCambio = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nuevaFechaEmision = event.target.value;
+    setFechaEmision(nuevaFechaEmision);
+
+    const fecha = new Date(nuevaFechaEmision);
+    fecha.setDate(fecha.getDate() + 30);
+    const fechaVencimientoFormateada = fecha.toISOString().split('T')[0];
+    setFechaVencimiento(fechaVencimientoFormateada);
   };
 
   // Cambiar entre pestañas
@@ -124,7 +157,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 fontSize: "12px",
               }}
             >
-              Leer detenidamente los campos obligatorios antes de escribir. (*)
+              Leer detenidamente los campos antes de registrar. (*)
             </Typography>
 
             <Box
@@ -137,10 +170,11 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Fecha de emisión"
                     required
-                    // value={fechaEmision}
-                    // onChange={manejarFechaEmisionCambio}
+                    type="date"
+                    label="Fecha de emisión"
+                    value={fechaEmision}
+                    onChange={manejarFechaEmisionCambio}
                     InputProps={{
                       startAdornment: (
                         <CalendarIcon sx={{ mr: 1, color: "gray" }} />
@@ -153,11 +187,11 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
+                    type="date"
                     label="Fecha de vencimiento"
-                    required
-                    // value={fechaVencimiento}
-                    // onChange={manejarFechaVencimientoCambio}
+                    value={fechaVencimiento}
                     InputProps={{
+                      readOnly: true,
                       startAdornment: (
                         <CalendarIcon sx={{ mr: 1, color: "gray" }} />
                       ),
@@ -171,13 +205,16 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <InputLabel id="servicio-label">Seleccionar Servicio</InputLabel>
                     <Select
                       labelId="servicio-label"
-                      label="Nro Puesto (*)"
+                      label="Seleccionar servicio"
                       // value={servicio}
                       // onChange={handleServicio}
                       startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
                     >
-                      <MenuItem value="1">Luz</MenuItem>
-                      <MenuItem value="2">Agua</MenuItem>
+                      {servicios.map((servicio: Servicio) => (
+                        <MenuItem key={servicio.id_servicio} value={servicio.id_servicio}>
+                          {`${servicio.descripcion} - S/ ${servicio.costo_unitario}`}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -192,7 +229,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     <TableContainer
                       sx={{
-                        maxHeight: "100%",
+                        height: "220px",
+                        mb: "5px",
                         borderRadius: "10px",
                         border: "1px solid #202123",
                       }}
@@ -223,7 +261,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                       ? ""
                                       : (row as any)[column.id];
                                   return (
-                                    <TableCell key={column.id} align="center">
+                                    <TableCell padding="checkbox" key={column.id} align="center">
                                       {column.id === "accion" ? (
                                         <Box
                                           sx={{
@@ -316,7 +354,31 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            sx={{ 
+              "& .MuiTabs-flexContainer": {
+                minHeight: "36px",
+              },
+              "& .MuiTab-root": {
+                fontSize: "0.8rem",
+                fontWeight: "normal",
+                color: "gray",
+                textTransform: "uppercase",
+                minWidth: "auto",
+                px: 2,
+              },
+              "& .MuiTab-root.Mui-selected": {
+                fontWeight: "bold",
+                color: "black !important",
+              },
+              "& .MuiTabs-indicator": {
+                display: "none",
+              },
+              mb: -1,
+            }}
+          >
             <Tab label="Registrar Cuota" />
           </Tabs>
         </Box>

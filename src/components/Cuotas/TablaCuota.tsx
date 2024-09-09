@@ -131,7 +131,7 @@ const TablaCuota: React.FC = () => {
     const formattedMonth = month.toString().padStart(2, "0");
 
     // Retornar la fecha en el formato "día mes año"
-    return `${formattedDay}/${formattedMonth}/${year}`;
+    return `${formattedDay} / ${formattedMonth} / ${year}`;
   };
 
   const fetchData = async () => {
@@ -141,8 +141,8 @@ const TablaCuota: React.FC = () => {
 
       const data = response.data.data.map((item: Cuotas) => ({
         id_cuota: item.id_cuota,
-        fecha_registro: item.fecha_registro,
-        fecha_vencimiento: item.fecha_vencimiento,
+        fecha_registro: formatDate(item.fecha_registro),
+        fecha_vencimiento: formatDate(item.fecha_vencimiento),
         importe: item.importe,
       }));
       setCuotas(data);

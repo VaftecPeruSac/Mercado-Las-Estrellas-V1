@@ -177,22 +177,39 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             >
               <Grid container spacing={2}>
 
+              <Grid item xs={12} sm={12}>
+
                 {/* Seleccionar socio */}
-                <Grid item xs={12} sm={12}>
-                  <FormControl sx={{ width: "400px" }} required>
-                    <InputLabel id="seleccionar-socio-label">
-                      Seleccionar Socio
-                    </InputLabel>
-                    <Select
-                      labelId="seleccionar-socio-label"
-                      label="Seleccionar Socio"
-                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      {/* Listado de socios */}
-                      <MenuItem value="1">Juanito Perez</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+                <FormControl sx={{ width: "390px" }} required>
+                  <InputLabel id="seleccionar-socio-label">
+                    Seleccionar Socio
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-socio-label"
+                    label="Seleccionar Socio"
+                    startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {/* Listado de socios */}
+                    <MenuItem value="1">Juanito Perez</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {/* Seleccionar puesto */}
+                <FormControl sx={{ ml: "23px" , width: "390px" }} required>
+                  <InputLabel id="seleccionar-puesto-label">
+                    Seleccionar Puesto
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-puesto-label"
+                    label="Seleccionar Puesto"
+                    startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {/* Listado de puestos por socio */}
+                    <MenuItem value="1">A-1</MenuItem>
+                  </Select>
+                </FormControl>
+
+              </Grid>
 
                 {/* Tabla deudas */}
                 <Grid item xs={12} sm={12}>
@@ -378,7 +395,31 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            sx={{ 
+              "& .MuiTabs-flexContainer": {
+                minHeight: "36px",
+              },
+              "& .MuiTab-root": {
+                fontSize: "0.8rem",
+                fontWeight: "normal",
+                color: "gray",
+                textTransform: "uppercase",
+                minWidth: "auto",
+                px: 2,
+              },
+              "& .MuiTab-root.Mui-selected": {
+                fontWeight: "bold",
+                color: "black !important",
+              },
+              "& .MuiTabs-indicator": {
+                display: "none",
+              },
+              mb: -1,
+            }}
+          >
             <Tab label="Registrar Pago" />
           </Tabs>
         </Box>

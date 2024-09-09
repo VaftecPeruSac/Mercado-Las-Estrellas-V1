@@ -278,7 +278,31 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            sx={{ 
+              "& .MuiTabs-flexContainer": {
+                minHeight: "36px",
+              },
+              "& .MuiTab-root": {
+                fontSize: "0.8rem",
+                fontWeight: "normal",
+                color: "gray",
+                textTransform: "uppercase",
+                minWidth: "auto",
+                px: 2,
+              },
+              "& .MuiTab-root.Mui-selected": {
+                fontWeight: "bold",
+                color: "black !important",
+              },
+              "& .MuiTabs-indicator": {
+                display: "none",
+              },
+              mb: -1,
+            }}
+          >
             <Tab label="Registrar Servicio" />
           </Tabs>
         </Box>
