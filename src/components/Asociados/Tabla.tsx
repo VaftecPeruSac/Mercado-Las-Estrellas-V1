@@ -138,8 +138,8 @@ const TablaAsociados: React.FC = () => {
 
   const fetchSocios = async (page: number = 1) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
-      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
+      // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}"); //publico
       console.log("Socios cargados:", response.data);
 
       const data = response.data.data.map((item: Socios) => ({
