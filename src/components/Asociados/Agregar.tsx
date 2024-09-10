@@ -245,6 +245,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
 
+  // Metodo para obtener el titulo del modal
+  const obtenerTituloModal = (): string => {
+    switch (activeTab) {
+      case 0:
+        return "REGISTRAR NUEVO SOCIO";
+      case 1:
+        return "REGISTRAR NUEVO INQUILINO";
+      default:
+        return "";
+    }
+  }
+
   // const manejarCheckCambio = (servicio: string) => {
   //   setItemsSeleccionados((prev) =>
   //     prev.includes(servicio)
@@ -957,7 +969,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
             component="h2"
             sx={{ textAlign: "center", fontSize: "0.9rem" }}
           >
-            REGISTRAR NUEVO SOCIO
+            {obtenerTituloModal()}
           </Typography>
         </Box>
         {loading && (

@@ -21,6 +21,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
@@ -48,19 +49,19 @@ interface Column {
 }
 
 interface Data {
-  desc_servicio: string;
-  monto: string;
+  descripcion: string;
+  costo_unitario: string;
 }
 
 const columns: readonly Column[] = [
   {
-    id: "desc_servicio",
+    id: "descripcion",
     label: "Servicio",
     minWidth: 50,
     align: "center",
   },
   {
-    id: "monto",
+    id: "costo_unitario",
     label: "Monto",
     minWidth: 50,
     align: "center",
@@ -73,37 +74,32 @@ const columns: readonly Column[] = [
   },
 ];
 
-const initialRows: Data[] = [
-  {
-    desc_servicio: "Luz",
-    monto: "40.00",
-  },
-  {
-    desc_servicio: "Agua",
-    monto: "15.00",
-  },
-];
-
 const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Para seleccionar servicios
   const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [servicioSeleccionado, setServicioSeleccionado] = useState<{ value: unknown } | "">("");
+  const [serviciosAgregados, setServiciosAgregados] = useState<Servicio[]>([]);
 
-  // Tabla servicios
-  const [rows, setRows] = useState<Data[]>(initialRows);
-  const [page, setPage] = useState(0);
-  const [rowsPage, setRowsPage] = useState(5);
+  // Para el importe total
+  const [importeTotal, setImporteTotal] = useState<number>(0);
 
-  const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
+  // Para el modal
   const [activeTab, setActiveTab] = useState(0);
 
   // Datos del formulario
   const [fechaEmision, setFechaEmision] = useState("");
   const [fechaVencimiento, setFechaVencimiento] = useState("");
 
-  // Cerrar modal
-  const handleCloseModal = () => {
-    handleClose();
+  // Para calcular la fecha de vencimiento de la cuota (La cuota vence en 30 dias)
+  const manejarFechaEmisionCambio = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nuevaFechaEmision = event.target.value;
+    setFechaEmision(nuevaFechaEmision);
+
+    const fecha = new Date(nuevaFechaEmision);
+    fecha.setDate(fecha.getDate() + 30);
+    const fechaVencimientoFormateada = fecha.toISOString().split('T')[0];
+    setFechaVencimiento(fechaVencimientoFormateada);
   };
 
   // Obtener los servicios para el SelectList
@@ -120,27 +116,41 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     fetchServicios();
   }, []);
 
-  // Para calcular la fecha de vencimiento de la cuota (La cuota vence en 30 dias)
-  const manejarFechaEmisionCambio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const nuevaFechaEmision = event.target.value;
-    setFechaEmision(nuevaFechaEmision);
+  // Para manejar el cambio de seleccion y agregar servicios a la tabla
+  const handleServicioChange = (event: SelectChangeEvent<{ value: unknown } | "" >) => {
+    const servicioId = event.target.value as string;
+    setServicioSeleccionado({ value: servicioId });
 
-    const fecha = new Date(nuevaFechaEmision);
-    fecha.setDate(fecha.getDate() + 30);
-    const fechaVencimientoFormateada = fecha.toISOString().split('T')[0];
-    setFechaVencimiento(fechaVencimientoFormateada);
+    // Encontramos el servicio seleccionado en la lista de servicios
+    const servicio = servicios.find((s) => s.id_servicio === servicioId);
+
+    // Si el servicio existe
+    if(servicio) {
+      // Verificamos si ya esta agregado y si no lo esta agregamos el servicio a la tabla
+      if(!serviciosAgregados.some((s) => s.id_servicio === servicio.id_servicio)) {
+        setServiciosAgregados([...serviciosAgregados, servicio]);
+      }
+    }
   };
+
+  // Para eliminar un servicio de la lista
+  const handleServicioDelete = (id: string) => {
+    setServiciosAgregados(serviciosAgregados.filter((s) => s.id_servicio !== id));
+  };
+
+  // Para calcular el importe total
+  useEffect(() => {
+    const total = serviciosAgregados.reduce((sum, servicio) => sum + parseFloat(servicio.costo_unitario), 0);
+    setImporteTotal(total);
+  }, [serviciosAgregados]);
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
 
-  const manejarCheckCambio = (servicio: string) => {
-    setItemsSeleccionados((prev) =>
-      prev.includes(servicio)
-        ? prev.filter((item) => item !== servicio)
-        : [...prev, servicio]
-    );
+  // Cerrar modal
+  const handleCloseModal = () => {
+    handleClose();
   };
 
   const renderTabContent = () => {
@@ -206,8 +216,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     <Select
                       labelId="servicio-label"
                       label="Seleccionar servicio"
-                      // value={servicio}
-                      // onChange={handleServicio}
+                      value={servicioSeleccionado}
+                      onChange={handleServicioChange}
                       startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
                     >
                       {servicios.map((servicio: Servicio) => (
@@ -251,40 +261,36 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rows
-                            .slice(page * rowsPage, page * rowsPage + rowsPage)
-                            .map((row) => (
-                              <TableRow hover role="checkbox" tabIndex={-1}>
-                                {columns.map((column) => {
-                                  const value =
-                                    column.id === "accion"
-                                      ? ""
-                                      : (row as any)[column.id];
-                                  return (
-                                    <TableCell padding="checkbox" key={column.id} align="center">
-                                      {column.id === "accion" ? (
-                                        <Box
-                                          sx={{
-                                            display: "flex",
-                                            gap: 1,
-                                            justifyContent: "center",
-                                          }}
+                          {serviciosAgregados.map((servicio) => (
+                            <TableRow hover role="checkbox" tabIndex={-1}>
+                              {columns.map((column) => {
+                                const value = column.id === "accion" ? "" : (servicio as any)[column.id];
+                                return (
+                                  <TableCell padding="checkbox" key={column.id} align="center">
+                                    {column.id === "accion" ? (
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          gap: 1,
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <IconButton
+                                          aria-label="delete"
+                                          sx={{ color: "#840202" }}
+                                          onClick={() => handleServicioDelete(servicio.id_servicio)}
                                         >
-                                          <IconButton
-                                            aria-label="delete"
-                                            sx={{ color: "#840202" }}
-                                          >
-                                            <Delete />
-                                          </IconButton>
-                                        </Box>
-                                      ) : (
-                                        value
-                                      )}
-                                    </TableCell>
-                                  );
-                                })}
-                              </TableRow>
-                            ))}
+                                          <Delete />
+                                        </IconButton>
+                                      </Box>
+                                    ) : (
+                                      value
+                                    )}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          ))}
                         </TableBody>
                       </Table>
                     </TableContainer>
@@ -294,13 +300,12 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={6} sx={{m: "auto auto 0 auto"}}>
                   <TextField
                     fullWidth
-                    label="Importe (S/)"
                     required
-                    // value={importe}
-                    // onChange={manejarImporte}
+                    label="Importe (S/)"
+                    value={importeTotal.toFixed(2)}
                     InputProps={{
-                      startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
-                      readOnly: true
+                      readOnly: true,
+                      startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />
                     }}
                     // error={!!errors.importe}
                     // helperText={errors.importe}

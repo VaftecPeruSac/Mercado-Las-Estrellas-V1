@@ -118,6 +118,20 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
 
+  // Metodo para obtener el titulo del modal
+  const obtenerTituloModal = (): string => {
+    switch (activeTab) {
+      case 0:
+        return "REGISTRAR PUESTO";
+      case 1:
+        return "ASIGNAR PUESTO";
+      case 2:
+        return "REGISTRAR BLOQUE";
+      default:
+        return "";
+    }
+  }
+
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
@@ -625,7 +639,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
             component="h2"
             sx={{ textAlign: "center", textTransform: "uppercase" }}
           >
-            Registrar Puesto
+            {obtenerTituloModal()}
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
