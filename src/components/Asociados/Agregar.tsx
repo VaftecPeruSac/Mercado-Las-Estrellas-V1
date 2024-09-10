@@ -14,6 +14,7 @@ import {
   Tabs,
   Tab,
   CircularProgress,
+  LinearProgress,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -244,29 +245,29 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
 
-  const manejarCheckCambio = (servicio: string) => {
-    setItemsSeleccionados((prev) =>
-      prev.includes(servicio)
-        ? prev.filter((item) => item !== servicio)
-        : [...prev, servicio]
-    );
-  };
+  // const manejarCheckCambio = (servicio: string) => {
+  //   setItemsSeleccionados((prev) =>
+  //     prev.includes(servicio)
+  //       ? prev.filter((item) => item !== servicio)
+  //       : [...prev, servicio]
+  //   );
+  // };
 
-  const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
-    setAnio(evento.target.value as string);
-  };
+  // const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
+  //   setAnio(evento.target.value as string);
+  // };
 
-  const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
-    setMes(evento.target.value as string);
-  };
+  // const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
+  //   setMes(evento.target.value as string);
+  // };
 
-  const handlePuestoChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const selectedIdPuesto = event.target.value as string;
-    setFormData((prevData) => ({
-      ...prevData,
-      id_puesto: selectedIdPuesto, // Actualiza id_puesto
-    }));
-  };
+  // const handlePuestoChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  //   const selectedIdPuesto = event.target.value as string;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     id_puesto: selectedIdPuesto, // Actualiza id_puesto
+  //   }));
+  // };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -275,10 +276,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     const { bloque, ...dataToSend } = formData;
 
     try {
-      // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
+      const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
+      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
 
       if (response.status === 200) {
+
         alert("Se registró correctamente");
         setFormData({
           nombre: "",
@@ -301,6 +303,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
         alert("No se pudo registrar el socio. Inténtalo nuevamente.");
         setLoading(false); // Desactiva el loading
       }
+      console.log(response)
+
     } catch (error) {
       console.error("Error al registrar el socio:", error);
       alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
@@ -957,9 +961,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
           </Typography>
         </Box>
         {loading && (
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <CircularProgress color="primary" />
-            <p>Cargando...</p>
+          <div style={{ textAlign: "center", marginBottom: "5px" }}>
+            <LinearProgress aria-description="dd" color="primary" />
+            {/* <p>Cargando...</p> */}
           </div>
         )}
 

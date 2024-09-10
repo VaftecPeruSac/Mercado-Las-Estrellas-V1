@@ -111,7 +111,7 @@ const TablaAsociados: React.FC = () => {
   const [socios, setSocios] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [rowsPerPage] = useState(20); // Número de filas por página
+  const [rowsPerPage] = useState(10); // Número de filas por página
 
   useEffect(() => {
     fetchSocios();
@@ -138,8 +138,9 @@ const TablaAsociados: React.FC = () => {
 
   const fetchSocios = async (page: number = 1) => {
     try {
-      // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
+      const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
+      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
+      console.log("Socios cargados:", response.data);
 
       const data = response.data.data.map((item: Socios) => ({
         numero_puesto: item.numero_puesto,
@@ -155,7 +156,7 @@ const TablaAsociados: React.FC = () => {
         inquilino: item.inquilino,
         deuda: item.deuda
       }));
-
+      console.log('Total Pages:', totalPages);
       setSocios(data);
       setTotalPages(response.data.meta.last_page); // Total de páginas
       setCurrentPage(response.data.meta.current_page); // Página actual
@@ -174,7 +175,7 @@ const TablaAsociados: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchSocios(currentPage); // Obtén los datos para la página inicial
+    fetchSocios(currentPage);
   }, [currentPage]);
 
   return (
@@ -346,7 +347,7 @@ const TablaAsociados: React.FC = () => {
               </TableHead>
               <TableBody>
                 {socios
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
                   .map((row, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => {
@@ -422,7 +423,7 @@ const TablaAsociados: React.FC = () => {
           <Box
             sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
           >
-            <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} />
+            {/* <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} /> */}
             <Pagination
               count={totalPages} // Total de páginas
               page={currentPage} // Página actual
@@ -430,7 +431,9 @@ const TablaAsociados: React.FC = () => {
               color="primary"
               sx={{ marginLeft: "25%" }}
             />
+
           </Box>
+
         </Paper>
         <Pagar open={openPagar} onClose={handleClosePagar} />
       </Card>
