@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Principal from "../Layout/Principal";
 import Tabla from "../components/Asociados/Tabla";
 import Dashboard from "../components/Dashboard";
@@ -8,10 +8,15 @@ import TablaCuota from "../components/Cuotas/TablaCuota";
 import TablaPuestos from "../components/Puestos/TablaPuestos";
 import TablaReportePagos from "../components/ReportePagos/TablaReportePagos";
 import TablaReporteDeudas from "../components/ReporteDeudas/TablaReporteDeudas";
+import Login from "../components/Login/Login";
 
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <Login />
+  },
+  {
+    path: "/home",
     element: <Principal />,
     children: [
       {
@@ -19,33 +24,39 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "/socios",
+        path: "socios",
         element: <Tabla />,
       },
       {
-        path: "/puestos",
+        path: "puestos",
         element: <TablaPuestos />,
       },
       {
-        path: "/servicios",
+        path: "servicios",
         element: <TablaServicios />,
       },
       {
-        path: "/cuotas",
+        path: "cuotas",
         element: <TablaCuota />,
       },
       {
-        path: "/pagos",
+        path: "pagos",
         element: <TablaPagos />,
       },
       {
-        path: "/reporte-pagos",
+        path: "reporte-pagos",
         element: <TablaReportePagos />,
       },
       {
-        path: "/reporte-deudas",
+        path: "reporte-deudas",
         element: <TablaReporteDeudas />,
       },
     ],
   },
 ]);
+
+const App = () => {
+  <RouterProvider router={router} />
+}
+
+export default App;

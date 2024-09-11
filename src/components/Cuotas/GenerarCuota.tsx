@@ -54,24 +54,9 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  {
-    id: "descripcion",
-    label: "Servicio",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "costo_unitario",
-    label: "Monto",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "accion",
-    label: "",
-    minWidth: 50,
-    align: "center",
-  },
+  { id: "descripcion", label: "Servicio", minWidth: 50, align: "center" },
+  { id: "costo_unitario", label: "Monto", minWidth: 50, align: "center" },
+  { id: "accion", label: "", minWidth: 50, align: "center" },
 ];
 
 const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
@@ -80,6 +65,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<{ value: unknown } | "">("");
   const [serviciosAgregados, setServiciosAgregados] = useState<Servicio[]>([]);
+  const [serviciosIds, setServiciosIds] = useState<string[]>([]);
 
   // Para el importe total
   const [importeTotal, setImporteTotal] = useState<number>(0);
@@ -90,6 +76,13 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Datos del formulario
   const [fechaEmision, setFechaEmision] = useState("");
   const [fechaVencimiento, setFechaVencimiento] = useState("");
+
+  const [formData, setFormData] = useState({
+    id_servicio: "",
+    importe: "",
+    fecha_registro: "",
+    fecha_vencimiento: ""
+  });
 
   // Para calcular la fecha de vencimiento de la cuota (La cuota vence en 30 dias)
   const manejarFechaEmisionCambio = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +122,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       // Verificamos si ya esta agregado y si no lo esta agregamos el servicio a la tabla
       if(!serviciosAgregados.some((s) => s.id_servicio === servicio.id_servicio)) {
         setServiciosAgregados([...serviciosAgregados, servicio]);
+        setServiciosIds((prevIds) => [...prevIds, servicio.id_servicio]);
       }
     }
   };
@@ -136,6 +130,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Para eliminar un servicio de la lista
   const handleServicioDelete = (id: string) => {
     setServiciosAgregados(serviciosAgregados.filter((s) => s.id_servicio !== id));
+    setServiciosIds((prevIds) => prevIds.filter((servicioId) => servicioId !== id));
   };
 
   // Para calcular el importe total
@@ -143,6 +138,42 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const total = serviciosAgregados.reduce((sum, servicio) => sum + parseFloat(servicio.costo_unitario), 0);
     setImporteTotal(total);
   }, [serviciosAgregados]);
+
+  // Generar cuota
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    
+    e.preventDefault();
+
+    const dataToSend = { 
+      ...formData,
+      servicios: serviciosIds,
+      importe: importeTotal,
+    };
+
+    try {
+      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
+      const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
+
+      if(response.status === 200) {
+        alert("La cuota fue registrada con exito");
+        setFormData({
+          id_servicio: "",
+          importe: "",
+          fecha_registro: "",
+          fecha_vencimiento: ""
+        });
+        setServiciosAgregados([]);
+        setServiciosIds([]);
+        setImporteTotal(0);
+      } else {
+        alert("No se pudo registrar la cuota. Inténtalo nuevamente.");
+      }
+    } catch (error) {
+      console.error("Error al registrar la cuota:", error);
+      alert("Ocurrio un error durante el registro. Inténtalo nuevamente.");
+    }
+
+  };
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
@@ -170,6 +201,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
               Leer detenidamente los campos antes de registrar. (*)
             </Typography>
 
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+
             <Box
               component="form"
               noValidate
@@ -183,7 +216,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     required
                     type="date"
                     label="Fecha de emisión"
-                    value={fechaEmision}
+                    value={formData.fecha_registro = fechaEmision}
                     onChange={manejarFechaEmisionCambio}
                     InputProps={{
                       startAdornment: (
@@ -199,7 +232,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     fullWidth
                     type="date"
                     label="Fecha de vencimiento"
-                    value={fechaVencimiento}
+                    value={formData.fecha_vencimiento = fechaVencimiento}
                     InputProps={{
                       readOnly: true,
                       startAdornment: (
@@ -427,7 +460,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#388E3C",
               },
             }}
-            // onClick={}
+            onClick={handleSubmit}
           >
             Registrar
           </Button>
