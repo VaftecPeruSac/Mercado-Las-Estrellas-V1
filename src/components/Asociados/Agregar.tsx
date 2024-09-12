@@ -164,7 +164,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
   };
 
   const handleCloseModal = () => {
-    limpiarCampos();
+    // limpiarCampos();
     handleClose();
   };
 

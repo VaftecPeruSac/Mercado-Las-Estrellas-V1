@@ -1,4 +1,4 @@
-import { DeleteForever, Print, SaveAs } from '@mui/icons-material';
+import { DeleteForever, Print, SaveAs } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -16,10 +16,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { GridAddIcon } from '@mui/x-data-grid';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import RegistrarPuesto from './RegistrarPuesto';
+import { GridAddIcon } from "@mui/x-data-grid";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import RegistrarPuesto from "./RegistrarPuesto";
 
 interface Puestos {
   numero_puesto: string;
@@ -57,19 +57,18 @@ const columns: readonly Column[] = [
   { id: "area", label: "Área", minWidth: 50 },
   { id: "gironegocio_nombre", label: "Giro de Negocio", minWidth: 50 },
   { id: "socio", label: "Socio", minWidth: 50 },
-  { id: "inquilino", label: "Inquilino",  minWidth: 50},
-  { id: "estado", label: "Estado", minWidth: 50},
-  { id: "fecha_registro",  label: "Fecha Registro",  minWidth: 50 },
+  { id: "inquilino", label: "Inquilino", minWidth: 50 },
+  { id: "estado", label: "Estado", minWidth: 50 },
+  { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
   { id: "accion", label: "Acciones", minWidth: 50 },
-]
-
+];
 
 const TablaPuestos: React.FC = () => {
-
   // Para la tabla
-  const [rows, setRows] = useState<Data[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [puestos, setPuestos] = useState<Data[]>([]);
+  const [totalPages, setTotalPages] = useState(1); // Total de páginas
+  const [paginaActal, setPaginaActual] = useState(1); // Página actual
+  // const [rowsPerPage] = useState(10); // Número de filas por página
 
   // Para el modal
   const [open, setOpen] = useState(false);
@@ -103,13 +102,13 @@ const TablaPuestos: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchPuestos();
   }, []);
 
-  const fetchData = async () => {
-    try{
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos"); //publico
-      // const response = await axios.get("http://127.0.0.1:8000/v1/puestos"); //local
+  const fetchPuestos = async (page: number = 1) => {
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}"); //publico
+      // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
 
       const data = response.data.data.map((item: Puestos) => ({
         numero_puesto: item.numero_puesto,
@@ -119,14 +118,22 @@ const TablaPuestos: React.FC = () => {
         socio: item.socio,
         gironegocio_nombre: item.gironegocio_nombre,
         block_nombre: item.block_nombre,
-        inquilino: item.inquilino
+        inquilino: item.inquilino,
       }));
-      setRows(data);
-      console.log("Datos recuperados con exito", response.data)
+      console.log("Total Pages:", totalPages);
+      setPuestos(data);
+      setTotalPages(response.data.meta.last_page); // Total de páginas
+      setPaginaActual(response.data.meta.current_page); // Página actual
+      console.log("Datos recuperados con exito", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
-  }
+  };
+
+  const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
+    fetchPuestos(value); // Obtén los datos para la página seleccionada
+  };
 
   return (
     <Box
@@ -149,9 +156,8 @@ const TablaPuestos: React.FC = () => {
           alignItems: { xs: "flex-start", sm: "center" },
           mb: 3,
         }}
-      >
-      </Box>
-      
+      ></Box>
+
       <Card
         sx={{
           backgroundColor: "#ffffff",
@@ -207,7 +213,6 @@ const TablaPuestos: React.FC = () => {
               ml: "auto",
             }}
           >
-
             {/* Formulario para el Select "Exportar" */}
             <FormControl
               variant="outlined"
@@ -298,16 +303,15 @@ const TablaPuestos: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                    >
+                {puestos
+                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((puesto) => (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
                       {columns.map((column) => {
-                        const value = column.id === "accion" ? "" : (row as any)[column.id];
+                        const value =
+                          column.id === "accion"
+                            ? ""
+                            : (puesto as any)[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {/* Acciones */}
@@ -344,13 +348,21 @@ const TablaPuestos: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={10} color="primary" />
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
+          >
+            <Pagination
+              count={totalPages} // Total de páginas
+              page={paginaActal} // Página actual
+              onChange={CambioDePagina} // Manejar el cambio de página
+              color="primary"
+              sx={{ marginLeft: "25%" }}
+            />
           </Box>
         </Paper>
       </Card>
     </Box>
-  )
-}
+  );
+};
 
 export default TablaPuestos;

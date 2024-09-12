@@ -35,14 +35,14 @@ interface Socios {
   id_inquilino: string;
   estado: string;
   fecha_registro: string;
-  socio: string;        // Nombre del socio
+  socio: string;
   dni: string;
   telefono: string;
   correo: string;
   gironegocio_nombre: string;
   block_nombre: string;
   inquilino: string;
-  deuda: string;         // Indica si tiene deuda o no ("no" o "yes")
+  deuda: string;        
 }
 
 interface Column {
@@ -57,18 +57,17 @@ interface Data {
   id_inquilino: string;
   estado: string;
   fecha_registro: string;
-  socio: string;          // Nombre del socio
+  socio: string;
   dni: string;
   telefono: string;
   correo: string;
   gironegocio_nombre: string;
   block_nombre: string;
   inquilino: string;
-  deuda: string;          // Indica si tiene deuda o no ("no" o "yes")
-  cuotas_extra: string;   // Cuotas extraordinarias
-  pagar: string;          // Pagar
+  deuda: string;
+  cuotas_extra: string;
+  pagar: string;          
 }
-
 
 const columns: readonly Column[] = [
   { id: "socio", label: "Nombre", minWidth: 50 }, // Nombre del socio
@@ -85,18 +84,12 @@ const columns: readonly Column[] = [
   { id: "pagar", label: "Pagar", minWidth: 50 },      // Pagar
   { id: "accion", label: "Acción", minWidth: 20 },    // Acción
 ];
-
-
-
 const TablaAsociados: React.FC = () => {
-  const [page, setPage] = useState(0);
+  // const [page, setPage] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
   const [openPagar, setOpenPagar] = useState<boolean>(false);
-  // const [letra, numero] = puestos.block.nombre.split('-');
-
-
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -110,18 +103,12 @@ const TablaAsociados: React.FC = () => {
 
   const [socios, setSocios] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
-  const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [rowsPerPage] = useState(10); // Número de filas por página
-
-  useEffect(() => {
-    fetchSocios();
-  }, []);
+  const [paginaActual, setPaginaActual] = useState(1); // Página actual
+  // const [rowsPerPage] = useState(20); // Número de filas por página
 
   const formatDate = (fecha: string): string => {
     // Crear un objeto Date a partir de la cadena de fecha
-
     const date = new Date(fecha);
-
     // Obtener el día, mes y año
     const day = date.getDate();
     const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
@@ -134,13 +121,11 @@ const TablaAsociados: React.FC = () => {
     // Retornar la fecha en el formato "día mes año"
     return `${formattedDay}/${formattedMonth}/${year}`;
   };
-  // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios"); //publico
-
   const fetchSocios = async (page: number = 1) => {
     try {
       // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}"); //publico
-      console.log("Socios cargados:", response.data);
+      // console.log("Socios cargados:", response.data);
 
       const data = response.data.data.map((item: Socios) => ({
         numero_puesto: item.numero_puesto,
@@ -159,7 +144,7 @@ const TablaAsociados: React.FC = () => {
       console.log('Total Pages:', totalPages);
       setSocios(data);
       setTotalPages(response.data.meta.last_page); // Total de páginas
-      setCurrentPage(response.data.meta.current_page); // Página actual
+      setPaginaActual(response.data.meta.current_page); // Página actual
     } catch (error) {
       console.error("Error al traer datos", error);
     }
@@ -169,14 +154,15 @@ const TablaAsociados: React.FC = () => {
     fetchSocios();  // Actualiza la lista de socios
   };
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setCurrentPage(value);
+  const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
     fetchSocios(value); // Obtén los datos para la página seleccionada
   };
 
   useEffect(() => {
-    fetchSocios(currentPage);
-  }, [currentPage]);
+    fetchSocios(paginaActual);
+  }, []);
+
 
   return (
     <Box
@@ -347,7 +333,7 @@ const TablaAsociados: React.FC = () => {
               </TableHead>
               <TableBody>
                 {socios
-                  .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+                  // .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
                   .map((row, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => {
@@ -423,11 +409,10 @@ const TablaAsociados: React.FC = () => {
           <Box
             sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
           >
-            {/* <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} /> */}
             <Pagination
               count={totalPages} // Total de páginas
-              page={currentPage} // Página actual
-              onChange={handlePageChange} // Manejar el cambio de página
+              page={paginaActual} // Página actual
+              onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
               sx={{ marginLeft: "25%" }}
             />
