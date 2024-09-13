@@ -69,35 +69,15 @@ const columns: readonly Column[] = [
 ];
 
 const TablaCuota: React.FC = () => {
-
-  // Para la tabla
-  const [cuotas, setCuotas] = useState<Data[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
-
-  // Para exportar
+  const [totalPages, setTotalPages] = useState(1); // Total de páginas
+  const [paginaActual, setPaginaActual] = useState(1); // Página actual
   const [exportFormat, setExportFormat] = useState<string>("");
-
-  // Para la buscar por fecha
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
-
-  // Para el modal
   const [open, setOpen] = useState(false);
-  const [openPagar, setOpenPagar] = useState<boolean>(false);
-
+  const [cuotas, setCuotas] = useState<Data[]>([]);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  // Para manejar los cambios
-  const manejarCheckCambio = (servicio: string) => {
-    setItemsSeleccionados((prev) =>
-      prev.includes(servicio)
-        ? prev.filter((item) => item !== servicio)
-        : [...prev, servicio]
-    );
-  };
 
   const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
     setAnio(evento.target.value as string);
@@ -141,31 +121,23 @@ const TablaCuota: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchData();
+    fetchCuotas();
   }, []);
 
   const formatDate = (fecha: string): string => {
-    // Crear un objeto Date a partir de la cadena de fecha
-
     const date = new Date(fecha);
-
-    // Obtener el día, mes y año
     const day = date.getDate();
-    const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    const month = date.getMonth() + 1; 
     const year = date.getFullYear();
-
-    // Formatear a dos dígitos para el día y el mes si es necesario
     const formattedDay = day.toString().padStart(2, "0");
     const formattedMonth = month.toString().padStart(2, "0");
-
-    // Retornar la fecha en el formato "día mes año"
     return `${formattedDay} / ${formattedMonth} / ${year}`;
   };
 
-  const fetchData = async () => {
+  const fetchCuotas = async (page: number = 1) => {
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas"); //publico
-      // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas"); //local
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}"); //publico
+      // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas?page=${page}"); //local
 
       const data = response.data.data.map((item: Cuotas) => ({
         id_cuota: item.id_cuota,
@@ -174,11 +146,21 @@ const TablaCuota: React.FC = () => {
         importe: item.importe,
       }));
       setCuotas(data);
+      setTotalPages(response.data.meta.last_page); // Total de páginas
+      setPaginaActual(response.data.meta.current_page); // Página actual
       console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
+
+  const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
+  fetchCuotas(value)  };
+
+  useEffect(() => {
+    fetchCuotas(paginaActual);
+  }, []);
 
   return (
     <Box
@@ -427,7 +409,7 @@ const TablaCuota: React.FC = () => {
               </TableHead>
               <TableBody>
                 {cuotas
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => {
@@ -481,8 +463,17 @@ const TablaCuota: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={10} color="primary" />
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
+          >
+            <Pagination
+              count={totalPages} // Total de páginas
+              page={paginaActual} // Página actual
+              onChange={CambioDePagina} // Manejar el cambio de página
+              color="primary"
+              sx={{ marginLeft: "25%" }}
+            />
+
           </Box>
         </Paper>
       </Card>

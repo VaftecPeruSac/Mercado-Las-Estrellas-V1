@@ -92,6 +92,19 @@ const TablaReporteDeudas: React.FC = () => {
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
 
+  // Metodo para generar el reporte de deudas de un socio
+  const handleGenerarReporte = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      alert("En proceso de actualizacion.");
+    } catch {
+      alert("En proceso de actualizacion.");
+    }
+
+  }
+
   // Metodo para exportar el reporte de deudas
   const handleExportReporteDeudas = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
@@ -197,7 +210,7 @@ const TablaReporteDeudas: React.FC = () => {
                 width: "150px",
                 borderRadius: "30px",
               }}
-              // onClick={}
+              onClick={handleGenerarReporte}
             >
               Generar
             </Button>
