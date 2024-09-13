@@ -149,7 +149,7 @@ const TablaCuota: React.FC = () => {
 
   const fetchCuotas = async (page: number = 1) => {
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}"); //publico
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas?page=${page}"); //local
 
       const data = response.data.data.map((item: Cuotas) => ({

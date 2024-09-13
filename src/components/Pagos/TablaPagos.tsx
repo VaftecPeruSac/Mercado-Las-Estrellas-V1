@@ -131,7 +131,7 @@ const handleSearchPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
 const fetchPagos = async (page: number = 1) => {
   try {
-    const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos?page=${page}");
+    const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/pagos?page=${page}`);
     // const response = await axios.get("http://127.0.0.1:8000/v1/pagos?page=${page}");
     const data = response.data.data.map((item: Pagos) => ({
       id_pago: item.id_pago,
