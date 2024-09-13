@@ -365,14 +365,14 @@ const TablaPuestos: React.FC = () => {
           </TableContainer>
 
           <Box
-            sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
-          >
+            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            >
             <Pagination
               count={totalPages} // Total de páginas
               page={paginaActal} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-              sx={{ marginLeft: "25%" }}
+              // sx={{ marginLeft: "25%" }}
             />
           </Box>
         </Paper>
