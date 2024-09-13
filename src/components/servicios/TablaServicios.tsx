@@ -67,13 +67,28 @@ const TablaServicios: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
-  const [openPagar, setOpenPagar] = useState<boolean>(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleExport = () => {
-    // Implement your export logic here
-    console.log(`Exporting as ${exportFormat}`);
+
+  // Metodo para exportar el listado de servicios
+  const handleExportServicios = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios/exportar");
+      // Si no hay problemas
+      if (response.status === 200) {
+        alert("La lista de servicios ha sido exportada correctamente.");
+      } else {
+        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+    }
+
   };
 
   const [servicios, setServicios] = useState<Data[]>([]);
@@ -258,6 +273,7 @@ const TablaServicios: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
+              onClick={handleExportServicios}
             >
               Imprimir
             </Button>

@@ -1,5 +1,6 @@
 import { Person, Print } from '@mui/icons-material';
 import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import axios from 'axios';
 import React, { useState } from 'react'
 
 interface Column {
@@ -91,8 +92,24 @@ const TablaReporteDeudas: React.FC = () => {
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
 
-  const handleExport = () => {
-    console.log(`Exporting as ${exportFormat}`);
+  // Metodo para exportar el reporte de deudas
+  const handleExportReporteDeudas = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-deudas/exportar");
+      // Si no hay problemas
+      if (response.status === 200) {
+        alert("El reporte de deudas ha sido exportado correctamente.");
+      } else {
+        alert("En proceso de actualización.");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+    }
+
   };
 
   return (
@@ -253,7 +270,7 @@ const TablaReporteDeudas: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
-              onClick={handleExport}
+              onClick={handleExportReporteDeudas}
             >
               Imprimir
             </Button>

@@ -69,8 +69,9 @@ const columns: readonly Column[] = [
 ];
 
 const TablaCuota: React.FC = () => {
+
   // Para la tabla
-  // const [rows, setRows] = useState<Data[]>(initialRows);
+  const [cuotas, setCuotas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
@@ -106,11 +107,38 @@ const TablaCuota: React.FC = () => {
     setMes(evento.target.value as string);
   };
 
-  const handleExport = () => {
-    console.log(`Exporting as ${exportFormat}`);
+  // Metodo para exportar el listado de cuotas
+  const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas/exportar");
+      // Si no hay problemas
+      if(response.status === 200){
+        alert("La lista de cuotas ha sido exportada correctamente.");
+      } else {
+        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+    }
+
   };
 
-  const [cuotas, setCuotas] = useState<Data[]>([]);
+  // Metodo para buscar cuotas por fecha
+  const handleSearchCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      alert("En proceso de actualización.");
+    } catch {
+      alert("Error al buscar la cuota. Intentelo nuevamente más tarde.")
+    }
+
+  }
 
   useEffect(() => {
     fetchData();
@@ -289,7 +317,7 @@ const TablaCuota: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
-              onClick={handleExport}
+              onClick={handleExportCuotas}
             >
               Imprimir
             </Button>
@@ -369,7 +397,7 @@ const TablaCuota: React.FC = () => {
               marginLeft: "25px",
               borderRadius: "30px",
             }}
-            onClick={handleExport}
+            onClick={handleSearchCuota}
           >
             Buscar
           </Button>
