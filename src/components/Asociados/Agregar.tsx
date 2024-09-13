@@ -288,8 +288,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     const { bloque, ...dataToSend } = formData;
 
     try {
-      // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
+      const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
+      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
 
       if (response.status === 200) {
 

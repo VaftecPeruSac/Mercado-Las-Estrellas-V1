@@ -76,39 +76,21 @@ const columns: readonly Column[] = [
 const TablaPago: React.FC = () => {
 
 const [pagos, setPagos] = useState<Data[]>([]);
-const [page, setPage] = useState(0);
-const [rowsPerPage, setRowsPerPage] = useState(5);
-
+const [totalPages, setTotalPages] = useState(1); // Total de páginas
+const [paginaActual, setPaginaActual] = useState(1); // Página actual
 const [exportFormat, setExportFormat] = useState<string>("");
-
 const [open, setOpen] = useState(false);
-
-const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
-
 const handleOpen = () => setOpen(true);
 const handleClose = () => setOpen(false);
-
-const manejarCheckCambio = (servicio: string) => {
-  setItemsSeleccionados((prev) =>
-    prev.includes(servicio)
-      ? prev.filter((item) => item !== servicio)
-      : [...prev, servicio]
-  );
-};
 
 const handleExport = () => {
   console.log(`Exporting as ${exportFormat}`);
 };
 
-useEffect(() => {
-  fetchData();
-}, []);
-
-const fetchData = async () => {
+const fetchPagos = async (page: number = 1) => {
   try {
-    const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos");
-    // const response = await axios.get("http://127.0.0.1:8000/v1/pagos");
-
+    const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos?page=${page}");
+    // const response = await axios.get("http://127.0.0.1:8000/v1/pagos?page=${page}");
     const data = response.data.data.map((item: Pagos) => ({
       id_pago: item.id_pago,
       puesto: item.puesto,
@@ -121,11 +103,22 @@ const fetchData = async () => {
       fecha_registro: item.fecha_registro
     }));
     setPagos(data);
+    setTotalPages(response.data.meta.last_page); // Total de páginas
+      setPaginaActual(response.data.meta.current_page); // Página actual
     console.log("La data es:", response.data);
   } catch (error) {
     console.error("Error al traer los datos", error);
   }
 };
+
+const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
+  setPaginaActual(value);
+  fetchPagos(value); // Obtén los datos para la página seleccionada
+};
+
+useEffect(() => {
+  fetchPagos(paginaActual);
+}, []);
 
 return (
   <Box
@@ -334,7 +327,7 @@ return (
             </TableHead>
             <TableBody>
               {pagos
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
                   <TableRow
                     hover
@@ -391,10 +384,18 @@ return (
             </TableBody>
           </Table>
         </TableContainer>
+        <Box
+            sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}
+          >
+            <Pagination
+              count={totalPages} // Total de páginas
+              page={paginaActual} // Página actual
+              onChange={CambioDePagina} // Manejar el cambio de página
+              color="primary"
+              sx={{ marginLeft: "25%" }}
+            />
 
-        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-          <Pagination count={10} color="primary" />
-        </Box>
+          </Box>
       </Paper>
     </Card>
   </Box>

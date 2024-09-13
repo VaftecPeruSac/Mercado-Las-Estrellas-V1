@@ -104,12 +104,9 @@ const TablaAsociados: React.FC = () => {
   const [socios, setSocios] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
-  // const [rowsPerPage] = useState(20); // Número de filas por página
 
   const formatDate = (fecha: string): string => {
-    // Crear un objeto Date a partir de la cadena de fecha
     const date = new Date(fecha);
-    // Obtener el día, mes y año
     const day = date.getDate();
     const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
     const year = date.getFullYear();
