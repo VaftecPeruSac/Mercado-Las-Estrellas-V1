@@ -66,7 +66,7 @@ interface Data {
   inquilino: string;
   deuda: string;
   cuotas_extra: string;
-  pagar: string;          
+  // pagar: string;          
 }
 
 const columns: readonly Column[] = [
@@ -81,11 +81,10 @@ const columns: readonly Column[] = [
   { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
   { id: "deuda", label: "Deuda Total", minWidth: 50 }, // Deuda total
   { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 }, // Cuotas extraordinarias
-  { id: "pagar", label: "Pagar", minWidth: 50 },      // Pagar
+  // { id: "pagar", label: "Pagar", minWidth: 50 },      // Pagar
   { id: "accion", label: "Acción", minWidth: 20 },    // Acción
 ];
 const TablaAsociados: React.FC = () => {
-  // const [page, setPage] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
@@ -94,7 +93,6 @@ const TablaAsociados: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleExport = () => {
-    // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
   };
 
@@ -102,20 +100,17 @@ const TablaAsociados: React.FC = () => {
   const handleClosePagar = () => setOpenPagar(false);
 
   const [socios, setSocios] = useState<Data[]>([]);
-  const [totalPages, setTotalPages] = useState(1); // Total de páginas
-  const [paginaActual, setPaginaActual] = useState(1); // Página actual
+  const [totalPages, setTotalPages] = useState(1); 
+  const [paginaActual, setPaginaActual] = useState(1); 
 
   const formatDate = (fecha: string): string => {
     const date = new Date(fecha);
     const day = date.getDate();
-    const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    const month = date.getMonth() + 1; 
     const year = date.getFullYear();
-
-    // Formatear a dos dígitos para el día y el mes si es necesario
     const formattedDay = day.toString().padStart(2, "0");
     const formattedMonth = month.toString().padStart(2, "0");
 
-    // Retornar la fecha en el formato "día mes año"
     return `${formattedDay}/${formattedMonth}/${year}`;
   };
   const fetchSocios = async (page: number = 1) => {
@@ -123,7 +118,6 @@ const TablaAsociados: React.FC = () => {
       // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}"); //publico
       // console.log("Socios cargados:", response.data);
-
       const data = response.data.data.map((item: Socios) => ({
         numero_puesto: item.numero_puesto,
         id_inquilino: item.id_inquilino,
@@ -140,20 +134,20 @@ const TablaAsociados: React.FC = () => {
       }));
       console.log('Total Pages:', totalPages);
       setSocios(data);
-      setTotalPages(response.data.meta.last_page); // Total de páginas
-      setPaginaActual(response.data.meta.current_page); // Página actual
+      setTotalPages(response.data.meta.last_page); 
+      setPaginaActual(response.data.meta.current_page); 
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
 
   const handleSocioRegistrado = () => {
-    fetchSocios();  // Actualiza la lista de socios
+    fetchSocios();  
   };
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
-    fetchSocios(value); // Obtén los datos para la página seleccionada
+    fetchSocios(value); 
   };
 
   useEffect(() => {
@@ -362,14 +356,14 @@ const TablaAsociados: React.FC = () => {
                                   <Plagiarism />
                                 </IconButton>
                               </Box>
-                            ) : column.id === "pagar" ? (
-                              <IconButton
-                                aria-label="payment"
-                                sx={{ color: "green" }}
-                                onClick={handleOpenPagar}
-                              >
-                                <Payments />
-                              </IconButton>
+                            // ) : column.id === "pagar" ? (
+                            //   <IconButton
+                            //     aria-label="payment"
+                            //     sx={{ color: "green" }}
+                            //     onClick={handleOpenPagar}
+                            //   >
+                            //     <Payments />
+                            //   </IconButton>
                             ) : column.id === "accion" ? (
                               <Box sx={{ display: "flex" }}>
                                 <IconButton
