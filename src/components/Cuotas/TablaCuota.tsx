@@ -87,9 +87,43 @@ const TablaCuota: React.FC = () => {
     setMes(evento.target.value as string);
   };
 
-  const handleExport = () => {
-    console.log(`Exporting as ${exportFormat}`);
+  // Metodo para exportar el listado de cuotas
+  const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas/exportar");
+      // Si no hay problemas
+      if(response.status === 200){
+        alert("La lista de cuotas ha sido exportada correctamente.");
+      } else {
+        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+    }
+
   };
+
+  // Metodo para buscar cuotas por fecha
+  const handleSearchCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      alert("En proceso de actualización.");
+    } catch {
+      alert("Error al buscar la cuota. Intentelo nuevamente más tarde.")
+    }
+
+  }
+
+  useEffect(() => {
+    fetchCuotas();
+  }, []);
+
   const formatDate = (fecha: string): string => {
     const date = new Date(fecha);
     const day = date.getDate();
@@ -127,6 +161,7 @@ const TablaCuota: React.FC = () => {
   useEffect(() => {
     fetchCuotas(paginaActual);
   }, []);
+
   return (
     <Box
       sx={{
@@ -264,7 +299,7 @@ const TablaCuota: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
-              onClick={handleExport}
+              onClick={handleExportCuotas}
             >
               Imprimir
             </Button>
@@ -344,7 +379,7 @@ const TablaCuota: React.FC = () => {
               marginLeft: "25px",
               borderRadius: "30px",
             }}
-            onClick={handleExport}
+            onClick={handleSearchCuota}
           >
             Buscar
           </Button>

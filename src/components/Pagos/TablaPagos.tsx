@@ -30,47 +30,47 @@ import RegistrarPago from "./RegistrarPago";
 import axios from "axios";
 
 interface Pagos {
-id_pago: string,
-puesto: string,
-socio: string,
-dni: string,
-telefono: string,
-correo: string,
-total_pago: string,
-total_deuda: string,
-fecha_registro: string
+  id_pago: string;
+  puesto: string;
+  socio: string;
+  dni: string;
+  telefono: string;
+  correo: string;
+  total_pago: string;
+  total_deuda: string;
+  fecha_registro: string;
 }
 
 interface Column {
-id: keyof Data | "accion";
-label: string;
-minWidth?: number;
-align?: "center";
+  id: keyof Data | "accion";
+  label: string;
+  minWidth?: number;
+  align?: "center";
 }
 
 interface Data {
-id_pago: string,
-puesto: string,
-socio: string,
-dni: string,
-telefono: string,
-correo: string,
-total_pago: string,
-total_deuda: string,
-fecha_registro: string
+  id_pago: string;
+  puesto: string;
+  socio: string;
+  dni: string;
+  telefono: string;
+  correo: string;
+  total_pago: string;
+  total_deuda: string;
+  fecha_registro: string;
 }
 
 const columns: readonly Column[] = [
-{ id: "id_pago", label: "#ID", minWidth: 50, align: "center" },
-{ id: "puesto", label: "N° Puesto", minWidth: 50, align: "center" },
-{ id: "socio", label: "Socio", minWidth: 50, align: "center" },
-{ id: "telefono", label: "DNI", minWidth: 50, align: "center" },
-{ id: "correo", label: "Fecha", minWidth: 50, align: "center" },
-{ id: "telefono", label: "Teléfono", minWidth: 50, align: "center" },
-{ id: "correo", label: "Correo", minWidth: 50, align: "center" },
-{ id: "total_pago", label: "A Cuenta", minWidth: 50, align: "center" },
-{ id: "total_deuda", label: "Monto Actual", minWidth: 50, align: "center" },
-{ id: "accion", label: "Acciones", minWidth: 50, align: "center" },
+  { id: "id_pago", label: "#ID", minWidth: 50, align: "center" },
+  { id: "puesto", label: "N° Puesto", minWidth: 50, align: "center" },
+  { id: "socio", label: "Socio", minWidth: 50, align: "center" },
+  { id: "telefono", label: "DNI", minWidth: 50, align: "center" },
+  { id: "correo", label: "Fecha", minWidth: 50, align: "center" },
+  { id: "telefono", label: "Teléfono", minWidth: 50, align: "center" },
+  { id: "correo", label: "Correo", minWidth: 50, align: "center" },
+  { id: "total_pago", label: "A Cuenta", minWidth: 50, align: "center" },
+  { id: "total_deuda", label: "Monto Actual", minWidth: 50, align: "center" },
+  { id: "accion", label: "Acciones", minWidth: 50, align: "center" },
 ];
 
 const TablaPago: React.FC = () => {
@@ -83,9 +83,38 @@ const [open, setOpen] = useState(false);
 const handleOpen = () => setOpen(true);
 const handleClose = () => setOpen(false);
 
-const handleExport = () => {
-  console.log(`Exporting as ${exportFormat}`);
+// Metodo para exportar el listado de pagos
+const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+  e.preventDefault();
+
+  try {
+    const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos/exportar");
+    // Si no hay problemas
+    if (response.status === 200) {
+      alert("La lista de pagos ha sido exportada correctamente.");
+    } else {
+      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+  }
+
 };
+
+// Metodo para buscar pagos por socio
+const handleSearchPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+  e.preventDefault();
+
+  try {
+    alert("En proceso de actualización.");
+  } catch {
+    alert("Error al buscar los pagos del socio. Intentelo nuevamente más tarde.")
+  }
+
+}
 
 const fetchPagos = async (page: number = 1) => {
   try {
@@ -258,7 +287,7 @@ return (
               width: "200px",
               borderRadius: "30px",
             }}
-            onClick={handleExport}
+            onClick={handleExportPagos}
           >
             Imprimir
           </Button>
@@ -297,7 +326,7 @@ return (
             marginLeft: "25px",
             borderRadius: "30px",
           }}
-          // onClick={handleExport}
+          onClick={handleSearchPagos}
         >
           Buscar
         </Button>
@@ -402,4 +431,4 @@ return (
 );
 };
 
-export default TablaPago;  
+export default TablaPago;

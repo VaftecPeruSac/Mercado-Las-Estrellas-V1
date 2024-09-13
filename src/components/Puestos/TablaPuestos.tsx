@@ -78,8 +78,24 @@ const TablaPuestos: React.FC = () => {
   // Para exportar la información
   const [exportFormat, setExportFormat] = useState<string>("");
 
-  const handleExport = () => {
-    console.log(`Exporting as ${exportFormat}`);
+  // Metodo para exportar el listado de puestos
+  const handleExportPuestos = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/exportar");
+      // Si no hay problemas
+      if (response.status === 200) {
+        alert("La lista de puestos ha sido exportada correctamente.");
+      } else {
+        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+    }
+
   };
 
   // Formato de fecha
@@ -273,7 +289,7 @@ const TablaPuestos: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
-              onClick={handleExport}
+              onClick={handleExportPuestos}
             >
               Imprimir
             </Button>
@@ -324,7 +340,7 @@ const TablaPuestos: React.FC = () => {
                                 }}
                               >
                                 <IconButton
-                                  aria-label="save "
+                                  aria-label="edit"
                                   sx={{ color: "#0478E3" }}
                                 >
                                   <SaveAs />

@@ -84,7 +84,9 @@ const columns: readonly Column[] = [
   // { id: "pagar", label: "Pagar", minWidth: 50 },      // Pagar
   { id: "accion", label: "Acción", minWidth: 20 },    // Acción
 ];
+
 const TablaAsociados: React.FC = () => {
+  // const [page, setPage] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
@@ -93,6 +95,7 @@ const TablaAsociados: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleExport = () => {
+    // Implement your export logic here
     console.log(`Exporting as ${exportFormat}`);
   };
 
@@ -113,6 +116,7 @@ const TablaAsociados: React.FC = () => {
 
     return `${formattedDay}/${formattedMonth}/${year}`;
   };
+
   const fetchSocios = async (page: number = 1) => {
     try {
       // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
@@ -293,6 +297,7 @@ const TablaAsociados: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
+              onClick={handleExportSocios}
             >
               Imprimir
             </Button>

@@ -274,7 +274,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
             component="h2"
             sx={{ textAlign: "center", textTransform: "uppercase" }}
           >
-            Registrar Puesto
+            Registrar Servicio
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
