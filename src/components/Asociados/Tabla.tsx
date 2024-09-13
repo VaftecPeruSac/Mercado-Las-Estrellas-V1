@@ -124,6 +124,7 @@ const TablaAsociados: React.FC = () => {
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
+      
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
