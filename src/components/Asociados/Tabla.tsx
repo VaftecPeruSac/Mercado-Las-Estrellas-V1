@@ -101,10 +101,26 @@ const TablaAsociados: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios/exportar");
-      // Si hay error
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios/exportar", 
+        {responseType: 'blob'} // Para manejar archivos
+      );
+
+      // Si no hay error
       if(response.status === 200){
-        alert("La lista de socios ha sido exportada correctamente.");
+        alert("La lista de socios se descargará en breve.");
+        // Creamos un elemento a partir del blob
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        // Creamos el enlace de descarga
+        const link = document.createElement('a');
+        link.href = url;
+        // Para obtener la fecha
+        const hoy = new Date();
+        const formatDate = hoy.toISOString().split('T')[0];
+        link.setAttribute('download', `lista-socios-${formatDate}.xlsx`); // Nombre del archivo
+        document.body.appendChild(link);
+        link.click();
+        // Para limpiar el enlace
+        link.parentNode?.removeChild(link);
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
