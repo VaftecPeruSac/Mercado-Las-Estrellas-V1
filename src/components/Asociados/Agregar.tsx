@@ -13,7 +13,6 @@ import {
   FormControl,
   Tabs,
   Tab,
-  CircularProgress,
   LinearProgress,
 } from "@mui/material";
 import {
@@ -25,6 +24,8 @@ import {
   Event,
   Badge,
   Wc,
+  Business,
+  Abc,
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
@@ -580,13 +581,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                       <Select
                         labelId="bloque-label"
                         id="select-bloque"
+                        label="Bloque"
                         value={bloqueSeleccionado}
                         onChange={(e) => {
                           const value = e.target.value as number;
                           setBloqueSeleccionado(value);
                           setFormData({ ...formData, bloque: value.toString() });
                         }}
-                        label="Bloque"
+                        startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                         sx={{ mb: 2 }}
                       >
                         {bloques.map((bloque: Bloque) => (
@@ -604,11 +606,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                         labelId="nro-puesto-label"
                         id="select-puesto"
                         value={formData.id_puesto}
+                        label="Nro. Puesto"
                         onChange={(e) => {
                           const value = e.target.value as string;
                           setFormData({ ...formData, id_puesto: value });
                         }}
-                        label="Nro. Puesto"
+                        startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
                       >
                         {puestosFiltrados.map((puesto: Puesto) => (
                           <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
@@ -890,34 +893,49 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                       ASIGNAR PUESTO
                     </Typography>
 
-                    {/* Seleccionar Bloque */}
+                    {/* Seleccionar bloque */}
                     <FormControl fullWidth required>
                       <InputLabel id="bloque-label">Bloque</InputLabel>
                       <Select
                         labelId="bloque-label"
+                        id="select-bloque"
                         label="Bloque"
-                        // value={tipoPersona}
-                        // onChange={handleTipoPersonaChange}
-                        startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                        value={bloqueSeleccionado}
+                        onChange={(e) => {
+                          const value = e.target.value as number;
+                          setBloqueSeleccionado(value);
+                          // setFormData({ ...formData, bloque: value.toString() });
+                        }}
+                        startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                         sx={{ mb: 2 }}
                       >
-                        <MenuItem value="Natural">Natural</MenuItem>
-                        <MenuItem value="Juridica">Jurídica</MenuItem>
+                        {bloques.map((bloque: Bloque) => (
+                          <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                            {bloque.nombre}
+                          </MenuItem>
+                        ))}
                       </Select>
                     </FormControl>
 
-                    {/* Seleccionar Puesto */}
+                    {/* Nro. Puesto */}
                     <FormControl fullWidth required>
                       <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
                       <Select
                         labelId="nro-puesto-label"
-                        label="Nro Puesto"
-                        // value={tipoPersona}
-                        // onChange={handleTipoPersonaChange}
-                        startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                        id="select-puesto"
+                        value={formData.id_puesto}
+                        label="Nro. Puesto"
+                        onChange={(e) => {
+                          const value = e.target.value as string;
+                          setFormData({ ...formData, id_puesto: value });
+                        }}
+                        startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
                       >
-                        <MenuItem value="Natural">Natural</MenuItem>
-                        <MenuItem value="Juridica">Jurídica</MenuItem>
+                        {puestosFiltrados.map((puesto: Puesto) => (
+                          <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                            {puesto.numero_puesto}
+                          </MenuItem>
+                        ))}
                       </Select>
                     </FormControl>
 
@@ -1041,7 +1059,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                 backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
-            onClick={handleSubmit} // Usa onClick para manejar el clic
+            onClick={(e) => {
+              if(activeTab === 0){
+                handleSubmit(e);
+              }
+              if(activeTab === 1){
+                alert("En proceso de actualización...");
+              }
+            }}
             disabled={loading} // Deshabilita el botón cuando está en loading
           >
             {loading ? "Cargando..." : "Registrar"}
