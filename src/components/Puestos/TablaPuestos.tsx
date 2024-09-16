@@ -1,79 +1,93 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
+import { DeleteForever, Print, SaveAs } from "@mui/icons-material";
 import {
+  Box,
+  Button,
+  Card,
+  FormControl,
+  IconButton,
+  MenuItem,
+  Pagination,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Button,
-  IconButton,
-  Box,
-  Card,
-  Pagination,
-  Select,
-  MenuItem,
-  FormControl,
 } from "@mui/material";
-import { Download, WhatsApp, Print, SaveAs } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
-import RegistrarServicio from "./RegistrarServicio";
+import React, { useEffect, useState } from "react";
+import RegistrarPuesto from "./RegistrarPuesto";
 
-interface Servicios {
-  id_servicio: number;
-  descripcion: string;
-  costo_unitario: string;
-  tipo_servicio: string;
+interface Puestos {
+  numero_puesto: string;
+  area: string;
+  estado: string;
   fecha_registro: string;
+  socio: string;
+  gironegocio_nombre: string;
+  block_nombre: string;
+  inquilino: string;
 }
 
 interface Column {
   id: keyof Data | "accion";
   label: string;
   minWidth?: number;
-  align?: "right";
+  align?: "center";
   format?: (value: any) => string;
 }
 
 interface Data {
-  id_servicio: string;
-  descripcion: string;
-  costo_unitario: string;
+  numero_puesto: string;
+  area: string;
+  estado: string;
   fecha_registro: string;
-  tipo_servicio: string;
+  socio: string;
+  gironegocio_nombre: string;
+  block_nombre: string;
+  inquilino: string;
 }
 
 const columns: readonly Column[] = [
-  { id: "id_servicio", label: "#ID", minWidth: 50 }, // Reduce el minWidth
-  { id: "descripcion", label: "Descripción", minWidth: 50 },
-  { id: "costo_unitario", label: "Costo Unitario", minWidth: 50 },
+  { id: "block_nombre", label: "Bloque", minWidth: 50 },
+  { id: "numero_puesto", label: "N° Puesto", minWidth: 50 },
+  { id: "area", label: "Área", minWidth: 50 },
+  { id: "gironegocio_nombre", label: "Giro de Negocio", minWidth: 50 },
+  { id: "socio", label: "Socio", minWidth: 50 },
+  { id: "inquilino", label: "Inquilino", minWidth: 50 },
+  { id: "estado", label: "Estado", minWidth: 50 },
   { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
-  { id: "tipo_servicio", label: "Tipo de Servicio", minWidth: 50 },
-  { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
+  { id: "accion", label: "Acciones", minWidth: 50 },
 ];
 
-const TablaServicios: React.FC = () => {
+const TablaPuestos: React.FC = () => {
+  // Para la tabla
+  const [puestos, setPuestos] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
-  const [paginaActual, setPaginaActual] = useState(1); // Página actual
-  const [open, setOpen] = useState(false);
-  const [exportFormat, setExportFormat] = React.useState("");
+  const [paginaActal, setPaginaActual] = useState(1); // Página actual
+  // const [rowsPerPage] = useState(10); // Número de filas por página
 
+  // Para el modal
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // Metodo para exportar el listado de servicios
-  const handleExportServicios = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  // Para exportar la información
+  const [exportFormat, setExportFormat] = useState<string>("");
+
+  // Metodo para exportar el listado de puestos
+  const handleExportPuestos = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios/exportar");
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/exportar");
       // Si no hay problemas
       if (response.status === 200) {
-        alert("La lista de servicios ha sido exportada correctamente.");
+        alert("La lista de puestos ha sido exportada correctamente.");
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
@@ -84,8 +98,7 @@ const TablaServicios: React.FC = () => {
 
   };
 
-  const [servicios, setServicios] = useState<Data[]>([]);
-
+  // Formato de fecha
   const formatDate = (fecha: string): string => {
     // Crear un objeto Date a partir de la cadena de fecha
 
@@ -104,22 +117,30 @@ const TablaServicios: React.FC = () => {
     return `${formattedDay}/${formattedMonth}/${year}`;
   };
 
-  const fetchServicios = async (page: number = 1) => {
-    try {
-      // const response = await axios.get("http://127.0.0.1:8000/v1/servicios?page=${page}"); //local
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}");
+  useEffect(() => {
+    fetchPuestos();
+  }, []);
 
-      const data = response.data.data.map((item: Servicios) => ({
-        id_servicio: item.id_servicio,
-        descripcion: item.descripcion,
-        costo_unitario: item.costo_unitario,
-        tipo_servicio: item.tipo_servicio,
+  const fetchPuestos = async (page: number = 1) => {
+    try {
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}"); //publico
+      // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
+
+      const data = response.data.data.map((item: Puestos) => ({
+        numero_puesto: item.numero_puesto,
+        area: item.area,
+        estado: item.estado,
         fecha_registro: formatDate(item.fecha_registro),
+        socio: item.socio,
+        gironegocio_nombre: item.gironegocio_nombre,
+        block_nombre: item.block_nombre,
+        inquilino: item.inquilino,
       }));
-      setServicios(data);
+      console.log("Total Pages:", totalPages);
+      setPuestos(data);
       setTotalPages(response.data.meta.last_page); // Total de páginas
       setPaginaActual(response.data.meta.current_page); // Página actual
-      console.log("la data es", response.data);
+      console.log("Datos recuperados con exito", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
@@ -127,13 +148,8 @@ const TablaServicios: React.FC = () => {
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
-    fetchServicios(value); // Obtén los datos para la página seleccionada
+    fetchPuestos(value); // Obtén los datos para la página seleccionada
   };
-
-  useEffect(() => {
-    fetchServicios(paginaActual);
-  }, []);
-
 
   return (
     <Box
@@ -156,9 +172,7 @@ const TablaServicios: React.FC = () => {
           alignItems: { xs: "flex-start", sm: "center" },
           mb: 3,
         }}
-      >
-        {/* Título opcional */}
-      </Box>
+      ></Box>
 
       <Card
         sx={{
@@ -166,7 +180,7 @@ const TablaServicios: React.FC = () => {
           borderRadius: "30px",
           width: "100%",
           height: "100%",
-          textAlign: "left",
+          textAlign: "center",
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
@@ -187,6 +201,7 @@ const TablaServicios: React.FC = () => {
             P: 0,
           }}
         >
+          {/* Botón "Agregar Puesto" */}
           <Button
             variant="contained"
             startIcon={<GridAddIcon />}
@@ -201,10 +216,10 @@ const TablaServicios: React.FC = () => {
             }}
             onClick={handleOpen}
           >
-            Agregar Servicio
+            Agregar Puesto
           </Button>
 
-          <RegistrarServicio open={open} handleClose={handleClose} />
+          <RegistrarPuesto open={open} handleClose={handleClose} />
 
           <Box
             sx={{
@@ -214,6 +229,7 @@ const TablaServicios: React.FC = () => {
               ml: "auto",
             }}
           >
+            {/* Formulario para el Select "Exportar" */}
             <FormControl
               variant="outlined"
               sx={{
@@ -221,14 +237,14 @@ const TablaServicios: React.FC = () => {
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
-                    borderColor: "#dcdcdc", // Color del borde inicial (gris claro)
+                    borderColor: "#dcdcdc",
                   },
                   "&:hover fieldset": {
-                    borderColor: "#dcdcdc", // Color del borde al hacer hover (gris claro)
+                    borderColor: "#dcdcdc",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#dcdcdc", // Color del borde cuando está enfocado (gris claro)
-                    boxShadow: "none", // Elimina la sombra del enfoque
+                    borderColor: "#dcdcdc",
+                    boxShadow: "none",
                   },
                 },
               }}
@@ -238,17 +254,17 @@ const TablaServicios: React.FC = () => {
                 onChange={(e) => setExportFormat(e.target.value)}
                 displayEmpty
                 sx={{
-                  backgroundColor: "white", // Color de fondo suave y clásico
+                  backgroundColor: "white",
                   "&:hover": {
-                    backgroundColor: "#e0e0e0", // Cambio sutil al hacer hover
+                    backgroundColor: "#e0e0e0",
                   },
                   height: "50px",
                   minWidth: "120px",
                   padding: "0 15px",
                   borderRadius: "30px",
-                  color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
+                  color: exportFormat ? "#000" : "#999",
                   "& .MuiSelect-icon": {
-                    color: "#000", // Color del icono del menú desplegable
+                    color: "#000",
                   },
                 }}
               >
@@ -256,10 +272,11 @@ const TablaServicios: React.FC = () => {
                   Exportar
                 </MenuItem>
                 <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="word">Excel</MenuItem>
+                <MenuItem value="excel">Excel</MenuItem>
               </Select>
             </FormControl>
 
+            {/* Botón "Imprimir" */}
             <Button
               variant="contained"
               startIcon={<Print />}
@@ -272,12 +289,14 @@ const TablaServicios: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
-              onClick={handleExportServicios}
+              onClick={handleExportPuestos}
             >
               Imprimir
             </Button>
           </Box>
         </Box>
+
+        {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
@@ -291,8 +310,6 @@ const TablaServicios: React.FC = () => {
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
                       sx={{
-                        //   backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                        //   color: column.id === 'deuda_total' ? '#721c24' : undefined,
                         fontWeight: "bold",
                       }}
                     >
@@ -302,43 +319,42 @@ const TablaServicios: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {servicios
+                {puestos
                   // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                  .map((puesto) => (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
                       {columns.map((column) => {
-                        const value = (row as any)[column.id];
-
-                        // Renderización específica para la columna "accion"
-                        if (column.id === "accion") {
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              <Box sx={{ display: "flex" }}>
+                        const value =
+                          column.id === "accion"
+                            ? ""
+                            : (puesto as any)[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {/* Acciones */}
+                            {column.id === "accion" ? (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: 1,
+                                  justifyContent: "center",
+                                }}
+                              >
                                 <IconButton
                                   aria-label="edit"
-                                  sx={{ color: "black" }}
+                                  sx={{ color: "#0478E3" }}
                                 >
                                   <SaveAs />
                                 </IconButton>
                                 <IconButton
-                                  aria-label="copy"
-                                  sx={{ color: "black" }}
+                                  aria-label="delete"
+                                  sx={{ color: "red" }}
                                 >
-                                  <Download />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="whatsapp"
-                                  sx={{ color: "green" }}
-                                >
-                                  <WhatsApp />
+                                  <DeleteForever />
                                 </IconButton>
                               </Box>
-                            </TableCell>
-                          );
-                        }
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {value}
+                            ) : (
+                              value
+                            )}
                           </TableCell>
                         );
                       })}
@@ -353,7 +369,7 @@ const TablaServicios: React.FC = () => {
             >
             <Pagination
               count={totalPages} // Total de páginas
-              page={paginaActual} // Página actual
+              page={paginaActal} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
               // sx={{ marginLeft: "25%" }}
@@ -365,4 +381,4 @@ const TablaServicios: React.FC = () => {
   );
 };
 
-export default TablaServicios;
+export default TablaPuestos;

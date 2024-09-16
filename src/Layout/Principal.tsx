@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Box, ThemeProvider } from "@mui/material";
+import { Box } from "@mui/material";
 import Header from "../components/Header";
-import Dashboard from "../components/Dashboard";
 import { Outlet } from "react-router-dom";
-
 
 const Principal = () => {
   const [open, setOpen] = useState(false);

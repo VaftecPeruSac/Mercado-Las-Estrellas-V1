@@ -1,15 +1,8 @@
 import React from "react";
 import { Box, Typography, Card, CardContent, Stack } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import SchoolIcon from "@mui/icons-material/School";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import GroupIcon from "@mui/icons-material/Group";
-
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { CardGiftcard, NextWeek, Person, Wysiwyg } from "@mui/icons-material";
+import { NextWeek, Person, Wysiwyg } from "@mui/icons-material";
 
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,

@@ -1,10 +1,8 @@
 import React from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import {
-  Avatar,
   Divider,
   List,
-  ListItem,
   ListItemText,
   ListItemIcon,
   Typography,
@@ -12,26 +10,18 @@ import {
   ListItemButton,
 } from "@mui/material";
 import {
-  Home,
-  Group,
   Assignment,
-  Build,
-  AccountBalance,
   MonetizationOn,
-  People,
   ExpandMore,
-  Store,
-  ShoppingBagSharp,
   ShoppingBasket,
-  GroupWork,
   Article,
   Settings,
   Description,
+  Storefront,
+  Groups,
 } from "@mui/icons-material";
-import { link } from "fs";
 import BackupTableIcon from '@mui/icons-material/BackupTable';
 import { Link } from "react-router-dom";
-import { GridFilterAltIcon } from "@mui/x-data-grid";
 import LoginIcon from '@mui/icons-material/Login';
 interface SidebarProps {
   open: boolean;
@@ -49,17 +39,15 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           variant="subtitle1"
           color="#FFFFFF"
           sx={{ ml: 1, }}
-        ><h3><b>
-          SISTEM MERCADO</b>
-
-          </h3>
+        >
+          <h3><b>SISTEM MERCADO</b></h3>
         </Typography>
       </Box>
       <List>
         &nbsp;
         <ListItemButton
           component={Link}
-          to="/"
+          to="/home"
           sx={{ ...listItemStyle }}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
@@ -76,11 +64,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         &nbsp;
         <ListItemButton
           component={Link}
-          to="/asociados"
+          to="socios"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
-            <GridFilterAltIcon />
+            <Groups />
           </ListItemIcon>
           {open && (
             <ListItemText
@@ -91,7 +79,22 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/servicios"
+          to="puestos"
+          sx={listItemStyle}
+        >
+          <ListItemIcon sx={{ color: "inherit" }}>
+            <Storefront />
+          </ListItemIcon>
+          {open && (
+            <ListItemText
+              primary="Puestos"
+              sx={{ ml: -3 }}
+            />
+          )}
+        </ListItemButton>
+        <ListItemButton
+          component={Link}
+          to="servicios"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
@@ -99,14 +102,14 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           </ListItemIcon>
           {open && (
             <ListItemText
-              primary="servicios"
+              primary="Servicios"
               sx={{ ml: -3 }}
             />
           )}
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/aperturar-deuda"
+          to="cuotas"
           sx={listItemStyle}
         >
           <Assignment sx={{ color: "inherit" }}>
@@ -121,11 +124,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/pagos"
+          to="pagos"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
-            <Group />
+            <MonetizationOn />
           </ListItemIcon>
           {open && (
             <ListItemText
@@ -140,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         <Divider sx={{ bgcolor: "#505155", ml: 3, mr: 3 }} />
         <ListItemButton
           component={Link}
-          to="/reporte-pagos"
+          to="configuracion"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
@@ -156,7 +159,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         <br />
         <ListItemButton
           component={Link}
-          to="/reporte-pagos"
+          to="reporte-pagos"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
@@ -171,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/ver-deuda"
+          to="reporte-deudas"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
@@ -190,10 +193,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         <br />
         <br />
         <br />
-        <br />
         <ListItemButton
           component={Link}
-          to="/ver-deuda"
+          to="ver-deuda"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
@@ -207,7 +209,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/ver-deuda"
+          to="ver-deuda"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
@@ -221,7 +223,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/ver-deuda"
+          to="/"
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>

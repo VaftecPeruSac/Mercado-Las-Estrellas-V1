@@ -11,17 +11,15 @@ import {
   MenuItem,
   Avatar,
   Grid,
-  Autocomplete,
   TextField,
   InputAdornment,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Sidebar from "./Sidebar";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { GridSearchIcon } from "@mui/x-data-grid";
-import { Notifications, NotificationsNone } from "@mui/icons-material";
+import { NotificationsNone } from "@mui/icons-material";
 
 interface HeaderProps {
   open: boolean;
