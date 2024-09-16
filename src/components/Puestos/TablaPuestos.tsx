@@ -84,13 +84,26 @@ const TablaPuestos: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/exportar");
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/exportar",
+        {responseType: 'blob'}
+      );
+
       // Si no hay problemas
       if (response.status === 200) {
-        alert("La lista de puestos ha sido exportada correctamente.");
+        alert("La lista de puestos se descargará en breve.");
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        const hoy = new Date();
+        const formatDate = hoy.toISOString().split('T')[0];
+        link.setAttribute('download', `lista-puestos-${formatDate}.xlsx`); // Nombre del archivo
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode?.removeChild(link);
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
+      
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -123,7 +136,7 @@ const TablaPuestos: React.FC = () => {
 
   const fetchPuestos = async (page: number = 1) => {
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}"); //publico
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
 
       const data = response.data.data.map((item: Puestos) => ({

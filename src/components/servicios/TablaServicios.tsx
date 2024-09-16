@@ -70,13 +70,26 @@ const TablaServicios: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios/exportar");
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios/exportar",
+        {responseType: 'blob'}
+      );
+      
       // Si no hay problemas
       if (response.status === 200) {
-        alert("La lista de servicios ha sido exportada correctamente.");
+        alert("La lista de servicios se descargará en breve.");
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        const hoy = new Date();
+        const formatDate = hoy.toISOString().split('T')[0];
+        link.setAttribute('download', `lista-servicios-${formatDate}.xlsx`); // Nombre del archivo
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode?.removeChild(link);
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
+
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -107,7 +120,7 @@ const TablaServicios: React.FC = () => {
   const fetchServicios = async (page: number = 1) => {
     try {
       // const response = await axios.get("http://127.0.0.1:8000/v1/servicios?page=${page}"); //local
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}");
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}`);
 
       const data = response.data.data.map((item: Servicios) => ({
         id_servicio: item.id_servicio,
