@@ -22,13 +22,20 @@ import React, { useEffect, useState } from "react";
 import RegistrarPuesto from "./RegistrarPuesto";
 
 interface Puestos {
+  id_puesto: string;
   numero_puesto: string;
   area: string;
   estado: string;
   fecha_registro: string;
   socio: string;
-  gironegocio_nombre: string;
-  block_nombre: string;
+  giro_negocio: {
+    id_gironegocio: string;
+    nombre: string;
+  };
+  block: {
+    id_block: string;
+    nombre: string;
+  };
   inquilino: string;
 }
 
@@ -41,21 +48,28 @@ interface Column {
 }
 
 interface Data {
+  id_puesto: string;
   numero_puesto: string;
   area: string;
   estado: string;
   fecha_registro: string;
   socio: string;
-  gironegocio_nombre: string;
-  block_nombre: string;
+  giro_negocio: {
+    id_gironegocio: string;
+    nombre: string;
+  };
+  block: {
+    id_block: string;
+    nombre: string;
+  };
   inquilino: string;
 }
 
 const columns: readonly Column[] = [
-  { id: "block_nombre", label: "Bloque", minWidth: 50 },
+  { id: "block", label: "Bloque", minWidth: 50 },
   { id: "numero_puesto", label: "N° Puesto", minWidth: 50 },
   { id: "area", label: "Área", minWidth: 50 },
-  { id: "gironegocio_nombre", label: "Giro de Negocio", minWidth: 50 },
+  { id: "giro_negocio", label: "Giro de Negocio", minWidth: 50 },
   { id: "socio", label: "Socio", minWidth: 50 },
   { id: "inquilino", label: "Inquilino", minWidth: 50 },
   { id: "estado", label: "Estado", minWidth: 50 },
@@ -68,11 +82,17 @@ const TablaPuestos: React.FC = () => {
   const [puestos, setPuestos] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActal, setPaginaActual] = useState(1); // Página actual
-  // const [rowsPerPage] = useState(10); // Número de filas por página
+  const [puestoSeleccionado, setPuestoSeleccionado] = useState<Puestos | null>(null);
 
   // Para el modal
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+
+  // Abrir modal con un pueto seleccionado o vacio
+  const handleOpen = (puesto?: Puestos) => {
+    setPuestoSeleccionado(puesto || null);
+    setOpen(true);
+  };
+
   const handleClose = () => setOpen(false);
 
   // Para exportar la información
@@ -140,13 +160,20 @@ const TablaPuestos: React.FC = () => {
       // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
 
       const data = response.data.data.map((item: Puestos) => ({
+        id_puesto: item.id_puesto,
         numero_puesto: item.numero_puesto,
         area: item.area,
         estado: item.estado,
         fecha_registro: formatDate(item.fecha_registro),
         socio: item.socio,
-        gironegocio_nombre: item.gironegocio_nombre,
-        block_nombre: item.block_nombre,
+        giro_negocio: {
+          id_gironegocio: item.giro_negocio.id_gironegocio,
+          nombre: item.giro_negocio.nombre,
+        },
+        block: {
+          id_block: item.block.id_block,
+          nombre: item.block.nombre,
+        },
         inquilino: item.inquilino,
       }));
       console.log("Total Pages:", totalPages);
@@ -227,12 +254,16 @@ const TablaPuestos: React.FC = () => {
               width: "230px",
               borderRadius: "30px",
             }}
-            onClick={handleOpen}
+            onClick={() => handleOpen()}
           >
             Agregar Puesto
           </Button>
 
-          <RegistrarPuesto open={open} handleClose={handleClose} />
+          <RegistrarPuesto 
+            open={open} 
+            handleClose={handleClose} 
+            puesto={puestoSeleccionado}
+          />
 
           <Box
             sx={{
@@ -344,7 +375,11 @@ const TablaPuestos: React.FC = () => {
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {/* Acciones */}
-                            {column.id === "accion" ? (
+                            {column.id === "giro_negocio" ? (
+                              puesto.giro_negocio.nombre
+                            ) : column.id === "block" ? (
+                              puesto.block.nombre
+                            ) : column.id === "accion" ? (
                               <Box
                                 sx={{
                                   display: "flex",
@@ -355,6 +390,7 @@ const TablaPuestos: React.FC = () => {
                                 <IconButton
                                   aria-label="edit"
                                   sx={{ color: "#0478E3" }}
+                                  onClick={() => handleOpen(puesto)}
                                 >
                                   <SaveAs />
                                 </IconButton>

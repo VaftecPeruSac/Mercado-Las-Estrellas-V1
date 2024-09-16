@@ -26,6 +26,25 @@ import React, { useEffect, useState } from 'react'
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
+  puesto: EditarPuesto | null;
+}
+
+interface EditarPuesto {
+  id_puesto: string;
+  numero_puesto: string;
+  area: string;
+  estado: string;
+  fecha_registro: string;
+  socio: string;
+  giro_negocio: {
+    id_gironegocio: string;
+    nombre: string;
+  };
+  block: {
+    id_block: string;
+    nombre: string;
+  };
+  inquilino: string;
 }
 
 interface GiroNegocio {
@@ -49,7 +68,7 @@ interface Socio {
   socio: string;
 }
 
-const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
+const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) => {
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -63,12 +82,33 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Datos para registrar el puesto
   const [formDataPuesto, setFormDataPuesto] = useState({
+    id_puesto: "",
     id_gironegocio: "",
     id_block: "",
     numero_puesto: "",
     area: "",
     fecha_registro: "",
   });
+
+  const formatDate = (fecha: string) => {
+    const [dia, mes, anio] = fecha.split("/");
+    return `${anio}-${mes}-${dia}`;
+  };
+
+  // Llenar campos con los datos del puesto seleccionado
+  useEffect(() => {
+    if(puesto){
+      console.log("Puesto obtenido:", puesto);
+      setFormDataPuesto({
+        id_puesto: puesto.id_puesto || "",
+        id_gironegocio: puesto.giro_negocio.id_gironegocio || "",
+        id_block: puesto.block.id_block || "",
+        numero_puesto: puesto.numero_puesto || "",
+        area: puesto.area || "",
+        fecha_registro: formatDate(puesto.fecha_registro) || "",
+      });
+    }
+  }, [puesto]);
 
   // Datos para asigna un puesto
   const [formDataAsginarPuesto, setFormDataAsignarPuesto] = useState({
@@ -224,7 +264,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
     e.preventDefault();
 
     // Data a enviar
-    const { ...dataToSend } = formDataPuesto;
+    const { id_puesto, ...dataToSend } = formDataPuesto;
 
     try {
 
@@ -237,6 +277,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
         alert("Puesto registrado con exito");
         // Limpiar los campos del formulario
         setFormDataPuesto({
+          id_puesto: "",
           id_gironegocio: "",
           id_block: "",
           numero_puesto: "",
@@ -378,13 +419,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
               Leer detenidamente los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+            <pre>{JSON.stringify(formDataPuesto, null, 2)}</pre>
 
             <Box
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "0px 58px" }}
+              sx={{ p: "0px 58px" }}  
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -415,6 +456,19 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     INFORMACION DEL PUESTO
                   </Typography>
+
+                  <TextField 
+                    fullWidth
+                    type="hidden"
+                    name="id_puesto"
+                    value={formDataPuesto.id_puesto}
+                    onChange={manejarCambioPuesto}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{ mb: 2, display: "none" }}
+                  />
+
                   {/* Seleccionar Bloque */}
                   <FormControl fullWidth required>
                     <InputLabel id="bloque-label">Bloque</InputLabel>
@@ -950,7 +1004,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
             }}
             onClick={(e) => {
               if(activeTab === 0){
-                registrarPuesto(e);
+                if(puesto){
+                  // Si el puesto existe, editar puesto
+
+                } else {
+                  // Si puesto es vacio, registrar puesto
+                  registrarPuesto(e);
+                }
               }
               if(activeTab === 1){
                 asignarPuesto(e);

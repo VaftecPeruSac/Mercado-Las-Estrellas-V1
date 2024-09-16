@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Principal from "../Layout/Principal";
 import Tabla from "../components/Asociados/Tabla";
 import Dashboard from "../components/Dashboard";
-// import TablaServicios from "../components/Servicios/TablaServicios";
+import TablaServicios from "../components/Servicios/TablaServicios";
 import TablaPagos from "../components/Pagos/TablaPagos";
 import TablaCuota from "../components/Cuotas/TablaCuota";
 import TablaPuestos from "../components/Puestos/TablaPuestos";
@@ -31,10 +31,10 @@ export const router = createBrowserRouter([
         path: "puestos",
         element: <TablaPuestos />,
       },
-      // {
-      //   path: "servicios",
-      //   element: <TablaServicios />,
-      // },
+      {
+        path: "servicios",
+        element: <TablaServicios />,
+      },
       {
         path: "cuotas",
         element: <TablaCuota />,
