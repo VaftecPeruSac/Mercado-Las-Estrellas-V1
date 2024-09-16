@@ -85,7 +85,7 @@ const TablaPuestos: React.FC = () => {
 
     try {
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/exportar",
-        {responseType: 'blob'}
+        { responseType: 'blob' }
       );
 
       // Si no hay problemas
@@ -103,7 +103,7 @@ const TablaPuestos: React.FC = () => {
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
-      
+
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -379,13 +379,13 @@ const TablaPuestos: React.FC = () => {
 
           <Box
             sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
-            >
+          >
             <Pagination
               count={totalPages} // Total de páginas
               page={paginaActal} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-              // sx={{ marginLeft: "25%" }}
+            // sx={{ marginLeft: "25%" }}
             />
           </Box>
         </Paper>

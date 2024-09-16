@@ -99,6 +99,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     id_puesto: "", // Usa id_puesto en lugar de numeroPuesto
   });
 
+  const [formDataInquilino, setformDataInquilino] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    dni: "",
+    telefono: "",
+    bloque: "",
+    id_puesto: "",
+
+  });
+
+
   // Validaciones del formulario
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -165,23 +177,32 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
   };
 
   const handleCloseModal = () => {
-    // limpiarCampos();
+    limpiarCampos();
+    limpiarBloque();
     handleClose();
   };
 
   const limpiarCampos = () => {
-    setDni("");
-    setNombre("");
-    setApellidoPaterno("");
-    setApellidoMaterno("");
-    setEstado("Activo");
-    setCuota("");
-    setTelefono("");
-    setCorreo("");
-    setDireccion("");
-    setErrors({});
-    setFecha("");
+    setFormData({
+      nombre: "",
+      apellido_paterno: "",
+      apellido_materno: "",
+      dni: "",
+      correo: "",
+      telefono: "",
+      direccion: "",
+      sexo: "",
+      estado: "",
+      fecha_registro: "",
+      bloque: "",
+      id_puesto: "",
+    });
   };
+
+  const limpiarBloque = () => {
+    setBloqueSeleccionado("")
+
+  }
 
   // Obtener bloques
   useEffect(() => {
@@ -234,6 +255,18 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     });
   };
 
+  const manejarCambioInquilino = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
+  ) => {
+    const { name, value } = e.target;
+    setformDataInquilino({
+      ...formDataInquilino,
+      [name]: value,
+    });
+  };
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     // Validar el formato de fecha YYYY-MM-DD
@@ -258,31 +291,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     }
   }
 
-  // const manejarCheckCambio = (servicio: string) => {
-  //   setItemsSeleccionados((prev) =>
-  //     prev.includes(servicio)
-  //       ? prev.filter((item) => item !== servicio)
-  //       : [...prev, servicio]
-  //   );
-  // };
 
-  // const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
-  //   setAnio(evento.target.value as string);
-  // };
-
-  // const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
-  //   setMes(evento.target.value as string);
-  // };
-
-  // const handlePuestoChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-  //   const selectedIdPuesto = event.target.value as string;
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     id_puesto: selectedIdPuesto, // Actualiza id_puesto
-  //   }));
-  // };
-
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true); // Activa el loading
 
@@ -325,6 +335,48 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
       setLoading(false); // Desactiva el loading
     }
   };
+
+  const registraInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true); // Activa el loading
+
+    const { bloque, ...dataToSend } = formDataInquilino;
+    console.log(dataToSend);
+
+    try {
+      // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); //publico
+
+      if (response.status === 200) {
+
+        alert("Se registró  inquilino correctamente");
+        setformDataInquilino({
+          nombre: "",
+          apellidoPaterno: "",
+          apellidoMaterno: "",
+          dni: "",
+          telefono: "",
+          bloque: "",
+          id_puesto: "",
+
+        });
+        setLoading(false); // Desactiva el loading
+        onSocioRegistrado();
+        handleClose() // Actualiza la lista de socios en Tabla.tsx
+      } else {
+        alert("No se pudo registrar inquilino. Inténtalo nuevamente.");
+        setLoading(false); // Desactiva el loading
+      }
+      console.log(response)
+
+    } catch (error) {
+      console.error("Error al registrar inquilino:", error);
+      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+      setLoading(false); // Desactiva el loading
+    }
+  };
+
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -751,8 +803,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                     fullWidth
                     label="Nombre"
                     required
-                    value={nombre}
-                    onChange={manejarNombreCambio}
+                    value={formDataInquilino.nombre}
+                    onChange={manejarCambioInquilino}
                     sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: (
@@ -1061,11 +1113,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
               },
             }}
             onClick={(e) => {
-              if(activeTab === 0){
-                handleSubmit(e);
+              if (activeTab === 0) {
+                registrarSocio(e);
               }
-              if(activeTab === 1){
-                alert("En proceso de actualización...");
+              if (activeTab === 1) {
+                // alert("En proceso de actualización...");
+                registraInquilino(e);
               }
             }}
             disabled={loading} // Deshabilita el botón cuando está en loading
