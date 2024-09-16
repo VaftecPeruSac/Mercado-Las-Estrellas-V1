@@ -42,7 +42,7 @@ interface Socios {
   gironegocio_nombre: string;
   block_nombre: string;
   inquilino: string;
-  deuda: string;        
+  deuda: string;
 }
 
 interface Column {
@@ -101,12 +101,12 @@ const TablaAsociados: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios/exportar", 
-        {responseType: 'blob'} // Para manejar archivos
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios/exportar",
+        { responseType: 'blob' } // Para manejar archivos
       );
 
       // Si no hay error
-      if(response.status === 200){
+      if (response.status === 200) {
         alert("La lista de socios se descargará en breve.");
         // Creamos un elemento a partir del blob
         const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -124,7 +124,7 @@ const TablaAsociados: React.FC = () => {
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
-      
+
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -136,13 +136,13 @@ const TablaAsociados: React.FC = () => {
   const handleClosePagar = () => setOpenPagar(false);
 
   const [socios, setSocios] = useState<Data[]>([]);
-  const [totalPages, setTotalPages] = useState(1); 
-  const [paginaActual, setPaginaActual] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
+  const [paginaActual, setPaginaActual] = useState(1);
 
   const formatDate = (fecha: string): string => {
     const date = new Date(fecha);
     const day = date.getDate();
-    const month = date.getMonth() + 1; 
+    const month = date.getMonth() + 1;
     const year = date.getFullYear();
     const formattedDay = day.toString().padStart(2, "0");
     const formattedMonth = month.toString().padStart(2, "0");
@@ -171,20 +171,20 @@ const TablaAsociados: React.FC = () => {
       }));
       console.log('Total Pages:', totalPages);
       setSocios(data);
-      setTotalPages(response.data.meta.last_page); 
-      setPaginaActual(response.data.meta.current_page); 
+      setTotalPages(response.data.meta.last_page);
+      setPaginaActual(response.data.meta.current_page);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
 
   const handleSocioRegistrado = () => {
-    fetchSocios();  
+    fetchSocios();
   };
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
-    fetchSocios(value); 
+    fetchSocios(value);
   };
 
   useEffect(() => {
@@ -394,14 +394,14 @@ const TablaAsociados: React.FC = () => {
                                   <Plagiarism />
                                 </IconButton>
                               </Box>
-                            // ) : column.id === "pagar" ? (
-                            //   <IconButton
-                            //     aria-label="payment"
-                            //     sx={{ color: "green" }}
-                            //     onClick={handleOpenPagar}
-                            //   >
-                            //     <Payments />
-                            //   </IconButton>
+                              // ) : column.id === "pagar" ? (
+                              //   <IconButton
+                              //     aria-label="payment"
+                              //     sx={{ color: "green" }}
+                              //     onClick={handleOpenPagar}
+                              //   >
+                              //     <Payments />
+                              //   </IconButton>
                             ) : column.id === "accion" ? (
                               <Box sx={{ display: "flex" }}>
                                 <IconButton
@@ -443,7 +443,7 @@ const TablaAsociados: React.FC = () => {
               page={paginaActual} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-              // sx={{ marginLeft: "25%" }}
+            // sx={{ marginLeft: "25%" }}
             />
 
           </Box>

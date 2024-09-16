@@ -1,24 +1,25 @@
-import { Abc, 
-  AddBusiness, 
-  Business,  
-  Event, 
-  Straighten 
+import {
+  Abc,
+  AddBusiness,
+  Business,
+  Event,
+  Straighten
 } from '@mui/icons-material';
-import { 
-  Box, 
-  Button, 
-  Card, 
-  FormControl, 
-  Grid, 
-  InputLabel, 
-  MenuItem, 
-  Modal, 
-  Select, 
-  SelectChangeEvent, 
-  Tab, 
-  Tabs, 
-  TextField, 
-  Typography 
+import {
+  Box,
+  Button,
+  Card,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  SelectChangeEvent,
+  Tab,
+  Tabs,
+  TextField,
+  Typography
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
@@ -114,6 +115,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const [formDataAsginarPuesto, setFormDataAsignarPuesto] = useState({
     id_puesto: "",
     id_socio: "",
+    // bloque: "",
+    // socio: "",
+    // numero_puesto: "",
   });
 
 
@@ -218,7 +222,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       [name]: value,
     });
   };
-  
+
   // Manejar los cambios del formulario Registrar Giro de Negocio
   const manejarCambioGiroNegocio = (
     e:
@@ -252,9 +256,37 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   }
 
+  const limpiarRegistrarPuesto = () => {
+    setFormDataPuesto({
+      id_puesto: "",
+      id_gironegocio: "",
+      id_block: "",
+      numero_puesto: "",
+      area: "",
+      fecha_registro: "",
+    });
+  };
+  const limpiarAsignarPuesto = () => {
+    setBloqueSeleccionado("")
+  };
+
+  const limpiarNuevoBloque = () => {
+    setFormDataBloque({
+      nombre: ""
+    });
+  };
+  const limpiarGiroNegocio = () => {
+    setFormDataGiroNegocio({
+      nombre: ""
+    });
+  };
+
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
+    limpiarRegistrarPuesto()
+    limpiarAsignarPuesto()
+    limpiarNuevoBloque()
   };
 
   // Registrar Puesto
@@ -273,7 +305,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       // const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
 
       // Manejar la respuesta del servidor
-      if(response.status === 200) {
+      if (response.status === 200) {
         alert("Puesto registrado con exito");
         // Limpiar los campos del formulario
         setFormDataPuesto({
@@ -302,9 +334,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
     // Evita el comportamiente por defecto del clic
     e.preventDefault();
+    const { ...dataToSend } = formDataAsginarPuesto;
+    console.log(dataToSend);
 
     // Data a enviar
-    const { ...dataToSend } = formDataAsginarPuesto;
+    // const { ...dataToSend } = formDataAsginarPuesto;
 
     try {
 
@@ -313,7 +347,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       // const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
 
       // Manejar la respuesta del servidor
-      if(response.status === 200) {
+      if (response.status === 200) {
         alert("Puesto asignado con exito");
         // Limpiar los campos del formulario
         setFormDataAsignarPuesto({
@@ -349,7 +383,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       // const response = await axios.post("http://127.0.0.1:8000/v1/blocks", dataToSend);
 
       // Manejar la respuesta del servidor
-      if(response.status === 200) {
+      if (response.status === 200) {
         alert("Bloque registrado con exito");
         // Limpiar los datos del formulario
         setFormDataBloque({
@@ -383,7 +417,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       // const response = await axios.post("http://127.0.0.1:8000/v1/giro-negocios", dataToSend);
 
       // Manejar la respuesta del servidor
-      if(response.status === 200) {
+      if (response.status === 200) {
         alert("Giro de negocio registrado con exito");
         // Limpiar los datos del formulario
         setFormDataGiroNegocio({
@@ -504,8 +538,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <Abc sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.area}
-                    // helperText={errors.area}
+                  // error={!!errors.area}
+                  // helperText={errors.area}
                   />
 
                   {/* Ingresar el area */}
@@ -522,8 +556,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <Straighten sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.area}
-                    // helperText={errors.area}
+                  // error={!!errors.area}
+                  // helperText={errors.area}
                   />
 
                 </Grid>
@@ -621,8 +655,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     InputProps={{
                       startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.fechaRegistro}
-                    // helperText={errors.fechaRegistro}
+                  // error={!!errors.fechaRegistro}
+                  // helperText={errors.fechaRegistro}
                   />
 
                 </Grid>
@@ -637,7 +671,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ mt: 2 ,p: "0px 58px" }}
+              sx={{ mt: 2, p: "0px 58px" }}
             >
               <Grid container spacing={2}>
 
@@ -695,25 +729,25 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
                   {/* Seleccionar Puesto */}
                   <FormControl fullWidth required sx={{ mt: 2 }}>
-                      <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                      <Select
-                        labelId="nro-puesto-label"
-                        id="select-puesto"
-                        label="Nro. Puesto"
-                        value={formDataAsginarPuesto.id_puesto}
-                        onChange={(e) => {
-                          const value = e.target.value as string;
-                          setFormDataAsignarPuesto({ ...formDataAsginarPuesto, id_puesto: value });
-                        }}
-                        startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                      >
-                        {puestosFiltrados.map((puesto: Puesto) => (
-                          <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
-                            {puesto.numero_puesto}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                    <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
+                    <Select
+                      labelId="nro-puesto-label"
+                      id="select-puesto"
+                      label="Nro. Puesto"
+                      value={formDataAsginarPuesto.id_puesto}
+                      onChange={(e) => {
+                        const value = e.target.value as string;
+                        setFormDataAsignarPuesto({ ...formDataAsginarPuesto, id_puesto: value });
+                      }}
+                      startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      {puestosFiltrados.map((puesto: Puesto) => (
+                        <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                          {puesto.numero_puesto}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -776,7 +810,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ mt: 2 ,p: "0px 58px" }}
+              sx={{ mt: 2, p: "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -820,8 +854,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <Business sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.bloque}
-                    // helperText={errors.bloque}
+                  // error={!!errors.bloque}
+                  // helperText={errors.bloque}
                   />
                 </Grid>
               </Grid>
@@ -835,7 +869,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ mt: 2 ,p: "0px 58px" }}
+              sx={{ mt: 2, p: "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -879,8 +913,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <Business sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.bloque}
-                    // helperText={errors.bloque}
+                  // error={!!errors.bloque}
+                  // helperText={errors.bloque}
                   />
                 </Grid>
               </Grid>
@@ -931,10 +965,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange} 
-            sx={{ 
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            sx={{
               "& .MuiTabs-flexContainer": {
                 minHeight: "36px",
               },
@@ -1012,13 +1046,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   registrarPuesto(e);
                 }
               }
-              if(activeTab === 1){
+              if (activeTab === 1) {
                 asignarPuesto(e);
               }
-              if(activeTab === 2){
+              if (activeTab === 2) {
                 registrarBloque(e);
               }
-              if(activeTab === 3){
+              if (activeTab === 3) {
                 registrarGiroNegocio(e);
               }
             }}
