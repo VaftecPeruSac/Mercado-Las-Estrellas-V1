@@ -45,6 +45,7 @@ interface Puesto {
 }
 
 interface Socio {
+  id_socio: number;
   socio: string;
 }
 
@@ -703,7 +704,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
                     >
                       {socios.map((socio: Socio) => (
-                        <MenuItem key={socio.socio} value={socio.socio}>
+                        <MenuItem key={socio.id_socio} value={socio.id_socio}>
                           {socio.socio}
                         </MenuItem>
                       ))}

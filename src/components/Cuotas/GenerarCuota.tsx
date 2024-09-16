@@ -151,8 +151,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     };
 
     try {
-      // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
-      const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
+      // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
 
       if(response.status === 200) {
         alert("La cuota fue registrada con exito");
