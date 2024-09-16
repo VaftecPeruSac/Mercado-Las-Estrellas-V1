@@ -453,7 +453,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               Leer detenidamente los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            <pre>{JSON.stringify(formDataPuesto, null, 2)}</pre>
+            {/* <pre>{JSON.stringify(formDataPuesto, null, 2)}</pre> */}
 
             <Box
               component="form"
