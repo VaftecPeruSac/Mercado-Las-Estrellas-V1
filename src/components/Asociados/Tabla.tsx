@@ -16,14 +16,16 @@ import {
   Select,
   MenuItem,
   FormControl,
+  Typography,
+  TextField,
 } from "@mui/material";
 import {
   Download,
   WhatsApp,
   Print,
   Payments,
-  Plagiarism,
   SaveAs,
+  Search,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
@@ -65,8 +67,7 @@ interface Data {
   block_nombre: string;
   inquilino: string;
   deuda: string;
-  cuotas_extra: string;
-  // pagar: string;          
+  ver_reporte: string;
 }
 
 const columns: readonly Column[] = [
@@ -80,14 +81,12 @@ const columns: readonly Column[] = [
   { id: "inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
   { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
   { id: "deuda", label: "Deuda Total", minWidth: 50 }, // Deuda total
-  { id: "cuotas_extra", label: "Cuotas Extraordinarias", minWidth: 10 }, // Cuotas extraordinarias
-  // { id: "pagar", label: "Pagar", minWidth: 50 },      // Pagar
+  { id: "ver_reporte", label: "Deudas / Pagos", minWidth: 10 }, // Ver Deuda / Pagos
   { id: "accion", label: "Acción", minWidth: 20 },    // Acción
 ];
 
 const TablaAsociados: React.FC = () => {
-  // const [page, setPage] = useState(0);
-  const [searchValue, setSearchValue] = useState("");
+
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
   const [openPagar, setOpenPagar] = useState<boolean>(false);
@@ -336,6 +335,45 @@ const TablaAsociados: React.FC = () => {
             </Button>
           </Box>
         </Box>
+
+        {/* Buscar socio */}
+        <Box
+        sx={{
+          padding: "15px 35px",
+          borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+          Buscar por:
+        </Typography>
+
+        {/* Input Nombre Socio */}
+        <TextField sx={{ width: "400px" }} label="Nombre del socio" />
+
+        {/* Boton Buscar */}
+        <Button
+          variant="contained"
+          startIcon={<Search />}
+          sx={{
+            backgroundColor: "#008001",
+            "&:hover": {
+              backgroundColor: "#2c6d33",
+            },
+            height: "50px",
+            width: "170px",
+            marginLeft: "25px",
+            borderRadius: "30px",
+          }}
+          // onClick={}
+        >
+          Buscar
+        </Button>
+      </Box>
+
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
@@ -379,39 +417,34 @@ const TablaAsociados: React.FC = () => {
                                 column.id === "deuda" ? "#721c24" : undefined,
                             }}
                           >
-                            {column.id === "cuotas_extra" ? (
-                              <Box sx={{ display: "flex" }}>
+                            {column.id === "ver_reporte" ? (
+                              <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <IconButton
-                                  aria-label="edit"
-                                  sx={{ color: "black" }}
+                                  aria-label="payment"
+                                  sx={{ color: "crimson" }}
+                                  onClick={handleOpenPagar}
                                 >
-                                  <SaveAs />
+                                  <Payments />
                                 </IconButton>
+                                <Typography> / </Typography>
                                 <IconButton
-                                  aria-label="edit"
-                                  sx={{ color: "black" }}
+                                  aria-label="payment"
+                                  sx={{ color: "green" }}
+                                  onClick={handleOpenPagar}
                                 >
-                                  <Plagiarism />
+                                  <Payments />
                                 </IconButton>
                               </Box>
-                              // ) : column.id === "pagar" ? (
-                              //   <IconButton
-                              //     aria-label="payment"
-                              //     sx={{ color: "green" }}
-                              //     onClick={handleOpenPagar}
-                              //   >
-                              //     <Payments />
-                              //   </IconButton>
                             ) : column.id === "accion" ? (
                               <Box sx={{ display: "flex" }}>
                                 <IconButton
                                   aria-label="edit"
-                                  sx={{ color: "black" }}
+                                  sx={{ color: "#0478E3" }}
                                 >
-                                  <Plagiarism />
+                                  <SaveAs />
                                 </IconButton>
                                 <IconButton
-                                  aria-label="copy"
+                                  aria-label="download"
                                   sx={{ color: "black" }}
                                 >
                                   <Download />

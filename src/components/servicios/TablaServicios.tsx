@@ -16,8 +16,10 @@ import {
   Select,
   MenuItem,
   FormControl,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { Print, SaveAs, DeleteForever } from "@mui/icons-material";
+import { Print, SaveAs, DeleteForever, Search } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
@@ -298,6 +300,44 @@ const TablaServicios: React.FC = () => {
             </Button>
           </Box>
         </Box>
+
+        <Box
+        sx={{
+          padding: "15px 35px",
+          borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+          Buscar por:
+        </Typography>
+
+        {/* Input Nombre Servicio */}
+        <TextField sx={{ width: "400px" }} label="Nombre del servicio" />
+
+        {/* Boton Buscar */}
+        <Button
+          variant="contained"
+          startIcon={<Search />}
+          sx={{
+            backgroundColor: "#008001",
+            "&:hover": {
+              backgroundColor: "#2c6d33",
+            },
+            height: "50px",
+            width: "170px",
+            marginLeft: "25px",
+            borderRadius: "30px",
+          }}
+          // onClick={}
+        >
+          Buscar
+        </Button>
+      </Box>
+
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}

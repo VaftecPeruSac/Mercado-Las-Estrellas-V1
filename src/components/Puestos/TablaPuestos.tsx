@@ -1,10 +1,11 @@
-import { DeleteForever, Print, SaveAs } from "@mui/icons-material";
+import { DeleteForever, Print, SaveAs, Search } from "@mui/icons-material";
 import {
   Box,
   Button,
   Card,
   FormControl,
   IconButton,
+  InputLabel,
   MenuItem,
   Pagination,
   Paper,
@@ -15,8 +16,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { GridAddIcon } from "@mui/x-data-grid";
+import { GridAddIcon, GridInputRowSelectionModel } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import RegistrarPuesto from "./RegistrarPuesto";
@@ -37,6 +40,16 @@ interface Puesto {
     nombre: string;
   };
   inquilino: string;
+}
+
+interface Bloque {
+  id_block: string;
+  nombre: string;
+}
+
+interface GiroNegocio {
+  id_gironegocio: string;
+  nombre: string;
 }
 
 interface Column {
@@ -78,11 +91,23 @@ const columns: readonly Column[] = [
 ];
 
 const TablaPuestos: React.FC = () => {
+
+  // Para filtrar los datos
+  const [bloques, setBloques] = useState<Bloque[]>([]);
+  const [girosNegocio, setGirosNegocio] = useState<GiroNegocio[]>([]);
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<string>("");
+  const [nroPuestoIngresado, setNroPuestoIngresado] = useState<string>("");
+  const [giroSeleccionado, setGiroSeleccionado] = useState<string>("");
+
   // Para la tabla
   const [puestos, setPuestos] = useState<Data[]>([]);
+  const [puestosFiltrados, setPuestosFiltrados] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActal, setPaginaActual] = useState(1); // Página actual
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<Puesto | null>(null);
+
+  // Para exportar la información
+  const [exportFormat, setExportFormat] = useState<string>("");
 
   // Para el modal
   const [open, setOpen] = useState(false);
@@ -94,9 +119,6 @@ const TablaPuestos: React.FC = () => {
   };
 
   const handleClose = () => setOpen(false);
-
-  // Para exportar la información
-  const [exportFormat, setExportFormat] = useState<string>("");
 
   // Metodo para exportar el listado de puestos
   const handleExportPuestos = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -150,10 +172,35 @@ const TablaPuestos: React.FC = () => {
     return `${formattedDay}/${formattedMonth}/${year}`;
   };
 
+  // Obtener bloques
   useEffect(() => {
-    fetchPuestos();
+    const fetchBloques = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
+        console.log("Bloques obtenidos:", response.data.data);
+        setBloques(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los bloques", error);
+      }
+    };
+    fetchBloques();
   }, []);
 
+  // Obtener giro de negocio
+  useEffect(() => {
+    const fechGiroNegocio = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios");
+        console.log("Giros de negocio obtenidos:", response.data.data);
+        setGirosNegocio(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los giro de negocio", error);
+      }
+    };
+    fechGiroNegocio();
+  }, []);
+
+  // Listar puestos
   const fetchPuestos = async (page: number = 1) => {
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}`); //publico
@@ -178,6 +225,7 @@ const TablaPuestos: React.FC = () => {
       }));
       console.log("Total Pages:", totalPages);
       setPuestos(data);
+      // setPuestosFiltrados(data);
       setTotalPages(response.data.meta.last_page); // Total de páginas
       setPaginaActual(response.data.meta.current_page); // Página actual
       console.log("Datos recuperados con exito", response.data);
@@ -185,6 +233,26 @@ const TablaPuestos: React.FC = () => {
       console.error("Error al traer datos", error);
     }
   };
+
+  useEffect(() => {
+    fetchPuestos();
+  }, []);
+
+  // Filtrar puestos por Bloque / N° Puesto / Giro de Negocio
+  const buscarPuestos = () => {
+    // const filtrarPuestos = puestos.filter((puesto) => {
+    //   return (
+    //     (bloqueSeleccionado === "" || puesto.block.id_block === bloqueSeleccionado) &&
+    //     (nroPuestoIngresado === "" || puesto.numero_puesto.toLowerCase().includes(nroPuestoIngresado.toLowerCase())) &&
+    //     (giroSeleccionado === "" || puesto.giro_negocio.id_gironegocio === giroSeleccionado),
+    //     console.log(`${puesto.block.id_block} === ${bloqueSeleccionado}`)
+    //   );
+    // });
+    // setPuestosFiltrados(filtrarPuestos);
+    // console.log("Selecciono:", bloqueSeleccionado, nroPuestoIngresado, giroSeleccionado)
+    // console.log("Filtrado:", filtrarPuestos)
+    alert("En proceso de actualización");
+  }
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
@@ -259,9 +327,9 @@ const TablaPuestos: React.FC = () => {
             Agregar Puesto
           </Button>
 
-          <RegistrarPuesto 
-            open={open} 
-            handleClose={handleClose} 
+          <RegistrarPuesto
+            open={open}
+            handleClose={handleClose}
             puesto={puestoSeleccionado}
           />
 
@@ -340,6 +408,93 @@ const TablaPuestos: React.FC = () => {
           </Box>
         </Box>
 
+        {/* Buscar */}
+        <Box
+          sx={{
+            padding: "15px 35px",
+            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+            Buscar por:
+          </Typography>
+
+          {/* Seleccionar Bloque */}
+          <FormControl sx={{ width: "200px", mr: 2, textAlign: "left" }}>
+            <InputLabel id="bloque-label">Bloque</InputLabel>
+            <Select
+              labelId="bloque-label"
+              label="Bloque"
+              id="select-bloque"
+              value={bloqueSeleccionado}
+              onChange={(e) => {
+                const value = e.target.value;
+                setBloqueSeleccionado(value);
+              }}
+            >
+              <MenuItem value="">Todos</MenuItem>
+              {bloques.map((bloque: Bloque) => (
+                <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                  {bloque.nombre}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Input Numero de puesto */}
+          <TextField 
+            sx={{ width: "200px" }}
+            type="text"
+            label="Numero de puesto" 
+            onChange={(e) => setNroPuestoIngresado(e.target.value)}
+          />
+
+          {/* Seleccionar Giro negocio */}
+          <FormControl sx={{ width: "200px", ml: 2, textAlign: "left" }}>
+            <InputLabel id="giro-negocio-label">Giro de negocio</InputLabel>
+            <Select
+              labelId="giro-negocio-label"
+              label="Giro de negocio"
+              id="select-giro-negocio"
+              value={giroSeleccionado}
+              onChange={(e) => {
+                const value = e.target.value;
+                setGiroSeleccionado(value);
+              }}
+            >
+              <MenuItem value="">Todos</MenuItem>
+              {girosNegocio.map((giro: GiroNegocio) => (
+                <MenuItem key={giro.id_gironegocio} value={giro.id_gironegocio}>
+                  {giro.nombre}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Boton Buscar */}
+          <Button
+            variant="contained"
+            startIcon={<Search />}
+            sx={{
+              backgroundColor: "#008001",
+              "&:hover": {
+                backgroundColor: "#2c6d33",
+              },
+              height: "50px",
+              width: "170px",
+              marginLeft: "25px",
+              borderRadius: "30px",
+            }}
+            onClick={buscarPuestos}
+          >
+            Buscar
+          </Button>
+        </Box>
+
         {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -413,15 +568,13 @@ const TablaPuestos: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box
-            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
-          >
+          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
             <Pagination
               count={totalPages} // Total de páginas
               page={paginaActal} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-            // sx={{ marginLeft: "25%" }}
+              // sx={{ marginLeft: "25%" }}
             />
           </Box>
         </Paper>

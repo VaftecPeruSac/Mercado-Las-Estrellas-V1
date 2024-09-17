@@ -78,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                 pl: '10px'
               }}
             >
-              <TextField
+              {/* <TextField
                 id="input-with-icon-textfield"
                 placeholder="Buscar"
                 InputProps={{
@@ -100,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     borderBottom: "none"
                   }
                 }}
-              />
+              /> */}
             </Box>
             <NotificationsNone sx={{ color: 'black' }} />
           </Box>
@@ -130,9 +130,8 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Mi Perfil</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Cerrar sesión</MenuItem>
           </Menu>
         </Toolbar>
         <Drawer
