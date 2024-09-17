@@ -341,18 +341,18 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
       // Manejar la respuesta del servidor
       if (response.status === 200) {
-        alert(`El puesto ${dataToSend.numero_puesto} fue actualizado con exito`);
+        alert(`Los datos del puesto: "${dataToSend.numero_puesto}" fue actualizado con exito`);
         // Limpiar los campos del formulario
         limpiarRegistrarPuesto();
         // Cerrar el formulario
         handleClose();
       } else {
-        alert("No se pudo actualizar la información del puesto. Intentelo nuevamente.");
+        alert("No se pudo actualizar los datos del puesto. Intentelo nuevamente.");
       }
 
     } catch (error) {
-      console.error("Error al actualizar la información del puesto:", error);
-      alert("Ocurrió un error al actualizar la información del puesto. Inténtalo nuevamente.");
+      console.error("Error al editar los datos del puesto:", error);
+      alert("Ocurrió un error al actualizar los datos del puesto. Inténtalo nuevamente.");
     }
 
   }

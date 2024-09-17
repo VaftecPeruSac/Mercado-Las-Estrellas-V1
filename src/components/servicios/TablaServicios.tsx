@@ -17,13 +17,13 @@ import {
   MenuItem,
   FormControl,
 } from "@mui/material";
-import { Download, WhatsApp, Print, SaveAs } from "@mui/icons-material";
+import { Print, SaveAs, DeleteForever } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
 
-interface Servicios {
-  id_servicio: number;
+interface Servicio {
+  id_servicio: string;
   descripcion: string;
   costo_unitario: string;
   tipo_servicio: string;
@@ -47,7 +47,6 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  { id: "id_servicio", label: "#ID", minWidth: 50 }, // Reduce el minWidth
   { id: "descripcion", label: "Descripción", minWidth: 50 },
   { id: "costo_unitario", label: "Costo Unitario", minWidth: 50 },
   { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
@@ -56,12 +55,22 @@ const columns: readonly Column[] = [
 ];
 
 const TablaServicios: React.FC = () => {
+
+  // Para la tabla
+  const [servicios, setServicios] = useState<Data[]>([]);
+  const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
+
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
-  const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = React.useState("");
+  const [open, setOpen] = useState(false);
 
-  const handleOpen = () => setOpen(true);
+  // Abrir modal con un servicio seleccionado o vacio
+  const handleOpen = (servicio?: Servicio) => {
+    setServicioSeleccionado(servicio || null);
+    setOpen(true);
+  }
+
   const handleClose = () => setOpen(false);
 
   // Metodo para exportar el listado de servicios
@@ -97,8 +106,6 @@ const TablaServicios: React.FC = () => {
 
   };
 
-  const [servicios, setServicios] = useState<Data[]>([]);
-
   const formatDate = (fecha: string): string => {
     // Crear un objeto Date a partir de la cadena de fecha
 
@@ -122,7 +129,7 @@ const TablaServicios: React.FC = () => {
       // const response = await axios.get("http://127.0.0.1:8000/v1/servicios?page=${page}"); //local
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}`);
 
-      const data = response.data.data.map((item: Servicios) => ({
+      const data = response.data.data.map((item: Servicio) => ({
         id_servicio: item.id_servicio,
         descripcion: item.descripcion,
         costo_unitario: item.costo_unitario,
@@ -212,12 +219,12 @@ const TablaServicios: React.FC = () => {
               width: "230px",
               borderRadius: "30px",
             }}
-            onClick={handleOpen}
+            onClick={() => handleOpen()}
           >
             Agregar Servicio
           </Button>
 
-          <RegistrarServicio open={open} handleClose={handleClose} />
+          <RegistrarServicio open={open} handleClose={handleClose} servicio={servicioSeleccionado} />
 
           <Box
             sx={{
@@ -303,11 +310,7 @@ const TablaServicios: React.FC = () => {
                       key={column.id}
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
-                      sx={{
-                        //   backgroundColor: column.id === 'deuda_total' ? '#f8d7da' : undefined,
-                        //   color: column.id === 'deuda_total' ? '#721c24' : undefined,
-                        fontWeight: "bold",
-                      }}
+                      sx={{ fontWeight: "bold", }}
                     >
                       {column.label}
                     </TableCell>
@@ -317,44 +320,36 @@ const TablaServicios: React.FC = () => {
               <TableBody>
                 {servicios
                   // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                  .map((servicio) => (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
                       {columns.map((column) => {
-                        const value = (row as any)[column.id];
-
-                        // Renderización específica para la columna "accion"
-                        if (column.id === "accion") {
-                          return (
+                        const value = column.id === "accion" 
+                          ? ""
+                          : (servicio as any)[column.id];
+                        return (
                             <TableCell key={column.id} align={column.align}>
-                              <Box sx={{ display: "flex" }}>
+                              {column.id === "accion" ? (
+                                <Box sx={{ display: "flex" }}>
                                 <IconButton
                                   aria-label="edit"
-                                  sx={{ color: "black" }}
+                                  sx={{ color: "#0478E3" }}
+                                  onClick={() => handleOpen(servicio)}
                                 >
                                   <SaveAs />
                                 </IconButton>
                                 <IconButton
-                                  aria-label="copy"
-                                  sx={{ color: "black" }}
+                                  aria-label="delete"
+                                  sx={{ color: "red" }}
                                 >
-                                  <Download />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="whatsapp"
-                                  sx={{ color: "green" }}
-                                >
-                                  <WhatsApp />
+                                  <DeleteForever />
                                 </IconButton>
                               </Box>
+                              ) : (
+                                value
+                              )}
                             </TableCell>
                           );
-                        }
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {value}
-                          </TableCell>
-                        );
-                      })}
+                        })}
                     </TableRow>
                   ))}
               </TableBody>

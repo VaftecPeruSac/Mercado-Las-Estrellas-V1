@@ -1,30 +1,55 @@
 import { AttachMoney, Bolt, Event } from '@mui/icons-material';
 import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
+  servicio: Editarservicio | null;
 }
 
-const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
+interface Editarservicio {
+  id_servicio: string;
+  descripcion: string;
+  costo_unitario: string;
+  tipo_servicio: string;
+  fecha_registro: string;
+}
+
+const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
   
   const [activeTab, setActiveTab] = useState(0);
 
   // Datos para registrar el servicio
   const [formData, setFormData] = useState({
+    id_servicio: "",
     descripcion: "",
     costo_unitario: "",
     tipo_servicio: "",
-    estado: "1",
+    estado: "Activo",
     fecha_registro: "",
   });
 
-  // Cerrar modal
-  const handleCloseModal = () => {
-    handleClose();
+  const formatDate = (fecha: string) => {
+    const [dia, mes, anio] = fecha.split("/");
+    return `${anio}-${mes}-${dia}`;
   };
+
+  // Llenar campos con los datos del servicio seleccionado
+  useEffect(() => {
+    if(servicio){
+      console.log("Servicio obtenido:", servicio);
+      setFormData({
+        id_servicio: servicio.id_servicio || "",
+        descripcion: servicio.descripcion || "",
+        costo_unitario: servicio.costo_unitario || "",
+        tipo_servicio: servicio.tipo_servicio || "",
+        estado: "Activo",
+        fecha_registro: formatDate(servicio.fecha_registro) || "",
+      });
+    }
+  }, [servicio]);
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
@@ -43,6 +68,23 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
     });
   };
 
+  const limpiarRegistarServicio = () => {
+    setFormData({
+      id_servicio: "",
+      descripcion: "",
+      costo_unitario: "",
+      tipo_servicio: "",
+      estado: "1",
+      fecha_registro: "",
+    });
+  };  
+
+  // Cerrar modal
+  const handleCloseModal = () => {
+    handleClose();
+    limpiarRegistarServicio();
+  };
+
   // Registrar servicio
   const registrarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
@@ -50,7 +92,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
     e.preventDefault();
 
     // Data a enviar
-    const { ...dataToSend } = formData;
+    const { id_servicio, ...dataToSend } = formData;
 
     try {
 
@@ -62,13 +104,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
       if(response.status === 200) {
         alert("Servicio registrado con exito");
         // Limpiar los campos del formulario
-        setFormData({
-          descripcion: "",
-          costo_unitario: "",
-          tipo_servicio: "",
-          estado: "1",
-          fecha_registro: "",
-        });
+        limpiarRegistarServicio();
         // Cerrar el formulario
         handleClose();
       } else {
@@ -78,6 +114,39 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
     } catch (error) {
       console.error("Error al registrar el servicio:", error);
       alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+    }
+
+  }
+
+  // Actualizar servicio
+  const editarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    // Evita el comportamiente por defecto del clic
+    e.preventDefault();
+
+    // Data a enviar
+    const { ...dataToSend } = formData;
+
+    try {
+
+      // Conexión al servicio
+      const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
+      // const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
+
+      // Manejar la respuesta del servidor
+      if(response.status === 200) {
+        alert(`Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con exito`);
+        // Limpiar los campos del formulario
+        limpiarRegistarServicio();
+        // Cerrar el formulario
+        handleClose();
+      } else {
+        alert("No se pudo actualizar los datos del servicio. Intentelo nuevamente.")
+      }
+
+    } catch (error) {
+      console.error("Error al editar los datos del servicio:", error);
+      alert("Ocurrió un error al editar los datos del servicio. Inténtalo nuevamente.");
     }
 
   }
@@ -346,7 +415,15 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#388E3C",
               },
             }}
-            onClick={registrarServicio}
+            onClick={(e) => {
+              if(servicio){ 
+                // Si se selecciono un servicio
+                editarServicio(e);
+              } else {
+                // Si servicio es nulo
+                registrarServicio(e);
+              }
+            }}
           >
             Registrar
           </Button>

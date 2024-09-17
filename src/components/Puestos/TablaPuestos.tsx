@@ -21,7 +21,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import RegistrarPuesto from "./RegistrarPuesto";
 
-interface Puestos {
+interface Puesto {
   id_puesto: string;
   numero_puesto: string;
   area: string;
@@ -82,13 +82,13 @@ const TablaPuestos: React.FC = () => {
   const [puestos, setPuestos] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActal, setPaginaActual] = useState(1); // Página actual
-  const [puestoSeleccionado, setPuestoSeleccionado] = useState<Puestos | null>(null);
+  const [puestoSeleccionado, setPuestoSeleccionado] = useState<Puesto | null>(null);
 
   // Para el modal
   const [open, setOpen] = useState(false);
 
   // Abrir modal con un pueto seleccionado o vacio
-  const handleOpen = (puesto?: Puestos) => {
+  const handleOpen = (puesto?: Puesto) => {
     setPuestoSeleccionado(puesto || null);
     setOpen(true);
   };
@@ -159,7 +159,7 @@ const TablaPuestos: React.FC = () => {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
 
-      const data = response.data.data.map((item: Puestos) => ({
+      const data = response.data.data.map((item: Puesto) => ({
         id_puesto: item.id_puesto,
         numero_puesto: item.numero_puesto,
         area: item.area,
