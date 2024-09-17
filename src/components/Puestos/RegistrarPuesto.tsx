@@ -115,11 +115,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const [formDataAsginarPuesto, setFormDataAsignarPuesto] = useState({
     id_puesto: "",
     id_socio: "",
-    // bloque: "",
-    // socio: "",
-    // numero_puesto: "",
   });
-
 
   // Datos para registrar el bloque
   const [formDataBloque, setFormDataBloque] = useState({
@@ -266,8 +262,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       fecha_registro: "",
     });
   };
+
   const limpiarAsignarPuesto = () => {
-    setBloqueSeleccionado("")
+    setBloqueSeleccionado("");
+    setFormDataAsignarPuesto({
+      id_puesto: "",
+      id_socio: "",
+    });
   };
 
   const limpiarNuevoBloque = () => {
@@ -284,9 +285,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
-    limpiarRegistrarPuesto()
-    limpiarAsignarPuesto()
-    limpiarNuevoBloque()
+    limpiarRegistrarPuesto();
+    limpiarAsignarPuesto();
+    limpiarNuevoBloque();
+    limpiarGiroNegocio();
   };
 
   // Registrar Puesto
@@ -308,14 +310,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         alert("Puesto registrado con exito");
         // Limpiar los campos del formulario
-        setFormDataPuesto({
-          id_puesto: "",
-          id_gironegocio: "",
-          id_block: "",
-          numero_puesto: "",
-          area: "",
-          fecha_registro: "",
-        });
+        limpiarRegistrarPuesto();
         // Cerrar el formulario
         handleClose();
       } else {
@@ -329,16 +324,47 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   }
 
+  // Editar Puesto
+  const editarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    // Evita el comportamiente por defecto del clic
+    e.preventDefault();
+
+    // Data a enviar
+    const { ...dataToSend } = formDataPuesto;
+
+    try {
+
+      // Conexión al servicio
+      const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/puestos}", dataToSend);
+      // const response = await axios.put("http://127.0.0.1:8000/v1/puestos", dataToSend);
+
+      // Manejar la respuesta del servidor
+      if (response.status === 200) {
+        alert(`El puesto ${dataToSend.numero_puesto} fue actualizado con exito`);
+        // Limpiar los campos del formulario
+        limpiarRegistrarPuesto();
+        // Cerrar el formulario
+        handleClose();
+      } else {
+        alert("No se pudo actualizar la información del puesto. Intentelo nuevamente.");
+      }
+
+    } catch (error) {
+      console.error("Error al actualizar la información del puesto:", error);
+      alert("Ocurrió un error al actualizar la información del puesto. Inténtalo nuevamente.");
+    }
+
+  }
+
   // Asignar Puesto
   const asignarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
     // Evita el comportamiente por defecto del clic
     e.preventDefault();
-    const { ...dataToSend } = formDataAsginarPuesto;
-    console.log(dataToSend);
 
     // Data a enviar
-    // const { ...dataToSend } = formDataAsginarPuesto;
+    const { ...dataToSend } = formDataAsginarPuesto;
 
     try {
 
@@ -350,10 +376,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         alert("Puesto asignado con exito");
         // Limpiar los campos del formulario
-        setFormDataAsignarPuesto({
-          id_puesto: "",
-          id_socio: "",
-        });
+        limpiarAsignarPuesto();
         // Cerrar el formulario
         handleClose();
       } else {
@@ -362,7 +385,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
     } catch (error) {
       console.error("Error al registrar el puesto:", error);
-      alert("En proceso de actualización...");
+      alert("Error durante la asignación del puesto. Intentelo nuevamente.");
     }
 
   }
@@ -386,9 +409,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         alert("Bloque registrado con exito");
         // Limpiar los datos del formulario
-        setFormDataBloque({
-          nombre: ""
-        });
+        limpiarNuevoBloque();
         handleClose();
       } else {
         alert("No se pudo registrar el bloque. Intentelo nuevamente.")
@@ -420,9 +441,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         alert("Giro de negocio registrado con exito");
         // Limpiar los datos del formulario
-        setFormDataGiroNegocio({
-          nombre: ""
-        });
+        limpiarGiroNegocio();
         handleClose();
       } else {
         alert("No se pudo registrar el giro de negocio. Intentelo nuevamente.")
@@ -1040,9 +1059,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               if(activeTab === 0){
                 if(puesto){
                   // Si el puesto existe, editar puesto
-
+                  editarPuesto(e);
                 } else {
-                  // Si puesto es vacio, registrar puesto
+                  // Si puesto es nulo, registrar puesto
                   registrarPuesto(e);
                 }
               }
