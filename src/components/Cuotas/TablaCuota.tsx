@@ -38,10 +38,13 @@ import axios from "axios";
 import GenerarCuota from "./GenerarCuota";
 
 interface Cuotas {
-  id_cuota: string; // Nombre del socio
+  id_deuda: string; // Nombre del socio
   fecha_registro: string;
   fecha_vencimiento: string;
   importe: string;
+  socio_nombre: string;
+  puesto_descripcion: string;
+  servicio_descripcion: string;
 }
 
 interface Column {
@@ -53,14 +56,20 @@ interface Column {
 }
 
 interface Data {
-  id_cuota: string;
+  id_deuda: string;
+  socio_nombre: string;
+  puesto_descripcion: string;
+  servicio_descripcion: string;
   fecha_registro: string;
   fecha_vencimiento: string;
   importe: string;
 }
 
 const columns: readonly Column[] = [
-  { id: "id_cuota", label: "# ID", minWidth: 50 }, // Nombre del socio
+  { id: "id_deuda", label: "# ID", minWidth: 50 }, // Nombre del socio
+  { id: "socio_nombre", label: "Socio", minWidth: 50 },
+  { id: "puesto_descripcion", label: "Puesto", minWidth: 50 },
+  { id: "servicio_descripcion", label: "Servicio", minWidth: 50 },
   { id: "fecha_registro", label: "Fecha Emisión", minWidth: 50 }, // DNI
   { id: "fecha_vencimiento", label: "fecha_vencimiento", minWidth: 50 }, // Nombre del bloque
   { id: "importe", label: "Importe", minWidth: 50 }, // Número del puesto
@@ -180,10 +189,14 @@ const TablaCuota: React.FC = () => {
 
       // console.log(anio, mes);
       const data = response.data.data.map((item: Cuotas) => ({
-        id_cuota: item.id_cuota,
+        id_deuda: item.id_deuda,
         fecha_registro: formatDate(item.fecha_registro),
         fecha_vencimiento: formatDate(item.fecha_vencimiento),
         importe: item.importe,
+        // --
+        socio_nombre: item.socio_nombre,
+        puesto_descripcion: item.puesto_descripcion,
+        servicio_descripcion: item.servicio_descripcion,
       }));
       setCuotas(data);
       setTotalPages(response.data.meta.last_page); // Total de páginas
