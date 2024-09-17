@@ -68,7 +68,32 @@ const columns: readonly Column[] = [
   // Acción
 ];
 
+// const options = [
+//   { value: 'chocolate', label: 'Chocolate' },
+//   { value: 'strawberry', label: 'Strawberry' },
+//   { value: 'vanilla', label: 'Vanilla' },
+// ];
+const optMeses = [
+  {value: "1", label: "Enero"},
+  {value: "2", label: "Febrero"},
+  {value: "3", label: "Marzo"},
+  {value: "4", label: "Abril"},
+  {value: "5", label: "Mayo"},
+  {value: "6", label: "Junio"},
+  {value: "7", label: "Julio"},
+  {value: "8", label: "Agosto"},
+  {value: "9", label: "Septiembre"},
+  {value: "10", label: "Octubre"},
+  {value: "11", label: "Noviembre"},
+  {value: "12", label: "Diciembre"},
+];
+interface IMeses {
+  value: string;
+  label: string;
+}
+
 const TablaCuota: React.FC = () => {
+  const [iMeses, setIMeses] = useState<IMeses[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
   const [exportFormat, setExportFormat] = useState<string>("");
@@ -125,11 +150,12 @@ const TablaCuota: React.FC = () => {
 
     e.preventDefault();
 
-    try {
-      alert("En proceso de actualización.");
-    } catch {
-      alert("Error al buscar la cuota. Intentelo nuevamente más tarde.")
-    }
+    // try {
+    //   alert("En proceso de actualización.");
+    // } catch {
+    //   alert("Error al buscar la cuota. Intentelo nuevamente más tarde.")
+    // }
+    fetchCuotas(1);
 
   }
 
@@ -149,9 +175,10 @@ const TablaCuota: React.FC = () => {
 
   const fetchCuotas = async (page: number = 1) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}`); //publico
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}&anio=${anio}&mes=${mes}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas?page=${page}"); //local
 
+      // console.log(anio, mes);
       const data = response.data.data.map((item: Cuotas) => ({
         id_cuota: item.id_cuota,
         fecha_registro: formatDate(item.fecha_registro),
@@ -174,6 +201,11 @@ const TablaCuota: React.FC = () => {
   useEffect(() => {
     fetchCuotas(paginaActual);
   }, []);
+
+  useEffect(() => {
+    setIMeses(optMeses);
+  }, []);
+  // setIMeses([]);
 
   return (
     <Box
@@ -357,24 +389,11 @@ const TablaCuota: React.FC = () => {
           <FormControl sx={{ minWidth: 250, mr: 1 }}>
             <InputLabel id="cuota-mes-label">Mes</InputLabel>
             <Select value={mes} onChange={manejarMesCambio} label="Mes">
-              {[
-                "Enero",
-                "Febrero",
-                "Marzo",
-                "Abril",
-                "Mayo",
-                "Junio",
-                "Julio",
-                "Agosto",
-                "Septiembre",
-                "Octubre",
-                "Noviembre",
-                "Diciembre",
-              ].map((mesNombre) => (
-                <MenuItem key={mesNombre} value={mesNombre}>
-                  {mesNombre}
-                </MenuItem>
-              ))}
+            {iMeses.map((iMes: IMeses) => (
+                        <MenuItem key={iMes.value} value={iMes.value}>
+                          {iMes.label}
+                        </MenuItem>
+                      ))}
             </Select>
           </FormControl>
 

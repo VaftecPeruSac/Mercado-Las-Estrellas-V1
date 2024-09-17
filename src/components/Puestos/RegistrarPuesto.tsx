@@ -230,7 +230,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       | SelectChangeEvent<string>
   ) => {
     const { name, value } = e.target;
-    setFormDataBloque({
+    setFormDataGiroNegocio({
       ...formDataGiroNegocio,
       [name]: value,
     });
