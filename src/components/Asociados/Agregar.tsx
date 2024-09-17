@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, ChangeEvent, useEffect } from "react";
 import {
   Box,
@@ -101,8 +104,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
 
   const [formDataInquilino, setformDataInquilino] = useState({
     nombre: "",
-    apellidoPaterno: "",
-    apellidoMaterno: "",
+    apellido_paterno: "",
+    apellido_materno: "",
     dni: "",
     telefono: "",
     bloque: "",
@@ -112,69 +115,69 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
 
 
   // Validaciones del formulario
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!tipoPersona) newErrors.tipoPersona = "Tipo de Persona es obligatorio";
-    if (!nombre) newErrors.nombre = "Nombre es obligatorio";
-    if (!apellidoPaterno)
-      newErrors.apellidoPaterno = "Apellido Paterno es obligatorio";
-    if (!apellidoMaterno)
-      newErrors.apellidoMaterno = "Apellido Materno es obligatorio";
-    if (!dni || !/^\d{8}$/.test(dni))
-      newErrors.dni = "DNI debe ser numérico y tener 8 caracteres";
-    if (!telefono || !/^\d{9}$/.test(telefono))
-      newErrors.telefono = "Teléfono debe ser numérico y tener 9 caracteres";
-    if (!correo || !/^[A-Za-z0-9._%+-]+@gmail\.com$/.test(correo))
-      newErrors.correo = "Correo debe ser un Gmail válido";
-    if (!direccion) newErrors.direccion = "Dirección es obligatoria";
+  // const validateForm = () => {
+  //   const newErrors: { [key: string]: string } = {};
+  //   if (!tipoPersona) newErrors.tipoPersona = "Tipo de Persona es obligatorio";
+  //   if (!nombre) newErrors.nombre = "Nombre es obligatorio";
+  //   if (!apellidoPaterno)
+  //     newErrors.apellidoPaterno = "Apellido Paterno es obligatorio";
+  //   if (!apellidoMaterno)
+  //     newErrors.apellidoMaterno = "Apellido Materno es obligatorio";
+  //   if (!dni || !/^\d{8}$/.test(dni))
+  //     newErrors.dni = "DNI debe ser numérico y tener 8 caracteres";
+  //   if (!telefono || !/^\d{9}$/.test(telefono))
+  //     newErrors.telefono = "Teléfono debe ser numérico y tener 9 caracteres";
+  //   if (!correo || !/^[A-Za-z0-9._%+-]+@gmail\.com$/.test(correo))
+  //     newErrors.correo = "Correo debe ser un Gmail válido";
+  //   if (!direccion) newErrors.direccion = "Dirección es obligatoria";
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
-  const handleEstadoChange = (event: SelectChangeEvent<string>) => {
-    setEstado(event.target.value);
-  };
+  // const handleEstadoChange = (event: SelectChangeEvent<string>) => {
+  //   setEstado(event.target.value);
+  // };
 
-  const handleCuotaChange = (event: SelectChangeEvent<string>) => {
-    setCuota(event.target.value);
-  };
+  // const handleCuotaChange = (event: SelectChangeEvent<string>) => {
+  //   setCuota(event.target.value);
+  // };
 
-  const manejarDniCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    // Permitir solo números y restringir a una longitud mínima
-    const regex = /^\d{0,8}$/; // Solo números, hasta 8 dígitos
-    if (regex.test(valor)) {
-      setDni(valor);
-    }
-  };
+  // const manejarDniCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const valor = e.target.value;
+  //   // Permitir solo números y restringir a una longitud mínima
+  //   const regex = /^\d{0,8}$/; // Solo números, hasta 8 dígitos
+  //   if (regex.test(valor)) {
+  //     setDni(valor);
+  //   }
+  // };
 
-  const manejarTelefonoCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    // Permitir solo números y restringir a una longitud mínima
-    const regex = /^[0-9]{0,9}$/; // Solo números, hasta 9 dígitos
-    if (regex.test(valor)) {
-      setTelefono(valor);
-    }
-  };
+  // const manejarTelefonoCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const valor = e.target.value;
+  //   // Permitir solo números y restringir a una longitud mínima
+  //   const regex = /^[0-9]{0,9}$/; // Solo números, hasta 9 dígitos
+  //   if (regex.test(valor)) {
+  //     setTelefono(valor);
+  //   }
+  // };
 
-  const manejarCambioCorreo = (event: ChangeEvent<HTMLInputElement>) => {
-    const valor = event.target.value;
-    const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/; // Valida que sea un Gmail
-    setCorreo(valor);
+  // const manejarCambioCorreo = (event: ChangeEvent<HTMLInputElement>) => {
+  //   const valor = event.target.value;
+  //   const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/; // Valida que sea un Gmail
+  //   setCorreo(valor);
 
-    if (!regex.test(valor)) {
-      console.error("Por favor ingrese un correo válido de Gmail.");
-    }
-  };
+  //   if (!regex.test(valor)) {
+  //     console.error("Por favor ingrese un correo válido de Gmail.");
+  //   }
+  // };
 
-  const manejarNombreCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    // Permitir solo caracteres alfabéticos y espacios
-    if (/^[a-zA-Z\s]*$/.test(valor)) {
-      setNombre(valor);
-    }
-  };
+  // const manejarNombreCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const valor = e.target.value;
+  //   // Permitir solo caracteres alfabéticos y espacios
+  //   if (/^[a-zA-Z\s]*$/.test(valor)) {
+  //     setNombre(valor);
+  //   }
+  // };
 
   const handleCloseModal = () => {
     limpiarCampos();
@@ -302,9 +305,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     try {
       // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
-
       if (response.status === 200) {
-
         alert("Se registró correctamente");
         setFormData({
           nombre: "",
@@ -352,8 +353,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
         alert("Se registró  inquilino correctamente");
         setformDataInquilino({
           nombre: "",
-          apellidoPaterno: "",
-          apellidoMaterno: "",
+          apellido_paterno: "",
+          apellido_materno: "",
           dni: "",
           telefono: "",
           bloque: "",
@@ -394,7 +395,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+            {/* <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre> */}
 
             <Box component="form" noValidate autoComplete="off">
 
@@ -763,6 +764,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
 
+            <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre>
+
+
             <Box component="form" noValidate autoComplete="off">
 
               <Grid container spacing={3} sx={{ mt: -4 }}>
@@ -802,6 +806,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                   <TextField
                     fullWidth
                     label="Nombre"
+                    name="nombre"
                     required
                     value={formDataInquilino.nombre}
                     onChange={manejarCambioInquilino}
@@ -820,6 +825,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                     fullWidth
                     label="Apellido Paterno"
                     required
+                    name="apellido_paterno"
+                    value={formDataInquilino.apellido_paterno}
+                    onChange={manejarCambioInquilino}
                     // value={apellidoPaterno}
                     // onChange={manejarApellidoPaternoCambio}
                     sx={{ mb: 2 }}
@@ -835,10 +843,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                   {/* Apellido Materno */}
                   <TextField
                     fullWidth
-                    label="Apellido Materno"
                     required
-                    // value={apellidoMaterno}
-                    // onChange={manejarApellidoMaternoCambio}
+                    label="Apellido Materno"
+                    name="apellido_materno"
+                    value={formDataInquilino.apellido_materno}
+                    onChange={manejarCambioInquilino}
                     sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: (
@@ -852,10 +861,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                   {/* DNI */}
                   <TextField
                     fullWidth
-                    label="DNI"
                     required
-                    value={dni}
-                    onChange={manejarDniCambio}
+                    label="DNI"
+                    name="dni"
+                    value={formDataInquilino.dni}
+                    onChange={manejarCambioInquilino}
                     InputProps={{
                       startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
                     }}
@@ -901,10 +911,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                     {/* Nro. Telefono */}
                     <TextField
                       fullWidth
-                      label="Nro. Telefono"
                       required
-                      value={telefono}
-                      onChange={manejarTelefonoCambio}
+                      label="Nro. Telefono"
+                      name="telefono"
+                      value={formDataInquilino.telefono}
+                      onChange={manejarCambioInquilino}
                       sx={{ mb: 2 }}
                       InputProps={{
                         startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
