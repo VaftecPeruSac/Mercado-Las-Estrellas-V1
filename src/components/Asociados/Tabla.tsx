@@ -32,53 +32,94 @@ import axios from "axios";
 import Agregar from "./Agregar";
 import Pagar from "./Pagar";
 
-interface Socios {
-  numero_puesto: string;
-  id_inquilino: string;
+interface Socio {
+  id_socio: string;
+  nombre_completo: string;
+  datos_socio: {
+    nombre_socio: string;
+    apellido_paterno: string;
+    apellido_materno: string;
+    dni: string;
+    sexo: string;
+    direccion: string;
+    telefono: string;
+    correo: string;
+  }
+  puesto: {
+    id_puesto: string;
+    numero_puesto: string;
+    bloque: {
+      id_block: string;
+      nombre: string;
+    }
+    gironegocio_nombre: string;
+    inquilino: {
+      id_inquilino: string;
+      nombre_inquilino: string;
+    }
+  }
   estado: string;
   fecha_registro: string;
-  socio: string;
-  dni: string;
-  telefono: string;
-  correo: string;
-  gironegocio_nombre: string;
-  block_nombre: string;
-  inquilino: string;
   deuda: string;
+  ver_reporte: string;
 }
 
+type NestedKeys<T> = {
+  [K in keyof T]: K extends string
+    ? T[K] extends object
+      ? `${K}.${NestedKeys<T[K]>}`
+      : K
+    : never
+}[keyof T];
+
 interface Column {
-  id: keyof Data | "accion";
+  id: NestedKeys<Data> | "accion";
   label: string;
   minWidth?: number;
   align?: "right";
   format?: (value: any) => string;
 }
 interface Data {
-  numero_puesto: string;
-  id_inquilino: string;
+  id_socio: string;
+  nombre_completo: string;
+  datos_socio: {
+    nombre_socio: string;
+    apellido_paterno: string;
+    apellido_materno: string;
+    dni: string;
+    sexo: string;
+    direccion: string;
+    telefono: string;
+    correo: string;
+  }
+  puesto: {
+    id_puesto: string;
+    numero_puesto: string;
+    bloque: {
+      id_block: string;
+      nombre: string;
+    }
+    gironegocio_nombre: string;
+    inquilino: {
+      id_inquilino: string;
+      nombre_inquilino: string;
+    }
+  }
   estado: string;
   fecha_registro: string;
-  socio: string;
-  dni: string;
-  telefono: string;
-  correo: string;
-  gironegocio_nombre: string;
-  block_nombre: string;
-  inquilino: string;
   deuda: string;
   ver_reporte: string;
 }
 
 const columns: readonly Column[] = [
-  { id: "socio", label: "Nombre", minWidth: 50 }, // Nombre del socio
-  { id: "dni", label: "DNI", minWidth: 50 },      // DNI
-  { id: "block_nombre", label: "Block", minWidth: 50 }, // Nombre del bloque
-  { id: "numero_puesto", label: "Puesto", minWidth: 50 }, // Número del puesto
-  { id: "gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
-  { id: "telefono", label: "Teléfono", minWidth: 50 },  // Teléfono
-  { id: "correo", label: "Correo", minWidth: 50 },      // Correo
-  { id: "inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
+  { id: "nombre_completo", label: "Nombre", minWidth: 50 }, // Nombre del socio
+  { id: "datos_socio.dni", label: "DNI", minWidth: 50 },      // DNI
+  { id: "puesto.bloque.nombre", label: "Block", minWidth: 50 }, // Nombre del bloque
+  { id: "puesto.numero_puesto", label: "Puesto", minWidth: 50 }, // Número del puesto
+  { id: "puesto.gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
+  { id: "datos_socio.telefono", label: "Teléfono", minWidth: 50 },  // Teléfono
+  { id: "datos_socio.correo", label: "Correo", minWidth: 50 },      // Correo
+  { id: "puesto.inquilino.nombre_inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
   { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
   { id: "deuda", label: "Deuda Total", minWidth: 50 }, // Deuda total
   { id: "ver_reporte", label: "Deudas / Pagos", minWidth: 10 }, // Ver Deuda / Pagos
@@ -87,11 +128,19 @@ const columns: readonly Column[] = [
 
 const TablaAsociados: React.FC = () => {
 
+  // Para filtrar los registros
+  const [nombreIngresado, setNombreIngresado] = useState<string>("");
+  const [socioSeleccionado, setSocioSeleccionado] = useState<Socio | null>(null);
+
   const [open, setOpen] = useState(false);
-  const [exportFormat, setExportFormat] = React.useState("");
+  const [exportFormat, setExportFormat] = useState("");
   const [openPagar, setOpenPagar] = useState<boolean>(false);
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (socio?: Socio) => {
+    setSocioSeleccionado(socio || null);
+    setOpen(true);
+  }
+
   const handleClose = () => setOpen(false);
 
   // Metodo para exportar el listado de socios
@@ -152,30 +201,46 @@ const TablaAsociados: React.FC = () => {
   const fetchSocios = async (page: number = 1) => {
     try {
       // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}`); //publico
-      console.log("Socios cargados:", response.data);
-      const data = response.data.data.map((item: Socios) => ({
-        numero_puesto: item.numero_puesto,
-        id_inquilino: item.id_inquilino,
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}&buscar_texto=${nombreIngresado}`); //publico
+
+      const data = response.data.data.map((item: Socio) => ({
+        "id_socio": item.id_socio,
+        "nombre_completo": item.nombre_completo,
+        "datos_socio.nombre_socio": item.datos_socio.nombre_socio,
+        "datos_socio.apellido_paterno": item.datos_socio.apellido_paterno,
+        "datos_socio.apellido_materno": item.datos_socio.apellido_materno,
+        "datos_socio.dni": item.datos_socio.dni,
+        "datos_socio.direccion": item.datos_socio.direccion,
+        "datos_socio.telefono": item.datos_socio.telefono,
+        "datos_socio.correo": item.datos_socio.correo,
+        "puesto.id_puesto": typeof item.puesto === 'object' ? item.puesto.id_puesto : '',
+        "puesto.numero_puesto": typeof item.puesto === 'object' ? item.puesto.numero_puesto : 'No asignado',
+        "puesto.bloque.id_block": typeof item.puesto === 'object' ? item.puesto.bloque.id_block : '',
+        "puesto.bloque.nombre": typeof item.puesto === 'object' ? item.puesto.bloque.nombre : 'No asignado',
+        "puesto.gironegocio_nombre": typeof item.puesto === 'object' ? item.puesto.gironegocio_nombre : 'No asignado',
+        "puesto.inquilino.nombre_inquilino": typeof item.puesto.inquilino === 'object' ? item.puesto.inquilino.nombre_inquilino : 'No asignado',
         estado: item.estado,
         fecha_registro: formatDate(item.fecha_registro),
-        socio: item.socio,
-        dni: item.dni,
-        telefono: item.telefono,
-        correo: item.correo,
-        gironegocio_nombre: item.gironegocio_nombre,
-        block_nombre: item.block_nombre,
-        inquilino: item.inquilino,
         deuda: item.deuda
       }));
+
       console.log('Total Pages:', totalPages);
       setSocios(data);
+      console.log(data);
       setTotalPages(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
       console.error("Error al traer datos", error);
     }
   };
+
+  useEffect(() => {
+    fetchSocios();
+  }, []);
+
+  const buscarSocios = () => {
+    fetchSocios();
+  }
 
   const handleSocioRegistrado = () => {
     fetchSocios();
@@ -185,11 +250,6 @@ const TablaAsociados: React.FC = () => {
     setPaginaActual(value);
     fetchSocios(value);
   };
-
-  useEffect(() => {
-    fetchSocios(paginaActual);
-  }, []);
-
 
   return (
     <Box
@@ -255,12 +315,16 @@ const TablaAsociados: React.FC = () => {
               width: "230px",
               borderRadius: "30px",
             }}
-            onClick={handleOpen}
+            onClick={() => handleOpen()}
           >
             Agregar Socio
           </Button>
 
-          <Agregar open={open} handleClose={handleClose} onSocioRegistrado={handleSocioRegistrado}
+          <Agregar 
+            open={open} 
+            handleClose={handleClose} 
+            socio={socioSeleccionado}
+            onSocioRegistrado={handleSocioRegistrado}
           />
 
           <Box
@@ -352,7 +416,11 @@ const TablaAsociados: React.FC = () => {
         </Typography>
 
         {/* Input Nombre Socio */}
-        <TextField sx={{ width: "400px" }} label="Nombre del socio" />
+        <TextField 
+          sx={{ width: "400px" }} 
+          label="Nombre del socio"
+          onChange={(e) => setNombreIngresado(e.target.value)}
+        />
 
         {/* Boton Buscar */}
         <Button
@@ -368,7 +436,7 @@ const TablaAsociados: React.FC = () => {
             marginLeft: "25px",
             borderRadius: "30px",
           }}
-          // onClick={}
+          onClick={buscarSocios}
         >
           Buscar
         </Button>
@@ -401,11 +469,11 @@ const TablaAsociados: React.FC = () => {
               <TableBody>
                 {socios
                   // .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                  .map((socio) => (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
                       {columns.map((column) => {
                         const value =
-                          column.id === "accion" ? "" : (row as any)[column.id];
+                          column.id === "accion" ? "" : (socio as any)[column.id];
                         return (
                           <TableCell
                             key={column.id}
@@ -440,6 +508,7 @@ const TablaAsociados: React.FC = () => {
                                 <IconButton
                                   aria-label="edit"
                                   sx={{ color: "#0478E3" }}
+                                  onClick={() => handleOpen(socio)}
                                 >
                                   <SaveAs />
                                 </IconButton>

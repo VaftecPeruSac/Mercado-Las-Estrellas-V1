@@ -19,7 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { GridAddIcon, GridInputRowSelectionModel } from "@mui/x-data-grid";
+import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import RegistrarPuesto from "./RegistrarPuesto";
@@ -101,7 +101,6 @@ const TablaPuestos: React.FC = () => {
 
   // Para la tabla
   const [puestos, setPuestos] = useState<Data[]>([]);
-  const [puestosFiltrados, setPuestosFiltrados] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActal, setPaginaActual] = useState(1); // Página actual
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<Puesto | null>(null);
@@ -225,7 +224,6 @@ const TablaPuestos: React.FC = () => {
       }));
       console.log("Total Pages:", totalPages);
       setPuestos(data);
-      // setPuestosFiltrados(data);
       setTotalPages(response.data.meta.last_page); // Total de páginas
       setPaginaActual(response.data.meta.current_page); // Página actual
       console.log("Datos recuperados con exito", response.data);
@@ -240,19 +238,6 @@ const TablaPuestos: React.FC = () => {
 
   // Filtrar puestos por Bloque / N° Puesto / Giro de Negocio
   const buscarPuestos = () => {
-    // const filtrarPuestos = puestos.filter((puesto) => {
-    //   return (
-    //     (bloqueSeleccionado === "" || puesto.block.id_block === bloqueSeleccionado) &&
-    //     (nroPuestoIngresado === "" || puesto.numero_puesto.toLowerCase().includes(nroPuestoIngresado.toLowerCase())) &&
-    //     (giroSeleccionado === "" || puesto.giro_negocio.id_gironegocio === giroSeleccionado),
-    //     console.log(`${puesto.block.id_block} === ${bloqueSeleccionado}`)
-    //   );
-    // });
-    // setPuestosFiltrados(filtrarPuestos);
-    // console.log("Selecciono:", bloqueSeleccionado, nroPuestoIngresado, giroSeleccionado)
-    // console.log("Filtrado:", filtrarPuestos)
-
-    // alert("En proceso de actualización");
     fetchPuestos();
   }
 
