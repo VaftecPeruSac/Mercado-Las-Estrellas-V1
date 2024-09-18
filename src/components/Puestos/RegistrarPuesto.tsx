@@ -66,7 +66,7 @@ interface Puesto {
 
 interface Socio {
   id_socio: number;
-  socio: string;
+  nombre_completo: string;
 }
 
 const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) => {
@@ -813,7 +813,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     >
                       {socios.map((socio: Socio) => (
                         <MenuItem key={socio.id_socio} value={socio.id_socio}>
-                          {socio.socio}
+                          {socio.nombre_completo}
                         </MenuItem>
                       ))}
                     </Select>
