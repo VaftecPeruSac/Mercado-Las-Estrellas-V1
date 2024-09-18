@@ -57,7 +57,7 @@ const columns: readonly Column[] = [
 ];
 
 const TablaServicios: React.FC = () => {
-
+  const [buscarTexto, setBuscarTexto] = useState<string>("");
   // Para la tabla
   const [servicios, setServicios] = useState<Data[]>([]);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
@@ -129,7 +129,7 @@ const TablaServicios: React.FC = () => {
   const fetchServicios = async (page: number = 1) => {
     try {
       // const response = await axios.get("http://127.0.0.1:8000/v1/servicios?page=${page}"); //local
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}&buscar_texto=${buscarTexto}`);
 
       const data = response.data.data.map((item: Servicio) => ({
         id_servicio: item.id_servicio,
@@ -156,6 +156,9 @@ const TablaServicios: React.FC = () => {
     fetchServicios(paginaActual);
   }, []);
 
+  const buscarServicios = () => {
+    fetchServicios(1);
+  }
 
   return (
     <Box
@@ -316,7 +319,10 @@ const TablaServicios: React.FC = () => {
         </Typography>
 
         {/* Input Nombre Servicio */}
-        <TextField sx={{ width: "400px" }} label="Nombre del servicio" />
+        <TextField sx={{ width: "400px" }} label="Nombre del servicio"
+          type="text"
+          onChange={(e) => setBuscarTexto(e.target.value)}
+        />
 
         {/* Boton Buscar */}
         <Button
@@ -332,7 +338,8 @@ const TablaServicios: React.FC = () => {
             marginLeft: "25px",
             borderRadius: "30px",
           }}
-          // onClick={}
+          // onClick={}buscarServicios
+          onClick={buscarServicios}
         >
           Buscar
         </Button>

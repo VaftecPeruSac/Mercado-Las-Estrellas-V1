@@ -336,7 +336,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
 
       // Conexión al servicio
-      const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/puestos}", dataToSend);
+      // console.log('puesto >>>> ',puesto?.id_puesto);
+      const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/puestos/${puesto?.id_puesto}`, dataToSend);
       // const response = await axios.put("http://127.0.0.1:8000/v1/puestos", dataToSend);
 
       // Manejar la respuesta del servidor

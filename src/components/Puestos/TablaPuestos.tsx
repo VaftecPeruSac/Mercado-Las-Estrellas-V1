@@ -203,7 +203,7 @@ const TablaPuestos: React.FC = () => {
   // Listar puestos
   const fetchPuestos = async (page: number = 1) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}`); //publico
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}&id_gironegocio=${giroSeleccionado}&id_block=${bloqueSeleccionado}&numero_puesto=${nroPuestoIngresado}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
 
       const data = response.data.data.map((item: Puesto) => ({
@@ -251,7 +251,9 @@ const TablaPuestos: React.FC = () => {
     // setPuestosFiltrados(filtrarPuestos);
     // console.log("Selecciono:", bloqueSeleccionado, nroPuestoIngresado, giroSeleccionado)
     // console.log("Filtrado:", filtrarPuestos)
-    alert("En proceso de actualización");
+
+    // alert("En proceso de actualización");
+    fetchPuestos();
   }
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {

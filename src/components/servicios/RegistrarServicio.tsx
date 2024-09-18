@@ -130,7 +130,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     try {
 
       // Conexión al servicio
-      const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
+      const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/servicios/${servicio?.id_servicio}`, dataToSend);
       // const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
 
       // Manejar la respuesta del servidor
