@@ -23,6 +23,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 interface AgregarProps {
@@ -35,6 +36,21 @@ interface Column {
   label: string;
   minWidth?: number;
   align?: "center";
+}
+
+interface Socio{
+  id_socio:number;
+  socio: string;
+}
+
+interface Puesto{
+  id_puesto:number;
+  numero_puesto: string;
+}
+
+interface Cuota{
+  id_cuota:number;
+  monto: string;
 }
 
 interface Data {
@@ -128,10 +144,30 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const [activeTab, setActiveTab] = useState(0);
 
+  const [socios, setSocios] = useState<Socio[]>([]);
+  const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
+  const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
+
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
   };
+
+
+   // Obtener Lista Socios
+   useEffect(() => {
+    const fetchBloques = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos");
+        console.log("Socios obtenidos:", response.data.data);
+        setSocios(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los Socios", error);
+      }
+    };
+    fetchBloques();
+  }, []);
 
   // Calcular el total a pagar de las filas seleccionadas
   const calcularTotalSeleccionado = () => {
