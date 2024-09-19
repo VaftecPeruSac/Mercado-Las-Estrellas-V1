@@ -1,7 +1,4 @@
-
-
-
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -36,7 +33,40 @@ import axios from "axios";
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
+  socio: EditarSocio | null;
   onSocioRegistrado: () => void;  // Nuevo callback para actualizar la lista
+}
+
+interface EditarSocio {
+  id_socio: string;
+  nombre_completo: string;
+  datos_socio: {
+    nombre_socio: string;
+    apellido_paterno: string;
+    apellido_materno: string;
+    dni: string;
+    sexo: string;
+    direccion: string;
+    telefono: string;
+    correo: string;
+  }
+  puesto: {
+    id_puesto: string;
+    numero_puesto: string;
+    bloque: {
+      id_block: string;
+      nombre: string;
+    }
+    gironegocio_nombre: string;
+    inquilino: {
+      id_inquilino: string;
+      nombre_inquilino: string;
+    }
+  }
+  estado: string;
+  fecha_registro: string;
+  deuda: string;
+  ver_reporte: string;
 }
 
 interface Bloque {
@@ -50,7 +80,7 @@ interface Puesto {
   numero_puesto: string;
 }
 
-const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado }) => {
+const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegistrado }) => {
 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -88,6 +118,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
   const [loading, setLoading] = useState(false); // Estado de loading
 
   const [formData, setFormData] = useState({
+    id_socio: "",
     nombre: "",
     apellido_paterno: "",
     apellido_materno: "",
@@ -98,7 +129,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     sexo: "",
     estado: "",
     fecha_registro: "",
-    bloque: "",
+    bloque_id: "",
     id_puesto: "", // Usa id_puesto en lugar de numeroPuesto
   });
 
@@ -113,6 +144,27 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
 
   });
 
+  // Llenar campos con los datos del socio seleccionado
+  useEffect(() => {
+    if(socio) {
+      console.log(socio);
+      setFormData({
+        id_socio: socio.id_socio || "",
+        nombre: socio.datos_socio?.nombre_socio || "",
+        apellido_paterno: socio.datos_socio?.apellido_paterno || "",
+        apellido_materno: socio.datos_socio?.apellido_materno || "",
+        dni: socio.datos_socio?.dni || "",
+        telefono: socio.datos_socio?.telefono || "",
+        direccion: socio.datos_socio?.direccion || "",
+        sexo : socio.datos_socio?.sexo || "",
+        correo: socio.datos_socio?.correo || "",
+        estado: socio.estado || "",
+        fecha_registro: socio.fecha_registro || "",
+        bloque_id: socio.puesto?.bloque?.id_block || "",
+        id_puesto: socio.puesto?.id_puesto || "",
+      });
+    }
+  }, [socio]);
 
   // Validaciones del formulario
   // const validateForm = () => {
@@ -180,13 +232,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
   // };
 
   const handleCloseModal = () => {
-    limpiarCampos();
-    limpiarBloque();
+    limpiarCamposSocio();
     handleClose();
   };
 
-  const limpiarCampos = () => {
+  const limpiarCamposSocio = () => {
+    setBloqueSeleccionado("");
     setFormData({
+      id_socio: "",
       nombre: "",
       apellido_paterno: "",
       apellido_materno: "",
@@ -197,15 +250,10 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
       sexo: "",
       estado: "",
       fecha_registro: "",
-      bloque: "",
+      bloque_id: "",
       id_puesto: "",
     });
   };
-
-  const limpiarBloque = () => {
-    setBloqueSeleccionado("")
-
-  }
 
   // Obtener bloques
   useEffect(() => {
@@ -299,7 +347,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
     e.preventDefault();
     setLoading(true); // Activa el loading
 
-    const { bloque, ...dataToSend } = formData;
+    const { id_socio, bloque_id, ...dataToSend } = formData;
     console.log(dataToSend);
 
     try {
@@ -307,21 +355,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
       if (response.status === 200) {
         alert("Se registró correctamente");
-        setFormData({
-          nombre: "",
-          apellido_paterno: "",
-          apellido_materno: "",
-          dni: "",
-          correo: "",
-          telefono: "",
-          direccion: "",
-          sexo: "",
-          estado: "",
-          fecha_registro: "",
-          bloque: "",
-          id_puesto: "",
-        });
         setLoading(false); // Desactiva el loading
+        limpiarCamposSocio();
         onSocioRegistrado();
         handleClose() // Actualiza la lista de socios en Tabla.tsx
       } else {
@@ -359,7 +394,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
           telefono: "",
           bloque: "",
           id_puesto: "",
-
         });
         setLoading(false); // Desactiva el loading
         onSocioRegistrado();
@@ -640,7 +674,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
                         onChange={(e) => {
                           const value = e.target.value as number;
                           setBloqueSeleccionado(value);
-                          setFormData({ ...formData, bloque: value.toString() });
+                          setFormData({ ...formData, bloque_id: value.toString() });
                         }}
                         startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                         sx={{ mb: 2 }}
@@ -1125,7 +1159,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, onSocioRegistrado 
             }}
             onClick={(e) => {
               if (activeTab === 0) {
-                registrarSocio(e);
+                if(socio){
+                  // Si se selecciono un socio
+                  // editarSocio(e);
+                  alert("En proceso de actualización");
+                } else {
+                  // Si el socio es nulo
+                  registrarSocio(e);
+                }
               }
               if (activeTab === 1) {
                 // alert("En proceso de actualización...");
