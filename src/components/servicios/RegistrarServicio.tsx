@@ -1,4 +1,4 @@
-import { AttachMoney, Bolt, Event } from '@mui/icons-material';
+import { AttachMoney, Bolt, Event, Storefront, Straighten } from '@mui/icons-material';
 import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
@@ -20,6 +20,11 @@ interface Editarservicio {
 const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
   
   const [activeTab, setActiveTab] = useState(0);
+
+  const [costoTotal, setCostoTotal] = useState("");
+  const [costoMetroCuadrado, setCostoMetroCuadrado] = useState(0);
+  const [puestosActivos, setPuestosActivos] = useState(0);
+  const [areaTotal, setAreaTotal] = useState(0);
 
   // Datos para registrar el servicio
   const [formData, setFormData] = useState({
@@ -74,7 +79,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       descripcion: "",
       costo_unitario: "",
       tipo_servicio: "",
-      estado: "1",
+      estado: "Activo",
       fecha_registro: "",
     });
   };  
@@ -288,7 +293,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                     fullWidth
                     required
                     type="date"
-                    label="Fecha de Registro"
+                    label="Fecha de registro"
                     name="fecha_registro"
                     value={formData.fecha_registro}
                     onChange={manejarCambio}
@@ -300,6 +305,232 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                   />
                 </Grid>
               </Grid>
+            </Box>
+          </>
+        );
+      case 1:
+        return (
+          <>
+            <Typography
+              sx={{
+                mt: 1,
+                color: "#333",
+                textAlign: "center",
+                fontSize: "12px",
+              }}
+            >
+              El monto total ingresado en este servicio sera repartido entre <br />
+              el área total de todos los puestos que se encuentren activos. (*)
+            </Typography>
+            
+            <Box
+              component="form"
+              noValidate
+              autoComplete="off"
+              sx={{ p: "0px 58px" }}
+            >
+              
+              <Grid container spacing={2}>
+
+                <Grid item xs={12} sm={6}>
+
+                  {/* Separador */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                      color: "black",
+                      textAlign: "center",
+                      mb: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      "&::before": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginRight: "8px",
+                      },
+                      "&::after": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginLeft: "8px",
+                      },
+                    }}
+                  >
+                    DETALLES DEL SERVICIO
+                  </Typography>
+
+                  {/* Ingresar nombre del servicio */}
+                  <TextField
+                    fullWidth
+                    required
+                    label="Nombre del servicio"
+                    name="descripcion"
+                    // value={formData.descripcion}
+                    // onChange={manejarCambio}
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      startAdornment: <Bolt sx={{ mr: 1, color: "gray" }} />,
+                    }}
+                    // error={!!errors.fechaRegistro}
+                    // helperText={errors.fechaRegistro}
+                  />
+
+                  {/* Ingresar costo total del servicio */}
+                  <TextField
+                    fullWidth
+                    required
+                    label="Costo total"
+                    value={costoTotal}
+                    onChange={(e) => setCostoTotal(e.target.value)}
+                    InputProps={{
+                      startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
+                    }}
+                    // error={!!errors.fechaRegistro}
+                    // helperText={errors.fechaRegistro}
+                  />
+
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+
+                  {/* Separador */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                      color: "black",
+                      textAlign: "center",
+                      mb: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      "&::before": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginRight: "8px",
+                      },
+                      "&::after": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginLeft: "8px",
+                      },
+                    }}
+                  >
+                    INFORMACION DE REGISTRO
+                  </Typography>
+
+                  {/* Ingresar fecha de registro */}
+                  <TextField
+                    fullWidth
+                    required
+                    type="date"
+                    label="Fecha de registro"
+                    // value={formData.fecha_registro}
+                    // onChange={manejarCambio}
+                    InputProps={{
+                      startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
+                    }}
+                    // error={!!errors.fechaRegistro}
+                    // helperText={errors.fechaRegistro}
+                  />
+
+                </Grid>
+
+                <Grid item xs={12}>
+
+                  {/* Separador */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                      color: "black",
+                      textAlign: "center",
+                      mb: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      "&::before": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginRight: "8px",
+                      },
+                      "&::after": {
+                        content: '""',
+                        flexGrow: 1,
+                        borderBottom: "1px solid #333",
+                        marginLeft: "8px",
+                      },
+                    }}
+                  >
+                    INFORMACION DE LOS PUESTOS
+                  </Typography>
+
+                  <Grid container direction="row" spacing={2}>
+
+                    <Grid item xs={12} sm={6}>
+
+                      {/* Nro. Puestos activos */}
+                      <TextField
+                        fullWidth
+                        label="Puestos activos"
+                        value={puestosActivos}
+                        onChange={(e) => setPuestosActivos(parseInt(e.target.value))}
+                        sx={{ mb: 2 }}
+                        InputProps={{
+                          readOnly: true,
+                          startAdornment: <Storefront sx={{ mr: 1, color: "gray" }} />
+                        }}
+                        // error={!!errors.fechaRegistro}
+                        // helperText={errors.fechaRegistro}
+                      />
+
+                      {/* Costo por metro cuadrado */}
+                      <TextField
+                        fullWidth
+                        label="Costo por metro cuadrado"
+                        value={costoMetroCuadrado}
+                        onChange={(e) => setCostoMetroCuadrado(parseFloat(e.target.value))}
+                        InputProps={{
+                          readOnly: true,
+                          startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
+                        }}
+                        // error={!!errors.fechaRegistro}
+                        // helperText={errors.fechaRegistro}
+                      />
+
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+
+                      {/* Area total */}
+                      <TextField
+                        fullWidth
+                        label="Área total"
+                        value={areaTotal}
+                        onChange={(e) => setAreaTotal(parseFloat(e.target.value))}
+                        InputProps={{
+                          readOnly: true,
+                          startAdornment: <Straighten sx={{ mr: 1, color: "gray" }} />,
+                          endAdornment: <> m2 </>,
+                        }}
+                        // error={!!errors.fechaRegistro}
+                        // helperText={errors.fechaRegistro}
+                      />
+
+                    </Grid>
+
+                  </Grid>
+
+                </Grid>
+
+              </Grid>
+
             </Box>
           </>
         );
@@ -319,7 +550,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       <Card
         sx={{
           width: "720px",
-          height: "670px",
+          height: "720px",
           p: "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
@@ -373,6 +604,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             }}
           >
             <Tab label="Registrar Servicio" />
+            <Tab label="Registrar Servicio Compartido" />
           </Tabs>
         </Box>
 

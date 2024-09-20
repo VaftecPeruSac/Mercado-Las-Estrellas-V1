@@ -123,17 +123,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     id_puesto: "",
   });
 
-  const [formDataInquilino, setformDataInquilino] = useState({
-    nombre: "",
-    apellido_paterno: "",
-    apellido_materno: "",
-    dni: "",
-    telefono: "",
-    bloque: "",
-    id_puesto: "",
-
-  });
-
   // Darle el formato esperado a la fecha para ser recibida en el input
   const formatDate = (fecha: string) => {
     const [dia, mes, anio] = fecha.split("/");
@@ -301,18 +290,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     });
   };
 
-  const manejarCambioInquilino = (
-    e:
-      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | SelectChangeEvent<string>
-  ) => {
-    const { name, value } = e.target;
-    setformDataInquilino({
-      ...formDataInquilino,
-      [name]: value,
-    });
-  };
-
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     // Validar el formato de fecha YYYY-MM-DD
@@ -330,8 +307,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     switch (activeTab) {
       case 0:
         return "REGISTRAR NUEVO SOCIO";
-      case 1:
-        return "REGISTRAR NUEVO INQUILINO";
       default:
         return "";
     }
@@ -393,46 +368,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     }
 
   }
-
-  // Registar inquilino
-  const registraInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setLoading(true); // Activa el loading
-
-    const { bloque, ...dataToSend } = formDataInquilino;
-    console.log(dataToSend);
-
-    try {
-      // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); //publico
-
-      if (response.status === 200) {
-
-        alert("Se registró  inquilino correctamente");
-        setformDataInquilino({
-          nombre: "",
-          apellido_paterno: "",
-          apellido_materno: "",
-          dni: "",
-          telefono: "",
-          bloque: "",
-          id_puesto: "",
-        });
-        setLoading(false); // Desactiva el loading
-        onSocioRegistrado();
-        handleClose() // Actualiza la lista de socios en Tabla.tsx
-      } else {
-        alert("No se pudo registrar inquilino. Inténtalo nuevamente.");
-        setLoading(false); // Desactiva el loading
-      }
-      console.log(response)
-
-    } catch (error) {
-      console.error("Error al registrar inquilino:", error);
-      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
-      setLoading(false); // Desactiva el loading
-    }
-  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -692,6 +627,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                         id="select-bloque"
                         label="Bloque"
                         value={bloqueSeleccionado}
+                        disabled={socio !== null}
                         onChange={(e) => {
                           const value = e.target.value as number;
                           setBloqueSeleccionado(value);
@@ -714,8 +650,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                       <Select
                         labelId="nro-puesto-label"
                         id="select-puesto"
-                        value={formData.id_puesto}
                         label="Nro. Puesto"
+                        value={formData.id_puesto}
+                        disabled={socio !== null}
                         onChange={(e) => {
                           const value = e.target.value as string;
                           setFormData({ ...formData, id_puesto: value });
@@ -805,268 +742,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
             </Box>
           </>
         );
-      case 1: // REGISTRAR INQUILINO
-        return (
-          <>
-            <Typography
-              sx={{
-                mb: 1,
-                color: "#333",
-                textAlign: "center",
-                fontSize: "0.8rem",
-              }}
-            >
-              Recuerde leer los campos obligatorios antes de escribir. (*)
-            </Typography>
-
-            {/* <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre> */}
-
-
-            <Box component="form" noValidate autoComplete="off">
-
-              <Grid container spacing={3} sx={{ mt: -4 }}>
-
-                {/* DATOS PERSONALES */}
-                <Grid item xs={12} sm={6}>
-
-                  {/* Nombre bloque */}
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "bold",
-                      fontSize: "0.8rem",
-                      color: "black",
-                      textAlign: "center",
-                      mb: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      "&::before": {
-                        content: '""',
-                        flexGrow: 1,
-                        borderBottom: "1px solid #333",
-                        marginRight: "8px",
-                      },
-                      "&::after": {
-                        content: '""',
-                        flexGrow: 1,
-                        borderBottom: "1px solid #333",
-                        marginLeft: "8px",
-                      },
-                    }}
-                  >
-                    DATOS PERSONALES
-                  </Typography>
-
-                  {/* Nombre */}
-                  <TextField
-                    fullWidth
-                    label="Nombre"
-                    name="nombre"
-                    required
-                    value={formDataInquilino.nombre}
-                    onChange={manejarCambioInquilino}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    error={!!errors.nombre}
-                    helperText={errors.nombre}
-                  />
-
-                  {/* Apellido Paterno */}
-                  <TextField
-                    fullWidth
-                    label="Apellido Paterno"
-                    required
-                    name="apellido_paterno"
-                    value={formDataInquilino.apellido_paterno}
-                    onChange={manejarCambioInquilino}
-                    // value={apellidoPaterno}
-                    // onChange={manejarApellidoPaternoCambio}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    error={!!errors.apellidoPaterno}
-                    helperText={errors.apellidoPaterno}
-                  />
-
-                  {/* Apellido Materno */}
-                  <TextField
-                    fullWidth
-                    required
-                    label="Apellido Materno"
-                    name="apellido_materno"
-                    value={formDataInquilino.apellido_materno}
-                    onChange={manejarCambioInquilino}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    error={!!errors.apellidoMaterno}
-                    helperText={errors.apellidoMaterno}
-                  />
-
-                  {/* DNI */}
-                  <TextField
-                    fullWidth
-                    required
-                    label="DNI"
-                    name="dni"
-                    value={formDataInquilino.dni}
-                    onChange={manejarCambioInquilino}
-                    InputProps={{
-                      startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
-                    }}
-                    error={!!errors.dni}
-                    helperText={errors.dni}
-                  />
-
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-
-                  {/* CONTACTO */}
-                  <Grid item xs={12} sm={12}>
-
-                    {/* Nombre bloque */}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "0.8rem",
-                        color: "black",
-                        textAlign: "center",
-                        mb: 2,
-                        display: "flex",
-                        alignItems: "center",
-                        "&::before": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginRight: "8px",
-                        },
-                        "&::after": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginLeft: "8px",
-                        },
-                      }}
-                    >
-                      CONTACTO
-                    </Typography>
-
-                    {/* Nro. Telefono */}
-                    <TextField
-                      fullWidth
-                      required
-                      label="Nro. Telefono"
-                      name="telefono"
-                      value={formDataInquilino.telefono}
-                      onChange={manejarCambioInquilino}
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
-                      }}
-                      error={!!errors.telefono}
-                      helperText={errors.telefono}
-                    />
-
-                  </Grid>
-
-                  {/* ASIGNAR PUESTO */}
-                  <Grid item xs={12} sm={12}>
-
-                    {/* Nombre bloque */}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "0.8rem",
-                        color: "black",
-                        textAlign: "center",
-                        mb: 2,
-                        display: "flex",
-                        alignItems: "center",
-                        "&::before": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginRight: "8px",
-                        },
-                        "&::after": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginLeft: "8px",
-                        },
-                      }}
-                    >
-                      ASIGNAR PUESTO
-                    </Typography>
-
-                    {/* Seleccionar bloque */}
-                    <FormControl fullWidth required>
-                      <InputLabel id="bloque-label">Bloque</InputLabel>
-                      <Select
-                        labelId="bloque-label"
-                        id="select-bloque"
-                        label="Bloque"
-                        value={bloqueSeleccionado}
-                        onChange={(e) => {
-                          const value = e.target.value as number;
-                          setBloqueSeleccionado(value);
-                          // setFormData({ ...formData, bloque: value.toString() });
-                        }}
-                        startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
-                        sx={{ mb: 2 }}
-                      >
-                        {bloques.map((bloque: Bloque) => (
-                          <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                            {bloque.nombre}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-                    {/* Nro. Puesto */}
-                    <FormControl fullWidth required>
-                      <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                      <Select
-                        labelId="nro-puesto-label"
-                        id="select-puesto"
-                        value={formData.id_puesto}
-                        label="Nro. Puesto"
-                        onChange={(e) => {
-                          const value = e.target.value as string;
-                          setFormData({ ...formData, id_puesto: value });
-                        }}
-                        startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                      >
-                        {puestosFiltrados.map((puesto: Puesto) => (
-                          <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
-                            {puesto.numero_puesto}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-                  </Grid>
-
-                </Grid>
-
-              </Grid>
-
-            </Box>
-          </>
-        );
       default:
         return <Typography>Seleccione una pestaña</Typography>;
     }
@@ -1143,7 +818,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
             }}
           >
             <Tab label="REGISTRAR SOCIO" />
-            <Tab label="REGISTRAR INQUILINO" />
           </Tabs>
         </Box>
         {renderTabContent()}
@@ -1187,9 +861,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                   // Si no se selecciono un socio
                   registrarSocio(e);
                 }
-              }
-              if (activeTab === 1) {
-                registraInquilino(e);
               }
             }}
             disabled={loading} // Deshabilita el botón cuando está en loading
