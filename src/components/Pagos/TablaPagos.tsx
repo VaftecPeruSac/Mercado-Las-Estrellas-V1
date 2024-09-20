@@ -64,8 +64,8 @@ const columns: readonly Column[] = [
   { id: "id_pago", label: "#ID", minWidth: 50, align: "center" },
   { id: "puesto", label: "N° Puesto", minWidth: 50, align: "center" },
   { id: "socio", label: "Socio", minWidth: 50, align: "center" },
-  { id: "telefono", label: "DNI", minWidth: 50, align: "center" },
-  { id: "correo", label: "Fecha", minWidth: 50, align: "center" },
+  { id: "dni", label: "DNI", minWidth: 50, align: "center" },
+  { id: "fecha_registro", label: "Fecha", minWidth: 50, align: "center" },
   { id: "telefono", label: "Teléfono", minWidth: 50, align: "center" },
   { id: "correo", label: "Correo", minWidth: 50, align: "center" },
   { id: "total_pago", label: "A Cuenta", minWidth: 50, align: "center" },
@@ -121,11 +121,12 @@ const handleSearchPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
   e.preventDefault();
 
-  try {
-    alert("En proceso de actualización.");
-  } catch {
-    alert("Error al buscar los pagos del socio. Intentelo nuevamente más tarde.")
-  }
+  // try {
+  //   alert("En proceso de actualización.");
+  // } catch {
+  //   alert("Error al buscar los pagos del socio. Intentelo nuevamente más tarde.")
+  // }
+  fetchPagos(1);
 
 }
 
@@ -146,14 +147,15 @@ const fetchPagos = async (page: number = 1) => {
     }));
     setPagos(data);
     setTotalPages(response.data.meta.last_page); // Total de páginas
-      setPaginaActual(response.data.meta.current_page); // Página actual
-    console.log("La data es:", response.data);
+    setPaginaActual(response.data.meta.current_page); // Página actual
+    // console.log("La data es:", response.data.data);
   } catch (error) {
     console.error("Error al traer los datos", error);
   }
 };
 
 const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
+  // console.log("CambioDePagina !!!");
   setPaginaActual(value);
   fetchPagos(value); // Obtén los datos para la página seleccionada
 };

@@ -1,4 +1,4 @@
-import { AttachMoney, Person } from "@mui/icons-material";
+import { AttachMoney, Person, Business } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -39,8 +39,9 @@ interface Column {
 }
 
 interface Socio{
-  id_socio:number;
+  id_socio: number;
   socio: string;
+  nombre_completo: string;
 }
 
 interface Puesto{
@@ -149,25 +150,59 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
   const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
 
+  // const [idSocio, setIdSocio] = useState<string>("");
+  const [formDataSocio, setFormDataSocio] = useState({
+    id_socio: "",
+    socio: "",
+    nombre_completo: "",
+  });
+  const [formDataPuesto, setFormDataPuesto] = useState({
+    id_puesto: "",
+    numero_puesto: "",
+  });
+
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
   };
 
 
-   // Obtener Lista Socios
-   useEffect(() => {
+  // Obtener Lista Socios
+  useEffect(() => {
     const fetchBloques = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos");
-        console.log("Socios obtenidos:", response.data.data);
-        setSocios(response.data.data);
+        const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=50`);
+        // console.log("Socios obtenidos:", response.data.data);
+        const data = response.data.data.map((item: Socio) => ({
+          id_socio: item.id_socio,
+          socio: item.socio,
+          nombre_completo: item.nombre_completo,
+        }));
+        setSocios(data);
       } catch (error) {
         console.error("Error al obtener los Socios", error);
       }
     };
     fetchBloques();
   }, []);
+
+  // Obtener Lista Puestos
+  const fetchPuestos = async (idSocio: string) => {
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      const data = response.data.data.map((item: Puesto) => ({
+        id_puesto: item.id_puesto,
+        numero_puesto: item.numero_puesto,
+      }));
+      setPuestos(data);
+    } catch (error) {
+      console.error("Error al obtener los Socios", error);
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchPuestos();
+  // }, []);
 
   // Calcular el total a pagar de las filas seleccionadas
   const calcularTotalSeleccionado = () => {
@@ -221,12 +256,22 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     Seleccionar Socio
                   </InputLabel>
                   <Select
-                    labelId="seleccionar-socio-label"
-                    label="Seleccionar Socio"
-                    startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                  >
-                    {/* Listado de socios */}
-                    <MenuItem value="1">Juanito Perez</MenuItem>
+                      labelId="seleccionar-socio-label"
+                      label="Socio"
+                      id="select-socio"
+                      value={formDataSocio.id_socio}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormDataSocio({ ...formDataSocio, id_socio: value });
+                        fetchPuestos(value);
+                      }}
+                      startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      {socios.map((socio: Socio) => (
+                        <MenuItem key={socio.id_socio} value={socio.id_socio}>
+                          {socio.nombre_completo}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
 
@@ -236,12 +281,21 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     Seleccionar Puesto
                   </InputLabel>
                   <Select
-                    labelId="seleccionar-puesto-label"
-                    label="Seleccionar Puesto"
-                    startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                  >
-                    {/* Listado de puestos por socio */}
-                    <MenuItem value="1">A-1</MenuItem>
+                      labelId="seleccionar-puesto-label"
+                      label="Puesto"
+                      id="select-puesto"
+                      value={formDataPuesto.id_puesto}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormDataPuesto({ ...formDataPuesto, id_puesto: value });
+                      }}
+                      startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      {puestos.map((puesto: Puesto) => (
+                        <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                          {puesto.numero_puesto}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
 
