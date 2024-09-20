@@ -1,4 +1,4 @@
-import { AttachMoney, Person, Business } from "@mui/icons-material";
+import { Business } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -83,7 +83,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [socios, setSocios] = useState<Socio[]>([]);
   const [idSocio, setIdSocio] = useState("");
   const [puestos, setPuestos] = useState<Puesto[]>([]);
-  const [idPuesto, setIdPuesto] = useState("");
   
   // Para la tabla
   const [deudas, setDeudas] = useState<Data[]>([]);
