@@ -40,33 +40,23 @@ interface AgregarProps {
 interface EditarSocio {
   id_socio: string;
   nombre_completo: string;
-  datos_socio: {
-    nombre_socio: string;
-    apellido_paterno: string;
-    apellido_materno: string;
-    dni: string;
-    sexo: string;
-    direccion: string;
-    telefono: string;
-    correo: string;
-  }
-  puesto: {
-    id_puesto: string;
-    numero_puesto: string;
-    bloque: {
-      id_block: string;
-      nombre: string;
-    }
-    gironegocio_nombre: string;
-    inquilino: {
-      id_inquilino: string;
-      nombre_inquilino: string;
-    }
-  }
+  nombre_socio: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  dni: string;
+  sexo: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  id_puesto: string; 
+  numero_puesto: string;
+  id_block: string; 
+  block_nombre: string;
+  gironegocio_nombre: string;
+  nombre_inquilino: string;
   estado: string;
   fecha_registro: string;
   deuda: string;
-  ver_reporte: string;
 }
 
 interface Bloque {
@@ -129,8 +119,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     sexo: "",
     estado: "",
     fecha_registro: "",
-    bloque_id: "",
-    id_puesto: "", // Usa id_puesto en lugar de numeroPuesto
+    id_block: "",
+    id_puesto: "",
   });
 
   const [formDataInquilino, setformDataInquilino] = useState({
@@ -144,24 +134,29 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   });
 
+  // Darle el formato esperado a la fecha para ser recibida en el input
+  const formatDate = (fecha: string) => {
+    const [dia, mes, anio] = fecha.split("/");
+    return `${anio}-${mes}-${dia}`;
+  };
+
   // Llenar campos con los datos del socio seleccionado
   useEffect(() => {
     if(socio) {
-      console.log(socio);
       setFormData({
-        id_socio: socio.id_socio || "",
-        nombre: socio.datos_socio?.nombre_socio || "",
-        apellido_paterno: socio.datos_socio?.apellido_paterno || "",
-        apellido_materno: socio.datos_socio?.apellido_materno || "",
-        dni: socio.datos_socio?.dni || "",
-        telefono: socio.datos_socio?.telefono || "",
-        direccion: socio.datos_socio?.direccion || "",
-        sexo : socio.datos_socio?.sexo || "",
-        correo: socio.datos_socio?.correo || "",
-        estado: socio.estado || "",
-        fecha_registro: socio.fecha_registro || "",
-        bloque_id: socio.puesto?.bloque?.id_block || "",
-        id_puesto: socio.puesto?.id_puesto || "",
+        id_socio: socio.id_socio || '',
+        nombre: socio.nombre_socio || '',
+        apellido_paterno: socio.apellido_paterno || '',
+        apellido_materno: socio.apellido_materno || '',
+        dni: (socio.dni === 'No' ? '' : socio.dni) || '',
+        sexo: socio.sexo || '',
+        direccion: (socio.direccion === 'No' ? '' : socio.direccion) || '',
+        telefono: (socio.telefono === 'No' ? '' : socio.telefono) || '',
+        correo: (socio.correo === 'No' ? '' : socio.correo) || '',
+        id_puesto: socio.id_puesto || '',
+        id_block: socio.id_block || '',
+        estado: socio.estado || '',
+        fecha_registro: formatDate(socio.fecha_registro) || '',
       });
     }
   }, [socio]);
@@ -250,7 +245,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
       sexo: "",
       estado: "",
       fecha_registro: "",
-      bloque_id: "",
+      id_block: "",
       id_puesto: "",
     });
   };
@@ -341,14 +336,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         return "";
     }
   }
-
-
+  
+  // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true); // Activa el loading
 
-    const { id_socio, bloque_id, ...dataToSend } = formData;
-    console.log(dataToSend);
+    const { id_socio, id_block, ...dataToSend } = formData;
 
     try {
       // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
@@ -372,6 +366,35 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     }
   };
 
+  // Editar socio
+  const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    
+    e.preventDefault();
+    setLoading(true);
+
+    const { id_puesto, id_block, ...dataToSend } = formData;
+
+    try{
+      const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+      if (response.status === 200) {
+        alert("Se registró correctamente");
+        setLoading(false);
+        limpiarCamposSocio();
+        onSocioRegistrado();
+        handleClose()
+      } else {
+        alert("No se pudo actualizar los datos del socio. Inténtalo nuevamente.");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error al editar los datos del socio:", error);
+      alert("Ocurrió un error al actualizar los datos del puesto. Inténtalo nuevamente.");
+      setLoading(false);
+    }
+
+  }
+
+  // Registar inquilino
   const registraInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true); // Activa el loading
@@ -411,8 +434,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     }
   };
 
-
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 0: // REGISTRAR SOCIO
@@ -429,7 +450,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            {/* <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre> */}
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Box component="form" noValidate autoComplete="off">
 
@@ -674,7 +695,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                         onChange={(e) => {
                           const value = e.target.value as number;
                           setBloqueSeleccionado(value);
-                          setFormData({ ...formData, bloque_id: value.toString() });
+                          setFormData({ ...formData, id_block: value.toString() });
                         }}
                         startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                         sx={{ mb: 2 }}
@@ -798,7 +819,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre>
+            {/* <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre> */}
 
 
             <Box component="form" noValidate autoComplete="off">
@@ -1161,15 +1182,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
               if (activeTab === 0) {
                 if(socio){
                   // Si se selecciono un socio
-                  // editarSocio(e);
-                  alert("En proceso de actualización");
+                  editarSocio(e);
                 } else {
-                  // Si el socio es nulo
+                  // Si no se selecciono un socio
                   registrarSocio(e);
                 }
               }
               if (activeTab === 1) {
-                // alert("En proceso de actualización...");
                 registraInquilino(e);
               }
             }}

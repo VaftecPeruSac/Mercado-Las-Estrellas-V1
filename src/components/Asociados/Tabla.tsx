@@ -18,6 +18,7 @@ import {
   FormControl,
   Typography,
   TextField,
+  accordionDetailsClasses,
 } from "@mui/material";
 import {
   Download,
@@ -35,45 +36,27 @@ import Pagar from "./Pagar";
 interface Socio {
   id_socio: string;
   nombre_completo: string;
-  datos_socio: {
-    nombre_socio: string;
-    apellido_paterno: string;
-    apellido_materno: string;
-    dni: string;
-    sexo: string;
-    direccion: string;
-    telefono: string;
-    correo: string;
-  }
-  puesto: {
-    id_puesto: string;
-    numero_puesto: string;
-    bloque: {
-      id_block: string;
-      nombre: string;
-    }
-    gironegocio_nombre: string;
-    inquilino: {
-      id_inquilino: string;
-      nombre_inquilino: string;
-    }
-  }
+  nombre_socio: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  dni: string;
+  sexo: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  id_puesto: string; 
+  numero_puesto: string;
+  id_block: string; 
+  block_nombre: string;
+  gironegocio_nombre: string;
+  nombre_inquilino: string;
   estado: string;
   fecha_registro: string;
   deuda: string;
-  ver_reporte: string;
 }
 
-type NestedKeys<T> = {
-  [K in keyof T]: K extends string
-    ? T[K] extends object
-      ? `${K}.${NestedKeys<T[K]>}`
-      : K
-    : never
-}[keyof T];
-
 interface Column {
-  id: NestedKeys<Data> | "accion";
+  id: keyof Data | "accion";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -82,29 +65,20 @@ interface Column {
 interface Data {
   id_socio: string;
   nombre_completo: string;
-  datos_socio: {
-    nombre_socio: string;
-    apellido_paterno: string;
-    apellido_materno: string;
-    dni: string;
-    sexo: string;
-    direccion: string;
-    telefono: string;
-    correo: string;
-  }
-  puesto: {
-    id_puesto: string;
-    numero_puesto: string;
-    bloque: {
-      id_block: string;
-      nombre: string;
-    }
-    gironegocio_nombre: string;
-    inquilino: {
-      id_inquilino: string;
-      nombre_inquilino: string;
-    }
-  }
+  nombre_socio: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  dni: string;
+  sexo: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  id_puesto: string; 
+  numero_puesto: string;
+  id_block: string; 
+  block_nombre: string;
+  gironegocio_nombre: string;
+  nombre_inquilino: string;
   estado: string;
   fecha_registro: string;
   deuda: string;
@@ -113,13 +87,13 @@ interface Data {
 
 const columns: readonly Column[] = [
   { id: "nombre_completo", label: "Nombre", minWidth: 50 }, // Nombre del socio
-  { id: "datos_socio.dni", label: "DNI", minWidth: 50 },      // DNI
-  { id: "puesto.bloque.nombre", label: "Block", minWidth: 50 }, // Nombre del bloque
-  { id: "puesto.numero_puesto", label: "Puesto", minWidth: 50 }, // Número del puesto
-  { id: "puesto.gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
-  { id: "datos_socio.telefono", label: "Teléfono", minWidth: 50 },  // Teléfono
-  { id: "datos_socio.correo", label: "Correo", minWidth: 50 },      // Correo
-  { id: "puesto.inquilino.nombre_inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
+  { id: "dni", label: "DNI", minWidth: 50 },      // DNI
+  { id: "telefono", label: "Teléfono", minWidth: 50 },  // Teléfono
+  { id: "correo", label: "Correo", minWidth: 50 },      // Correo
+  { id: "block_nombre", label: "Block", minWidth: 50 }, // Nombre del bloque
+  { id: "numero_puesto", label: "Puesto", minWidth: 50 }, // Número del puesto
+  { id: "gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
+  { id: "nombre_inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
   { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
   { id: "deuda", label: "Deuda Total", minWidth: 50 }, // Deuda total
   { id: "ver_reporte", label: "Deudas / Pagos", minWidth: 10 }, // Ver Deuda / Pagos
@@ -204,21 +178,22 @@ const TablaAsociados: React.FC = () => {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}&buscar_texto=${nombreIngresado}`); //publico
 
       const data = response.data.data.map((item: Socio) => ({
-        "id_socio": item.id_socio,
-        "nombre_completo": item.nombre_completo,
-        "datos_socio.nombre_socio": item.datos_socio.nombre_socio,
-        "datos_socio.apellido_paterno": item.datos_socio.apellido_paterno,
-        "datos_socio.apellido_materno": item.datos_socio.apellido_materno,
-        "datos_socio.dni": item.datos_socio.dni,
-        "datos_socio.direccion": item.datos_socio.direccion,
-        "datos_socio.telefono": item.datos_socio.telefono,
-        "datos_socio.correo": item.datos_socio.correo,
-        "puesto.id_puesto": typeof item.puesto === 'object' ? item.puesto.id_puesto : '',
-        "puesto.numero_puesto": typeof item.puesto === 'object' ? item.puesto.numero_puesto : 'No asignado',
-        "puesto.bloque.id_block": typeof item.puesto === 'object' ? item.puesto.bloque.id_block : '',
-        "puesto.bloque.nombre": typeof item.puesto === 'object' ? item.puesto.bloque.nombre : 'No asignado',
-        "puesto.gironegocio_nombre": typeof item.puesto === 'object' ? item.puesto.gironegocio_nombre : 'No asignado',
-        "puesto.inquilino.nombre_inquilino": typeof item.puesto.inquilino === 'object' ? item.puesto.inquilino.nombre_inquilino : 'No asignado',
+        id_socio: item.id_socio,
+        nombre_completo: item.nombre_completo,
+        nombre_socio: item.nombre_socio,
+        apellido_paterno: item.apellido_paterno,
+        apellido_materno: item.apellido_materno,
+        dni: item.dni,
+        sexo: item.sexo,
+        direccion: item.direccion,
+        telefono: item.telefono,
+        correo: item.correo,
+        id_puesto: item.id_puesto,
+        numero_puesto: item.numero_puesto,
+        id_block: item.id_block,
+        block_nombre: item.block_nombre,
+        gironegocio_nombre: item.gironegocio_nombre,
+        nombre_inquilino: item.nombre_inquilino,
         estado: item.estado,
         fecha_registro: formatDate(item.fecha_registro),
         deuda: item.deuda
