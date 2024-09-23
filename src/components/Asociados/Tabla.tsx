@@ -44,9 +44,9 @@ interface Socio {
   direccion: string;
   telefono: string;
   correo: string;
-  id_puesto: string; 
+  id_puesto: string;
   numero_puesto: string;
-  id_block: string; 
+  id_block: string;
   block_nombre: string;
   gironegocio_nombre: string;
   nombre_inquilino: string;
@@ -73,9 +73,9 @@ interface Data {
   direccion: string;
   telefono: string;
   correo: string;
-  id_puesto: string; 
+  id_puesto: string;
   numero_puesto: string;
-  id_block: string; 
+  id_block: string;
   block_nombre: string;
   gironegocio_nombre: string;
   nombre_inquilino: string;
@@ -295,9 +295,9 @@ const TablaAsociados: React.FC = () => {
             Agregar Socio
           </Button>
 
-          <Agregar 
-            open={open} 
-            handleClose={handleClose} 
+          <Agregar
+            open={open}
+            handleClose={handleClose}
             socio={socioSeleccionado}
             onSocioRegistrado={handleSocioRegistrado}
           />
@@ -377,45 +377,45 @@ const TablaAsociados: React.FC = () => {
 
         {/* Buscar socio */}
         <Box
-        sx={{
-          padding: "15px 35px",
-          borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-          borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Typography sx={{ fontWeight: "bold", mr: 2 }}>
-          Buscar por:
-        </Typography>
-
-        {/* Input Nombre Socio */}
-        <TextField 
-          sx={{ width: "400px" }} 
-          label="Nombre del socio"
-          onChange={(e) => setNombreIngresado(e.target.value)}
-        />
-
-        {/* Boton Buscar */}
-        <Button
-          variant="contained"
-          startIcon={<Search />}
           sx={{
-            backgroundColor: "#008001",
-            "&:hover": {
-              backgroundColor: "#2c6d33",
-            },
-            height: "50px",
-            width: "170px",
-            marginLeft: "25px",
-            borderRadius: "30px",
+            padding: "15px 35px",
+            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
           }}
-          onClick={buscarSocios}
         >
-          Buscar
-        </Button>
-      </Box>
+          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+            Buscar por:
+          </Typography>
+
+          {/* Input Nombre Socio */}
+          <TextField
+            sx={{ width: "400px" }}
+            label="Nombre del socio"
+            onChange={(e) => setNombreIngresado(e.target.value)}
+          />
+
+          {/* Boton Buscar */}
+          <Button
+            variant="contained"
+            startIcon={<Search />}
+            sx={{
+              backgroundColor: "#008001",
+              "&:hover": {
+                backgroundColor: "#2c6d33",
+              },
+              height: "50px",
+              width: "170px",
+              marginLeft: "25px",
+              borderRadius: "30px",
+            }}
+            onClick={buscarSocios}
+          >
+            Buscar
+          </Button>
+        </Box>
 
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer

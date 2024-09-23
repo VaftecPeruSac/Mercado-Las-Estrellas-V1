@@ -9,6 +9,7 @@ import {
   Straighten
 } from '@mui/icons-material';
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -101,7 +102,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Llenar campos con los datos del puesto seleccionado
   useEffect(() => {
-    if(puesto){
+    if (puesto) {
       console.log("Puesto obtenido:", puesto);
       setFormDataPuesto({
         id_puesto: puesto.id_puesto || "",
@@ -419,7 +420,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   }
 
-    // Registar inquilino
+  // Registar inquilino
   const asignarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // setLoading(true); // Activa el loading
@@ -546,7 +547,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "0px 58px" }}  
+              sx={{ p: "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -578,7 +579,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     INFORMACION DEL PUESTO
                   </Typography>
 
-                  <TextField 
+                  <TextField
                     fullWidth
                     type="hidden"
                     name="id_puesto"
@@ -681,24 +682,40 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
                   {/* Seleccionar giro de negocio */}
                   <FormControl fullWidth required>
-                    <InputLabel id="giro-label">Giro de negocio</InputLabel>
-                    <Select
-                      labelId="giro-label"
-                      label="Giro de negocio"
-                      id="select-giro-negocio"
-                      value={formDataPuesto.id_gironegocio}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setFormDataPuesto({ ...formDataPuesto, id_gironegocio: value });
+                    <Autocomplete
+                      options={girosNegocio}
+                      getOptionLabel={(giroNegocio) => giroNegocio.nombre} // Mostrar el nombre del giro de negocio
+                      onChange={(event, newValue) => {
+                        if (newValue) {
+                          setFormDataPuesto({
+                            ...formDataPuesto,
+                            id_gironegocio: newValue.id_gironegocio.toString(), // Convertir id_gironegocio a string
+                          });
+                        }
                       }}
-                      startAdornment={<AddBusiness sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      {girosNegocio.map((giroNegocio: GiroNegocio) => (
-                        <MenuItem key={giroNegocio.id_gironegocio} value={giroNegocio.id_gironegocio}>
-                          {giroNegocio.nombre}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Giro de negocio"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <AddBusiness sx={{ mr: 1, color: "gray" }} />
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      ListboxProps={{
+                        style: {
+                          maxHeight: 225,
+                          overflow: 'auto',
+                        },
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id_gironegocio === Number(value)} // Convertir value a número para la comparación
+                    />
                   </FormControl>
 
                   {/* Separador */}
@@ -816,24 +833,40 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
                   {/* Seleccionar Puesto */}
                   <FormControl fullWidth required sx={{ mt: 2 }}>
-                    <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                    <Select
-                      labelId="nro-puesto-label"
-                      id="select-puesto"
-                      label="Nro. Puesto"
-                      value={formDataAsginarPuesto.id_puesto}
-                      onChange={(e) => {
-                        const value = e.target.value as string;
-                        setFormDataAsignarPuesto({ ...formDataAsginarPuesto, id_puesto: value });
+                    <Autocomplete
+                      options={puestosFiltrados}
+                      getOptionLabel={(puesto) => puesto.numero_puesto.toString()}
+                      onChange={(event, newValue) => {
+                        if (newValue) {
+                          setFormDataAsignarPuesto({
+                            ...formDataAsginarPuesto,
+                            id_puesto: newValue.id_puesto.toString(),
+                          });
+                        }
                       }}
-                      startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      {puestosFiltrados.map((puesto: Puesto) => (
-                        <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
-                          {puesto.numero_puesto}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Nro. Puesto"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <Abc sx={{ mr: 1, color: "gray" }} />
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      ListboxProps={{
+                        style: {
+                          maxHeight: 200,
+                          overflow: 'auto',
+                        },
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id_puesto === Number(value)}
+                    />
                   </FormControl>
                 </Grid>
 
@@ -865,25 +898,39 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   >
                     SELECCIONAR SOCIO
                   </Typography>
-                  {/* Seleccionar Socio */}
+
                   <FormControl fullWidth required>
-                    <InputLabel id="socio-label">Socio</InputLabel>
-                    <Select
-                      labelId="socio-label"
-                      label="Socio"
-                      value={formDataAsginarPuesto.id_socio}
-                      onChange={(e) => {
-                        const value = e.target.value as string;
-                        setFormDataAsignarPuesto({ ...formDataAsginarPuesto, id_socio: value });
+                    <Autocomplete
+                      options={socios}
+                      getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
+                      onChange={(event, newValue) => {
+                        if (newValue) {
+                          setFormDataAsignarPuesto({ ...formDataAsginarPuesto, id_socio: String(newValue.id_socio) });
+                        }
                       }}
-                      startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                    >
-                      {socios.map((socio: Socio) => (
-                        <MenuItem key={socio.id_socio} value={socio.id_socio}>
-                          {socio.nombre_completo}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Socio"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <Abc sx={{ mr: 1, color: "gray" }} />
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      ListboxProps={{
+                        style: {
+                          maxHeight: 270,
+                          overflow: 'auto',
+                        },
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id_socio === Number(value.id_socio)} // Compara convirtiendo el value a número
+                    />
                   </FormControl>
                 </Grid>
               </Grid>
@@ -956,8 +1003,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.nombre}
-                    // helperText={errors.nombre}
+                  // error={!!errors.nombre}
+                  // helperText={errors.nombre}
                   />
 
                   {/* Apellido Paterno */}
@@ -976,8 +1023,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.apellidoPaterno}
-                    // helperText={errors.apellidoPaterno}
+                  // error={!!errors.apellidoPaterno}
+                  // helperText={errors.apellidoPaterno}
                   />
 
                   {/* Apellido Materno */}
@@ -994,8 +1041,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <AccountCircle sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.apellidoMaterno}
-                    // helperText={errors.apellidoMaterno}
+                  // error={!!errors.apellidoMaterno}
+                  // helperText={errors.apellidoMaterno}
                   />
 
                   {/* DNI */}
@@ -1009,8 +1056,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     InputProps={{
                       startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.dni}
-                    // helperText={errors.dni}
+                  // error={!!errors.dni}
+                  // helperText={errors.dni}
                   />
 
                 </Grid>
@@ -1060,8 +1107,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                       InputProps={{
                         startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
                       }}
-                      // error={!!errors.telefono}
-                      // helperText={errors.telefono}
+                    // error={!!errors.telefono}
+                    // helperText={errors.telefono}
                     />
 
                   </Grid>
@@ -1112,6 +1159,14 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         }}
                         startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                         sx={{ mb: 2 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 150, // Limitar el alto del desplegable
+                              overflowY: 'auto', // Habilitar scroll vertical
+                            },
+                          },
+                        }}
                       >
                         {bloques.map((bloque: Bloque) => (
                           <MenuItem key={bloque.id_block} value={bloque.id_block}>
@@ -1123,32 +1178,44 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
                     {/* Nro. Puesto */}
                     <FormControl fullWidth required>
-                      <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                      <Select
-                        labelId="nro-puesto-label"
-                        id="select-puesto"
-                        value={formDataInquilino.id_puesto}
-                        label="Nro. Puesto"
-                        onChange={(e) => {
-                          const value = e.target.value as string;
-                          setformDataInquilino({ ...formDataInquilino, id_puesto: value });
+                      <Autocomplete
+                        options={puestosFiltrados}
+                        getOptionLabel={(puesto) => puesto.numero_puesto.toString()} // Convertir numero_puesto a string para mostrarlo correctamente
+                        onChange={(event, newValue) => {
+                          if (newValue) {
+                            setformDataInquilino({
+                              ...formDataInquilino,
+                              id_puesto: newValue.id_puesto.toString(), // Convertir id_puesto a string
+                            });
+                          }
                         }}
-                        startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                      >
-                        {puestosFiltrados.map((puesto: Puesto) => (
-                          <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
-                            {puesto.numero_puesto}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Nro. Puesto"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  <Abc sx={{ mr: 1, color: "gray" }} />
+                                  {params.InputProps.startAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                        ListboxProps={{
+                          style: {
+                            maxHeight: 180,
+                            overflow: 'auto',
+                          },
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id_puesto === Number(value)} // Convierte value a número para la comparación
+                      />
                     </FormControl>
-
                   </Grid>
-
                 </Grid>
-
               </Grid>
-
             </Box>
           </>
         );
@@ -1387,8 +1454,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               },
             }}
             onClick={(e) => {
-              if(activeTab === 0){
-                if(puesto){
+              if (activeTab === 0) {
+                if (puesto) {
                   // Si el puesto existe, editar puesto
                   editarPuesto(e);
                 } else {

@@ -110,7 +110,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   }, []);
 
   // Para manejar el cambio de seleccion y agregar servicios a la tabla
-  const handleServicioChange = (event: SelectChangeEvent<{ value: unknown } | "" >) => {
+  const handleServicioChange = (event: SelectChangeEvent<{ value: unknown } | "">) => {
     const servicioId = event.target.value as string;
     setServicioSeleccionado({ value: servicioId });
 
@@ -118,9 +118,9 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const servicio = servicios.find((s) => s.id_servicio === servicioId);
 
     // Si el servicio existe
-    if(servicio) {
+    if (servicio) {
       // Verificamos si ya esta agregado y si no lo esta agregamos el servicio a la tabla
-      if(!serviciosAgregados.some((s) => s.id_servicio === servicio.id_servicio)) {
+      if (!serviciosAgregados.some((s) => s.id_servicio === servicio.id_servicio)) {
         setServiciosAgregados([...serviciosAgregados, servicio]);
         setServiciosIds((prevIds) => [...prevIds, servicio.id_servicio]);
       }
@@ -141,10 +141,10 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Generar cuota
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    
+
     e.preventDefault();
 
-    const dataToSend = { 
+    const dataToSend = {
       ...formData,
       servicios: serviciosIds,
       importe: importeTotal,
@@ -154,7 +154,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
       // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
 
-      if(response.status === 200) {
+      if (response.status === 200) {
         alert("La cuota fue registrada con exito");
         setFormData({
           id_servicio: "",
@@ -223,8 +223,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         <CalendarIcon sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.fechaEmision}
-                    // helperText={errors.fechaEmision}
+                  // error={!!errors.fechaEmision}
+                  // helperText={errors.fechaEmision}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -239,8 +239,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         <CalendarIcon sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                    // error={!!errors.fechaVencimiento}
-                    // helperText={errors.fechaVencimiento}
+                  // error={!!errors.fechaVencimiento}
+                  // helperText={errors.fechaVencimiento}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -252,6 +252,14 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       value={servicioSeleccionado}
                       onChange={handleServicioChange}
                       startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 200,
+                            overflowY: 'auto', // Habilita el desplazamiento
+                          },
+                        },
+                      }}
                     >
                       {servicios.map((servicio: Servicio) => (
                         <MenuItem key={servicio.id_servicio} value={servicio.id_servicio}>
@@ -330,7 +338,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </Paper>
                 </Grid>
                 {/* Importe */}
-                <Grid item xs={12} sm={6} sx={{m: "auto auto 0 auto"}}>
+                <Grid item xs={12} sm={6} sx={{ m: "auto auto 0 auto" }}>
                   <TextField
                     fullWidth
                     required
@@ -340,8 +348,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       readOnly: true,
                       startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />
                     }}
-                    // error={!!errors.importe}
-                    // helperText={errors.importe}
+                  // error={!!errors.importe}
+                  // helperText={errors.importe}
                   />
                 </Grid>
               </Grid>
@@ -392,10 +400,10 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
           </Typography>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange} 
-            sx={{ 
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            sx={{
               "& .MuiTabs-flexContainer": {
                 minHeight: "36px",
               },

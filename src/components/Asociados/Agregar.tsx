@@ -14,6 +14,8 @@ import {
   Tabs,
   Tab,
   LinearProgress,
+  Autocomplete,
+  Popper,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -48,9 +50,9 @@ interface EditarSocio {
   direccion: string;
   telefono: string;
   correo: string;
-  id_puesto: string; 
+  id_puesto: string;
   numero_puesto: string;
-  id_block: string; 
+  id_block: string;
   block_nombre: string;
   gironegocio_nombre: string;
   nombre_inquilino: string;
@@ -131,7 +133,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   // Llenar campos con los datos del socio seleccionado
   useEffect(() => {
-    if(socio) {
+    if (socio) {
       setFormData({
         id_socio: socio.id_socio || '',
         nombre: socio.nombre_socio || '',
@@ -311,7 +313,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         return "";
     }
   }
-  
+
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -343,13 +345,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   // Editar socio
   const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    
+
     e.preventDefault();
     setLoading(true);
 
     const { id_puesto, id_block, ...dataToSend } = formData;
 
-    try{
+    try {
       const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
       if (response.status === 200) {
         alert("Se registró correctamente");
@@ -635,6 +637,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                         }}
                         startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                         sx={{ mb: 2 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 200,
+                              overflowY: 'auto',
+                            },
+                          },
+                        }}
                       >
                         {bloques.map((bloque: Bloque) => (
                           <MenuItem key={bloque.id_block} value={bloque.id_block}>
@@ -644,29 +654,44 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                       </Select>
                     </FormControl>
 
+
                     {/* Nro. Puesto */}
                     <FormControl fullWidth required>
-                      <InputLabel id="nro-puesto-label">Nro. Puesto</InputLabel>
-                      <Select
-                        labelId="nro-puesto-label"
-                        id="select-puesto"
-                        label="Nro. Puesto"
-                        value={formData.id_puesto}
-                        disabled={socio !== null}
-                        onChange={(e) => {
-                          const value = e.target.value as string;
-                          setFormData({ ...formData, id_puesto: value });
+                      <Autocomplete
+                        options={puestosFiltrados}
+                        getOptionLabel={(puesto) => puesto.numero_puesto.toString()} // Convertir numero_puesto a string para mostrarlo correctamente
+                        onChange={(event, newValue) => {
+                          if (newValue) {
+                            setFormData({
+                              ...formData,
+                              id_puesto: newValue.id_puesto.toString(), // Convertir id_puesto a string
+                            });
+                          }
                         }}
-                        startAdornment={<Abc sx={{ mr: 1, color: "gray" }} />}
-                      >
-                        {puestosFiltrados.map((puesto: Puesto) => (
-                          <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
-                            {puesto.numero_puesto}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Nro. Puesto"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  <Abc sx={{ mr: 1, color: "gray" }} />
+                                  {params.InputProps.startAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                        ListboxProps={{
+                          style: {
+                            maxHeight: 200,
+                            overflow: 'auto',
+                          },
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id_puesto === Number(value)} // Comparación de valores
+                      />
                     </FormControl>
-
                   </Grid>
 
                   {/* Informacion de registro */}
@@ -854,7 +879,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
             }}
             onClick={(e) => {
               if (activeTab === 0) {
-                if(socio){
+                if (socio) {
                   // Si se selecciono un socio
                   editarSocio(e);
                 } else {
