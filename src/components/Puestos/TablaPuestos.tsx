@@ -1,4 +1,4 @@
-import { DeleteForever, Print, SaveAs, Search } from "@mui/icons-material";
+import { DeleteForever, Download, SaveAs, Search } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -131,16 +131,23 @@ const TablaPuestos: React.FC = () => {
 
       // Si no hay problemas
       if (response.status === 200) {
-        alert("La lista de puestos se descargará en breve.");
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        const hoy = new Date();
-        const formatDate = hoy.toISOString().split('T')[0];
-        link.setAttribute('download', `lista-puestos-${formatDate}.xlsx`); // Nombre del archivo
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode?.removeChild(link);
+        if (exportFormat === "1") { // PDF
+          alert("En proceso de actualización. Intentelo más tarde.");
+        } else if (exportFormat === "2") { // Excel
+          alert("La lista de puestos se descargará en breve.");
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          const hoy = new Date();
+          const formatDate = hoy.toISOString().split('T')[0];
+          link.setAttribute('download', `lista-puestos-${formatDate}.xlsx`); // Nombre del archivo
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          setExportFormat("");
+        } else {
+          alert("Formato de exportación no válido.");
+        }
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
@@ -370,15 +377,15 @@ const TablaPuestos: React.FC = () => {
                 <MenuItem disabled value="">
                   Exportar
                 </MenuItem>
-                <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="excel">Excel</MenuItem>
+                <MenuItem value="1">PDF</MenuItem>
+                <MenuItem value="2">Excel</MenuItem>
               </Select>
             </FormControl>
 
-            {/* Botón "Imprimir" */}
+            {/* Botón "Descargar" */}
             <Button
               variant="contained"
-              startIcon={<Print />}
+              startIcon={<Download />}
               sx={{
                 backgroundColor: "#008001",
                 "&:hover": {
@@ -388,9 +395,10 @@ const TablaPuestos: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
+              disabled={ exportFormat === "" }
               onClick={handleExportPuestos}
             >
-              Imprimir
+              Descargar
             </Button>
           </Box>
         </Box>

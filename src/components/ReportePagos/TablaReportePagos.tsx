@@ -1,5 +1,5 @@
-import { Download, Padding, Payments, Person, Plagiarism, Print, SaveAs, WhatsApp } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, IconButton, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Download, Person } from '@mui/icons-material';
+import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 
@@ -19,36 +19,11 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  {
-    id: "fecha_pago",
-    label: "Fec. Pago",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "numero_recibo",
-    label: "N° Recibo",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "aporte",
-    label: "Aporte (S/)",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "servicios",
-    label: "Desc. Servicios por cuota",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "total",
-    label: "Total (S/)",
-    minWidth: 50,
-    align: "center",
-  },
+  { id: "fecha_pago", label: "Fec. Pago", minWidth: 50, align: "center" },
+  { id: "numero_recibo", label: "N° Recibo", minWidth: 50, align: "center" },
+  { id: "aporte", label: "Aporte (S/)", minWidth: 50, align: "center" },
+  { id: "servicios", label: "Desc. Servicios por cuota", minWidth: 50, align: "center" },
+  { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
 ]
 
 const initialRows: Data[] = [
@@ -111,16 +86,23 @@ const TablaReportePagos: React.FC = () => {
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-pagos/exportar");
       // Si no hay problemas
       if (response.status === 200) {
-        alert("El reporte de pagos se descargará en breve.");
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        const hoy = new Date();
-        const formatDate = hoy.toISOString().split('T')[0];
-        link.setAttribute('download', `reporte-pagos-${formatDate}.xlsx`); // Nombre del archivo
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode?.removeChild(link);
+        if (exportFormat === "1") { // PDF
+          alert("En proceso de actualizacion. Intentelo más tarde.");
+        } else if (exportFormat === "2") { // Excel
+          alert("El reporte de pagos se descargará en breve.");
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          const hoy = new Date();
+          const formatDate = hoy.toISOString().split('T')[0];
+          link.setAttribute('download', `reporte-pagos-${formatDate}.xlsx`); // Nombre del archivo
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          setExportFormat("");
+        } else {
+          alert("Formato de exportación no válido.");
+        }
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
@@ -271,15 +253,15 @@ const TablaReportePagos: React.FC = () => {
                 <MenuItem disabled value="">
                   Exportar
                 </MenuItem>
-                <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="excel">Excel</MenuItem>
+                <MenuItem value="1">PDF</MenuItem>
+                <MenuItem value="2">Excel</MenuItem>
               </Select>
             </FormControl>
 
-            {/* Botón "Imprimir" */}
+            {/* Botón "Descargar" */}
             <Button
               variant="contained"
-              startIcon={<Print />}
+              startIcon={<Download />}
               sx={{
                 backgroundColor: "#008001",
                 "&:hover": {
@@ -289,9 +271,10 @@ const TablaReportePagos: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
+              disabled={ exportFormat === "" }
               onClick={handleExportReporteDeudas}
             >
-              Imprimir
+              Descargar
             </Button>
           </Box>
         </Box>

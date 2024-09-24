@@ -1,4 +1,4 @@
-import { Person, Print } from '@mui/icons-material';
+import { Download, Person } from '@mui/icons-material';
 import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
@@ -21,48 +21,13 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  {
-    id: "id_cuota",
-    label: "#ID CUOTA",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "anio",
-    label: "Año",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "mes",
-    label: "Mes",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "servicios",
-    label: "Desc. Servicios por Cuota",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "total",
-    label: "Total (S/)",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "pagado",
-    label: "Imp. Pagado (S/)",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "por_pagar",
-    label: "Imp. Por pagar (S/)",
-    minWidth: 50,
-    align: "center",
-  },
+  { id: "id_cuota", label: "#ID CUOTA", minWidth: 50, align: "center" },
+  { id: "anio", label: "Año", minWidth: 50, align: "center" },
+  { id: "mes", label: "Mes", minWidth: 50, align: "center" },
+  { id: "servicios", label: "Desc. Servicios por Cuota", minWidth: 50, align: "center" },
+  { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
+  { id: "pagado", label: "Imp. Pagado (S/)", minWidth: 50, align: "center" },
+  { id: "por_pagar", label: "Imp. Por pagar (S/)", minWidth: 50, align: "center" },
 ]
 
 const initialRows: Data[] = [
@@ -117,16 +82,23 @@ const TablaReporteDeudas: React.FC = () => {
 
       // Si no hay problemas
       if (response.status === 200) {
-        alert("El reporte de deudas se descargará en breve.");
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        const hoy = new Date();
-        const formatDate = hoy.toISOString().split('T')[0];
-        link.setAttribute('download', `reporte-deudas-${formatDate}.xlsx`); // Nombre del archivo
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode?.removeChild(link);
+        if (exportFormat === "1") { // PDF
+          alert("En proceso de actualizacion. Intentelo más tarde.");	
+        } else if (exportFormat === "2") { // Excel
+          alert("El reporte de deudas se descargará en breve.");
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          const hoy = new Date();
+          const formatDate = hoy.toISOString().split('T')[0];
+          link.setAttribute('download', `reporte-deudas-${formatDate}.xlsx`); // Nombre del archivo
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          setExportFormat("");
+        } else {
+          alert("Formato de exportación no válido.");
+        }       
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
@@ -278,15 +250,15 @@ const TablaReporteDeudas: React.FC = () => {
                 <MenuItem disabled value="">
                   Exportar
                 </MenuItem>
-                <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="excel">Excel</MenuItem>
+                <MenuItem value="1">PDF</MenuItem>
+                <MenuItem value="2">Excel</MenuItem>
               </Select>
             </FormControl>
 
-            {/* Botón "Imprimir" */}
+            {/* Botón "Descargar" */}
             <Button
               variant="contained"
-              startIcon={<Print />}
+              startIcon={<Download />}
               sx={{
                 backgroundColor: "#008001",
                 "&:hover": {
@@ -296,9 +268,10 @@ const TablaReporteDeudas: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
+              disabled={ exportFormat === "" }
               onClick={handleExportReporteDeudas}
             >
-              Imprimir
+              Descargar
             </Button>
           </Box>
         </Box>

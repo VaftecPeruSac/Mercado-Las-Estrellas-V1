@@ -18,12 +18,10 @@ import {
   FormControl,
   Typography,
   TextField,
-  accordionDetailsClasses,
 } from "@mui/material";
 import {
   Download,
   WhatsApp,
-  Print,
   Payments,
   SaveAs,
   Search,
@@ -129,20 +127,28 @@ const TablaAsociados: React.FC = () => {
 
       // Si no hay error
       if (response.status === 200) {
-        alert("La lista de socios se descargará en breve.");
-        // Creamos un elemento a partir del blob
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        // Creamos el enlace de descarga
-        const link = document.createElement('a');
-        link.href = url;
-        // Para obtener la fecha
-        const hoy = new Date();
-        const formatDate = hoy.toISOString().split('T')[0];
-        link.setAttribute('download', `lista-socios-${formatDate}.xlsx`); // Nombre del archivo
-        document.body.appendChild(link);
-        link.click();
-        // Para limpiar el enlace
-        link.parentNode?.removeChild(link);
+        if (exportFormat === "1") { // PDF
+          alert("En proceso de actualización. Intentelo más tarde.");
+        } else if (exportFormat === "2") { // Excel
+          alert("La lista de socios se descargará en breve.");
+          // Creamos un elemento a partir del blob
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          // Creamos el enlace de descarga
+          const link = document.createElement('a');
+          link.href = url;
+          // Para obtener la fecha
+          const hoy = new Date();
+          const formatDate = hoy.toISOString().split('T')[0];
+          link.setAttribute('download', `lista-socios-${formatDate}.xlsx`); // Nombre del archivo
+          document.body.appendChild(link);
+          link.click();
+          // Para limpiar el enlace
+          link.parentNode?.removeChild(link);
+          // Limpiamos el formato de exportación
+          setExportFormat("");
+        } else {
+          alert("Formato de exportación no válido.");
+        }
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
@@ -351,14 +357,14 @@ const TablaAsociados: React.FC = () => {
                 <MenuItem disabled value="">
                   Exportar
                 </MenuItem>
-                <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="word">Excel</MenuItem>
+                <MenuItem value="1">PDF</MenuItem>
+                <MenuItem value="2">Excel</MenuItem>
               </Select>
             </FormControl>
 
             <Button
               variant="contained"
-              startIcon={<Print />}
+              startIcon={<Download />}
               sx={{
                 backgroundColor: "#008001",
                 "&:hover": {
@@ -368,9 +374,10 @@ const TablaAsociados: React.FC = () => {
                 width: "200px",
                 borderRadius: "30px",
               }}
-              onClick={handleExportSocios}
+              disabled={ exportFormat === "" }
+              onClick={ handleExportSocios }
             >
-              Imprimir
+              Descargar
             </Button>
           </Box>
         </Box>
