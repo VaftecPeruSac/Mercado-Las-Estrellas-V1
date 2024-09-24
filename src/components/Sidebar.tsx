@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import {
   Divider,
@@ -8,6 +8,7 @@ import {
   Typography,
   Box,
   ListItemButton,
+  Collapse,
 } from "@mui/material";
 import {
   Assignment,
@@ -19,21 +20,66 @@ import {
   Description,
   Storefront,
   Groups,
+  ExpandLess,
 } from "@mui/icons-material";
 import BackupTableIcon from '@mui/icons-material/BackupTable';
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoginIcon from '@mui/icons-material/Login';
+import { useAuth } from "../context/AuthContext";
+
 interface SidebarProps {
   open: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ open }) => {
+
+  const [openPanel, setOpenPanel] = useState(false);
+  const location = useLocation();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleOpenPanel = () => {
+    setOpenPanel(!openPanel);
+  };
+
+  // Estilos de los items de la lista
+  const getEstilos = (ubicacion: string, estilosAdicionales = {}) => {
+    // Si la ubicacion actual es igual a la ubicacion del item de la lista
+    return location.pathname === ubicacion
+    // Retornar los estilos del item de la lista con el color de fondo #404040 y el texto en negrita
+      ? { 
+        ...listItemStyle, 
+        ...estilosAdicionales, 
+        backgroundColor: "#404040", 
+        "& .MuiListItemText-primary": {
+          fontWeight: "550",
+        },
+      }
+    // De lo contrario, retornar los estilos del item de la lista con el color de fondo por defecto 
+    // y el texto en color #888
+      : { 
+        ...listItemStyle, 
+        ...estilosAdicionales, 
+        color: "#888" 
+      }
+  };
+
+  const handleCerrarSesion = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <Box sx={{
-      height: "100vh", display: "flex", flexDirection: "column",
-      bgcolor: "#1f2022", pl: 2, pr: 2
+      height: "100vh",
+      width: "260px",
+      display: "flex", 
+      flexDirection: "column",
+      bgcolor: "#1f2022", 
+      pl: 2, pr: 2
     }}>
-      <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 2 }}>
+
+      <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 1 }}>
         <BackupTableIcon />
         <Typography
           variant="subtitle1"
@@ -43,124 +89,135 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           <h3><b>SISTEM MERCADO</b></h3>
         </Typography>
       </Box>
-      <List>
-        &nbsp;
-        <ListItemButton
-          component={Link}
-          to="/home"
-          sx={{ ...listItemStyle }}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <DashboardIcon />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Panel de Control"
-              sx={{ ml: -2, }}
-            />
-          )}
-          <ExpandMore />
-        </ListItemButton>
-        &nbsp;
-        <ListItemButton
-          component={Link}
-          to="socios"
-          sx={listItemStyle}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <Groups />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Socios"
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
-        <ListItemButton
-          component={Link}
-          to="puestos"
-          sx={listItemStyle}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <Storefront />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Puestos"
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
-        <ListItemButton
-          component={Link}
-          to="servicios"
-          sx={listItemStyle}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <ShoppingBasket />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Servicios"
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
-        <ListItemButton
-          component={Link}
-          to="cuotas"
-          sx={listItemStyle}
-        >
-          <Assignment sx={{ color: "inherit" }}>
-            <Article />
-          </Assignment>
-          {open && (
-            <ListItemText
-              primary="Generar Cuota"
-              sx={{ ml: 1 }}
-            />
-          )}
-        </ListItemButton>
-        <ListItemButton
-          component={Link}
-          to="pagos"
-          sx={listItemStyle}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <MonetizationOn />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Pagos"
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
 
+      <Box>
 
-        &nbsp;
-        <Divider sx={{ bgcolor: "#505155", ml: 3, mr: 3 }} />
-        <ListItemButton
-          component={Link}
-          to="configuracion"
-          sx={listItemStyle}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <Settings />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Configuracion  "
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
-        <br />
+        <List>
+
+          <ListItemButton
+            component={Link}
+            to="/home"
+            sx={getEstilos("/home", { mt: 4 })}
+            onClick={handleOpenPanel}
+          >
+            <ListItemIcon sx={{ color: "inherit" }}>
+              <DashboardIcon />
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary="Panel de Control"
+                sx={{ ml: -3, }}
+              />
+            )}
+            {openPanel ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+
+          <Collapse in={openPanel} timeout="auto" unmountOnExit>
+
+            <List component="div" disablePadding>
+
+              {/* Socios */}
+              <ListItemButton
+                component={Link}
+                to="socios"
+                sx={getEstilos("/home/socios", { ml: 2 })}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <Groups />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Socios"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
+
+              {/* Puestos */}
+              <ListItemButton
+                component={Link}
+                to="puestos"
+                sx={getEstilos("/home/puestos", { ml: 2 })}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <Storefront />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Puestos"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
+
+              {/* Servicios */}
+              <ListItemButton
+                component={Link}
+                to="servicios"
+                sx={getEstilos("/home/servicios", { ml: 2 })}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <ShoppingBasket />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Servicios"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
+
+              {/* Cuotas */}
+              <ListItemButton
+                component={Link}
+                to="cuotas"
+                sx={getEstilos("/home/cuotas", { ml: 2 })}
+              >
+                <Assignment sx={{ color: "inherit" }}>
+                  <Article />
+                </Assignment>
+                {open && (
+                  <ListItemText
+                    primary="Generar Cuota"
+                    sx={{ ml: 1 }}
+                  />
+                )}
+              </ListItemButton>
+
+              {/* Pagos */}
+              <ListItemButton
+                component={Link}
+                to="pagos"
+                sx={getEstilos("/home/pagos", { ml: 2 })}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <MonetizationOn />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Pagos"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
+
+            </List>
+
+          </Collapse>
+
+        </List>
+
+      </Box>
+
+      <Box>
+
+        <Divider sx={{ bgcolor: "#505155", m: 3 }} />
+
+        {/* Reporte de pagos */}
         <ListItemButton
           component={Link}
           to="reporte-pagos"
-          sx={listItemStyle}
+          sx={getEstilos("/home/reporte-pagos", {})}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Description />
@@ -168,35 +225,56 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           {open && (
             <ListItemText
               primary="Reporte pagos"
-              sx={{ ml: -2 }}
+              sx={{ ml: -3 }}
             />
           )}
         </ListItemButton>
+
+        {/* Reporte de deudas */}
         <ListItemButton
           component={Link}
           to="reporte-deudas"
-          sx={listItemStyle}
+          sx={getEstilos("/home/reporte-deudas", {})}
         >
-          <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
+          <ListItemIcon sx={{ color: "inherit" }}>
             <Description />
           </ListItemIcon>
           {open && (
             <ListItemText
               primary="Reporte Deudas"
-              sx={{ ml: -2 }}
+              sx={{ ml: -3 }}
             />
           )}
         </ListItemButton>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+
+        <Divider sx={{ bgcolor: "#505155", m: 3 }} />
+
+        {/* Configuracion */}
         <ListItemButton
           component={Link}
-          to="ver-deuda"
-          sx={listItemStyle}
+          to="configuracion"
+          sx={getEstilos("/home/configuracion", { mb: "auto" })}
+        >
+          <ListItemIcon sx={{ color: "inherit" }}>
+            <Settings />
+          </ListItemIcon>
+          {open && (
+            <ListItemText
+              primary="Configuracion"
+              sx={{ ml: -3 }}
+            />
+          )}
+        </ListItemButton>
+
+      </Box>
+
+      <Box sx={{ mt: "auto", mb: 2 }}>
+
+        {/* Ayuda */}
+        <ListItemButton
+          component={Link}
+          to="ayuda"
+          sx={getEstilos("/home/ayuda", {})}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>
@@ -207,10 +285,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
             />
           )}
         </ListItemButton>
+
+        {/* Contactanos */}
         <ListItemButton
           component={Link}
-          to="ver-deuda"
-          sx={listItemStyle}
+          to="contactenos"
+          sx={getEstilos("/home/contactenos", {})}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>
@@ -221,9 +301,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
             />
           )}
         </ListItemButton>
+
+        {/* Salir / Cerrar sesión */}
         <ListItemButton
-          component={Link}
-          to="/"
+          onClick={handleCerrarSesion}
           sx={listItemStyle}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
@@ -236,19 +317,20 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
             />
           )}
         </ListItemButton>
-      </List>
+
+      </Box>
+
     </Box>
+
   );
 };
 
 const listItemStyle = {
+  mt: "2px",
+  mb: "2px",
+  borderRadius: '16px',
   "&:hover": {
     backgroundColor: "#404040",
-    borderRadius: '16px',
-    color: "#FFFFFF",
-    "& .MuiListItemText-primary": {
-      fontWeight: "bold",
-    },
   },
 };
 

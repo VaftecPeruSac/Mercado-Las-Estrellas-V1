@@ -20,6 +20,8 @@ import Sidebar from "./Sidebar";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { GridSearchIcon } from "@mui/x-data-grid";
 import { NotificationsNone } from "@mui/icons-material";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   open: boolean;
@@ -27,7 +29,10 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,6 +41,12 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleCerrarSesion = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -66,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               </Grid>
               <Grid item xs={12}>
                 <Typography sx={{ color: '#b3b3b3', fontWeight: "bold", text: "center", ml: 30 }}>
-                  <h5>Sitema Intranet Mercado las Estrellas versopm 2.0</h5>
+                  <h5>Sistema Intranet Mercado las Estrellas versión 2.0</h5>
                 </Typography>
               </Grid>
             </Grid>
@@ -131,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             onClose={handleMenuClose}
           >
             <MenuItem onClick={handleMenuClose}>Mi Perfil</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Cerrar sesión</MenuItem>
+            <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </Menu>
         </Toolbar>
         <Drawer
@@ -158,9 +169,9 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
           sx={{
             position: "absolute",
             top: "855px",
-            left: open ? "225px" : "0px",
+            left: open ? "240px" : "0px",
             borderRadius: "16px",
-            transition: "left 0.3s, opacity 0.3s",
+            transition: "left 0.3s, opacity 0.5s",
             opacity: open ? 1 : 0,
             pointerEvents: open ? "auto" : "none",
             display: "flex",
