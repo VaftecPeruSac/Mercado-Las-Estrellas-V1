@@ -9,6 +9,8 @@ import TablaPuestos from "../components/Puestos/TablaPuestos";
 import TablaReportePagos from "../components/ReportePagos/TablaReportePagos";
 import TablaReporteDeudas from "../components/ReporteDeudas/TablaReporteDeudas";
 import Login from "../components/Login/Login";
+import { AuthProvider } from "../context/AuthContext";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +19,12 @@ export const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <Principal />,
+    element: (
+      // Usamos el componente de ruta protegida
+      <ProtectedRoute>
+        <Principal />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -56,7 +63,10 @@ export const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  <RouterProvider router={router} />
+  // Envolver la aplicación con el proveedor de autenticación
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 }
 
 export default App;

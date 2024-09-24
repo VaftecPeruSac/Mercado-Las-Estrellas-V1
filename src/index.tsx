@@ -5,14 +5,17 @@ import reportWebVitals from "./reportWebVitals";
 
 import { router } from "./router/Index";
 import { RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
-  <React.StrictMode>
+  // Envolver la aplicación con el proveedor de autenticación
+  <AuthProvider>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

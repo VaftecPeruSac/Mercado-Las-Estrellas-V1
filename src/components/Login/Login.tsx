@@ -1,6 +1,7 @@
 import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Login: React.FC = () => {
 
@@ -10,12 +11,16 @@ const Login: React.FC = () => {
   const [rol, setRol] = useState("1");
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Iniciar sesion
   const IniciarSesion = (event: React.FormEvent) => {
     event.preventDefault();
-    if(usuario === "Admin" && password === "12345" && rol === "1"){
+    if(usuario === "Admin" && password === "12345" && rol === "3"){
       alert(`Bienvenido ${usuario} \nSesión iniciada con exito`);
+      // Iniciamos sesión
+      login();
+      // Redirigimos a la pagina de inicio
       navigate("/home");
     } else {
       alert("Credenciales no validas. Por favor intentelo nuevamente.");
