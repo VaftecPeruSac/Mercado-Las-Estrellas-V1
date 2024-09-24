@@ -18,7 +18,12 @@ const data = [
   { name: 'Abril', uv: 28, pv: 39, amt: 20 },
   { name: 'Mayo', uv: 18, pv: 48, amt: 21 },
   { name: 'Junio', uv: 23, pv: 38, amt: 25 },
-  { name: 'Julio', uv: 34, pv: 43, amt: 21 },
+  { name: 'Julio', uv: 23, pv: 38, amt: 25 },
+  { name: 'Agosto', uv: 34, pv: 43, amt: 21 },
+  { name: 'Septiembre', uv: 34, pv: 43, amt: 21 },
+  { name: 'Octubre', uv: 34, pv: 43, amt: 21 },
+  { name: 'Noviembre', uv: 34, pv: 43, amt: 21 },
+  { name: 'Diciembre', uv: 34, pv: 43, amt: 21 },
 ];
 
 const chartData = [
@@ -33,16 +38,19 @@ interface PieData {
   value: number;
 }
 const Dashboard: React.FC = () => {
+  
   const [itemData, setItemData] = React.useState<PieData | null>(null);
   const formatTooltipValue = (value: number) => `${value}%`;
+
   return (
     <Box
       sx={{
         flexGrow: 1,
         p: 5,
-        pt: 15, // Espacio adicional en la parte superior para crear un margen con el Header
+        pt: 10,
+        mt: 5,
         backgroundColor: "#f0f0f0",
-        minHeight: "100vh",
+        minHeight: "93vh",
         display: "-ms-flexbox",
         flexDirection: "column",
       }}
@@ -53,9 +61,7 @@ const Dashboard: React.FC = () => {
           justifyContent: "space-between",
           flexWrap: "wrap",
           mb: 3,
-          gap: "1rem  ",
-          marginLeft: "1rem", // Ajusta el margen izquierdo
-          marginRight: "1rem",
+          gap: "1rem",
         }}
       >
         <Box
@@ -68,7 +74,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "400px",
+            width: "30%",
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease", // Suaviza la transición de colores
@@ -134,7 +140,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "400px",
+            width: "33%",
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -198,7 +204,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "400px",
+            width: "33%",
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -259,29 +265,23 @@ const Dashboard: React.FC = () => {
           flexWrap: "wrap",
           mb: 3,
           gap: "1rem",
-
-
         }}
       >
         <Card sx={{
           width: "70%",
+          padding: "20px",
           borderRadius: '30px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          position: "relative",
-          textAlign: "left",
         }}>
           <CardContent>
-            <Box sx={{ textAlign: 'left', mb: 2 }}>
+            <Box sx={{ textAlign: 'left', mb: 4 }}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', marginLeft: "30px" }}>
                 Rendimiento de los pagos
               </Typography>
             </Box>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="96%" height={350}>
               <LineChart
                 data={data}
-                margin={{
-                  top: 5, right: 30, left: 20, bottom: 5,
-                }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -295,7 +295,7 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card sx={{ width: "350px", borderRadius: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: "-ms-inline-flexbox" }}>
+        <Card sx={{ width: "28%", borderRadius: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: "-ms-inline-flexbox" }}>
           <CardContent>
             <Box sx={{ textAlign: 'center', mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>

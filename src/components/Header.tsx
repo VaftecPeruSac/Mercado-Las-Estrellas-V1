@@ -11,14 +11,13 @@ import {
   MenuItem,
   Avatar,
   Grid,
-  TextField,
-  InputAdornment,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Sidebar from "./Sidebar";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { GridSearchIcon } from "@mui/x-data-grid";
 import { NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +32,10 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -146,13 +149,11 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
           </Menu>
         </Toolbar>
         <Drawer
-          variant="persistent"
+          variant={isMobile ? "temporary" : "persistent"}
           anchor="left"
           open={open}
+          onClose={toggleDrawer}
           sx={{
-            // zIndex: (theme) => theme.zIndex.appBar + 1,
-            // width: 220,
-            // flexShrink: 0,
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               backgroundColor: "#404040",
@@ -163,7 +164,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             },
           }}
         >
-          <Sidebar open={open} />
+          <Sidebar open={open} onClose={toggleDrawer}/>
         </Drawer>
         <Box
           sx={{

@@ -9,6 +9,9 @@ import {
   Box,
   ListItemButton,
   Collapse,
+  useMediaQuery,
+  useTheme,
+  IconButton,
 } from "@mui/material";
 import {
   Assignment,
@@ -21,6 +24,7 @@ import {
   Storefront,
   Groups,
   ExpandLess,
+  Close,
 } from "@mui/icons-material";
 import BackupTableIcon from '@mui/icons-material/BackupTable';
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -29,11 +33,16 @@ import { useAuth } from "../context/AuthContext";
 
 interface SidebarProps {
   open: boolean;
+  onClose: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ open }) => {
+const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
-  const [openPanel, setOpenPanel] = useState(false);
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [openPanel, setOpenPanel] = useState(isMobile ? true : false);
   const location = useLocation();
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -67,18 +76,25 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   const handleCerrarSesion = () => {
     logout();
     navigate("/");
+    onClose();
   };
 
   return (
     <Box sx={{
       height: "100vh",
-      width: "260px",
+      width: isMobile ? "100vw" : "260px",
       display: "flex", 
       flexDirection: "column",
       bgcolor: "#1f2022", 
       pl: 2, pr: 2
     }}>
 
+    <Box sx={{ 
+      display: "flex", 
+      alignItems: "center", 
+      alignContent: "center",
+      justifyContent: "space-between" 
+    }}>
       <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 1 }}>
         <BackupTableIcon />
         <Typography
@@ -89,6 +105,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           <h3><b>SISTEM MERCADO</b></h3>
         </Typography>
       </Box>
+      {isMobile && (
+        <IconButton onClick={onClose} sx={{ color: '#fff', pt: 4 }}>
+          <Close />
+        </IconButton>
+      )}
+    </Box>
 
       <Box>
 
@@ -97,8 +119,18 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           <ListItemButton
             component={Link}
             to="/home"
-            sx={getEstilos("/home", { mt: 4 })}
-            onClick={handleOpenPanel}
+            sx={getEstilos("/home", { mt: 3 })}
+            onClick={() => {
+              if(!isMobile){
+                handleOpenPanel();
+              } else {
+                if(location.pathname === "/home") {
+                  handleOpenPanel();
+                } else {
+                  onClose();
+                }
+              }
+            }}
           >
             <ListItemIcon sx={{ color: "inherit" }}>
               <DashboardIcon />
@@ -121,6 +153,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                 component={Link}
                 to="socios"
                 sx={getEstilos("/home/socios", { ml: 2 })}
+                onClick={isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <Groups />
@@ -138,6 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                 component={Link}
                 to="puestos"
                 sx={getEstilos("/home/puestos", { ml: 2 })}
+                onClick={isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <Storefront />
@@ -155,6 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                 component={Link}
                 to="servicios"
                 sx={getEstilos("/home/servicios", { ml: 2 })}
+                onClick={isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <ShoppingBasket />
@@ -172,6 +207,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                 component={Link}
                 to="cuotas"
                 sx={getEstilos("/home/cuotas", { ml: 2 })}
+                onClick={isMobile ? onClose : undefined}
               >
                 <Assignment sx={{ color: "inherit" }}>
                   <Article />
@@ -189,6 +225,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                 component={Link}
                 to="pagos"
                 sx={getEstilos("/home/pagos", { ml: 2 })}
+                onClick={isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <MonetizationOn />
@@ -218,13 +255,14 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           component={Link}
           to="reporte-pagos"
           sx={getEstilos("/home/reporte-pagos", {})}
+          onClick={isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Description />
           </ListItemIcon>
           {open && (
             <ListItemText
-              primary="Reporte pagos"
+              primary="Reporte Pagos"
               sx={{ ml: -3 }}
             />
           )}
@@ -235,6 +273,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           component={Link}
           to="reporte-deudas"
           sx={getEstilos("/home/reporte-deudas", {})}
+          onClick={isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Description />
@@ -254,6 +293,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           component={Link}
           to="configuracion"
           sx={getEstilos("/home/configuracion", { mb: "auto" })}
+          onClick={isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Settings />
@@ -275,6 +315,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           component={Link}
           to="ayuda"
           sx={getEstilos("/home/ayuda", {})}
+          onClick={isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>
@@ -291,6 +332,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           component={Link}
           to="contactenos"
           sx={getEstilos("/home/contactenos", {})}
+          onClick={isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>

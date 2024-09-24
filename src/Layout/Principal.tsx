@@ -22,8 +22,9 @@ const Principal = () => {
           sx={{
             flexGrow: 1,
             p: 3,
+            pb: 0,
             transition: "margin-left 0.3s",
-            marginLeft: open ? "240px" : "64px",
+            marginLeft: open ? "260px" : "0px",
           }}
         >
           {/* <Dashboard /> */}
