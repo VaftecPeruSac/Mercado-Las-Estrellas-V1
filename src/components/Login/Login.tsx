@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -9,9 +9,14 @@ const Login: React.FC = () => {
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("1");
-
-  const navigate = useNavigate();
   const { login } = useAuth();
+
+  // Para redirigir
+  const navigate = useNavigate();
+  
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Iniciar sesion
   const IniciarSesion = (event: React.FormEvent) => {
@@ -30,7 +35,7 @@ const Login: React.FC = () => {
   return (
     <Container 
       component="main"
-      sx={{ maxWidth: "100vh" }}
+      sx={{ maxWidth: "100vw" }}
     >
       <Box
         sx={{
@@ -43,7 +48,7 @@ const Login: React.FC = () => {
       >
 
         <Box sx={{
-          width: "440px",
+          width: isMobile ? "280px" : "440px",
           height: "680px" ,
           border: "1px solid",
           borderRadius: "15px",
@@ -54,7 +59,7 @@ const Login: React.FC = () => {
             component="h1"
             sx={{
               textAlign: "center",
-              fontSize: "28px",
+              fontSize: isMobile ? "24px" : "28px",
               fontWeight: "bold",
               mb: 4
             }}
@@ -73,7 +78,7 @@ const Login: React.FC = () => {
                   color: "#0AB544",
                 }}
               >
-                Nombres y apellidos
+                Nombre de usuario
               </Typography>
               <TextField
                 fullWidth

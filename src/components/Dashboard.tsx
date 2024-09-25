@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Card, CardContent, Stack } from "@mui/material";
+import { Box, Typography, Card, CardContent, Stack, useTheme, useMediaQuery } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { NextWeek, Person, Wysiwyg } from "@mui/icons-material";
@@ -39,6 +39,10 @@ interface PieData {
 }
 const Dashboard: React.FC = () => {
   
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [itemData, setItemData] = React.useState<PieData | null>(null);
   const formatTooltipValue = (value: number) => `${value}%`;
 
@@ -48,7 +52,7 @@ const Dashboard: React.FC = () => {
         flexGrow: 1,
         p: 5,
         pt: 10,
-        mt: 5,
+        mt: isMobile ? 10 : 5,
         backgroundColor: "#f0f0f0",
         minHeight: "93vh",
         display: "-ms-flexbox",
@@ -58,8 +62,9 @@ const Dashboard: React.FC = () => {
       <Box
         sx={{
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          flexWrap: isMobile ? "none" : "wrap",
           justifyContent: "space-between",
-          flexWrap: "wrap",
           mb: 3,
           gap: "1rem",
         }}
@@ -74,7 +79,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "30%",
+            width: isMobile ? "100%" : "32%", // Ancho del card
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease", // Suaviza la transición de colores
@@ -124,7 +129,12 @@ const Dashboard: React.FC = () => {
             }}>
               +15.6%
             </Typography>
-            <Typography variant="subtitle2" sx={{ marginLeft: "50px", color: 'gray' }}>
+            <Typography variant="subtitle2" 
+              sx={{ 
+                marginLeft: "auto",
+                marginRight: "10px",
+                color: 'gray' 
+              }}>
               Consolidado por semana
             </Typography>
           </Box>
@@ -140,7 +150,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "33%",
+            width: isMobile ? "100%" : "32%", // Ancho del card
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -188,7 +198,12 @@ const Dashboard: React.FC = () => {
             }}>
               +15.6%
             </Typography>
-            <Typography variant="subtitle2" sx={{ marginLeft: "135px", color: 'gray' }}>
+            <Typography variant="subtitle2" 
+              sx={{ 
+                marginLeft: "auto",
+                marginRight: "10px",
+                color: 'gray' 
+              }}>
               +1.4k por año
             </Typography>
           </Box>
@@ -204,7 +219,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: "33%",
+            width: isMobile ? "100%" : "32%", // Ancho del card
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -251,7 +266,12 @@ const Dashboard: React.FC = () => {
             }}>
               +15.6%
             </Typography>
-            <Typography variant="subtitle2" sx={{ marginLeft: "170px", color: 'gray' }}>
+            <Typography variant="subtitle2" 
+              sx={{ 
+                marginLeft: "auto", 
+                marginRight: "10px", 
+                color: 'gray' 
+              }}>
               Ver más
             </Typography>
           </Box>
@@ -268,21 +288,29 @@ const Dashboard: React.FC = () => {
         }}
       >
         <Card sx={{
-          width: "70%",
-          padding: "20px",
+          width: isMobile ? "100%" : "70%",
+          padding: isMobile ? "0" : "20px",
           borderRadius: '30px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         }}>
           <CardContent>
             <Box sx={{ textAlign: 'left', mb: 4 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', marginLeft: "30px" }}>
+              <Typography variant="h5" 
+                sx={{ 
+                  fontWeight: 'bold',
+                  marginLeft: "10px",
+                  marginTop: isMobile ? "10px" : "0",
+                }}
+              >
                 Rendimiento de los pagos
               </Typography>
             </Box>
-            <ResponsiveContainer width="96%" height={350}>
-              <LineChart
-                data={data}
-              >
+            <ResponsiveContainer
+              width="100%" 
+              height={300}
+              style={{ marginLeft: "-25px" }}
+            >
+              <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -295,7 +323,14 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card sx={{ width: "28%", borderRadius: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: "-ms-inline-flexbox" }}>
+        <Card 
+          sx={{ 
+            width: isMobile ? "100%" : "28%", 
+            borderRadius: '30px', 
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+            display: "-ms-inline-flexbox" 
+          }}
+        >
           <CardContent>
             <Box sx={{ textAlign: 'center', mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
