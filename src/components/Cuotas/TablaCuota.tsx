@@ -19,12 +19,16 @@ import {
   InputLabel,
   SelectChangeEvent,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   Download,
   Search,
   Plagiarism,
   WhatsApp,
+  ExpandLess,
+  ExpandMore,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
@@ -95,6 +99,12 @@ interface IMeses {
 }
 
 const TablaCuota: React.FC = () => {
+
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+
   const [iMeses, setIMeses] = useState<IMeses[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
@@ -218,14 +228,13 @@ const TablaCuota: React.FC = () => {
   useEffect(() => {
     setIMeses(optMeses);
   }, []);
-  // setIMeses([]);
 
   return (
     <Box
       sx={{
         flexGrow: 1,
         p: 3,
-        pt: 10,
+        pt: isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -233,15 +242,7 @@ const TablaCuota: React.FC = () => {
         overflowX: "auto",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          mb: 3,
-        }}
-      />
+      <Box sx={{ mb: 3 }}/>
 
       <Card
         sx={{
@@ -265,7 +266,7 @@ const TablaCuota: React.FC = () => {
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
+            mb: isMobile ? 2 : 3,
             p: 0,
           }}
         >
@@ -279,7 +280,8 @@ const TablaCuota: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: "230px",
+              width: isMobile ? "100%" : "230px",
+              marginBottom: isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={handleOpen}
@@ -291,6 +293,7 @@ const TablaCuota: React.FC = () => {
 
           <Box
             sx={{
+              width: isMobile ? "100%" : "auto",
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -301,7 +304,7 @@ const TablaCuota: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                minWidth: "150px",
+                width: isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -327,7 +330,7 @@ const TablaCuota: React.FC = () => {
                     backgroundColor: "#e0e0e0",
                   },
                   height: "50px",
-                  minWidth: "120px",
+                  minWidth: "100%",
                   padding: "0 15px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999",
@@ -354,7 +357,7 @@ const TablaCuota: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: "200px",
+                width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
               }}
               disabled={ exportFormat === "" }
@@ -365,71 +368,123 @@ const TablaCuota: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Buscar cuotas */}
-        <Box
-          sx={{
-            padding: "15px 35px",
-            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
-            Buscar por:
-          </Typography>
-
-          {/* Seleccionar año */}
-          <FormControl sx={{ minWidth: 250, mr: 1 }}>
-            <InputLabel id="cuota-anio-label">Año</InputLabel>
-            <Select value={anio} onChange={manejarAnioCambio} label="Año">
-              {[
-                2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
-                2014, 2013, 2012,
-              ].map((año) => (
-                <MenuItem
-                  sx={{ padding: "10px 25px !important" }}
-                  key={año}
-                  value={año}
-                >
-                  {año}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Seleccionar mes */}
-          <FormControl sx={{ minWidth: 250, mr: 1 }}>
-            <InputLabel id="cuota-mes-label">Mes</InputLabel>
-            <Select value={mes} onChange={manejarMesCambio} label="Mes">
-            {iMeses.map((iMes: IMeses) => (
-                        <MenuItem key={iMes.value} value={iMes.value}>
-                          {iMes.label}
-                        </MenuItem>
-                      ))}
-            </Select>
-          </FormControl>
-
-          {/* Boton Buscar */}
-          <Button
-            variant="contained"
-            startIcon={<Search />}
+        {isMobile && (
+          // Botón "Filtros" para mostrar/ocultar los filtros
+          <Box 
             sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: "170px",
-              marginLeft: "25px",
-              borderRadius: "30px",
+              width: "100%",
+              borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+              borderBottom: !mostrarFiltros ? "1px solid rgba(0, 0, 0, 0.25)" : "none",
+              pt: "1rem",
             }}
-            onClick={handleSearchCuota}
           >
-            Buscar
-          </Button>
-        </Box>
+            <Button
+              variant="contained"
+              sx={{
+                height: "50px",
+                width: "100%",
+                borderRadius: "30px",
+                mb: "1rem",
+              }}
+              onClick={() => setMostrarFiltros(!mostrarFiltros)}
+              endIcon={mostrarFiltros 
+                ? <ExpandLess /> 
+                : <ExpandMore />}
+            >
+              Filtrar Cuotas
+            </Button>
+          </Box>
+        )}
+
+        {(!isMobile || mostrarFiltros) && (
+
+          // Filtros de búsqueda
+          <Box
+            sx={{
+              padding: isMobile ? "15px 0" : "15px 35px",
+              borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+              borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              alignItems: isMobile ? "left" : "center",
+            }}
+          >
+            <Typography 
+              sx={{
+                textAlign: "left",
+                fontWeight: "bold", 
+                mr: 2,
+                mt: isMobile ? 1 : 0,
+                mb: isMobile ? 2 : 0
+              }}
+            >
+              Buscar por:
+            </Typography>
+
+            {/* Seleccionar año */}
+            <FormControl 
+              sx={{ 
+                width: isMobile ? "100%" : "200px", 
+                mr: isMobile ? 0 : 1, 
+              }}
+            >
+              <InputLabel id="cuota-anio-label">Año</InputLabel>
+              <Select value={anio} onChange={manejarAnioCambio} label="Año">
+                {[
+                  2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
+                  2014, 2013, 2012,
+                ].map((año) => (
+                  <MenuItem
+                    sx={{ padding: "10px 25px !important" }}
+                    key={año}
+                    value={año}
+                  >
+                    {año}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Seleccionar mes */}
+            <FormControl
+              sx={{ 
+                width: isMobile ? "100%" : "200px", 
+                mr: isMobile ? 0 : 1,
+                mt: isMobile ? 2 : 0,
+                mb: isMobile ? 2 : 0,
+              }}
+            >
+              <InputLabel id="cuota-mes-label">Mes</InputLabel>
+              <Select value={mes} onChange={manejarMesCambio} label="Mes">
+              {iMeses.map((iMes: IMeses) => (
+                          <MenuItem key={iMes.value} value={iMes.value}>
+                            {iMes.label}
+                          </MenuItem>
+                        ))}
+              </Select>
+            </FormControl>
+
+            {/* Boton Buscar */}
+            <Button
+              variant="contained"
+              startIcon={<Search />}
+              sx={{
+                backgroundColor: "#008001",
+                "&:hover": {
+                  backgroundColor: "#2c6d33",
+                },
+                height: "50px",
+                width: isMobile ? "100%" : "170px",
+                marginLeft: isMobile ? 0 : "1rem",
+                borderRadius: "30px",
+              }}
+              onClick={handleSearchCuota}
+            >
+              Buscar
+            </Button>
+          </Box>
+
+        )}
 
         {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>

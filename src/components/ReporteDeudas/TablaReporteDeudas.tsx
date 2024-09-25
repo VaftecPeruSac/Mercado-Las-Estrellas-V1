@@ -1,5 +1,5 @@
 import { Download, Person } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 
@@ -48,6 +48,10 @@ const initialRows: Data[] = [
 ]
 
 const TablaReporteDeudas: React.FC = () => {
+
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Para la tabla
   const [rows, setRows] = useState<Data[]>(initialRows);
@@ -115,7 +119,7 @@ const TablaReporteDeudas: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: 3,
-        pt: 10,
+        pt: isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -123,16 +127,7 @@ const TablaReporteDeudas: React.FC = () => {
         overflowX: "auto",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          mb: 3,
-        }}
-      >
-      </Box>
+      <Box sx={{ mb: 3 }}/>
       
       <Card
         sx={{
@@ -156,21 +151,25 @@ const TablaReporteDeudas: React.FC = () => {
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
+            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+            mb: isMobile ? 2 : 3,
             p: 0,
+            pb: 1,
           }}
         >
           <Box
             sx={{
+              width: isMobile ? "100%" : "auto",
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
               gap: 2,
               alignItems: "center",
-              ml: "10px",
-              mr: "auto",
+              ml: isMobile ? "0px" : "10px",
+              mr: isMobile ? "0px" : "auto",
             }}
           >
             {/* Seleccionar socio */}
-            <FormControl sx={{ width: "400px" }} required>
+            <FormControl sx={{ width: isMobile ? "100%" : "400px" }} required>
               <InputLabel id="seleccionar-socio-label">
                 Seleccionar Socio
               </InputLabel>
@@ -192,7 +191,7 @@ const TablaReporteDeudas: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: "150px",
+                width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
               onClick={handleGenerarReporte}
@@ -202,17 +201,19 @@ const TablaReporteDeudas: React.FC = () => {
           </Box>
           <Box
             sx={{
+              width: isMobile ? "100%" : "auto",
               display: "flex",
               gap: 2,
               alignItems: "center",
               ml: "auto",
+              mt: 2 ,
             }}
           >
             {/* Formulario para el Select "Exportar" */}
             <FormControl
               variant="outlined"
               sx={{
-                minWidth: "150px",
+                width: isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -238,7 +239,7 @@ const TablaReporteDeudas: React.FC = () => {
                     backgroundColor: "#e0e0e0",
                   },
                   height: "50px",
-                  minWidth: "120px",
+                  width: "100%",
                   padding: "0 15px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999",
@@ -265,7 +266,7 @@ const TablaReporteDeudas: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: "200px",
+                width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
               }}
               disabled={ exportFormat === "" }

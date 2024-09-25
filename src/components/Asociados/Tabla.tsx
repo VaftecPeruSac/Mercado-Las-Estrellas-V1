@@ -18,6 +18,8 @@ import {
   FormControl,
   Typography,
   TextField,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   Download,
@@ -99,6 +101,10 @@ const columns: readonly Column[] = [
 ];
 
 const TablaAsociados: React.FC = () => {
+
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Para filtrar los registros
   const [nombreIngresado, setNombreIngresado] = useState<string>("");
@@ -237,7 +243,7 @@ const TablaAsociados: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: 3,
-        pt: 10,
+        pt: isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -245,17 +251,8 @@ const TablaAsociados: React.FC = () => {
         overflowX: "auto",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          mb: 3,
-        }}
-      >
-        {/* Título opcional */}
-      </Box>
+
+      <Box sx={{ mb: 3 }} />
 
       <Card
         sx={{
@@ -277,10 +274,10 @@ const TablaAsociados: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            flexDirection: { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
+            mb: isMobile ? 2 : 3,
             P: 0,
           }}
         >
@@ -293,7 +290,8 @@ const TablaAsociados: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: "230px",
+              width: isMobile ? "100%" : "230px",
+              marginBottom: isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={() => handleOpen()}
@@ -310,16 +308,17 @@ const TablaAsociados: React.FC = () => {
 
           <Box
             sx={{
+              width: isMobile ? "100%" : "auto", // Ancho del contenedor
               display: "flex",
               gap: 2,
               alignItems: "center",
-              ml: "auto",
+              ml: isMobile ? 0 : "auto",
             }}
           >
             <FormControl
               variant="outlined"
               sx={{
-                minWidth: "150px",
+                width: isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -345,7 +344,7 @@ const TablaAsociados: React.FC = () => {
                     backgroundColor: "#e0e0e0", // Cambio sutil al hacer hover
                   },
                   height: "50px",
-                  minWidth: "120px",
+                  width: "100%",
                   padding: "0 15px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
@@ -371,7 +370,7 @@ const TablaAsociados: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: "200px",
+                width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
               }}
               disabled={ exportFormat === "" }
@@ -385,7 +384,7 @@ const TablaAsociados: React.FC = () => {
         {/* Buscar socio */}
         <Box
           sx={{
-            padding: "15px 35px",
+            padding: isMobile ? "15px 0px" : "15px 35px",
             borderTop: "1px solid rgba(0, 0, 0, 0.25)",
             borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
             display: "flex",
@@ -393,13 +392,18 @@ const TablaAsociados: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+          <Typography 
+            sx={{ 
+              display: isMobile ? "none" : "inline-block",
+              fontWeight: "bold", 
+              mr: 2,
+            }}>
             Buscar por:
           </Typography>
 
           {/* Input Nombre Socio */}
           <TextField
-            sx={{ width: "400px" }}
+            sx={{ width: isMobile ? "60%" : "30%" }}
             label="Nombre del socio"
             onChange={(e) => setNombreIngresado(e.target.value)}
           />
@@ -414,8 +418,8 @@ const TablaAsociados: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: "170px",
-              marginLeft: "25px",
+              width: isMobile ? "40%" : "170px",
+              marginLeft: isMobile ? "10px" : "1rem",
               borderRadius: "30px",
             }}
             onClick={buscarSocios}

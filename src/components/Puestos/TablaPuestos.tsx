@@ -1,4 +1,4 @@
-import { DeleteForever, Download, SaveAs, Search } from "@mui/icons-material";
+import { DeleteForever, Download, ExpandLess, ExpandMore, SaveAs, Search } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -18,6 +18,8 @@ import {
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
@@ -91,6 +93,12 @@ const columns: readonly Column[] = [
 ];
 
 const TablaPuestos: React.FC = () => {
+
+  // Variables para el responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   // Para filtrar los datos
   const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -258,7 +266,7 @@ const TablaPuestos: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: 3,
-        pt: 10,
+        pt: isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -266,15 +274,7 @@ const TablaPuestos: React.FC = () => {
         overflowX: "auto",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          mb: 3,
-        }}
-      ></Box>
+      <Box sx={{ mb: 3 }}/>
 
       <Card
         sx={{
@@ -299,7 +299,7 @@ const TablaPuestos: React.FC = () => {
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
+            mb: isMobile ? 2 : 3,
             P: 0,
           }}
         >
@@ -313,7 +313,8 @@ const TablaPuestos: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: "230px",
+              width: isMobile ? "100%" : "230px",
+              marginBottom: isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={() => handleOpen()}
@@ -329,6 +330,7 @@ const TablaPuestos: React.FC = () => {
 
           <Box
             sx={{
+              width: isMobile ? "100%" : "auto",
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -339,7 +341,7 @@ const TablaPuestos: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                minWidth: "150px",
+                width: isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -365,7 +367,7 @@ const TablaPuestos: React.FC = () => {
                     backgroundColor: "#e0e0e0",
                   },
                   height: "50px",
-                  minWidth: "120px",
+                  width: "100%",
                   padding: "0 15px",
                   borderRadius: "30px",
                   color: exportFormat ? "#000" : "#999",
@@ -392,7 +394,7 @@ const TablaPuestos: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: "200px",
+                width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
               }}
               disabled={ exportFormat === "" }
@@ -403,92 +405,149 @@ const TablaPuestos: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Buscar */}
-        <Box
-          sx={{
-            padding: "15px 35px",
-            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
-            Buscar por:
-          </Typography>
-
-          {/* Seleccionar Bloque */}
-          <FormControl sx={{ width: "200px", mr: 2, textAlign: "left" }}>
-            <InputLabel id="bloque-label">Bloque</InputLabel>
-            <Select
-              labelId="bloque-label"
-              label="Bloque"
-              id="select-bloque"
-              value={bloqueSeleccionado}
-              onChange={(e) => {
-                const value = e.target.value;
-                setBloqueSeleccionado(value);
-              }}
-            >
-              <MenuItem value="">Todos</MenuItem>
-              {bloques.map((bloque: Bloque) => (
-                <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                  {bloque.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Input Numero de puesto */}
-          <TextField 
-            sx={{ width: "200px" }}
-            type="text"
-            label="Numero de puesto" 
-            onChange={(e) => setNroPuestoIngresado(e.target.value)}
-          />
-
-          {/* Seleccionar Giro negocio */}
-          <FormControl sx={{ width: "200px", ml: 2, textAlign: "left" }}>
-            <InputLabel id="giro-negocio-label">Giro de negocio</InputLabel>
-            <Select
-              labelId="giro-negocio-label"
-              label="Giro de negocio"
-              id="select-giro-negocio"
-              value={giroSeleccionado}
-              onChange={(e) => {
-                const value = e.target.value;
-                setGiroSeleccionado(value);
-              }}
-            >
-              <MenuItem value="">Todos</MenuItem>
-              {girosNegocio.map((giro: GiroNegocio) => (
-                <MenuItem key={giro.id_gironegocio} value={giro.id_gironegocio}>
-                  {giro.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Boton Buscar */}
-          <Button
-            variant="contained"
-            startIcon={<Search />}
+        {isMobile && (
+          // Botón "Filtros" para mostrar/ocultar los filtros
+          <Box 
             sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: "170px",
-              marginLeft: "25px",
-              borderRadius: "30px",
+              width: "100%",
+              borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+              borderBottom: !mostrarFiltros ? "1px solid rgba(0, 0, 0, 0.25)" : "none",
+              pt: "1rem",
             }}
-            onClick={buscarPuestos}
           >
-            Buscar
-          </Button>
-        </Box>
+            <Button
+              variant="contained"
+              sx={{
+                height: "50px",
+                width: "100%",
+                borderRadius: "30px",
+                mb: "1rem",
+              }}
+              onClick={() => setMostrarFiltros(!mostrarFiltros)}
+              endIcon={mostrarFiltros 
+                ? <ExpandLess /> 
+                : <ExpandMore />}
+            >
+              Filtrar Puestos
+            </Button>
+          </Box>
+        )}
+
+        {(!isMobile || mostrarFiltros) && (
+
+          // Filtros de búsqueda
+          <Box
+            sx={{
+              padding: isMobile ? "15px 0" : "15px 35px",
+              borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+              borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              alignItems: isMobile ? "left" : "center",
+            }}
+          >
+            <Typography 
+              sx={{
+                textAlign: "left",
+                fontWeight: "bold", 
+                mr: 2,
+                mt: isMobile ? 1 : 0,
+                mb: isMobile ? 2 : 0
+              }}
+            >
+              Buscar por:
+            </Typography>
+
+            {/* Seleccionar Bloque */}
+            <FormControl 
+              sx={{ 
+                width: isMobile ? "100%" : "200px", 
+                mr: isMobile ? 0 : 2, 
+                textAlign: "left" 
+              }}
+            >
+              <InputLabel id="bloque-label">Bloque</InputLabel>
+              <Select
+                labelId="bloque-label"
+                label="Bloque"
+                id="select-bloque"
+                value={bloqueSeleccionado}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setBloqueSeleccionado(value);
+                }}
+              >
+                <MenuItem value="" >Todos</MenuItem>
+                {bloques.map((bloque: Bloque) => (
+                  <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                    {bloque.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Input Numero de puesto */}
+            <TextField 
+              sx={{ 
+                width: isMobile ? "100%" : "200px",
+                mt: isMobile ? 2 : 0, 
+                mb: isMobile ? 2 : 0, 
+              }}
+              type="text"
+              label="Numero de puesto" 
+              onChange={(e) => setNroPuestoIngresado(e.target.value)}
+            />
+
+            {/* Seleccionar Giro negocio */}
+            <FormControl 
+              sx={{ 
+                width: isMobile ? "100%" : "200px", 
+                ml: isMobile ? 0 : 2, 
+                textAlign: "left" 
+              }}
+            >
+              <InputLabel id="giro-negocio-label">Giro de negocio</InputLabel>
+              <Select
+                labelId="giro-negocio-label"
+                label="Giro de negocio"
+                id="select-giro-negocio"
+                value={giroSeleccionado}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setGiroSeleccionado(value);
+                }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                {girosNegocio.map((giro: GiroNegocio) => (
+                  <MenuItem key={giro.id_gironegocio} value={giro.id_gironegocio}>
+                    {giro.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Boton Buscar */}
+            <Button
+              variant="contained"
+              startIcon={<Search />}
+              sx={{
+                backgroundColor: "#008001",
+                "&:hover": {
+                  backgroundColor: "#2c6d33",
+                },
+                height: "50px",
+                width: isMobile ? "100%" : "170px",
+                marginTop: isMobile ? 2 : 0,
+                marginLeft: isMobile ? 0 : "1rem",
+                borderRadius: "30px",
+              }}
+              onClick={buscarPuestos}
+            >
+              Buscar
+            </Button>
+          </Box>
+
+        )}
 
         {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
@@ -498,24 +557,125 @@ const TablaPuestos: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                      sx={{
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
+                  {isMobile 
+                    ? <Typography
+                        sx={{
+                          mt: 2,
+                          mb: 1,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Lista de Puestos
+                      </Typography> 
+                    : columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth }}
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {column.label}
+                      </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {puestos
-                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((puesto) => (
+                {puestos.map((puesto) => (
+                  isMobile 
+                  ? ( // Si estamos en mobile
+                    // Para mostrar los detalles del puesto
+                    <TableRow hover role="checkbox" tabIndex={-1}>
+                      <TableCell padding="checkbox" colSpan={columns.length}>
+                        <Box sx={{ display: "flex", flexDirection: "column"}}>
+                          <Typography 
+                            sx={{ 
+                              p: 2,
+                              // Seleccionar el puesto y cambiar el color de fondo
+                              bgcolor: mostrarDetalles === puesto.id_puesto ? "#f0f0f0" : "inherit",
+                              "&:hover": {
+                                cursor: "pointer",
+                                bgcolor: "#f0f0f0",
+                              }
+                            }}
+                            onClick={() => setMostrarDetalles(
+                              // Si el puesto seleccionado es igual al puesto actual, ocultar detalles
+                              mostrarDetalles === puesto.id_puesto ? null : puesto.id_puesto
+                            )}
+                          >
+                            {puesto.block.nombre} - {puesto.numero_puesto} - {puesto.giro_negocio.nombre}
+                          </Typography>
+                          {mostrarDetalles === puesto.id_puesto && (
+                            <Box 
+                              sx={{
+                                p: 2,
+                                display: "flex", 
+                                flexDirection: "column", 
+                                gap: 1 
+                              }}
+                            >
+                              {columns.map((column) => {
+                                const value = column.id === "accion" ? "" : (puesto as any)[column.id];
+                                return (
+                                  <Box>
+                                    {/* Mostrar titulo del campo */}
+                                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                      {column.label}
+                                    </Typography>
+                                    {/* Mostrar los detalles del puesto */}
+                                    <Typography>
+                                      {column.id === "giro_negocio" ? (
+                                        puesto.giro_negocio.nombre
+                                      ) : column.id === "block" ? (
+                                        puesto.block.nombre
+                                      ) : column.id === "accion" ? (
+                                        <Box
+                                          sx={{
+                                            display: "flex",
+                                            justifyContent: "flex-start",
+                                            gap: 1,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="contained"
+                                            sx={{ 
+                                              width: "50%",
+                                              bgcolor: "#EA9A00", 
+                                              color: "#fff" 
+                                            }}
+                                            onClick={() => handleOpen(puesto)}
+                                          >
+                                            Editar
+                                          </Button>
+                                          <Button
+                                            variant="contained"
+                                            sx={{ 
+                                              width: "50%",
+                                              bgcolor: "#840202", 
+                                              color: "#fff" 
+                                            }}
+                                            onClick={() => alert("En proceso de actualización. Intentelo más tarde.")}
+                                          >
+                                            Eliminar
+                                          </Button>
+                                        </Box>
+                                      ) : (
+                                        value
+                                      )}
+                                    </Typography>
+                                  </Box>
+                                )
+                              })}
+                            </Box>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ) 
+                  : ( // Si no estamos en mobile
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {columns.map((column) => {
                         const value =
@@ -547,6 +707,7 @@ const TablaPuestos: React.FC = () => {
                                 <IconButton
                                   aria-label="delete"
                                   sx={{ color: "red" }}
+                                  onClick={() => alert("En proceso de actualización. Intentelo más tarde.")}
                                 >
                                   <DeleteForever />
                                 </IconButton>
@@ -558,7 +719,7 @@ const TablaPuestos: React.FC = () => {
                         );
                       })}
                     </TableRow>
-                  ))}
+                  )))}
               </TableBody>
             </Table>
           </TableContainer>
