@@ -63,6 +63,7 @@ const TablaServicios: React.FC = () => {
   // Variables para el responsive
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [buscarTexto, setBuscarTexto] = useState<string>("");
   // Para la tabla
@@ -368,24 +369,130 @@ const TablaServicios: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                      sx={{ fontWeight: "bold", }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
+                  {isMobile 
+                    ? <Typography
+                        sx={{ 
+                          mt: 2,
+                          mb: 1,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase", 
+                          textAlign: "center" 
+                        }}
+                      >
+                        Lista de Servicios
+                      </Typography>
+                    : columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth }}
+                        sx={{ fontWeight: "bold", }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))
+                  }
                 </TableRow>
               </TableHead>
               <TableBody>
-                {servicios
-                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((servicio) => (
+                {servicios.map((servicio) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {columns.map((column) => {
+                      {isMobile 
+                      ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column"}}>
+                            <Typography 
+                              sx={{ 
+                                p: 2,
+                                // Seleccionar el servicio y cambiar el color de fondo
+                                bgcolor: mostrarDetalles === servicio.id_servicio ? "#f0f0f0" : "inherit",
+                                "&:hover": {
+                                  cursor: "pointer",
+                                  bgcolor: "#f0f0f0",
+                                }
+                              }}
+                              onClick={() => setMostrarDetalles(
+                                // Si el servicio seleccionado es igual al servicio actual, ocultar detalles
+                                mostrarDetalles === servicio.id_servicio ? null : servicio.id_servicio
+                              )}
+                            >
+                              {servicio.descripcion} - {parseInt(servicio.tipo_servicio) === 1
+                                ? "Ordinario" 
+                                : parseInt(servicio.tipo_servicio) === 2
+                                ? "Extraordinario"
+                                : "Por metrado"}
+                            </Typography>
+                            {mostrarDetalles === servicio.id_servicio && (
+                              <Box 
+                                sx={{
+                                  p: 2,
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  gap: 1 
+                                }}
+                              >
+                                {columns.map((column) => {
+                                  const value = column.id === "accion" ? "" : (servicio as any)[column.id];
+                                  return (
+                                    <Box>
+                                      {/* Mostrar titulo del campo */}
+                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                        {column.label}
+                                      </Typography>
+                                      {/* Mostrar los detalles del servicio */}
+                                      <Typography>
+                                        {column.id === "tipo_servicio" ? (
+                                          // Si el campo es tipo_servicio, mostrar el tipo de servicio
+                                          parseInt(servicio.tipo_servicio) === 1 
+                                            ? "Ordinario (Pagos fijos)" 
+                                            : parseInt(servicio.tipo_servicio) === 2
+                                            ? "Extraordinario (Pagos extras)"
+                                            : "Por metrado (Pagos por metraje)"
+                                        ) : column.id === "accion" ? (
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              justifyContent: "flex-start",
+                                              gap: 1,
+                                            }}
+                                          >
+                                            <Button
+                                              variant="contained"
+                                              sx={{ 
+                                                width: "50%",
+                                                bgcolor: "#EA9A00", 
+                                                color: "#fff" 
+                                              }}
+                                              onClick={() => handleOpen(servicio)}
+                                            >
+                                              <SaveAs sx={{ mr: 1 }}/>
+                                              Editar
+                                            </Button>
+                                            <Button
+                                              variant="contained"
+                                              sx={{ 
+                                                width: "50%",
+                                                bgcolor: "crimson", 
+                                                color: "#fff" 
+                                              }}
+                                              onClick={() => alert("En proceso de actualización. Intentelo más tarde.")}
+                                            >
+                                              <DeleteForever sx={{ mr: 1 }}/>
+                                              Eliminar
+                                            </Button>
+                                          </Box>
+                                        ) : (
+                                          value
+                                        )}
+                                      </Typography> 
+                                    </Box>
+                                  )
+                                })}
+                              </Box>
+                            )}
+                          </Box>
+                        </TableCell>
+                      : columns.map((column) => {
                         const value = column.id === "accion" 
                           ? ""
                           : (servicio as any)[column.id];

@@ -25,10 +25,10 @@ import {
 import {
   Download,
   Search,
-  Plagiarism,
   WhatsApp,
   ExpandLess,
   ExpandMore,
+  SaveAs,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
@@ -104,6 +104,7 @@ const TablaCuota: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [iMeses, setIMeses] = useState<IMeses[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
@@ -494,7 +495,20 @@ const TablaCuota: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
+                  {isMobile
+                  ? <Typography
+                      sx={{
+                        mt: 2,
+                        mb: 1,
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        textAlign: "center",
+                      }}
+                    >
+                      Listado de Cuotas
+                    </Typography>
+                  : columns.map((column) => (
                     <TableCell
                       key={column.id}
                       align={column.id === "accion" ? "center" : column.align} // Alinear 'accion' a la derecha
@@ -509,13 +523,107 @@ const TablaCuota: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {cuotas
-                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                      {columns.map((column) => {
+                {cuotas.map((cuota) => (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
+                      {isMobile
+                      ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column"}}>
+                            <Typography 
+                              sx={{ 
+                                p: 2,
+                                // Seleccionar la cuota y cambiar el color de fondo
+                                bgcolor: mostrarDetalles === cuota.id_deuda ? "#f0f0f0" : "inherit",
+                                "&:hover": {
+                                  cursor: "pointer",
+                                  bgcolor: "#f0f0f0",
+                                }
+                              }}
+                              onClick={() => setMostrarDetalles(
+                                // Si la cuota seleccionada es igual a la cuota actual, ocultar detalles
+                                mostrarDetalles === cuota.id_deuda ? null : cuota.id_deuda
+                              )}
+                            >
+                              {cuota.fecha_registro} - {cuota.socio_nombre}
+                            </Typography>
+                            {mostrarDetalles === cuota.id_deuda && (
+                              <Box 
+                                sx={{
+                                  p: 2,
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  gap: 1 
+                                }}
+                              >
+                                {columns.map((column) => {
+                                  const value = column.id === "accion" ? "" : (cuota as any)[column.id];
+                                  return (
+                                    <Box>
+                                      {/* Mostrar titulo del campo */}
+                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                        {column.label}
+                                      </Typography>
+                                      {/* Mostrar los detalles de la cuota */}
+                                      <Typography>
+                                        {column.id === "accion" ? (
+                                          <Box 
+                                            sx={{
+                                              width: "100%",
+                                              display: "flex", 
+                                              flexDirection: "column",
+                                              justifyContent: "center"
+                                            }}
+                                          >
+                                            <Button
+                                              variant="contained"
+                                              sx={{
+                                                padding: "0.5rem 1.5rem",
+                                                backgroundColor: "#0478E3", 
+                                                color: "white" 
+                                              }}
+                                              // onClick={() => handleOpen(cuota)}
+                                            >
+                                              <SaveAs sx={{ mr: 1 }} />
+                                              Editar
+                                            </Button>
+                                            <Button
+                                              variant="contained"
+                                              sx={{
+                                                mt: 1,
+                                                mb: 1,
+                                                padding: "0.5rem 1.5rem",
+                                                backgroundColor: "black", 
+                                                color: "white"
+                                              }}
+                                            >
+                                              <Download sx={{ mr: 1 }} />
+                                              Descargar
+                                            </Button>
+                                            <Button
+                                              variant="contained"
+                                              sx={{
+                                                padding: "0.5rem 1.5rem",
+                                                backgroundColor: "green", 
+                                                color: "white"
+                                              }}
+                                            >
+                                              <WhatsApp sx={{ mr: 1 }} />
+                                              Enviar
+                                            </Button>
+                                          </Box>
+                                        ) : (
+                                          value
+                                        )}
+                                      </Typography>
+                                    </Box>
+                                  )
+                                })}
+                              </Box>
+                            )}
+                          </Box>
+                        </TableCell>
+                      : columns.map((column) => {
                         const value =
-                          column.id === "accion" ? "" : (row as any)[column.id];
+                          column.id === "accion" ? "" : (cuota as any)[column.id];
                         return (
                           <TableCell
                             key={column.id}
@@ -533,13 +641,12 @@ const TablaCuota: React.FC = () => {
                                   justifyContent: "center",
                                 }}
                               >
-                                {" "}
                                 {/* Alinea los íconos a la derecha */}
                                 <IconButton
                                   aria-label="edit"
                                   sx={{ color: "black" }}
                                 >
-                                  <Plagiarism />
+                                  <SaveAs />
                                 </IconButton>
                                 <IconButton
                                   aria-label="copy"
@@ -572,7 +679,6 @@ const TablaCuota: React.FC = () => {
               page={paginaActual} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-              // sx={{ marginLeft: "25%" }}
             />
 
           </Box>

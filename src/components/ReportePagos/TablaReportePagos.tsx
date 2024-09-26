@@ -1,5 +1,5 @@
 import { Download, Person } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 
@@ -11,6 +11,7 @@ interface Column {
 }
 
 interface Data {
+  id_pago: string;
   fecha_pago: string;
   numero_recibo: string;
   aporte: string;
@@ -22,12 +23,13 @@ const columns: readonly Column[] = [
   { id: "fecha_pago", label: "Fec. Pago", minWidth: 50, align: "center" },
   { id: "numero_recibo", label: "N° Recibo", minWidth: 50, align: "center" },
   { id: "aporte", label: "Aporte (S/)", minWidth: 50, align: "center" },
-  { id: "servicios", label: "Desc. Servicios por cuota", minWidth: 50, align: "center" },
+  { id: "servicios", label: "Servicios", minWidth: 50, align: "center" },
   { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
 ]
 
 const initialRows: Data[] = [
   {
+    id_pago: "1",
     fecha_pago: "04-09-2024",
     numero_recibo: "100002",
     aporte: "165.50",
@@ -41,6 +43,7 @@ const initialRows: Data[] = [
     total: "165.50",
   },
   {
+    id_pago: "2",
     fecha_pago: "03-09-2024",
     numero_recibo: "100001",
     aporte: "150",
@@ -59,6 +62,7 @@ const TablaReportePagos: React.FC = () => {
   // Variables para el responsive
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null); 
 
   // Para la tabla
   const [rows, setRows] = useState<Data[]>(initialRows);
@@ -210,7 +214,8 @@ const TablaReportePagos: React.FC = () => {
               gap: 2,
               alignItems: "center",
               ml: "auto",
-              mt: 2 ,
+              mt: 2,
+              mb: 1
             }}
           >
             {/* Formulario para el Select "Exportar" */}
@@ -289,7 +294,20 @@ const TablaReportePagos: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
+                  {isMobile
+                  ? <Typography
+                      sx={{
+                        mt: 2,
+                        mb: 1,
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        textAlign: "center",
+                      }}
+                    >
+                      Lista de Pagos
+                    </Typography>
+                  : columns.map((column) => (
                     <TableCell
                       key={column.id}
                       align={column.align}
@@ -307,8 +325,62 @@ const TablaReportePagos: React.FC = () => {
                 {rows
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((row) => (
-                    <TableRow>
-                      {columns.map((column) => {
+                    <TableRow hover role="checkbox" tabIndex={-1}>
+                      {isMobile
+                      ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column"}}>
+                            <Typography 
+                              sx={{ 
+                                p: 2,
+                                // Seleccionar el pago y cambiar el color de fondo
+                                bgcolor: mostrarDetalles === row.id_pago ? "#f0f0f0" : "inherit",
+                                "&:hover": {
+                                  cursor: "pointer",
+                                  bgcolor: "#f0f0f0",
+                                }
+                              }}
+                              onClick={() => setMostrarDetalles(
+                                mostrarDetalles === row.id_pago ? null : row.id_pago
+                              )}
+                            >
+                              {row.fecha_pago} - {row.numero_recibo} - {row.total}
+                            </Typography>
+                            {mostrarDetalles === row.id_pago && (
+                              <Box 
+                                sx={{
+                                  p: 2,
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  gap: 1 
+                                }}
+                              >
+                                {columns.map((column) => {
+                                  const value = column.id === "accion" ? "" : (row as any)[column.id];
+                                  return (
+                                    <Box>
+                                      {/* Mostrar titulo del campo */}
+                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                        {column.label}
+                                      </Typography>
+                                      {/* Mostrar los detalles del pago */}
+                                      {Array.isArray(value) // Si es un array de servicios
+                                      ? (value.map((servicio, index) => ( // Mostrar los servicios
+                                          <Typography key={index}>
+                                            {servicio.nombre}: S/ {servicio.costo}
+                                          </Typography>
+                                        ))
+                                      ) : <Typography>
+                                        {value}
+                                      </Typography>
+                                    }
+                                    </Box>
+                                  )
+                                })}
+                              </Box>
+                            )}
+                          </Box>
+                        </TableCell>
+                      : columns.map((column) => {
                         const value = column.id === "accion" ? "" : (row as any)[column.id];
                         return (
                           <TableCell
@@ -328,8 +400,8 @@ const TablaReportePagos: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "flex-start", marginTop: 3 }}>
-            <Pagination count={10} color="primary" sx={{ marginLeft: "25%" }} />
+          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+            <Pagination count={3} color="primary"/>
           </Box>
         </Paper>
       </Card>

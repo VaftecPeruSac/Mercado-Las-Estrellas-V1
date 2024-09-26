@@ -565,6 +565,7 @@ const TablaPuestos: React.FC = () => {
                           fontSize: "1.5rem",
                           fontWeight: "bold",
                           textTransform: "uppercase",
+                          textAlign: "center",
                         }}
                       >
                         Lista de Puestos
@@ -580,16 +581,15 @@ const TablaPuestos: React.FC = () => {
                       >
                         {column.label}
                       </TableCell>
-                  ))}
+                    ))
+                  }
                 </TableRow>
               </TableHead>
               <TableBody>
                 {puestos.map((puesto) => (
-                  isMobile 
-                  ? ( // Si estamos en mobile
-                    // Para mostrar los detalles del puesto
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      <TableCell padding="checkbox" colSpan={columns.length}>
+                  <TableRow hover role="checkbox" tabIndex={-1}>
+                    {isMobile 
+                    ? <TableCell padding="checkbox" colSpan={columns.length}>
                         <Box sx={{ display: "flex", flexDirection: "column"}}>
                           <Typography 
                             sx={{ 
@@ -648,24 +648,26 @@ const TablaPuestos: React.FC = () => {
                                             }}
                                             onClick={() => handleOpen(puesto)}
                                           >
+                                            <SaveAs sx={{ mr: 1 }}/>
                                             Editar
                                           </Button>
                                           <Button
                                             variant="contained"
                                             sx={{ 
                                               width: "50%",
-                                              bgcolor: "#840202", 
+                                              bgcolor: "crimson", 
                                               color: "#fff" 
                                             }}
                                             onClick={() => alert("En proceso de actualización. Intentelo más tarde.")}
                                           >
+                                            <DeleteForever sx={{ mr: 1 }}/>
                                             Eliminar
                                           </Button>
                                         </Box>
                                       ) : (
                                         value
                                       )}
-                                    </Typography>
+                                    </Typography> 
                                   </Box>
                                 )
                               })}
@@ -673,11 +675,7 @@ const TablaPuestos: React.FC = () => {
                           )}
                         </Box>
                       </TableCell>
-                    </TableRow>
-                  ) 
-                  : ( // Si no estamos en mobile
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {columns.map((column) => {
+                    : columns.map((column) => {
                         const value =
                           column.id === "accion"
                             ? ""
@@ -719,7 +717,7 @@ const TablaPuestos: React.FC = () => {
                         );
                       })}
                     </TableRow>
-                  )))}
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>

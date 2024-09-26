@@ -447,11 +447,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         <TableBody>
                           {deudas.map((deuda) => {
                             // Calculamos el monto a pagar
-                            const montoInicial =
-                              parseFloat(deuda.total) -
-                              parseFloat(deuda.a_cuenta);
-                            const seleccionado =
-                              filasSeleccionadas[deuda.id_deuda] || false;
+                            const montoInicial = parseFloat(deuda.deuda)
+                            const seleccionado = filasSeleccionadas[deuda.id_deuda] || false;
 
                             // Si el monto a pagar se a cambiado, usamos el nuevo monto; si no, usamos el monto inicial
                             const nuevoMonto =

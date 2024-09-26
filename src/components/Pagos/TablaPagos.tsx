@@ -80,6 +80,7 @@ const TablaPago: React.FC = () => {
   // Variables para el responsive
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [pagos, setPagos] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
@@ -373,7 +374,20 @@ const TablaPago: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
+                  {isMobile
+                  ? <Typography
+                      sx={{
+                        mt: 2,
+                        mb: 1,
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        textAlign: "center",
+                      }}
+                    >
+                      Lista de pagos
+                    </Typography>
+                  : columns.map((column) => (
                     <TableCell
                       key={column.id}
                       align={column.align}
@@ -388,18 +402,107 @@ const TablaPago: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {pagos
-                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.id_pago}
-                    >
-                      {columns.map((column) => {
+                {pagos.map((pago) => (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
+                      {isMobile 
+                      ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column"}}>
+                            <Typography 
+                              sx={{ 
+                                p: 2,
+                                // Seleccionar el pago y cambiar el color de fondo
+                                bgcolor: mostrarDetalles === pago.id_pago ? "#f0f0f0" : "inherit",
+                                "&:hover": {
+                                  cursor: "pointer",
+                                  bgcolor: "#f0f0f0",
+                                }
+                              }}
+                              onClick={() => setMostrarDetalles(
+                                // Si el pago seleccionado es igual al pago actual, ocultar detalles
+                                mostrarDetalles === pago.id_pago ? null : pago.id_pago
+                              )}
+                            >
+                              {pago.fecha_registro} - {pago.socio} - {pago.total_pago}
+                            </Typography>
+                            {mostrarDetalles === pago.id_pago && (
+                              <Box 
+                                sx={{
+                                  p: 2,
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  gap: 1 
+                                }}
+                              >
+                                {columns.map((column) => {
+                                  const value = column.id === "accion" ? "" : (pago as any)[column.id];
+                                  return (
+                                    <Box>
+                                      {/* Mostrar titulo del campo */}
+                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                        {column.label}
+                                      </Typography>
+                                      {/* Mostrar los detalles del pago */}
+                                      <Typography>
+                                        {column.id === "accion" ? (
+                                          <Box 
+                                            sx={{
+                                              width: "100%",
+                                              display: "flex", 
+                                              flexDirection: "column",
+                                              justifyContent: "center"
+                                            }}
+                                          >
+                                            {/* <Button 
+                                              variant="contained"
+                                              sx={{
+                                                padding: "0.5rem 1.5rem",
+                                                backgroundColor: "#0478E3", 
+                                                color: "white" 
+                                              }}
+                                              // onClick={() => handleOpen(pago)}
+                                            >
+                                              <InsertDriveFile sx={{ mr: 1 }} />
+                                              Ver detalles
+                                            </Button> */}
+                                            <Button
+                                              variant="contained"
+                                              sx={{
+                                                mt: 1,
+                                                mb: 1,
+                                                padding: "0.5rem 1.5rem",
+                                                backgroundColor: "black", 
+                                                color: "white"
+                                              }}
+                                            >
+                                              <Download sx={{ mr: 1 }} />
+                                              Descargar
+                                            </Button>
+                                            <Button
+                                              variant="contained"
+                                              sx={{
+                                                padding: "0.5rem 1.5rem",
+                                                backgroundColor: "green", 
+                                                color: "white"
+                                              }}
+                                            >
+                                              <WhatsApp sx={{ mr: 1 }} />
+                                              Enviar
+                                            </Button>
+                                          </Box>
+                                        ) : (
+                                          value
+                                        )}
+                                      </Typography>
+                                    </Box>
+                                  )
+                                })}
+                              </Box>
+                            )}
+                          </Box>
+                        </TableCell>
+                      : columns.map((column) => {
                         const value =
-                          column.id === "accion" ? "" : (row as any)[column.id];
+                          column.id === "accion" ? "" : (pago as any)[column.id];
                         return (
                           <TableCell key={column.id} align="center">
                             {column.id === "accion" ? (
@@ -410,13 +513,13 @@ const TablaPago: React.FC = () => {
                                   justifyContent: "center",
                                 }}
                               >
-                                {/* Boton Ver deuda */}
-                                <IconButton
+                                {/* Boton Ver pago */}
+                                {/* <IconButton
                                   aria-label="file"
                                   sx={{ color: "#000" }}
                                 >
                                   <InsertDriveFile />
-                                </IconButton>
+                                </IconButton> */}
 
                                 {/* Boton Descargar */}
                                 <IconButton
@@ -447,17 +550,15 @@ const TablaPago: React.FC = () => {
             </Table>
           </TableContainer>
           <Box
-              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
-              >
-              <Pagination
-                count={totalPages} // Total de páginas
-                page={paginaActual} // Página actual
-                onChange={CambioDePagina} // Manejar el cambio de página
-                color="primary"
-                // sx={{ marginLeft: "25%" }}
-              />
-
-            </Box>
+            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+          >
+            <Pagination
+              count={totalPages} // Total de páginas
+              page={paginaActual} // Página actual
+              onChange={CambioDePagina} // Manejar el cambio de página
+              color="primary"
+            />
+          </Box>
         </Paper>
       </Card>
     </Box>
