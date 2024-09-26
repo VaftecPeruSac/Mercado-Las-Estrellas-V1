@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
+import TemporizadorInactividad from "../context/TemporizadorInactividad";
 
 const Principal = () => {
 
@@ -16,6 +17,10 @@ const Principal = () => {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  // Iniciamos el temporizador de inactividad en 30 minutos
+  // con una alerta a los 5 minutos antes de cerrar sesión
+  TemporizadorInactividad(30 * 60 * 1000, 5 * 60 * 1000);
 
   return (
     <>
