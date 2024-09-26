@@ -1,7 +1,22 @@
 import { Download, Person } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+interface Puesto {
+  id_puesto: string;
+  numero_puesto: string;
+}
+
+interface Deuda {
+  id_cuota: string;
+  anio: string;
+  mes: string;
+  servicio_descripcion: string;
+  total: string;
+  importe_pagado: string;
+  importe_por_pagar: string;
+}
 
 interface Column {
   id: keyof Data | "accion";
@@ -14,37 +29,20 @@ interface Data {
   id_cuota: string;
   anio: string;
   mes: string;
-  servicios: Array<{nombre: string; costo: string;}>;
+  servicio_descripcion: string;
   total: string;
-  pagado: string;
-  por_pagar: string;
+  importe_pagado: string;
+  importe_por_pagar: string;
 }
 
 const columns: readonly Column[] = [
   { id: "id_cuota", label: "#ID CUOTA", minWidth: 50, align: "center" },
   { id: "anio", label: "Año", minWidth: 50, align: "center" },
   { id: "mes", label: "Mes", minWidth: 50, align: "center" },
-  { id: "servicios", label: "Servicios", minWidth: 50, align: "center" },
+  { id: "servicio_descripcion", label: "Servicios", minWidth: 50, align: "center" },
   { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
-  { id: "pagado", label: "Imp. Pagado (S/)", minWidth: 50, align: "center" },
-  { id: "por_pagar", label: "Imp. Por pagar (S/)", minWidth: 50, align: "center" },
-]
-
-const initialRows: Data[] = [
-  {
-    id_cuota: "1",
-    anio: "2024",
-    mes: "SEPTIEMBRE",
-    servicios: [
-      {nombre: "Agua", costo: "30"}, 
-      {nombre: "Luz", costo: "70"}, 
-      {nombre: "Gas", costo: "20"}, 
-      {nombre: "Vigilancia", costo: "30"}
-    ],
-    total: "150",
-    pagado: "70",
-    por_pagar: "80",
-  },
+  { id: "importe_pagado", label: "Imp. Pagado (S/)", minWidth: 50, align: "center" },
+  { id: "importe_por_pagar", label: "Imp. Por pagar (S/)", minWidth: 50, align: "center" },
 ]
 
 const TablaReporteDeudas: React.FC = () => {
@@ -54,25 +52,39 @@ const TablaReporteDeudas: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
+  // Para seleccionar un puesto
+  const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
+
   // Para la tabla
-  const [rows, setRows] = useState<Data[]>(initialRows);
+  const [deudas, setDeudas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
 
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
 
-  // Metodo para generar el reporte de deudas de un socio
-  const handleGenerarReporte = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    e.preventDefault();
-
-    try {
-      alert("En proceso de actualizacion.");
-    } catch {
-      alert("En proceso de actualizacion.");
+  // Metodo para obtener los puestos
+  useEffect(() => {
+    const fetchPuestos = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
+        setPuestos(response.data.data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
     }
+    fetchPuestos();
+  }, []);
 
+  // Metodo para obtener las deudas de un puesto
+  const fetchDeudas = async (idPuesto: number) => {
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/deudas?id_puesto=${idPuesto}`);
+      setDeudas(response.data.data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
   }
 
   // Metodo para exportar el reporte de deudas
@@ -169,19 +181,31 @@ const TablaReporteDeudas: React.FC = () => {
               mr: isMobile ? "0px" : "auto",
             }}
           >
-            {/* Seleccionar socio */}
-            <FormControl sx={{ width: isMobile ? "100%" : "400px" }} required>
-              <InputLabel id="seleccionar-socio-label">
-                Seleccionar Socio
-              </InputLabel>
-              <Select
-                labelId="seleccionar-socio-label"
-                label="Seleccionar Socio"
-                startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-              >
-                {/* Listado de socios */}
-                <MenuItem value="1">Juanito Perez</MenuItem>
-              </Select>
+            {/* Seleccionar puesto */}
+            <FormControl fullWidth required sx={{ width: isMobile ? "100%" : "300px" }}>
+              <Autocomplete
+                options={puestos}
+                getOptionLabel={(puesto) => puesto.numero_puesto} // Mostrar el numero del puesto
+                onChange={(event, value) => { // Obtener el id del puesto seleccionado
+                  if (value) { // Si se selecciona un puesto
+                    setPuestoSeleccionado(Number(value.id_puesto)); // Guardar el id del puesto
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Seleccionar puesto" // Etiqueta del input
+                    InputProps={{...params.InputProps }} // Propiedades del input
+                  />
+                )}
+                ListboxProps={{
+                  style: {
+                    maxHeight: 270, // Altura máxima de la lista de opciones
+                    overflow: 'auto', // Hacer scroll si hay muchos elementos
+                  },
+                }}
+                isOptionEqualToValue={(option, value) => option.id_puesto === value.id_puesto}
+              />
             </FormControl>
             {/* Botón "Generar Reporte" */}
             <Button
@@ -195,7 +219,7 @@ const TablaReporteDeudas: React.FC = () => {
                 width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
-              onClick={handleGenerarReporte}
+              onClick={(e) => fetchDeudas(puestoSeleccionado)}
             >
               Generar
             </Button>
@@ -315,9 +339,9 @@ const TablaReporteDeudas: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
+                {deudas
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
-                  .map((row) => (
+                  .map((deuda) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isMobile
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
@@ -326,19 +350,19 @@ const TablaReporteDeudas: React.FC = () => {
                               sx={{ 
                                 p: 2,
                                 // Seleccionar la deuda y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === row.id_cuota ? "#f0f0f0" : "inherit",
+                                bgcolor: mostrarDetalles === deuda.id_cuota ? "#f0f0f0" : "inherit",
                                 "&:hover": {
                                   cursor: "pointer",
                                   bgcolor: "#f0f0f0",
                                 }
                               }}
                               onClick={() => setMostrarDetalles(
-                                mostrarDetalles === row.id_cuota ? null : row.id_cuota
+                                mostrarDetalles === deuda.id_cuota ? null : deuda.id_cuota
                               )}
                             >
-                              {row.mes} - {row.anio} - S/{row.total}
+                              {deuda.mes} - {deuda.anio} - S/{deuda.total}
                             </Typography>
-                            {mostrarDetalles === row.id_cuota && (
+                            {mostrarDetalles === deuda.id_cuota && (
                               <Box 
                                 sx={{
                                   p: 2,
@@ -348,7 +372,7 @@ const TablaReporteDeudas: React.FC = () => {
                                 }}
                               >
                                 {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (row as any)[column.id];
+                                  const value = column.id === "accion" ? "" : (deuda as any)[column.id];
                                   return (
                                     <Box>
                                       {/* Mostrar titulo del campo */}
@@ -374,17 +398,13 @@ const TablaReporteDeudas: React.FC = () => {
                           </Box>
                         </TableCell>
                       : columns.map((column) => {
-                          const value = column.id === "accion" ? "" : (row as any)[column.id];
+                          const value = column.id === "accion" ? "" : (deuda as any)[column.id];
                           return (
                             <TableCell
                               key={column.id}
                               align={column.align}
                             >
-                              {column.id === "servicios" ? ((value as {nombre: string; costo: string}[])
-                                .map((servicio, index) => (
-                                  <div key={index}>{servicio.nombre}: S/ {servicio.costo} </div>
-                                ))) : (value)
-                              }
+                              {value}
                             </TableCell>
                           );
                         })}

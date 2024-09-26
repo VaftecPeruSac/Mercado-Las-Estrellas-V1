@@ -1,7 +1,24 @@
-import { Download, Person } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Download } from '@mui/icons-material';
+import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+interface Socio {
+  id_socio: string;
+  nombre_completo: string;
+}
+
+interface Pago {
+  numero: string;
+  serie: string;
+  aporte: string;
+  total: string;
+  fecha: string;
+  detalle_pago: {
+    descripcion: string; 
+    importe: string;
+  }
+}
 
 interface Column {
   id: keyof Data | "accion";
@@ -11,50 +28,24 @@ interface Column {
 }
 
 interface Data {
-  id_pago: string;
-  fecha_pago: string;
-  numero_recibo: string;
+  numero: string;
+  serie: string;
   aporte: string;
-  servicios: Array<{nombre: string; costo: string;}>;
   total: string;
+  fecha: string;
+  detalle_pagos: {
+    descripcion: string; 
+    importe: string;
+  }
 }
 
 const columns: readonly Column[] = [
-  { id: "fecha_pago", label: "Fec. Pago", minWidth: 50, align: "center" },
-  { id: "numero_recibo", label: "N° Recibo", minWidth: 50, align: "center" },
+  { id: "numero", label: "N° Pago", minWidth: 50, align: "center" },
+  { id: "serie", label: "N° Serie", minWidth: 50, align: "center" },
+  { id: "fecha", label: "Fec. Pago", minWidth: 50, align: "center" },
   { id: "aporte", label: "Aporte (S/)", minWidth: 50, align: "center" },
-  { id: "servicios", label: "Servicios", minWidth: 50, align: "center" },
   { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
-]
-
-const initialRows: Data[] = [
-  {
-    id_pago: "1",
-    fecha_pago: "04-09-2024",
-    numero_recibo: "100002",
-    aporte: "165.50",
-    servicios: [
-      {nombre: "Agua", costo: "30"}, 
-      {nombre: "Luz", costo: "70"}, 
-      {nombre: "Gas", costo: "20"}, 
-      {nombre: "Vigilancia", costo: "30"},
-      {nombre: "Renovación de luminaria", costo: "15.50"}
-    ],
-    total: "165.50",
-  },
-  {
-    id_pago: "2",
-    fecha_pago: "03-09-2024",
-    numero_recibo: "100001",
-    aporte: "150",
-    servicios: [
-      {nombre: "Agua", costo: "30"}, 
-      {nombre: "Luz", costo: "70"}, 
-      {nombre: "Gas", costo: "20"}, 
-      {nombre: "Vigilancia", costo: "30"}
-    ],
-    total: "150",
-  },
+  { id: "detalle_pagos", label: "Detalle Pago", minWidth: 50, align: "center" },
 ]
 
 const TablaReportePagos: React.FC = () => {
@@ -64,25 +55,39 @@ const TablaReportePagos: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null); 
 
+  // Para seleccionar el socio
+  const [socios, setSocios] = useState<Socio[]>([]);
+  const [socioSeleccionado, setSocioSeleccionado] = useState<number>(0);
+
   // Para la tabla
-  const [rows, setRows] = useState<Data[]>(initialRows);
+  const [pagos, setPagos] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
 
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
 
-  // Metodo para generar el reporte de pagos de un socio
-  const handleGenerarReporte = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    e.preventDefault();
-
-    try {
-      alert("En proceso de actualizacion.");
-    } catch {
-      alert("En proceso de actualizacion.");
+  // Metodo para obtener los socios
+  useEffect(() => {
+    const fetchSocios = async () => {
+      try {
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=100");
+        setSocios(response.data.data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
     }
+    fetchSocios();
+  }, []);
 
+  // Metodo para obtener los pagos realizados por un socio
+  const fetchPagos = async (idSocio: number) => {
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/pagos?id_socio=${idSocio}`);
+      setPagos(response.data.data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
   }
 
   // Metodo para exportar el reporte de pagos
@@ -177,18 +182,30 @@ const TablaReportePagos: React.FC = () => {
             }}
           >
             {/* Seleccionar socio */}
-            <FormControl sx={{ width: isMobile ? "100%" : "400px" }} required>
-              <InputLabel id="seleccionar-socio-label">
-                Seleccionar Socio
-              </InputLabel>
-              <Select
-                labelId="seleccionar-socio-label"
-                label="Seleccionar Socio"
-                startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-              >
-                {/* Listado de socios */}
-                <MenuItem value="1">Juanito Perez</MenuItem>
-              </Select>
+            <FormControl fullWidth required sx={{ width: isMobile ? "100%" : "300px" }}>
+              <Autocomplete
+                options={socios}
+                getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
+                onChange={(event, value) => { // Obtener el id del socio seleccionado
+                  if (value) { // Si se selecciona un socio
+                    setSocioSeleccionado(Number(value.id_socio)); // Guardar el id del socio
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Seleccionar socio" // Etiqueta del input
+                    InputProps={{...params.InputProps }} // Propiedades del input
+                  />
+                )}
+                ListboxProps={{
+                  style: {
+                    maxHeight: 270, // Altura máxima de la lista de opciones
+                    overflow: 'auto', // Hacer scroll si hay muchos elementos
+                  },
+                }}
+                isOptionEqualToValue={(option, value) => option.id_socio === value.id_socio}
+              />
             </FormControl>
             {/* Botón "Generar Reporte" */}
             <Button
@@ -202,7 +219,7 @@ const TablaReportePagos: React.FC = () => {
                 width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
-              onClick={handleGenerarReporte}
+              onClick={(e) => fetchPagos(socioSeleccionado)}
             >
               Generar
             </Button>
@@ -322,9 +339,9 @@ const TablaReportePagos: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
+                {pagos
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
-                  .map((row) => (
+                  .map((pago) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isMobile
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
@@ -333,19 +350,19 @@ const TablaReportePagos: React.FC = () => {
                               sx={{ 
                                 p: 2,
                                 // Seleccionar el pago y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === row.id_pago ? "#f0f0f0" : "inherit",
+                                bgcolor: mostrarDetalles === pago.numero ? "#f0f0f0" : "inherit",
                                 "&:hover": {
                                   cursor: "pointer",
                                   bgcolor: "#f0f0f0",
                                 }
                               }}
                               onClick={() => setMostrarDetalles(
-                                mostrarDetalles === row.id_pago ? null : row.id_pago
+                                mostrarDetalles === pago.numero ? null : pago.numero
                               )}
                             >
-                              N°{row.numero_recibo} - {row.fecha_pago} - S/{row.total}
+                              N°{pago.numero} - {pago.fecha} - S/{pago.total}
                             </Typography>
-                            {mostrarDetalles === row.id_pago && (
+                            {mostrarDetalles === pago.numero && (
                               <Box 
                                 sx={{
                                   p: 2,
@@ -355,7 +372,7 @@ const TablaReportePagos: React.FC = () => {
                                 }}
                               >
                                 {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (row as any)[column.id];
+                                  const value = column.id === "accion" ? "" : (pago as any)[column.id];
                                   return (
                                     <Box>
                                       {/* Mostrar titulo del campo */}
@@ -364,9 +381,9 @@ const TablaReportePagos: React.FC = () => {
                                       </Typography>
                                       {/* Mostrar los detalles del pago */}
                                       {Array.isArray(value) // Si es un array de servicios
-                                      ? (value.map((servicio, index) => ( // Mostrar los servicios
+                                      ? (value.map((detalle, index) => ( // Mostrar los servicios
                                           <Typography key={index}>
-                                            {servicio.nombre}: S/ {servicio.costo}
+                                            {detalle.descripcion}: S/ {detalle.importe}
                                           </Typography>
                                         ))
                                       ) : <Typography>
@@ -381,16 +398,18 @@ const TablaReportePagos: React.FC = () => {
                           </Box>
                         </TableCell>
                       : columns.map((column) => {
-                        const value = column.id === "accion" ? "" : (row as any)[column.id];
+                        const value = column.id === "accion" ? "" : (pago as any)[column.id];
                         return (
                           <TableCell
                             key={column.id}
                             align={column.align}
                           >
-                            {column.id === "servicios" ? ((value as {nombre: string; costo: string}[])
-                              .map((servicio, index) => (
-                                <div key={index}>{servicio.nombre}: S/ {servicio.costo} </div>
-                              ))) : (value)
+                            {Array.isArray(value) ? (value.map((detalle, index) => ( // Mostrar los servicios
+                                          <Typography textAlign="left" key={index}>
+                                            {detalle.descripcion}: S/ {detalle.importe}
+                                          </Typography>
+                                        ))
+                                      )  : (value)
                             }
                           </TableCell>
                         );
