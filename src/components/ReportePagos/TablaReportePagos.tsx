@@ -343,7 +343,7 @@ const TablaReportePagos: React.FC = () => {
                                 mostrarDetalles === row.id_pago ? null : row.id_pago
                               )}
                             >
-                              {row.fecha_pago} - {row.numero_recibo} - {row.total}
+                              N°{row.numero_recibo} - {row.fecha_pago} - S/{row.total}
                             </Typography>
                             {mostrarDetalles === row.id_pago && (
                               <Box 
