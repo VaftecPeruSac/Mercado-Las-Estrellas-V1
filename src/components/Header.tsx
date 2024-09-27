@@ -11,8 +11,6 @@ import {
   MenuItem,
   Avatar,
   Grid,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -21,6 +19,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { ExpandLess, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import useResponsive from "./Responsive";
 
 interface HeaderProps {
   open: boolean;
@@ -28,14 +27,13 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
+  
+  // Variables para el responsive
+  const { isMobile, isSmallMobile } = useResponsive();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
-
-  // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -86,9 +84,9 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     color: 'black', 
                     fontWeight: "bold", 
                     text: "center", 
-                    fontSize: isMobile ? 14 : 18,
+                    fontSize: isSmallMobile ? 12 : isMobile ? 14 : 18,
                     ml: isMobile ? 2 : open ? 30 : 3, 
-                    mb: -5 
+                    mb: isMobile ? -4 : -5 
                   }}
                 >
                   <h2>Bienvenido al Sistema, Administrador</h2>

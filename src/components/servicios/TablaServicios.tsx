@@ -18,13 +18,12 @@ import {
   FormControl,
   TextField,
   Typography,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import { SaveAs, DeleteForever, Search, Download } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
+import useResponsive from "../Responsive";
 
 interface Servicio {
   id_servicio: string;
@@ -61,8 +60,7 @@ const columns: readonly Column[] = [
 const TablaServicios: React.FC = () => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [buscarTexto, setBuscarTexto] = useState<string>("");
@@ -179,8 +177,8 @@ const TablaServicios: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        p: 3,
-        pt: isMobile ? 16 : 10,
+        p: isSmallMobile ? 2 : 3,
+        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -201,7 +199,7 @@ const TablaServicios: React.FC = () => {
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: 3,
+          p: isSmallMobile ? 2 : 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
@@ -304,6 +302,7 @@ const TablaServicios: React.FC = () => {
                 height: "50px",
                 width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
+                fontSize: isMobile ? "0.8rem" : "auto"
               }}
               disabled={ exportFormat === "" }
               onClick={handleExportServicios}
@@ -335,7 +334,15 @@ const TablaServicios: React.FC = () => {
 
         {/* Input Nombre Servicio */}
         <TextField 
-          sx={{ width: isMobile ? "60%" : "30%" }} 
+          sx={{ 
+            width: isMobile ? "60%" : "30%",
+            "& .MuiInputLabel-root": {
+            fontSize: isSmallMobile ? "0.9rem" : "auto",
+            },
+            "& .MuiInputBase-input": {
+              fontSize: isSmallMobile ? "0.9rem" : "auto",
+            },
+          }}
           label="Nombre del servicio"
           type="text"
           onChange={(e) => setBuscarTexto(e.target.value)}
@@ -353,6 +360,7 @@ const TablaServicios: React.FC = () => {
             height: "50px",
             width: isMobile ? "40%" : "170px",
             marginLeft: isMobile ? "10px" : "1rem",
+            fontSize: isSmallMobile ? "0.8rem" : "auto",
             borderRadius: "30px",
           }}
           // onClick={}buscarServicios

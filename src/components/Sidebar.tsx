@@ -9,8 +9,6 @@ import {
   Box,
   ListItemButton,
   Collapse,
-  useMediaQuery,
-  useTheme,
   IconButton,
 } from "@mui/material";
 import {
@@ -30,6 +28,7 @@ import BackupTableIcon from '@mui/icons-material/BackupTable';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from "../context/AuthContext";
+import useResponsive from "./Responsive";
 
 interface SidebarProps {
   open: boolean;
@@ -39,8 +38,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile } = useResponsive();
 
   const [openPanel, setOpenPanel] = useState(isMobile ? true : false);
   const location = useLocation();

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Card, CardContent, Stack, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, Card, CardContent, Stack } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { NextWeek, Person, Wysiwyg } from "@mui/icons-material";
@@ -10,6 +10,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import useResponsive from "./Responsive";
 
 const data = [
   { name: 'Enero', uv: 40, pv: 24, amt: 24 },
@@ -40,8 +41,7 @@ interface PieData {
 const Dashboard: React.FC = () => {
   
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
 
   const [itemData, setItemData] = React.useState<PieData | null>(null);
   const formatTooltipValue = (value: number) => `${value}%`;
@@ -50,9 +50,9 @@ const Dashboard: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        p: 5,
+        p: isSmallMobile ? 3 : 5,
         pt: 10,
-        mt: isMobile ? 10 : 5,
+        mt: isSmallMobile ? 8 : isMobile ? 10 : 5,
         backgroundColor: "#f0f0f0",
         minHeight: "93vh",
         display: "-ms-flexbox",

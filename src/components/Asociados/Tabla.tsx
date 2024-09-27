@@ -18,8 +18,6 @@ import {
   FormControl,
   Typography,
   TextField,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import {
   Download,
@@ -32,6 +30,7 @@ import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import Agregar from "./Agregar";
 import Pagar from "./Pagar";
+import useResponsive from "../Responsive";
 
 interface Socio {
   id_socio: string;
@@ -103,8 +102,7 @@ const columns: readonly Column[] = [
 const TablaAsociados: React.FC = () => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   // Para filtrar los registros
@@ -243,8 +241,8 @@ const TablaAsociados: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        p: 3,
-        pt: isMobile ? 16 : 10,
+        p: isSmallMobile ? 2 : 3,
+        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -265,7 +263,7 @@ const TablaAsociados: React.FC = () => {
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: 3,
+          p: isSmallMobile ? 2 : 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
@@ -373,6 +371,7 @@ const TablaAsociados: React.FC = () => {
                 height: "50px",
                 width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
+                fontSize: isMobile ? "0.8rem" : "auto"
               }}
               disabled={ exportFormat === "" }
               onClick={ handleExportSocios }
@@ -404,7 +403,15 @@ const TablaAsociados: React.FC = () => {
 
           {/* Input Nombre Socio */}
           <TextField
-            sx={{ width: isMobile ? "60%" : "30%" }}
+            sx={{ 
+              width: isMobile ? "60%" : "30%",
+              "& .MuiInputLabel-root": {
+              fontSize: isSmallMobile ? "0.9rem" : "auto",
+              },
+              "& .MuiInputBase-input": {
+                fontSize: isSmallMobile ? "0.9rem" : "auto",
+              },
+            }}
             label="Nombre del socio"
             onChange={(e) => setNombreIngresado(e.target.value)}
           />
@@ -421,6 +428,7 @@ const TablaAsociados: React.FC = () => {
               height: "50px",
               width: isMobile ? "40%" : "170px",
               marginLeft: isMobile ? "10px" : "1rem",
+              fontSize: isSmallMobile ? "0.8rem" : "auto",
               borderRadius: "30px",
             }}
             onClick={buscarSocios}
@@ -493,7 +501,7 @@ const TablaAsociados: React.FC = () => {
                             {mostrarDetalles === socio.id_socio && (
                               <Box 
                                 sx={{
-                                  p: 2,
+                                  p: isSmallMobile ? 1 : 2,
                                   display: "flex", 
                                   flexDirection: "column", 
                                   gap: 1 
@@ -519,12 +527,11 @@ const TablaAsociados: React.FC = () => {
                                             </Typography>
                                           </Box>
                                         ) : column.id === "ver_reporte" ? (
-                                          <Box sx={{ display: "flex", alignItems: "center" }}>
+                                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                             <Button
                                               variant="contained"
                                               sx={{ 
                                                 width: "50%",
-                                                mr: 1,
                                                 padding: "0.5rem 1.5rem",
                                                 backgroundColor: "crimson", 
                                                 color: "white" 

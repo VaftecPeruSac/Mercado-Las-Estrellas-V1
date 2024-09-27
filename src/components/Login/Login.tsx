@@ -2,6 +2,7 @@ import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typog
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import useResponsive from '../Responsive';
 
 const Login: React.FC = () => {
 
@@ -15,8 +16,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
 
   // Iniciar sesion
   const IniciarSesion = (event: React.FormEvent) => {
@@ -35,7 +35,7 @@ const Login: React.FC = () => {
   return (
     <Container 
       component="main"
-      sx={{ maxWidth: "100vw" }}
+      sx={{ maxWidth: "100vw", maxHeight: "100vh" }}
     >
       <Box
         sx={{
@@ -48,20 +48,21 @@ const Login: React.FC = () => {
       >
 
         <Box sx={{
-          width: isMobile ? "280px" : "440px",
-          height: "680px" ,
+          boxSizing: isSmallMobile ? "border-box" : "content-box",
+          width: isSmallMobile ? "100%" : isMobile ? "280px" : "440px",
+          height: isSmallMobile ? "620px" : "680px",
           border: "1px solid",
           borderRadius: "15px",
-          p: "50px 35px"
+          p: isSmallMobile ? "10px 30px" : "50px 35px"
         }}>
 
           <Typography
             component="h1"
             sx={{
               textAlign: "center",
-              fontSize: isMobile ? "24px" : "28px",
+              fontSize: isSmallMobile ? "22px" : isMobile ? "24px" : "28px",
               fontWeight: "bold",
-              mb: 4
+              mb: isSmallMobile ? 2 : 4
             }}
           >
             Ingresar SYSTEM MERCADO
@@ -75,6 +76,7 @@ const Login: React.FC = () => {
                 sx={{ 
                   mb: "2px",
                   fontWeight: "bold",
+                  fontSize: isSmallMobile ? "14px" : "auto",
                   color: "#0AB544",
                 }}
               >
@@ -100,6 +102,7 @@ const Login: React.FC = () => {
                 sx={{ 
                   mb: "2px",
                   fontWeight: "bold",
+                  fontSize: isSmallMobile ? "14px" : "auto",
                   color: "#0AB544",
                 }}
               >
@@ -126,6 +129,7 @@ const Login: React.FC = () => {
                 sx={{ 
                   mb: "2px",
                   fontWeight: "bold",
+                  fontSize: isSmallMobile ? "14px" : "auto",
                   color: "#0AB544",
                 }}
               >
@@ -149,9 +153,9 @@ const Login: React.FC = () => {
               variant="contained"
               type="submit"
               sx={{
-                width: "215px",
-                mt: 4,
-                mb: 8,
+                width: isSmallMobile ? "100%" : "215px",
+                mt: isSmallMobile ? 3 : 4,
+                mb: isSmallMobile ? 4 : 8,
                 p: "10px 50px",
                 textTransform: "inherit",
                 fontSize: "16px",
@@ -170,7 +174,7 @@ const Login: React.FC = () => {
           <Typography
             sx={{ 
               mb: "2px",
-              fontSize: "18px",
+              fontSize: isSmallMobile ? "16px" : "18px",
               fontWeight: "bold",
               color: "#0AB544",
             }}
@@ -178,7 +182,7 @@ const Login: React.FC = () => {
             Busqueda rápida de puesto
           </Typography>
 
-          <Typography sx={{ color: "#9C9C9C" }}>
+          <Typography sx={{ color: "#9C9C9C", fontSize: isSmallMobile ? "12px" : "auto" }}>
             Realiza una busqeda de reporte global de cada puesto
           </Typography>
 
@@ -186,8 +190,8 @@ const Login: React.FC = () => {
             variant="contained"
             type="submit"
             sx={{
-              width: "215px",
-              mt: 4,
+              width: isSmallMobile ? "100%" : "215px",
+              mt: isSmallMobile ? 2 : 4,
               p: "10px 50px",
               textTransform: "inherit",
               fontSize: "16px",

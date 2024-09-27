@@ -1,21 +1,12 @@
-import { Download, Person } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Card, FormControl, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Download } from '@mui/icons-material';
+import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import useResponsive from '../Responsive';
 
 interface Puesto {
   id_puesto: string;
   numero_puesto: string;
-}
-
-interface Deuda {
-  id_cuota: string;
-  anio: string;
-  mes: string;
-  servicio_descripcion: string;
-  total: string;
-  importe_pagado: string;
-  importe_por_pagar: string;
 }
 
 interface Column {
@@ -48,8 +39,7 @@ const columns: readonly Column[] = [
 const TablaReporteDeudas: React.FC = () => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   // Para seleccionar un puesto
@@ -131,8 +121,8 @@ const TablaReporteDeudas: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        p: 3,
-        pt: isMobile ? 16 : 10,
+        p: isSmallMobile ? 2 : 3,
+        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -152,7 +142,7 @@ const TablaReporteDeudas: React.FC = () => {
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: 3,
+          p: isSmallMobile ? 2 : 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
@@ -294,6 +284,7 @@ const TablaReporteDeudas: React.FC = () => {
                 height: "50px",
                 width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
+                fontSize: isMobile ? "0.8rem" : "auto"
               }}
               disabled={ exportFormat === "" }
               onClick={handleExportReporteDeudas}

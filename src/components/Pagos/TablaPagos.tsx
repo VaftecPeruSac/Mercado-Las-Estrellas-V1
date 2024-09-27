@@ -1,7 +1,6 @@
 import {
   Download,
   FileDownload,
-  InsertDriveFile,
   Search,
   WhatsApp,
 } from "@mui/icons-material";
@@ -23,13 +22,12 @@ import {
   TableRow,
   TextField,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import RegistrarPago from "./RegistrarPago";
 import axios from "axios";
+import useResponsive from "../Responsive";
 
 interface Pagos {
   id_pago: string;
@@ -78,8 +76,7 @@ const columns: readonly Column[] = [
 const TablaPago: React.FC = () => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [pagos, setPagos] = useState<Data[]>([]);
@@ -182,8 +179,8 @@ const TablaPago: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        p: 3,
-        pt: isMobile ? 16 : 10,
+        p: isSmallMobile ? 2 : 3,
+        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -203,7 +200,7 @@ const TablaPago: React.FC = () => {
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: 3,
+          p: isSmallMobile ? 2 : 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
@@ -309,6 +306,7 @@ const TablaPago: React.FC = () => {
                 height: "50px",
                 width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
+                fontSize: isMobile ? "0.8rem" : "auto"
               }}
               disabled={ exportFormat === "" }
               onClick={handleExportPagos}
@@ -359,6 +357,7 @@ const TablaPago: React.FC = () => {
               width: isMobile ? "40%" : "170px",
               marginLeft: isMobile ? "10px" : "1rem",
               borderRadius: "30px",
+              fontSize: isSmallMobile ? "0.8rem" : "auto"
             }}
             onClick={handleSearchPagos}
           >

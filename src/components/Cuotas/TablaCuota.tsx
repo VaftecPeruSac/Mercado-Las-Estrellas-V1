@@ -19,8 +19,6 @@ import {
   InputLabel,
   SelectChangeEvent,
   Typography,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import {
   Download,
@@ -33,6 +31,7 @@ import {
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import GenerarCuota from "./GenerarCuota";
+import useResponsive from "../Responsive";
 
 interface Cuotas {
   id_deuda: string; // Nombre del socio
@@ -70,15 +69,9 @@ const columns: readonly Column[] = [
   { id: "fecha_registro", label: "Fecha Emisión", minWidth: 50 }, // DNI
   { id: "fecha_vencimiento", label: "fecha_vencimiento", minWidth: 50 }, // Nombre del bloque
   { id: "importe", label: "Importe", minWidth: 50 }, // Número del puesto
-  { id: "accion", label: "Acción", minWidth: 20 },
-  // Acción
+  { id: "accion", label: "Acción", minWidth: 20 }, // Acciones
 ];
 
-// const options = [
-//   { value: 'chocolate', label: 'Chocolate' },
-//   { value: 'strawberry', label: 'Strawberry' },
-//   { value: 'vanilla', label: 'Vanilla' },
-// ];
 const optMeses = [
   {value: "1", label: "Enero"},
   {value: "2", label: "Febrero"},
@@ -101,8 +94,7 @@ interface IMeses {
 const TablaCuota: React.FC = () => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isSmallMobile } = useResponsive();
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
@@ -234,8 +226,8 @@ const TablaCuota: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        p: 3,
-        pt: isMobile ? 16 : 10,
+        p: isSmallMobile ? 2 : 3,
+        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -255,7 +247,7 @@ const TablaCuota: React.FC = () => {
           position: "relative",
           transition: "all 0.3s ease",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: 3,
+          p: isSmallMobile ? 2 : 3,
           overflow: "auto",
           display: "-ms-inline-flexbox",
           margin: "0 auto",
@@ -360,6 +352,7 @@ const TablaCuota: React.FC = () => {
                 height: "50px",
                 width: isMobile ? "50%" : "200px",
                 borderRadius: "30px",
+                fontSize: isMobile ? "0.8rem" : "auto"
               }}
               disabled={ exportFormat === "" }
               onClick={handleExportCuotas}
