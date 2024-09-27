@@ -385,7 +385,7 @@ const TablaCuota: React.FC = () => {
                 ? <ExpandLess /> 
                 : <ExpandMore />}
             >
-              Filtrar Cuotas
+              {mostrarFiltros ? "Ocultar Filtros" : "Mostrar Filtros"}
             </Button>
           </Box>
         )}

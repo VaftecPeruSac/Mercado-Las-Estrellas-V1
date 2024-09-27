@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import useResponsive from "../Responsive";
 
 interface AgregarProps {
   open: boolean;
@@ -79,6 +80,9 @@ const columns: readonly Column[] = [
 ];
 
 const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
+
+  // Variables para el diseño responsivo
+  const { isMobile } = useResponsive();
 
   // Para los select
   const [socios, setSocios] = useState<Socio[]>([]);
@@ -165,7 +169,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       if(filasSeleccionadas[id_deuda]){
         const fila = deudas.find((deuda) => deuda.id_deuda === parseInt(id_deuda));
         if(fila){
-          total += parseFloat(fila.total);
+          total += parseFloat(fila.deuda);
         }
       }
     });
@@ -336,14 +340,19 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "20px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={12}>
+                <Grid item xs={12} sm={12} marginTop={1}>
                   {/* Seleccionar socio */}
-                  <FormControl sx={{ width: "390px" }} required>
+                  <FormControl 
+                    sx={{ 
+                      width: isMobile ? "100%" : "390px",
+                      mb: isMobile ? "15px" : "0px"
+                    }}
+                  >
                     <Autocomplete
                       options={socios}
                       getOptionLabel={(socio: Socio) => socio.nombre_completo}
@@ -383,7 +392,12 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </FormControl>
 
                   {/* Seleccionar puesto */}
-                  <FormControl sx={{ ml: "23px", width: "390px" }} required>
+                  <FormControl 
+                    sx={{ 
+                      ml: isMobile ? "0px" : "23px", 
+                      width: isMobile ? "100%" : "390px" 
+                    }}
+                  >
                     <InputLabel id="seleccionar-puesto-label">
                       Seleccionar Puesto
                     </InputLabel>
@@ -424,7 +438,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   >
                     <TableContainer
                       sx={{
-                        height: "235px",
+                        height: "250px",
                         borderRadius: "10px",
                         border: "1px solid #202123",
                       }}
@@ -523,6 +537,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                             // Si no esta seleccionado no se puede editar el monto a pagar
                                             readOnly: !seleccionado,
                                           }}
+                                          sx={{
+                                            width: "100px",
+                                          }}
                                         />
                                       ) : (
                                         value
@@ -540,7 +557,12 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 </Grid>
 
                 {/* Monto a pagar */}
-                <Grid item xs={12} sm={8} sx={{ m: "10px 0 0 auto" }}>
+                <Box
+                  sx={{
+                    m: "25px 0 0 auto",
+                    pl: isMobile ? "16px" : "0px",
+                  }}
+                >
                   <TextField
                     label="Total deuda"
                     value={totalDeuda}
@@ -553,6 +575,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                     }}
                     sx={{
                       mr: 2,
+                      mb: isMobile ? "15px" : "0px",
+                      width: isMobile ? "100%" : "200px",
                     }}
                   />
                   <TextField
@@ -566,8 +590,11 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         <Typography sx={{ mr: 1 }}>S/</Typography>
                       ),
                     }}
+                    sx={{
+                      width: isMobile ? "100%" : "200px",
+                    }}
                   />
-                </Grid>
+                </Box>
               </Grid>
             </Box>
           </>
@@ -587,15 +614,16 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     >
       <Card
         sx={{
-          width: "1000px",
-          // height: "750px",
-          p: "40px",
+          width: isMobile ? "95%" : "1000px",
+          height: isMobile ? "90%" : "720px",
+          p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          overflowY: "auto",
         }}
       >
         <Box
@@ -650,9 +678,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: "20px 58px 0 58px",
+            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}

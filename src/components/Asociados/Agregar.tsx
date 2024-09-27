@@ -15,7 +15,6 @@ import {
   Tab,
   LinearProgress,
   Autocomplete,
-  Popper,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -31,6 +30,7 @@ import {
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
+import useResponsive from "../Responsive";
 
 interface AgregarProps {
   open: boolean;
@@ -73,6 +73,9 @@ interface Puesto {
 }
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegistrado }) => {
+
+  // Variables para el diseño responsivo
+  const { isMobile, isSmallMobile } = useResponsive();
 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -782,7 +785,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     >
       <Card
         sx={{
-          width: "720px",
+          height: isMobile ? "90%" : "auto",
+          width: isMobile ? "95%" : "720px",
           p: 3,
           bgcolor: "white",
           boxShadow: 24,
@@ -790,6 +794,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          overflowY: "auto",
         }}
       >
         <Box
@@ -849,7 +854,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         {/* <Agregar onSocioRegistrado={handleSocioRegistrado} />
         <Tabla socios={socios} /> */}
 
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+        <Box 
+          sx={{ 
+            display: "flex", 
+            justifyContent: isMobile ? "center" : "flex-end",
+            mt: 3 
+          }}
+        >
           <Button
             variant="outlined"
             sx={{

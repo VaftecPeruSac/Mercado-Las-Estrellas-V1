@@ -2,6 +2,7 @@ import { AttachMoney, Bolt, Event, Storefront, Straighten } from '@mui/icons-mat
 import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import useResponsive from '../Responsive';
 
 interface AgregarProps {
   open: boolean;
@@ -19,6 +20,9 @@ interface Editarservicio {
 
 const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
   
+  // Variables para el diseño responsivo
+  const { isMobile } = useResponsive();
+
   const [activeTab, setActiveTab] = useState(0);
 
   const [costoTotal, setCostoTotal] = useState("");
@@ -180,7 +184,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -317,9 +321,10 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 color: "#333",
                 textAlign: "center",
                 fontSize: "12px",
+                p: isMobile ? "0px" : "0px 58px"
               }}
             >
-              El monto total ingresado en este servicio sera repartido entre <br />
+              El monto total ingresado en este servicio sera repartido entre 
               el área total de todos los puestos que se encuentren activos. (*)
             </Typography>
             
@@ -327,7 +332,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               
               <Grid container spacing={2}>
@@ -549,15 +554,16 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     >
       <Card
         sx={{
-          width: "720px",
-          height: "720px",
-          p: "40px",
+          width: isMobile ? "95%" : "720px",
+          height: isMobile ? "90%" : "720px",
+          p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          overflowY: "auto",
         }}
       >
         <Box
@@ -580,7 +586,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs 
             value={activeTab} 
-            onChange={handleTabChange} 
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
             sx={{ 
               "& .MuiTabs-flexContainer": {
                 minHeight: "36px",
@@ -601,6 +609,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 display: "none",
               },
               mb: -1,
+              overflowX: "auto",
             }}
           >
             <Tab label="Registrar Servicio" />
@@ -613,9 +622,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: "20px 58px 0 58px",
+            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}

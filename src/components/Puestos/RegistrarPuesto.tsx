@@ -27,6 +27,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import useResponsive from '../Responsive';
 
 interface AgregarProps {
   open: boolean;
@@ -74,6 +75,9 @@ interface Socio {
 }
 
 const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) => {
+
+  // Variables para el diseño responsivo
+  const { isMobile } = useResponsive();
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -547,7 +551,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -775,7 +779,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ mt: 2, p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
 
@@ -1226,7 +1230,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ mt: 2, p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -1285,7 +1289,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ mt: 2, p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -1352,15 +1356,16 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     >
       <Card
         sx={{
-          width: "740px",
-          height: "670px",
-          p: "40px",
+          width: isMobile ? "95%" : "740px",
+          height: isMobile ? "90%" : "670px",
+          p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          overflowY: "auto",
         }}
       >
         <Box
@@ -1384,6 +1389,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
             sx={{
               "& .MuiTabs-flexContainer": {
                 minHeight: "36px",
@@ -1404,6 +1411,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 display: "none",
               },
               mb: -1,
+              overflowX: "auto",
             }}
           >
             <Tab label="Registrar Puesto" />
@@ -1419,9 +1427,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: "20px 58px 0 58px",
+            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}

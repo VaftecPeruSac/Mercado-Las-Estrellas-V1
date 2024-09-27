@@ -26,6 +26,7 @@ import {
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
 import axios from "axios";
+import useResponsive from "../Responsive";
 
 interface AgregarProps {
   open: boolean;
@@ -60,6 +61,9 @@ const columns: readonly Column[] = [
 ];
 
 const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
+
+  // Variables para el diseño responsivo
+  const { isMobile } = useResponsive();
 
   // Para seleccionar servicios
   const [servicios, setServicios] = useState<Servicio[]>([]);
@@ -207,7 +211,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: "0px 58px" }}
+              sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -273,7 +277,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={12}>
                   <Paper
                     sx={{
-                      width: "524px",
+                      width: isMobile ? "100%" : "524px",
                       overflow: "hidden",
                       boxShadow: "none",
                     }}
@@ -371,15 +375,16 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     >
       <Card
         sx={{
-          width: "720px",
-          height: "800px",
-          p: "40px",
+          width: isMobile ? "95%" : "720px",
+          height: isMobile ? "90%" : "800px",
+          p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          overflowY: "auto",
         }}
       >
         <Box
@@ -434,9 +439,9 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: "20px 58px 0 58px",
+            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}

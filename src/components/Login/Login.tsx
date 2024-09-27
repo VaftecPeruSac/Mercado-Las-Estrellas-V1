@@ -53,14 +53,14 @@ const Login: React.FC = () => {
           height: isSmallMobile ? "620px" : "680px",
           border: "1px solid",
           borderRadius: "15px",
-          p: isSmallMobile ? "10px 30px" : "50px 35px"
+          p: isSmallMobile ? "30px" : "50px 35px"
         }}>
 
           <Typography
             component="h1"
             sx={{
               textAlign: "center",
-              fontSize: isSmallMobile ? "22px" : isMobile ? "24px" : "28px",
+              fontSize: isSmallMobile ? "20px" : isMobile ? "24px" : "28px",
               fontWeight: "bold",
               mb: isSmallMobile ? 2 : 4
             }}

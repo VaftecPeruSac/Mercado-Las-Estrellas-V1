@@ -3,12 +3,12 @@ import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 import TemporizadorInactividad from "../context/TemporizadorInactividad";
+import useResponsive from "../components/Responsive";
 
 const Principal = () => {
 
   // Variables para el responsive
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isSmallTablet, isMobile } = useResponsive();
 
   // Estado para abrir y cerrar el drawer
   const [open, setOpen] = useState(false);
@@ -35,8 +35,8 @@ const Principal = () => {
         <Box
           sx={{
             flexGrow: 1,
-            p: isMobile ? 0 : 3,
-            pt: isMobile ? 2 : 3,
+            p: isSmallTablet || isMobile ? 0 : 3,
+            pt: isSmallTablet || isMobile ? 2 : 3,
             pb: 0,
             transition: "margin-left 0.3s",
             marginLeft: open ? "260px" : "0px",
