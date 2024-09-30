@@ -28,12 +28,26 @@
   color: #61dafb;
 }
 
+.swal2-container {
+  z-index: 2000 !important;
+}
 
+.custom-popup {
+  border-radius: 10px;
+}
+
+.custom-confirm-button {
+  background-color: #008001 !important;
+  /* Color de fondo del botón Aceptar */
+  color: #fff !important;
+  /* Color del texto del botón Aceptar */
+}
 
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

@@ -27,7 +27,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
-  
+
   // Variables para el responsive
   const { isSmallTablet, isMobile, isSmallMobile } = useResponsive();
 
@@ -58,10 +58,10 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
           zIndex: (theme) => theme.zIndex.drawer - 1,
         }}
       >
-        <Toolbar 
-          sx={{ 
-            justifyContent: isMobile ? "none" : "space-between", 
-            paddingRight: 0 
+        <Toolbar
+          sx={{
+            justifyContent: isMobile ? "none" : "space-between",
+            paddingRight: 0,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -73,31 +73,31 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             >
               <MenuIcon />
             </IconButton>
-            <Grid container 
+            <Grid container
               sx={{
                 maxWidth: isMobile ? "280px" : "auto",
               }}
             >
               <Grid item xs={12}>
                 <Typography
-                  sx={{ 
-                    color: 'black', 
-                    fontWeight: "bold", 
-                    text: "center", 
+                  sx={{
+                    color: 'black',
+                    fontWeight: "bold",
+                    text: "center",
                     fontSize: isSmallMobile ? 12 : isMobile || isSmallTablet ? 14 : 18,
-                    ml: isMobile ? 2 : open ? 30 : 3, 
-                    mb: isMobile ? -4 : -5 
+                    ml: isMobile ? 2 : open ? 30 : 3,
+                    mb: isMobile ? -4 : -5
                   }}
                 >
                   <h2>Bienvenido al Sistema, Administrador</h2>
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <Typography 
-                  sx={{ 
-                    color: '#b3b3b3', 
-                    fontWeight: "bold", 
-                    text: "center", 
+                <Typography
+                  sx={{
+                    color: '#b3b3b3',
+                    fontWeight: "bold",
+                    text: "center",
                     ml: isMobile ? 2 : open ? 30 : 3
                   }}>
                   <h5>Sistema Intranet Mercado las Estrellas versión 2.0</h5>
@@ -105,16 +105,16 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               </Grid>
             </Grid>
           </Box>
-          <Box 
-            display="flex" 
-            flexDirection="row" 
+          <Box
+            display="flex"
+            flexDirection="row"
             alignItems="center"
           >
-            <NotificationsNone 
-              sx={{ 
-                color: 'black', 
+            <NotificationsNone
+              sx={{
+                color: 'black',
                 display: isMobile ? "none" : "block",
-              }} 
+              }}
             />
             <Box
               sx={{
@@ -133,30 +133,30 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                 src="/images/image-avatar.jpeg"
                 sx={{ width: 35, height: 35, mr: 2 }}
               />
-              <Typography 
-                sx={{ 
-                  color: 'black', 
+              <Typography
+                sx={{
+                  color: 'black',
                   fontWeight: "bold",
                   display: isMobile ? "none" : "block"
                 }}
               >
                 Ottoniel Yauri
               </Typography>
-              { Boolean(anchorEl) 
+              {Boolean(anchorEl)
                 ? <ExpandLess
-                    sx={{ 
-                      ml: '1rem', 
-                      color: 'black',
-                      display: isMobile ? "none" : "block"
-                    }}
-                  />
+                  sx={{
+                    ml: '1rem',
+                    color: 'black',
+                    display: isMobile ? "none" : "block"
+                  }}
+                />
                 : <ExpandMoreIcon
-                    sx={{ 
-                      ml: '1rem', 
-                      color: 'black',
-                      display: isMobile ? "none" : "block"
-                    }}
-                  />
+                  sx={{
+                    ml: '1rem',
+                    color: 'black',
+                    display: isMobile ? "none" : "block"
+                  }}
+                />
               }
             </Box>
           </Box>
@@ -196,7 +196,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             },
           }}
         >
-          <Sidebar open={open} onClose={toggleDrawer}/>
+          <Sidebar open={open} onClose={toggleDrawer} />
         </Drawer>
         <Box
           sx={{
