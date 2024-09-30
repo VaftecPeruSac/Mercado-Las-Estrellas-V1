@@ -31,6 +31,8 @@ import {
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
 import useResponsive from "../Responsive";
+import Swal from "sweetalert2";
+import { mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 interface AgregarProps {
   open: boolean;
@@ -87,10 +89,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const [mes, setMes] = useState<string>("");
   const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
 
-  // Estado para el contenido de las pestañas
   const [activeTab, setActiveTab] = useState(0);
 
-  // Datos del formulario
   const [tipoPersona, setTipoPersona] = useState("");
   const [nombre, setNombre] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
@@ -105,12 +105,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   const [cuota, setCuota] = useState("");
 
-  // Error Formulario
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [openPagar, setOpenPagar] = useState<boolean>(false);
 
   const [loading, setLoading] = useState(false); // Estado de loading
+  const [modalVisible, setModalVisible] = useState(false); // Controla la visibilidad del modal
+
 
   const [formData, setFormData] = useState({
     id_socio: "",
@@ -223,6 +224,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const handleCloseModal = () => {
     limpiarCamposSocio();
     handleClose();
+    setModalVisible(false); // Cierra el modal
+
   };
 
   const limpiarCamposSocio = () => {
@@ -316,35 +319,44 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         return "";
     }
   }
-
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true); // Activa el loading
-
-    const { id_socio, id_block, ...dataToSend } = formData;
+    const { id_socio, id_block, ...dataToSend } = formData; // Extraer datos aquí
 
     try {
-      // const response = await axios.post("http://127.0.0.1:8000/v1/socios", dataToSend); // Local
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend); //publico
+      // Intenta registrar el socio
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+
       if (response.status === 200) {
-        alert("Se registró correctamente");
-        setLoading(false); // Desactiva el loading
+        mostrarAlerta(
+          "Registro exitoso",
+          "El socio se registró correctamente",
+          "success"
+        );
         limpiarCamposSocio();
         onSocioRegistrado();
-        handleClose() // Actualiza la lista de socios en Tabla.tsx
+        handleClose(); // Cierra el modal
       } else {
-        alert("No se pudo registrar el socio. Inténtalo nuevamente.");
-        setLoading(false); // Desactiva el loading
+        mostrarAlerta(
+          "Error",
+          "No se pudo registrar el socio. Inténtalo nuevamente.",
+          "error"
+        );
       }
-      console.log(response)
-
     } catch (error) {
       console.error("Error al registrar el socio:", error);
-      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
-      setLoading(false); // Desactiva el loading
+      mostrarAlerta(
+        "Error",
+        "Ocurrió un error al registrar. Inténtalo nuevamente.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
     }
   };
+
 
   // Editar socio
   const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -781,7 +793,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
       onClose={handleCloseModal}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      sx={{ display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, }}
     >
       <Card
         sx={{
@@ -822,33 +834,33 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         )}
 
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 0 }}>
-          <Tabs
+          {/* <Tabs
             value={activeTab}
             onChange={handleTabChange}
             sx={{
               "& .MuiTabs-flexContainer": {
-                minHeight: "36px", // Reduce la altura del contenedor de tabs
+                minHeight: "36px",
               },
               "& .MuiTab-root": {
-                fontSize: "0.8rem", // Tamaño de fuente más pequeño
-                fontWeight: "normal", // Peso de fuente normal
-                color: "gray", // Color gris para tabs no seleccionados
-                textTransform: "none", // Mantener el texto tal cual
-                minWidth: "auto", // Quitar el ancho mínimo
-                px: 2, // Padding horizontal
+                fontSize: "0.8rem",
+                fontWeight: "normal",
+                color: "gray",
+                textTransform: "none",
+                minWidth: "auto",
+                px: 2,
               },
               "& .MuiTab-root.Mui-selected": {
-                fontWeight: "bold", // Negrita para el tab seleccionado
-                color: "black !important", // Color negro para el tab seleccionado con !important
+                fontWeight: "bold",
+                color: "black !important",
               },
               "& .MuiTabs-indicator": {
-                display: "none", // Ocultar el indicador de línea predeterminado
+                display: "none",
               },
-              mb: -1, // Reduce el margen inferior para acercar el divider a los tabs
+              mb: -1,
             }}
           >
             <Tab label="REGISTRAR SOCIO" />
-          </Tabs>
+          </Tabs> */}
         </Box>
         {renderTabContent()}
         {/* <Agregar onSocioRegistrado={handleSocioRegistrado} />
@@ -888,14 +900,21 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                 backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
-            onClick={(e) => {
+            onClick={async (e) => { // Cambiar a función asíncrona
               if (activeTab === 0) {
-                if (socio) {
-                  // Si se selecciono un socio
-                  editarSocio(e);
-                } else {
-                  // Si no se selecciono un socio
-                  registrarSocio(e);
+                const result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
+                  "¿Está seguro de registrar un nuevo socio?",
+                  "Verifique la información antes de continuar."
+                );
+
+                if (result.isConfirmed) {
+                  if (socio) {
+                    // Si se seleccionó un socio
+                    editarSocio(e);
+                  } else {
+                    // Si no se seleccionó un socio
+                    registrarSocio(e);
+                  }
                 }
               }
             }}
