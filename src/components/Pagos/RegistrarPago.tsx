@@ -95,7 +95,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [filasSeleccionadas, setFilasSeleccionadas] = useState<({[key: string]: boolean;})>({});
 
   // Para guardar el monto por deuda
-  const [montoPagar, setMontoPagar] = useState<{ [key: number]: number }>({}); 
+  const [montoPagar, setMontoPagar] = useState<{ [key: number]: number }>({});
 
   // Para manejar los pagos
   const [totalPagar, setTotalPagar] = useState(0);
@@ -298,6 +298,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Cerrar modal
   const handleCloseModal = () => {
+    setMontoPagar({}); // Limpiamos los montos a pagar
     handleClose();
     limpiarCampos();
   };
@@ -342,7 +343,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
               autoComplete="off"
               sx={{ p: isMobile ? "0px" : "0px 58px" }}
             >
-              {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+              <pre>{JSON.stringify(formData, null, 2)}</pre>
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} marginTop={1}>
