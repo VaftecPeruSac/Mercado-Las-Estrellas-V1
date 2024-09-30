@@ -566,7 +566,7 @@ const TablaCuota: React.FC = () => {
                                               justifyContent: "center"
                                             }}
                                           >
-                                            <Button
+                                            {/* <Button
                                               variant="contained"
                                               sx={{
                                                 padding: "0.5rem 1.5rem",
@@ -577,7 +577,7 @@ const TablaCuota: React.FC = () => {
                                             >
                                               <SaveAs sx={{ mr: 1 }} />
                                               Editar
-                                            </Button>
+                                            </Button> */}
                                             <Button
                                               variant="contained"
                                               sx={{
