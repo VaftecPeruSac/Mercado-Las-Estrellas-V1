@@ -793,7 +793,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
       onClose={handleCloseModal}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, }}
+      sx={{ display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200, }}
     >
       <Card
         sx={{
