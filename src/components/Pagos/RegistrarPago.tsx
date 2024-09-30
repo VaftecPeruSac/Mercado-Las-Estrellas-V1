@@ -82,7 +82,7 @@ const columns: readonly Column[] = [
 const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Variables para el diseño responsivo
-  const { isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
 
   // Para los select
   const [socios, setSocios] = useState<Socio[]>([]);
@@ -341,16 +341,16 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
-              <pre>{JSON.stringify(formData, null, 2)}</pre>
+              {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} marginTop={1}>
                   {/* Seleccionar socio */}
                   <FormControl 
                     sx={{ 
-                      width: isMobile ? "100%" : "390px",
+                      width: isTablet ? "48%" : isMobile ? "100%" : "390px",
                       mb: isMobile ? "15px" : "0px"
                     }}
                   >
@@ -395,8 +395,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Seleccionar puesto */}
                   <FormControl 
                     sx={{ 
-                      ml: isMobile ? "0px" : "23px", 
-                      width: isMobile ? "100%" : "390px" 
+                      ml: isTablet ? "1rem" : isMobile ? "0px" : "23px", 
+                      width: isTablet ? "48%" : isMobile ? "100%" : "390px" 
                     }}
                   >
                     <InputLabel id="seleccionar-puesto-label">
@@ -615,8 +615,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     >
       <Card
         sx={{
-          width: isMobile ? "95%" : "1000px",
-          height: isMobile ? "90%" : "720px",
+          width: isTablet ? "90%" : isMobile ? "95%" : "1000px",
+          height: isTablet || isMobile ? "90%" : "720px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
@@ -679,9 +679,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: isMobile ? "center" : "flex-end",
+            justifyContent: isTablet || isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
+            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}

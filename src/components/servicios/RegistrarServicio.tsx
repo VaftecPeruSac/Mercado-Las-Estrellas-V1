@@ -21,7 +21,7 @@ interface Editarservicio {
 const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
   
   // Variables para el diseño responsivo
-  const { isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -184,7 +184,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -332,7 +332,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               
               <Grid container spacing={2}>
@@ -554,8 +554,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     >
       <Card
         sx={{
-          width: isMobile ? "95%" : "720px",
-          height: isMobile ? "90%" : "720px",
+          width: isTablet ? "90%" : isMobile ? "95%" : "720px",
+          height: isTablet || isMobile ? "90%" : "720px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
@@ -622,9 +622,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
         <Box
           sx={{
             display: "flex",
-            justifyContent: isMobile ? "center" : "flex-end",
+            justifyContent: isTablet || isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
+            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}

@@ -17,7 +17,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  SelectChangeEvent,
   Typography,
 } from "@mui/material";
 import {
@@ -26,7 +25,6 @@ import {
   WhatsApp,
   ExpandLess,
   ExpandMore,
-  SaveAs,
 } from "@mui/icons-material";
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
@@ -94,7 +92,7 @@ interface IMeses {
 const TablaCuota: React.FC = () => {
 
   // Variables para el responsive
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
@@ -108,14 +106,6 @@ const TablaCuota: React.FC = () => {
   const [cuotas, setCuotas] = useState<Data[]>([]);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  const manejarAnioCambio = (evento: SelectChangeEvent<string>) => {
-    setAnio(evento.target.value as string);
-  };
-
-  const manejarMesCambio = (evento: SelectChangeEvent<string>) => {
-    setMes(evento.target.value as string);
-  };
 
   // Metodo para exportar el listado de cuotas
   const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -158,22 +148,9 @@ const TablaCuota: React.FC = () => {
   };
 
   // Metodo para buscar cuotas por fecha
-  const handleSearchCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    e.preventDefault();
-
-    // try {
-    //   alert("En proceso de actualización.");
-    // } catch {
-    //   alert("Error al buscar la cuota. Intentelo nuevamente más tarde.")
-    // }
-    fetchCuotas(1);
-
-  }
-
-  useEffect(() => {
+  const handleSearchCuota = () => {
     fetchCuotas();
-  }, []);
+  }
 
   const formatDate = (fecha: string): string => {
     const date = new Date(fecha);
@@ -227,7 +204,7 @@ const TablaCuota: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: isSmallMobile ? 2 : 3,
-        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
+        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -256,7 +233,7 @@ const TablaCuota: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
             justifyContent: "space-between",
             alignItems: "center",
             mb: isMobile ? 2 : 3,
@@ -273,8 +250,8 @@ const TablaCuota: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: isMobile ? "100%" : "230px",
-              marginBottom: isMobile ? "1em" : "0",
+              width: isTablet || isMobile ? "100%" : "230px",
+              marginBottom: isTablet || isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={handleOpen}
@@ -286,7 +263,7 @@ const TablaCuota: React.FC = () => {
 
           <Box
             sx={{
-              width: isMobile ? "100%" : "auto",
+              width: isTablet ? "100%" : isMobile ? "100%" : "auto", 
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -297,7 +274,7 @@ const TablaCuota: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                width: isMobile ? "50%" : "150px",
+                width: isTablet || isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -350,7 +327,7 @@ const TablaCuota: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: isMobile ? "50%" : "200px",
+                width: isTablet || isMobile ? "50%" : "200px",
                 borderRadius: "30px",
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
@@ -395,7 +372,7 @@ const TablaCuota: React.FC = () => {
           // Filtros de búsqueda
           <Box
             sx={{
-              padding: isMobile ? "15px 0" : "15px 35px",
+              padding: isTablet || isMobile ? "15px 0" : "15px 35px",
               borderTop: "1px solid rgba(0, 0, 0, 0.25)",
               borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
               display: "flex",
@@ -405,6 +382,7 @@ const TablaCuota: React.FC = () => {
           >
             <Typography 
               sx={{
+                display: isTablet ? "none" : "block",
                 textAlign: "left",
                 fontWeight: "bold", 
                 mr: 2,
@@ -423,7 +401,7 @@ const TablaCuota: React.FC = () => {
               }}
             >
               <InputLabel id="cuota-anio-label">Año</InputLabel>
-              <Select value={anio} onChange={manejarAnioCambio} label="Año">
+              <Select value={anio} onChange={(e) => setAnio(e.target.value)} label="Año">
                 {[
                   2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
                   2014, 2013, 2012,
@@ -449,7 +427,7 @@ const TablaCuota: React.FC = () => {
               }}
             >
               <InputLabel id="cuota-mes-label">Mes</InputLabel>
-              <Select value={mes} onChange={manejarMesCambio} label="Mes">
+              <Select value={mes} onChange={(e) => setMes(e.target.value)} label="Mes">
               {iMeses.map((iMes: IMeses) => (
                           <MenuItem key={iMes.value} value={iMes.value}>
                             {iMes.label}
@@ -488,7 +466,7 @@ const TablaCuota: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {isMobile
+                  {isTablet || isMobile
                   ? <Typography
                       sx={{
                         mt: 2,
@@ -518,7 +496,7 @@ const TablaCuota: React.FC = () => {
               <TableBody>
                 {cuotas.map((cuota) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isMobile
+                      {isTablet || isMobile
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
                           <Box sx={{ display: "flex", flexDirection: "column"}}>
                             <Typography 
@@ -566,18 +544,6 @@ const TablaCuota: React.FC = () => {
                                               justifyContent: "center"
                                             }}
                                           >
-                                            {/* <Button
-                                              variant="contained"
-                                              sx={{
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "#0478E3", 
-                                                color: "white" 
-                                              }}
-                                              // onClick={() => handleOpen(cuota)}
-                                            >
-                                              <SaveAs sx={{ mr: 1 }} />
-                                              Editar
-                                            </Button> */}
                                             <Button
                                               variant="contained"
                                               sx={{
@@ -635,12 +601,6 @@ const TablaCuota: React.FC = () => {
                                 }}
                               >
                                 {/* Alinea los íconos a la derecha */}
-                                <IconButton
-                                  aria-label="edit"
-                                  sx={{ color: "black" }}
-                                >
-                                  <SaveAs />
-                                </IconButton>
                                 <IconButton
                                   aria-label="copy"
                                   sx={{ color: "black" }}

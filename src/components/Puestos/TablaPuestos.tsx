@@ -94,7 +94,7 @@ const columns: readonly Column[] = [
 const TablaPuestos: React.FC = () => {
 
   // Variables para el responsive
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
@@ -264,7 +264,7 @@ const TablaPuestos: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: isSmallMobile ? 2 : 3,
-        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
+        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -294,7 +294,7 @@ const TablaPuestos: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
             justifyContent: "space-between",
             alignItems: "center",
             mb: isMobile ? 2 : 3,
@@ -311,8 +311,8 @@ const TablaPuestos: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: isMobile ? "100%" : "230px",
-              marginBottom: isMobile ? "1em" : "0",
+              width: isTablet || isMobile ? "100%" : "230px",
+              marginBottom: isTablet || isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={() => handleOpen()}
@@ -328,7 +328,7 @@ const TablaPuestos: React.FC = () => {
 
           <Box
             sx={{
-              width: isMobile ? "100%" : "auto",
+              width: isTablet ? "100%" : isMobile ? "100%" : "auto", // Ancho del contenedor
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -339,7 +339,7 @@ const TablaPuestos: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                width: isMobile ? "50%" : "150px",
+                width: isTablet || isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -392,7 +392,7 @@ const TablaPuestos: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: isMobile ? "50%" : "200px",
+                width: isTablet || isMobile ? "50%" : "200px",
                 borderRadius: "30px",
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
@@ -404,7 +404,7 @@ const TablaPuestos: React.FC = () => {
           </Box>
         </Box>
 
-        {isMobile && (
+        {(isMobile || isTablet) && (
           // Botón "Filtros" para mostrar/ocultar los filtros
           <Box 
             sx={{
@@ -432,21 +432,22 @@ const TablaPuestos: React.FC = () => {
           </Box>
         )}
 
-        {(!isMobile || mostrarFiltros) && (
+        {((!isMobile || !isTablet) && mostrarFiltros) && (
 
           // Filtros de búsqueda
           <Box
             sx={{
-              padding: isMobile ? "15px 0" : "15px 35px",
+              padding: isTablet || isMobile ? "15px 0" : "15px 35px",
               borderTop: "1px solid rgba(0, 0, 0, 0.25)",
               borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
               display: "flex",
-              flexDirection: isMobile ? "column" : "row",
+              flexDirection: isTablet || isMobile ? "column" : "row",
               alignItems: isMobile ? "left" : "center",
             }}
           >
             <Typography 
               sx={{
+                display: isTablet ? "none" : "block",
                 textAlign: "left",
                 fontWeight: "bold", 
                 mr: 2,
@@ -457,73 +458,84 @@ const TablaPuestos: React.FC = () => {
               Buscar por:
             </Typography>
 
-            {/* Seleccionar Bloque */}
-            <FormControl 
-              sx={{ 
-                width: isMobile ? "100%" : "200px", 
-                mr: isMobile ? 0 : 2, 
-                textAlign: "left" 
+            <Box
+              sx={{
+                width: "100%",
+                mb: isTablet ? 2 : 0,
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
               }}
             >
-              <InputLabel id="bloque-label">Bloque</InputLabel>
-              <Select
-                labelId="bloque-label"
-                label="Bloque"
-                id="select-bloque"
-                value={bloqueSeleccionado}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setBloqueSeleccionado(value);
+
+              {/* Seleccionar Bloque */}
+              <FormControl 
+                sx={{ 
+                  width: isTablet ? "33%" : isMobile ? "100%" : "200px", 
+                  mr: isMobile ? 0 : 2, 
+                  textAlign: "left" 
                 }}
               >
-                <MenuItem value="" >Todos</MenuItem>
-                {bloques.map((bloque: Bloque) => (
-                  <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                    {bloque.nombre}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel id="bloque-label">Bloque</InputLabel>
+                <Select
+                  labelId="bloque-label"
+                  label="Bloque"
+                  id="select-bloque"
+                  value={bloqueSeleccionado}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setBloqueSeleccionado(value);
+                  }}
+                >
+                  <MenuItem value="" >Todos</MenuItem>
+                  {bloques.map((bloque: Bloque) => (
+                    <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                      {bloque.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-            {/* Input Numero de puesto */}
-            <TextField 
-              sx={{ 
-                width: isMobile ? "100%" : "200px",
-                mt: isMobile ? 2 : 0, 
-                mb: isMobile ? 2 : 0, 
-              }}
-              type="text"
-              label="Numero de puesto" 
-              onChange={(e) => setNroPuestoIngresado(e.target.value)}
-            />
+              {/* Input Numero de puesto */}
+              <TextField 
+                sx={{ 
+                  width: isTablet ? "33%" : isMobile ? "100%" : "200px",
+                  mt: isMobile ? 2 : 0, 
+                  mb: isMobile ? 2 : 0, 
+                }}
+                type="text"
+                label="Numero de puesto" 
+                onChange={(e) => setNroPuestoIngresado(e.target.value)}
+              />
 
-            {/* Seleccionar Giro negocio */}
-            <FormControl 
-              sx={{ 
-                width: isMobile ? "100%" : "200px", 
-                ml: isMobile ? 0 : 2, 
-                textAlign: "left" 
-              }}
-            >
-              <InputLabel id="giro-negocio-label">Giro de negocio</InputLabel>
-              <Select
-                labelId="giro-negocio-label"
-                label="Giro de negocio"
-                id="select-giro-negocio"
-                value={giroSeleccionado}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setGiroSeleccionado(value);
+              {/* Seleccionar Giro negocio */}
+              <FormControl 
+                sx={{ 
+                  width: isTablet ? "33%" : isMobile ? "100%" : "200px",
+                  ml: isMobile ? 0 : 2, 
+                  textAlign: "left" 
                 }}
               >
-                <MenuItem value="">Todos</MenuItem>
-                {girosNegocio.map((giro: GiroNegocio) => (
-                  <MenuItem key={giro.id_gironegocio} value={giro.id_gironegocio}>
-                    {giro.nombre}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel id="giro-negocio-label">Giro de negocio</InputLabel>
+                <Select
+                  labelId="giro-negocio-label"
+                  label="Giro de negocio"
+                  id="select-giro-negocio"
+                  value={giroSeleccionado}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setGiroSeleccionado(value);
+                  }}
+                >
+                  <MenuItem value="">Todos</MenuItem>
+                  {girosNegocio.map((giro: GiroNegocio) => (
+                    <MenuItem key={giro.id_gironegocio} value={giro.id_gironegocio}>
+                      {giro.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+            </Box>
 
             {/* Boton Buscar */}
             <Button
@@ -535,7 +547,7 @@ const TablaPuestos: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: isMobile ? "100%" : "170px",
+                width: isTablet ? "100%" : isMobile ? "100%" : "170px",
                 marginTop: isMobile ? 2 : 0,
                 marginLeft: isMobile ? 0 : "1rem",
                 borderRadius: "30px",
@@ -556,7 +568,7 @@ const TablaPuestos: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {isMobile 
+                  {isTablet || isMobile 
                     ? <Typography
                         sx={{
                           mt: 2,
@@ -587,7 +599,7 @@ const TablaPuestos: React.FC = () => {
               <TableBody>
                 {puestos.map((puesto) => (
                   <TableRow hover role="checkbox" tabIndex={-1}>
-                    {isMobile 
+                    {isTablet || isMobile 
                     ? <TableCell padding="checkbox" colSpan={columns.length}>
                         <Box sx={{ display: "flex", flexDirection: "column"}}>
                           <Typography 

@@ -38,7 +38,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   // Variables para el responsive
-  const { isMobile, isSmallTablet } = useResponsive();
+  const { isMobile, isTablet } = useResponsive();
 
   const [openPanel, setOpenPanel] = useState(isMobile ? true : false);
   const location = useLocation();
@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   return (
     <Box sx={{
       height: "100vh",
-      width: isMobile || isSmallTablet ? "100vw" : "260px",
+      width: isMobile || isTablet ? "100vw" : "260px",
       display: "flex", 
       flexDirection: "column",
       bgcolor: "#1f2022", 
@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           <h3><b>SISTEM MERCADO</b></h3>
         </Typography>
       </Box>
-      {(isSmallTablet || isMobile) && (
+      {(isTablet || isMobile) && (
         <IconButton onClick={onClose} sx={{ color: '#fff', pt: 4 }}>
           <Close />
         </IconButton>
@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             to="/home"
             sx={getEstilos("/home", { mt: 3 })}
             onClick={() => {
-              if(!isMobile && !isSmallTablet) {
+              if(!isMobile && !isTablet) {
                 handleOpenPanel();
               } else {
                 if(location.pathname === "/home") {
@@ -151,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 component={Link}
                 to="socios"
                 sx={getEstilos("/home/socios", { ml: 2 })}
-                onClick={isSmallTablet || isMobile ? onClose : undefined}
+                onClick={isTablet || isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <Groups />
@@ -169,7 +169,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 component={Link}
                 to="puestos"
                 sx={getEstilos("/home/puestos", { ml: 2 })}
-                onClick={isSmallTablet || isMobile ? onClose : undefined}
+                onClick={isTablet || isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <Storefront />
@@ -187,7 +187,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 component={Link}
                 to="servicios"
                 sx={getEstilos("/home/servicios", { ml: 2 })}
-                onClick={isSmallTablet || isMobile ? onClose : undefined}
+                onClick={isTablet || isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <ShoppingBasket />
@@ -205,7 +205,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 component={Link}
                 to="cuotas"
                 sx={getEstilos("/home/cuotas", { ml: 2 })}
-                onClick={isSmallTablet || isMobile ? onClose : undefined}
+                onClick={isTablet || isMobile ? onClose : undefined}
               >
                 <Assignment sx={{ color: "inherit" }}>
                   <Article />
@@ -223,7 +223,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 component={Link}
                 to="pagos"
                 sx={getEstilos("/home/pagos", { ml: 2 })}
-                onClick={isSmallTablet || isMobile ? onClose : undefined}
+                onClick={isTablet || isMobile ? onClose : undefined}
               >
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <MonetizationOn />
@@ -253,7 +253,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           component={Link}
           to="reporte-pagos"
           sx={getEstilos("/home/reporte-pagos", {})}
-          onClick={isSmallTablet || isMobile ? onClose : undefined}
+          onClick={isTablet || isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Description />
@@ -271,7 +271,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           component={Link}
           to="reporte-deudas"
           sx={getEstilos("/home/reporte-deudas", {})}
-          onClick={isSmallTablet || isMobile ? onClose : undefined}
+          onClick={isTablet || isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Description />
@@ -291,7 +291,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           component={Link}
           to="configuracion"
           sx={getEstilos("/home/configuracion", { mb: "auto" })}
-          onClick={isSmallTablet || isMobile ? onClose : undefined}
+          onClick={isTablet || isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
             <Settings />
@@ -313,7 +313,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           component={Link}
           to="ayuda"
           sx={getEstilos("/home/ayuda", {})}
-          onClick={isSmallTablet || isMobile ? onClose : undefined}
+          onClick={isTablet || isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>
@@ -330,7 +330,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           component={Link}
           to="contactenos"
           sx={getEstilos("/home/contactenos", {})}
-          onClick={isSmallTablet || isMobile ? onClose : undefined}
+          onClick={isTablet || isMobile ? onClose : undefined}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>

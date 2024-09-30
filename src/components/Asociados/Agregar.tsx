@@ -75,7 +75,7 @@ interface Puesto {
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegistrado }) => {
 
   // Variables para el diseño responsivo
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isMobile, isTablet } = useResponsive();
 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -785,8 +785,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     >
       <Card
         sx={{
-          height: isMobile ? "90%" : "auto",
-          width: isMobile ? "95%" : "720px",
+          width: isTablet ? "90%" : isMobile ? "95%" : "720px",
+          height: isTablet || isMobile ? "90%" : "auto",
           p: 3,
           bgcolor: "white",
           boxShadow: 24,
@@ -857,7 +857,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         <Box 
           sx={{ 
             display: "flex", 
-            justifyContent: isMobile ? "center" : "flex-end",
+            justifyContent: isTablet || isMobile ? "center" : "flex-end",
             mt: 3 
           }}
         >

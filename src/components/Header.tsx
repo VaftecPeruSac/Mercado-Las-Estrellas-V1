@@ -29,7 +29,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   
   // Variables para el responsive
-  const { isSmallTablet, isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isMobile, isSmallMobile } = useResponsive();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { logout } = useAuth();
@@ -84,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     color: 'black', 
                     fontWeight: "bold", 
                     text: "center", 
-                    fontSize: isSmallMobile ? 12 : isMobile || isSmallTablet ? 14 : 18,
+                    fontSize: isSmallMobile ? 12 : isMobile || isTablet ? 14 : 18,
                     ml: isMobile ? 2 : open ? 30 : 3, 
                     mb: isMobile ? -4 : -5 
                   }}
@@ -200,7 +200,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
         </Drawer>
         <Box
           sx={{
-            display: isSmallTablet || isMobile || isSmallMobile ? "none" : "flex",
+            display: isTablet || isMobile || isSmallMobile ? "none" : "flex",
             position: "absolute",
             top: "80vh",
             left: open ? "240px" : "0px",

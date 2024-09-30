@@ -63,7 +63,7 @@ const columns: readonly Column[] = [
 const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Variables para el diseño responsivo
-  const { isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
 
   // Para seleccionar servicios
   const [servicios, setServicios] = useState<Servicio[]>([]);
@@ -211,7 +211,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -277,7 +277,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={12}>
                   <Paper
                     sx={{
-                      width: isMobile ? "100%" : "524px",
+                      width: isTablet || isMobile ? "100%" : "524px",
                       overflow: "hidden",
                       boxShadow: "none",
                     }}
@@ -375,8 +375,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     >
       <Card
         sx={{
-          width: isMobile ? "95%" : "720px",
-          height: isMobile ? "90%" : "800px",
+          width: isTablet ? "90%" : isMobile ? "95%" : "720px",
+          height: isTablet || isMobile ? "90%" : "800px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
@@ -439,9 +439,9 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: isMobile ? "center" : "flex-end",
+            justifyContent: isTablet || isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
+            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}
