@@ -8,7 +8,7 @@ import useResponsive from "../components/Responsive";
 const Principal = () => {
 
   // Variables para el responsive
-  const { isSmallTablet, isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
 
   // Estado para abrir y cerrar el drawer
   const [open, setOpen] = useState(false);
@@ -35,8 +35,8 @@ const Principal = () => {
         <Box
           sx={{
             flexGrow: 1,
-            p: isSmallTablet || isMobile ? 0 : 3,
-            pt: isSmallTablet || isMobile ? 2 : 3,
+            p: isTablet || isMobile ? 0 : 3,
+            pt: isTablet || isMobile ? 2 : 3,
             pb: 0,
             transition: "margin-left 0.3s",
             marginLeft: open ? "260px" : "0px",

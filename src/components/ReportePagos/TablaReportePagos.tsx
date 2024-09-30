@@ -40,7 +40,7 @@ const columns: readonly Column[] = [
 const TablaReportePagos: React.FC = () => {
 
   // Variables para el responsive
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null); 
 
   // Para seleccionar el socio
@@ -120,7 +120,7 @@ const TablaReportePagos: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: isSmallMobile ? 2 : 3,
-        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
+        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -149,7 +149,7 @@ const TablaReportePagos: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
             justifyContent: "space-between",
             alignItems: "center",
             borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
@@ -160,17 +160,21 @@ const TablaReportePagos: React.FC = () => {
         >
           <Box
             sx={{
-              width: isMobile ? "100%" : "auto",
+              width: isTablet || isMobile ? "100%" : "auto",
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
               gap: 2,
               alignItems: "center",
-              ml: isMobile ? "0px" : "10px",
+              ml: isTablet || isMobile ? "0px" : "10px",
               mr: isMobile ? "0px" : "auto",
             }}
           >
             {/* Seleccionar socio */}
-            <FormControl fullWidth required sx={{ width: isMobile ? "100%" : "300px" }}>
+            <FormControl fullWidth required 
+              sx={{ 
+                width: isTablet ? "70%" : isMobile ? "100%" : "300px"
+              }}
+            >
               <Autocomplete
                 options={socios}
                 getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
@@ -214,7 +218,7 @@ const TablaReportePagos: React.FC = () => {
           </Box>
           <Box
             sx={{
-              width: isMobile ? "100%" : "auto",
+              width: isTablet || isMobile ? "100%" : "auto",
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -227,7 +231,7 @@ const TablaReportePagos: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                width: isMobile ? "50%" : "150px",
+                width: isTablet || isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -280,7 +284,7 @@ const TablaReportePagos: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: isMobile ? "50%" : "200px",
+                width: isTablet || isMobile ? "50%" : "200px",
                 borderRadius: "30px",
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
@@ -300,7 +304,7 @@ const TablaReportePagos: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {isMobile
+                  {isTablet || isMobile
                   ? <Typography
                       sx={{
                         mt: 2,
@@ -332,7 +336,7 @@ const TablaReportePagos: React.FC = () => {
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((pago) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isMobile
+                      {isTablet || isMobile
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
                           <Box sx={{ display: "flex", flexDirection: "column"}}>
                             <Typography 

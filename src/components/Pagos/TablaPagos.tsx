@@ -76,7 +76,7 @@ const columns: readonly Column[] = [
 const TablaPago: React.FC = () => {
 
   // Variables para el responsive
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [pagos, setPagos] = useState<Data[]>([]);
@@ -180,7 +180,7 @@ const TablaPago: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: isSmallMobile ? 2 : 3,
-        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
+        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -209,7 +209,7 @@ const TablaPago: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
             justifyContent: "space-between",
             alignItems: "center",
             mb: isMobile ? 2 : 3,
@@ -226,8 +226,8 @@ const TablaPago: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: isMobile ? "100%" : "230px",
-              marginBottom: isMobile ? "1em" : "0",
+              width: isTablet || isMobile ? "100%" : "230px",
+              marginBottom: isTablet || isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={handleOpen}
@@ -240,7 +240,7 @@ const TablaPago: React.FC = () => {
 
           <Box
             sx={{
-              width: isMobile ? "100%" : "auto",
+              width: isTablet ? "100%" : isMobile ? "100%" : "auto",
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -251,7 +251,7 @@ const TablaPago: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                width: isMobile ? "50%" : "150px",
+                width: isTablet || isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": { 
@@ -304,7 +304,7 @@ const TablaPago: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: isMobile ? "50%" : "200px",
+                width: isTablet || isMobile ? "50%" : "200px",
                 borderRadius: "30px",
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
@@ -319,7 +319,7 @@ const TablaPago: React.FC = () => {
         {/* Buscar Pagos X Socio */}
         <Box
           sx={{
-            padding: isMobile ? "15px 0" : "15px 35px",
+            padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
             borderTop: "1px solid rgba(0, 0, 0, 0.25)",
             borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
             display: "flex",
@@ -329,7 +329,7 @@ const TablaPago: React.FC = () => {
         >
           <Typography 
             sx={{ 
-              display: isMobile ? "none" : "inline-block",
+              display: isTablet || isMobile ? "none" : "inline-block",
               fontWeight: "bold", 
               mr: 2 
             }}
@@ -339,7 +339,7 @@ const TablaPago: React.FC = () => {
 
           {/* Input Nombre Socio */}
           <TextField 
-            sx={{ width: isMobile ? "60%" : "30%" }} 
+            sx={{ width: isTablet || isMobile ? "60%" : "30%" }} 
             label="Nombre del socio" 
             type="text"
           />
@@ -354,7 +354,7 @@ const TablaPago: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: isMobile ? "40%" : "170px",
+              width: isTablet || isMobile ? "40%" : "170px",
               marginLeft: isMobile ? "10px" : "1rem",
               borderRadius: "30px",
               fontSize: isSmallMobile ? "0.8rem" : "auto"
@@ -373,7 +373,7 @@ const TablaPago: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {isMobile
+                {isTablet || isMobile 
                   ? <Typography
                       sx={{
                         mt: 2,
@@ -403,7 +403,7 @@ const TablaPago: React.FC = () => {
               <TableBody>
                 {pagos.map((pago) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isMobile 
+                      {isTablet || isMobile 
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
                           <Box sx={{ display: "flex", flexDirection: "column"}}>
                             <Typography 

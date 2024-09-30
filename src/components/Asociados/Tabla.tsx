@@ -102,7 +102,7 @@ const columns: readonly Column[] = [
 const TablaAsociados: React.FC = () => {
 
   // Variables para el responsive
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   // Para filtrar los registros
@@ -242,7 +242,7 @@ const TablaAsociados: React.FC = () => {
       sx={{
         flexGrow: 1,
         p: isSmallMobile ? 2 : 3,
-        pt: isSmallMobile ? 14 : isMobile ? 16 : 10,
+        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
         backgroundColor: "#f0f0f0",
         minHeight: "100vh",
         display: "flex",
@@ -273,7 +273,7 @@ const TablaAsociados: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
+            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
             justifyContent: "space-between",
             alignItems: "center",
             mb: isMobile ? 2 : 3,
@@ -289,8 +289,8 @@ const TablaAsociados: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: isMobile ? "100%" : "230px",
-              marginBottom: isMobile ? "1em" : "0",
+              width: isTablet || isMobile ? "100%" : "230px",
+              marginBottom: isTablet || isMobile ? "1em" : "0",
               borderRadius: "30px",
             }}
             onClick={() => handleOpen()}
@@ -307,7 +307,7 @@ const TablaAsociados: React.FC = () => {
 
           <Box
             sx={{
-              width: isMobile ? "100%" : "auto", // Ancho del contenedor
+              width: isTablet ? "100%" : isMobile ? "100%" : "auto", // Ancho del contenedor
               display: "flex",
               gap: 2,
               alignItems: "center",
@@ -317,7 +317,7 @@ const TablaAsociados: React.FC = () => {
             <FormControl
               variant="outlined"
               sx={{
-                width: isMobile ? "50%" : "150px",
+                width: isTablet || isMobile ? "50%" : "150px",
                 height: "50px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
@@ -369,7 +369,7 @@ const TablaAsociados: React.FC = () => {
                   backgroundColor: "#2c6d33",
                 },
                 height: "50px",
-                width: isMobile ? "50%" : "200px",
+                width: isTablet || isMobile ? "50%" : "200px",
                 borderRadius: "30px",
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
@@ -384,7 +384,7 @@ const TablaAsociados: React.FC = () => {
         {/* Buscar socio */}
         <Box
           sx={{
-            padding: isMobile ? "15px 0px" : "15px 35px",
+            padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
             borderTop: "1px solid rgba(0, 0, 0, 0.25)",
             borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
             display: "flex",
@@ -394,7 +394,7 @@ const TablaAsociados: React.FC = () => {
         >
           <Typography 
             sx={{ 
-              display: isMobile ? "none" : "inline-block",
+              display: isTablet || isMobile ? "none" : "inline-block",
               fontWeight: "bold", 
               mr: 2,
             }}>
@@ -404,7 +404,7 @@ const TablaAsociados: React.FC = () => {
           {/* Input Nombre Socio */}
           <TextField
             sx={{ 
-              width: isMobile ? "60%" : "30%",
+              width: isTablet || isMobile ? "60%" : "30%",
               "& .MuiInputLabel-root": {
               fontSize: isSmallMobile ? "0.9rem" : "auto",
               },
@@ -426,7 +426,7 @@ const TablaAsociados: React.FC = () => {
                 backgroundColor: "#2c6d33",
               },
               height: "50px",
-              width: isMobile ? "40%" : "170px",
+              width: isTablet || isMobile ? "40%" : "170px",
               marginLeft: isMobile ? "10px" : "1rem",
               fontSize: isSmallMobile ? "0.8rem" : "auto",
               borderRadius: "30px",
@@ -444,7 +444,7 @@ const TablaAsociados: React.FC = () => {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {isMobile 
+                  {isTablet || isMobile 
                     ? <Typography
                         sx={{
                           mt: 2,
@@ -478,7 +478,7 @@ const TablaAsociados: React.FC = () => {
               <TableBody>
                 {socios.map((socio) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isMobile 
+                      {isTablet || isMobile 
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
                           <Box sx={{ display: "flex", flexDirection: "column"}}>
                             <Typography 
@@ -560,13 +560,16 @@ const TablaAsociados: React.FC = () => {
                                             sx={{
                                               width: "100%",
                                               display: "flex", 
-                                              flexDirection: "column",
-                                              justifyContent: "center"
+                                              flexDirection: isTablet ? "row" : "column",
+                                              justifyContent: "center",
+                                              gap: isTablet ? 1 : 0
                                             }}
                                           >
                                             <Button
                                               variant="contained"
                                               sx={{
+                                                width: isTablet ? "33%" : "100%",
+                                                mb: isTablet ? 1 : 0,
                                                 padding: "0.5rem 1.5rem",
                                                 backgroundColor: "#0478E3", 
                                                 color: "white" 
@@ -579,7 +582,8 @@ const TablaAsociados: React.FC = () => {
                                             <Button
                                               variant="contained"
                                               sx={{
-                                                mt: 1,
+                                                width: isTablet ? "33%" : "100%",
+                                                mt: isTablet ? 0 : 1,
                                                 mb: 1,
                                                 padding: "0.5rem 1.5rem",
                                                 backgroundColor: "black", 
@@ -592,6 +596,8 @@ const TablaAsociados: React.FC = () => {
                                             <Button
                                               variant="contained"
                                               sx={{
+                                                width: isTablet ? "33%" : "100%",
+                                                mb: isTablet ? 1 : 0,
                                                 padding: "0.5rem 1.5rem",
                                                 backgroundColor: "green", 
                                                 color: "white"

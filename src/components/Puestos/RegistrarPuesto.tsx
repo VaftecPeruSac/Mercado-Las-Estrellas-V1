@@ -77,7 +77,7 @@ interface Socio {
 const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) => {
 
   // Variables para el diseño responsivo
-  const { isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -551,7 +551,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -779,7 +779,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
 
@@ -1230,7 +1230,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -1289,7 +1289,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               component="form"
               noValidate
               autoComplete="off"
-              sx={{ p: isMobile ? "0px" : "0px 58px" }}
+              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -1356,8 +1356,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     >
       <Card
         sx={{
-          width: isMobile ? "95%" : "740px",
-          height: isMobile ? "90%" : "670px",
+          width: isTablet ? "90%" : isMobile ? "95%" : "740px",
+          height: isTablet || isMobile ? "90%" : "670px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,
@@ -1427,9 +1427,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         <Box
           sx={{
             display: "flex",
-            justifyContent: isMobile ? "center" : "flex-end",
+            justifyContent: isTablet || isMobile ? "center" : "flex-end",
             mt: "auto",
-            p: isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
+            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
             borderTop: 1,
             borderColor: "divider",
           }}
