@@ -38,9 +38,12 @@
 
 .custom-confirm-button {
   background-color: #008001 !important;
-  /* Color de fondo del botón Aceptar */
   color: #fff !important;
-  /* Color del texto del botón Aceptar */
+}
+
+.custom-cancel-button {
+  background-color: #202123 !important;
+  color: #fff !important;
 }
 
 @keyframes App-logo-spin {

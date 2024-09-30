@@ -32,12 +32,12 @@ export const mostrarAlertaConfirmacion = (
         showCancelButton: true,
         confirmButtonText,
         cancelButtonText,
-        confirmButtonColor: "#008001",
-        cancelButtonColor: "#202123",
         iconColor: "#008001",
         allowOutsideClick: false,
         customClass: {
-            popup: 'custom-popup'
+            popup: 'custom-popup', // Clase para el popup
+            confirmButton: 'custom-confirm-button', // Clase para el botón de confirmar
+            cancelButton: 'custom-cancel-button' // Clase para el botón de cancelar
         }
     });
 };
