@@ -63,7 +63,7 @@ const columns: readonly Column[] = [
 const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Variables para el diseño responsivo
-  const { isTablet, isMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile } = useResponsive();
 
   // Para seleccionar servicios
   const [servicios, setServicios] = useState<Servicio[]>([]);
@@ -277,7 +277,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 <Grid item xs={12} sm={12}>
                   <Paper
                     sx={{
-                      width: isTablet || isMobile ? "100%" : "524px",
+                      width: isLaptop || isTablet || isMobile ? "100%" : "524px",
                       overflow: "hidden",
                       boxShadow: "none",
                     }}
@@ -376,7 +376,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       <Card
         sx={{
           width: isTablet ? "90%" : isMobile ? "95%" : "720px",
-          height: isTablet || isMobile ? "90%" : "800px",
+          height: isLaptop || isTablet || isMobile ? "90%" : "800px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,

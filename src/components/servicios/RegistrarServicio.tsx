@@ -21,7 +21,7 @@ interface Editarservicio {
 const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
   
   // Variables para el diseño responsivo
-  const { isTablet, isMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile } = useResponsive();
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -555,7 +555,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       <Card
         sx={{
           width: isTablet ? "90%" : isMobile ? "95%" : "720px",
-          height: isTablet || isMobile ? "90%" : "720px",
+          height: isLaptop || isTablet || isMobile ? "90%" : "720px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,

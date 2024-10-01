@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 import TemporizadorInactividad from "../context/TemporizadorInactividad";
@@ -8,7 +8,7 @@ import useResponsive from "../components/Responsive";
 const Principal = () => {
 
   // Variables para el responsive
-  const { isTablet, isMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile } = useResponsive();
 
   // Estado para abrir y cerrar el drawer
   const [open, setOpen] = useState(false);
@@ -24,7 +24,6 @@ const Principal = () => {
 
   return (
     <>
-
       <Box
         sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
       >
@@ -35,7 +34,7 @@ const Principal = () => {
         <Box
           sx={{
             flexGrow: 1,
-            p: isTablet || isMobile ? 0 : 3,
+            p: isLaptop || isTablet || isMobile ? 0 : 3,
             pt: isTablet || isMobile ? 2 : 3,
             pb: 0,
             transition: "margin-left 0.3s",
@@ -46,7 +45,6 @@ const Principal = () => {
           <Outlet />
         </Box>
       </Box>
-
     </>
   );
 };

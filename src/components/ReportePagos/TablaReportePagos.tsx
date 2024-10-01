@@ -3,6 +3,7 @@ import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Pap
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface Socio {
   id_socio: string;
@@ -54,6 +55,20 @@ const TablaReportePagos: React.FC = () => {
 
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
+
+  // Para obtener el parametro socio de la URL
+  const [searchParams] = useSearchParams();
+  const idSocio = searchParams.get("socio");
+
+  const navigate = useNavigate();
+
+  // Si el parametro puesto existe, obtener las deudas del puesto
+  useEffect(() => {
+    if (idSocio) {
+      setSocioSeleccionado(Number(idSocio));
+      fetchPagos(Number(idSocio));
+    }
+  }, [idSocio]);
 
   // Metodo para obtener los socios
   useEffect(() => {
@@ -211,7 +226,10 @@ const TablaReportePagos: React.FC = () => {
                 width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
-              onClick={(e) => fetchPagos(socioSeleccionado)}
+              onClick={(e) => {
+                fetchPagos(socioSeleccionado);
+                navigate("/home/reporte-pagos");
+              }}
             >
               Generar
             </Button>

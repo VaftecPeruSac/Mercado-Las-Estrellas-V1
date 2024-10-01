@@ -82,7 +82,7 @@ const columns: readonly Column[] = [
 const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Variables para el diseño responsivo
-  const { isTablet, isMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile } = useResponsive();
 
   // Para los select
   const [socios, setSocios] = useState<Socio[]>([]);
@@ -350,7 +350,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   {/* Seleccionar socio */}
                   <FormControl 
                     sx={{ 
-                      width: isTablet ? "48%" : isMobile ? "100%" : "390px",
+                      width: isMobile ? "100%" : "48%",
                       mb: isMobile ? "15px" : "0px"
                     }}
                   >
@@ -396,7 +396,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   <FormControl 
                     sx={{ 
                       ml: isTablet ? "1rem" : isMobile ? "0px" : "23px", 
-                      width: isTablet ? "48%" : isMobile ? "100%" : "390px" 
+                      width: isMobile ? "100%" : "48%" 
                     }}
                   >
                     <InputLabel id="seleccionar-puesto-label">
@@ -615,8 +615,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     >
       <Card
         sx={{
-          width: isTablet ? "90%" : isMobile ? "95%" : "1000px",
-          height: isTablet || isMobile ? "90%" : "720px",
+          width: isLaptop ? "60%" : isTablet ? "90%" : isMobile ? "95%" : "1000px",
+          height: isLaptop || isTablet || isMobile ? "90%" : "720px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,

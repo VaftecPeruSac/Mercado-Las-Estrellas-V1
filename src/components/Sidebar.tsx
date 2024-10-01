@@ -84,7 +84,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       display: "flex", 
       flexDirection: "column",
       bgcolor: "#1f2022", 
-      pl: 2, pr: 2
+      pl: 2, pr: 2,
+      overflowY: "auto", // Hace que el sidebar tenga scroll
+      "&::-webkit-scrollbar": {
+      display: "none", // Oculta el scrollbar en navegadores basados en WebKit
+      },
     }}>
 
     <Box sx={{ 

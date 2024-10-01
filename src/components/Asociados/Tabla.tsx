@@ -29,8 +29,8 @@ import {
 import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import Agregar from "./Agregar";
-import Pagar from "./Pagar";
 import useResponsive from "../Responsive";
+import { useNavigate } from "react-router-dom";
 
 interface Socio {
   id_socio: string;
@@ -111,7 +111,17 @@ const TablaAsociados: React.FC = () => {
 
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("");
-  const [openPagar, setOpenPagar] = useState<boolean>(false);
+
+  // Para ir a los reportes
+  const navigate = useNavigate();
+
+  const handleVerReportePagos = (id_socio: string) => {
+    navigate(`/home/reporte-pagos?socio=${id_socio}`);
+  };
+
+  const handleVerReporteDeudas = (id_puesto: string) => {
+    navigate(`/home/reporte-deudas?puesto=${id_puesto}`);
+  };
 
   const handleOpen = (socio?: Socio) => {
     setSocioSeleccionado(socio || null);
@@ -164,9 +174,6 @@ const TablaAsociados: React.FC = () => {
     }
 
   };
-
-  const handleOpenPagar = () => setOpenPagar(true);
-  const handleClosePagar = () => setOpenPagar(false);
 
   const [socios, setSocios] = useState<Data[]>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -536,7 +543,7 @@ const TablaAsociados: React.FC = () => {
                                                 backgroundColor: "crimson", 
                                                 color: "white" 
                                               }}
-                                              onClick={handleOpenPagar}
+                                              onClick={() => handleVerReporteDeudas(socio.id_puesto)}
                                             >
                                               <Payments sx={{ mr: 1 }} />
                                               Deudas
@@ -549,7 +556,7 @@ const TablaAsociados: React.FC = () => {
                                                 backgroundColor: "green", 
                                                 color: "white" 
                                               }}
-                                              onClick={handleOpenPagar}
+                                              onClick={() => handleVerReportePagos(socio.id_socio)}
                                             >
                                               <Payments sx={{ mr: 1 }} />
                                               Pagos
@@ -637,14 +644,14 @@ const TablaAsociados: React.FC = () => {
                                   <IconButton
                                     aria-label="payment"
                                     sx={{ color: "crimson" }}
-                                    onClick={handleOpenPagar}
+                                    onClick={() => handleVerReporteDeudas((socio as any).id_puesto)}
                                   >
                                     <Payments />
                                   </IconButton>
                                   <IconButton
                                     aria-label="payment"
                                     sx={{ color: "green" }}
-                                    onClick={handleOpenPagar}
+                                    onClick={() => handleVerReportePagos((socio as any).id_socio)}
                                   >
                                     <Payments />
                                   </IconButton>
@@ -697,7 +704,6 @@ const TablaAsociados: React.FC = () => {
           </Box>
 
         </Paper>
-        <Pagar open={openPagar} onClose={handleClosePagar} />
       </Card>
     </Box>
   );

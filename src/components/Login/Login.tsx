@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -16,7 +16,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   
   // Variables para el responsive
-  const { isMobile, isSmallMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
   // Iniciar sesion
   const IniciarSesion = (event: React.FormEvent) => {
@@ -48,21 +48,24 @@ const Login: React.FC = () => {
       >
 
         <Box sx={{
-          boxSizing: isSmallMobile ? "border-box" : "content-box",
-          width: isSmallMobile ? "100%" : isMobile ? "280px" : "440px",
-          height: isSmallMobile ? "620px" : "680px",
+          boxSizing: isSmallMobile || isLaptop ? "border-box" : "content-box",
+          width: isSmallMobile ? "100%" : isMobile ? "280px" : isTablet ? "50%" : isLaptop ? "35%" : "440px",
+          height: isSmallMobile ? "90%" : "80%",
+          maxHeight: "680px",
           border: "1px solid",
           borderRadius: "15px",
-          p: isSmallMobile ? "30px" : "50px 35px"
+          p: isSmallMobile ? "30px" : "50px 35px",
+          display: "flex",
+          flexDirection: "column",
         }}>
 
           <Typography
             component="h1"
             sx={{
               textAlign: "center",
-              fontSize: isSmallMobile ? "20px" : isMobile ? "24px" : "28px",
+              fontSize: isSmallMobile? "20px" : isLaptop ? "22px" : isMobile ? "24px" :  "28px",
               fontWeight: "bold",
-              mb: isSmallMobile ? 2 : 4
+              mb: isSmallMobile || isLaptop ? 2 : 4
             }}
           >
             Ingresar SYSTEM MERCADO
@@ -76,7 +79,7 @@ const Login: React.FC = () => {
                 sx={{ 
                   mb: "2px",
                   fontWeight: "bold",
-                  fontSize: isSmallMobile ? "14px" : "auto",
+                  fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
                   color: "#0AB544",
                 }}
               >
@@ -88,9 +91,8 @@ const Login: React.FC = () => {
                 id="usuario"
                 name="usuario"
                 placeholder="Ingrese su nombre completo"
-                InputLabelProps={{
-                  style: { color: "#0AB544" }
-                }}
+                InputProps={{ style: { height: "3rem" } }}
+                InputLabelProps={{ style: { color: "#0AB544" }}}
                 value={usuario}
                 onChange={(e) => setUsuario(e.target.value)}
               />
@@ -102,7 +104,7 @@ const Login: React.FC = () => {
                 sx={{ 
                   mb: "2px",
                   fontWeight: "bold",
-                  fontSize: isSmallMobile ? "14px" : "auto",
+                  fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
                   color: "#0AB544",
                 }}
               >
@@ -115,9 +117,8 @@ const Login: React.FC = () => {
                 id="password"
                 name="password"
                 placeholder="Ingrese su contraseña"
-                InputLabelProps={{
-                  style: { color: "#0AB544" }
-                }}
+                InputProps={{ style: { height: "3rem" } }}
+                InputLabelProps={{ style: { color: "#0AB544" }}}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -129,7 +130,7 @@ const Login: React.FC = () => {
                 sx={{ 
                   mb: "2px",
                   fontWeight: "bold",
-                  fontSize: isSmallMobile ? "14px" : "auto",
+                  fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
                   color: "#0AB544",
                 }}
               >
@@ -139,6 +140,7 @@ const Login: React.FC = () => {
                 <Select
                   labelId="rol-label"
                   value={rol}
+                  inputProps={{ style: { height: "3rem" } }}
                   onChange={(e) => setRol(e.target.value)}
                   >
                   <MenuItem value="1">Socio</MenuItem>
@@ -155,7 +157,6 @@ const Login: React.FC = () => {
               sx={{
                 width: isSmallMobile ? "100%" : "215px",
                 mt: isSmallMobile ? 3 : 4,
-                mb: isSmallMobile ? 4 : 8,
                 p: "10px 50px",
                 textTransform: "inherit",
                 fontSize: "16px",
@@ -171,40 +172,44 @@ const Login: React.FC = () => {
 
           </Box>
 
-          <Typography
-            sx={{ 
-              mb: "2px",
-              fontSize: isSmallMobile ? "16px" : "18px",
-              fontWeight: "bold",
-              color: "#0AB544",
-            }}
-          >
-            Busqueda rápida de puesto
-          </Typography>
+          <Box sx={{ mt: "auto"}}>
 
-          <Typography sx={{ color: "#9C9C9C", fontSize: isSmallMobile ? "12px" : "auto" }}>
-            Realiza una busqeda de reporte global de cada puesto
-          </Typography>
+            <Typography
+              sx={{ 
+                mb: "2px",
+                fontSize: isSmallMobile ? "16px" : "18px",
+                fontWeight: "bold",
+                color: "#0AB544",
+              }}
+            >
+              Busqueda rápida de puesto
+            </Typography>
 
-          <Button
-            variant="contained"
-            type="submit"
-            sx={{
-              width: isSmallMobile ? "100%" : "215px",
-              mt: isSmallMobile ? 2 : 4,
-              p: "10px 50px",
-              textTransform: "inherit",
-              fontSize: "16px",
-              fontWeight: "500",
-              color: "#0AB544",
-              bgcolor: "#FFF",
-              border: "1px solid #0AB544",
-              "&:hover": { bgcolor: "#0AB544", color: "#FFF" }
-            }}
-            // onClick={}
-          >
-            Buscar puesto
-          </Button>
+            <Typography sx={{ color: "#9C9C9C", fontSize: isSmallMobile ? "12px" : "auto" }}>
+              Realiza una busqueda de reporte global de cada puesto
+            </Typography>
+
+            <Button
+              variant="contained"
+              type="submit"
+              sx={{
+                width: isSmallMobile ? "100%" : "215px",
+                mt: isSmallMobile ? 2 : 4,
+                p: "10px 50px",
+                textTransform: "inherit",
+                fontSize: "16px",
+                fontWeight: "500",
+                color: "#0AB544",
+                bgcolor: "#FFF",
+                border: "1px solid #0AB544",
+                "&:hover": { bgcolor: "#0AB544", color: "#FFF" }
+              }}
+              // onClick={}
+            >
+              Buscar puesto
+            </Button>
+
+          </Box>
 
         </Box>
 

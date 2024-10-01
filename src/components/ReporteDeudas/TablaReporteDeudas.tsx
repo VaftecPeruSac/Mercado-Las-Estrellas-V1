@@ -3,6 +3,7 @@ import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Pap
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface Puesto {
   id_puesto: string;
@@ -50,6 +51,20 @@ const TablaReporteDeudas: React.FC = () => {
   const [deudas, setDeudas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
+
+  // Para obtener el parametro puesto de la URL
+  const [searchParams] = useSearchParams();
+  const idPuesto = searchParams.get("puesto");
+
+  const navigate = useNavigate();
+
+  // Si el parametro puesto existe, obtener las deudas del puesto
+  useEffect(() => {
+    if (idPuesto) {
+      setPuestoSeleccionado(Number(idPuesto));
+      fetchDeudas(Number(idPuesto));
+    }
+  }, [idPuesto]);
 
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
@@ -213,7 +228,10 @@ const TablaReporteDeudas: React.FC = () => {
                 width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
-              onClick={(e) => fetchDeudas(puestoSeleccionado)}
+              onClick={(e) => {
+                fetchDeudas(puestoSeleccionado);
+                navigate(`/home/reporte-deudas`);
+              }}
             >
               Generar
             </Button>
