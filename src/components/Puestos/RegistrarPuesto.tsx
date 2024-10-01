@@ -16,6 +16,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Modal,
   Select,
@@ -28,6 +29,7 @@ import {
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
+import { mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
 
 interface AgregarProps {
   open: boolean;
@@ -88,6 +90,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
   const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
   const [socios, setSocios] = useState<Socio[]>([]);
+  const [loading, setLoading] = useState(false);
+
 
   // Datos para registrar el puesto
   const [formDataPuesto, setFormDataPuesto] = useState({
@@ -304,6 +308,18 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     });
   };
 
+  const limpiarAsignarInquilino =() =>{
+    setformDataInquilino({
+      nombre: "",
+      apellido_paterno: "",
+      apellido_materno: "",
+      dni: "",
+      telefono: "",
+      bloque: "",
+      id_puesto: "",
+  });
+  }
+
   const limpiarNuevoBloque = () => {
     setFormDataBloque({
       nombre: ""
@@ -326,36 +342,42 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Registrar Puesto
   const registrarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
     e.preventDefault();
-
-    // Data a enviar
+    setLoading(true); 
     const { id_puesto, ...dataToSend } = formDataPuesto;
 
     try {
-
-      // Conexión al servicio
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
-
-      // Manejar la respuesta del servidor
-      if (response.status === 200) {
-        alert("Puesto registrado con exito");
-        // Limpiar los campos del formulario
-        limpiarRegistrarPuesto();
-        // Cerrar el formulario
-        handleClose();
-      } else {
-        alert("No se pudo registrar el puesto. Intentelo nuevamente.")
-      }
-
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
+        if (response.status === 200) {
+            const mensaje = response.data.message || "Puesto registrado con éxito";
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            limpiarRegistrarPuesto();
+            handleClose();
+        } else {
+            mostrarAlerta(
+                "Error",
+                "No se pudo registrar el puesto. Inténtalo nuevamente.",
+                "error"
+            );
+        }
     } catch (error) {
-      console.error("Error al registrar el puesto:", error);
-      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
-    }
+        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
 
-  }
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data?.message) {
+                mensajeError = error.response.data.message;
+            } else if (error.response?.data) {
+                mensajeError = error.response.data;
+            }
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+            mensajeError = "Por favor, completa todos los campos obligatorios.";
+        }
+        mostrarAlerta("Error", mensajeError, "error");
+    } finally {
+        setLoading(false); 
+    }
+};
 
   // Editar Puesto
   const editarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -393,36 +415,33 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
     e.preventDefault();
-
-    // Data a enviar
-    const { ...dataToSend } = formDataAsginarPuesto;
+    setLoading(true); 
+    const dataToSend = formDataAsginarPuesto;
 
     try {
-
-      // Conexión al servicio
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/puestos", dataToSend);
-
-      // Manejar la respuesta del servidor
-      if (response.status === 200) {
-        alert("Puesto asignado con exito");
-        // Limpiar los campos del formulario
-        limpiarAsignarPuesto();
-        // Cerrar el formulario
-        handleClose();
-      } else {
-        alert("No se pudo asignar el puesto. Intentelo nuevamente.")
-      }
-
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
+        if (response.status === 200) {
+            const mensaje = response.data;
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            limpiarAsignarPuesto();
+            handleClose();
+        } else {
+            mostrarAlerta("Error", "No se pudo asignar el puesto. Inténtalo nuevamente.", "error");
+        }
     } catch (error) {
-      console.error("Error al registrar el puesto:", error);
-      alert("Error durante la asignación del puesto. Intentelo nuevamente.");
+        let mensajeError = "Error durante la asignación del puesto. Inténtalo nuevamente.";
+        if (axios.isAxiosError(error) && error.response?.data?.message) {
+            mensajeError = error.response.data.message;
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+          mensajeError = "Por favor, completa todos los campos obligatorios.";
+      }
+        mostrarAlerta("Error", mensajeError, "error");
+    } finally {
+        setLoading(false); 
     }
-
-  }
+};
 
   // Registar inquilino
   const asignarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -465,68 +484,74 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Registrar Bloque
   const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
     e.preventDefault();
-
-    // Data a enviar
-    const { ...dataToSend } = formDataBloque;
+    setLoading(true); // Indicar que la carga está en progreso
+    const dataToSend = { ...formDataBloque }; // Extraer datos aquí
 
     try {
+        // Conexión al servicio
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
 
-      // Conexión al servicio
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/blocks", dataToSend);
-
-      // Manejar la respuesta del servidor
-      if (response.status === 200) {
-        alert("Bloque registrado con exito");
-        // Limpiar los datos del formulario
-        limpiarNuevoBloque();
-        handleClose();
-      } else {
-        alert("No se pudo registrar el bloque. Intentelo nuevamente.")
-      }
-
+        // Manejar la respuesta del servidor
+        if (response.status === 200) {
+            const mensaje = response.data || "El bloque se registró correctamente";
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            // Limpiar los datos del formulario
+            limpiarNuevoBloque();
+            handleClose();
+        } else {
+            mostrarAlerta("Error", "No se pudo registrar el bloque. Inténtalo nuevamente.", "error");
+        }
     } catch (error) {
-      console.error("Error al registrar el bloque:", error);
-      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data?.message) {
+                mensajeError = error.response.data.message;
+            } else if (error.response?.data) {
+                mensajeError = error.response.data;
+            }
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+            mensajeError = "Por favor, completa todos los campos obligatorios.";
+        }
+        mostrarAlerta("Error", mensajeError, "error");
+    } finally {
+        setLoading(false); // Finaliza el estado de carga
     }
-
-  }
+};
 
   // Registrar Giro de negocio
   const registrarGiroNegocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
     e.preventDefault();
-
-    // Data a enviar
-    const { ...dataToSend } = formDataGiroNegocio;
-
+    setLoading(true);
+    const dataToSend = { ...formDataGiroNegocio };
     try {
-
-      // Conexión al servicio
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/giro-negocios", dataToSend);
-
-      // Manejar la respuesta del servidor
-      if (response.status === 200) {
-        alert("Giro de negocio registrado con exito");
-        // Limpiar los datos del formulario
-        limpiarGiroNegocio();
-        handleClose();
-      } else {
-        alert("No se pudo registrar el giro de negocio. Intentelo nuevamente.")
-      }
-
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
+        if (response.status === 200) {
+            const mensaje = response.data || "El giro de negocio se registró correctamente";
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            limpiarGiroNegocio();
+            handleClose();
+        } else {
+            mostrarAlerta("Error", "No se pudo registrar el giro de negocio. Inténtalo nuevamente.", "error");
+        }
     } catch (error) {
-      console.error("Error al registrar el giro de negocio:", error);
-      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data) {
+                mensajeError = error.response.data;
+            } else if (error.response?.data) {
+                mensajeError = error.response.data;
+            }
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+            mensajeError = "Por favor, completa todos los campos obligatorios.";
+        }
+        mostrarAlerta("Error", mensajeError, "error");
+    } finally {
+        setLoading(false);
     }
-
-  }
-
+};
   // Contenido del modal
   const renderTabContent = () => {
     switch (activeTab) {
@@ -1385,6 +1410,12 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             {obtenerTituloModal()}
           </Typography>
         </Box>
+        {loading && (
+          <div style={{ textAlign: "center", marginBottom: "5px" }}>
+            <LinearProgress aria-description="dd" color="primary" />
+            {/* <p>Cargando...</p> */}
+          </div>
+        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={activeTab}
@@ -1461,27 +1492,60 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 backgroundColor: "#388E3C",
               },
             }}
-            onClick={(e) => {
+            onClick={async (e) => {
+              let result; // Variable para almacenar el resultado de la alerta de confirmación
+              // Cambiar a función asíncrona
               if (activeTab === 0) {
-                if (puesto) {
-                  // Si el puesto existe, editar puesto
-                  editarPuesto(e);
-                } else {
-                  // Si puesto es nulo, registrar puesto
-                  registrarPuesto(e);
+                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
+                  "¿Está seguro de registrar un nuevo Puesto?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  if (puesto) {
+                    editarPuesto(e);
+                  } else {
+                    registrarPuesto(e);
+                  }
                 }
+
               }
               if (activeTab === 1) {
-                asignarPuestoSocio(e);
+                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
+                  "¿Está seguro de asignar un puesto a un socio?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  asignarPuestoSocio(e); // Asignar puesto
+                }
               }
               if (activeTab === 2) {
-                asignarInquilino(e);
+                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar inquilino
+                  "¿Está seguro de asignar un inquilino?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  asignarInquilino(e); // Asignar inquilino
+                }
               }
+            
               if (activeTab === 3) {
-                registrarBloque(e);
+                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar bloque
+                  "¿Está seguro de registrar un bloque?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  registrarBloque(e); // Registrar bloque
+                }
               }
+            
               if (activeTab === 4) {
-                registrarGiroNegocio(e);
+                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
+                  "¿Está seguro de registrar un giro de negocio?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  registrarGiroNegocio(e); // Registrar giro de negocio
+                }
               }
             }}
           >

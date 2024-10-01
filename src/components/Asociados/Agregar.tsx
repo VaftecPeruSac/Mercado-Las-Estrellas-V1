@@ -78,7 +78,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   // Variables para el diseño responsivo
   const { isMobile, isTablet } = useResponsive();
-
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
@@ -89,30 +88,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const [mes, setMes] = useState<string>("");
   const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
 
-  const [activeTab, setActiveTab] = useState(0);
-
-  const [tipoPersona, setTipoPersona] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [apellidoPaterno, setApellidoPaterno] = useState("");
-  const [apellidoMaterno, setApellidoMaterno] = useState("");
-  const [dni, setDni] = useState("");
-  const [direccion, setDireccion] = useState("");
-  const [sexo, setSexo] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [estado, setEstado] = useState("Activo");
+  const [activeTab, setActiveTab] = useState(0)
   const [fecha, setFecha] = useState("");
-
-  const [cuota, setCuota] = useState("");
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const [openPagar, setOpenPagar] = useState<boolean>(false);
-
   const [loading, setLoading] = useState(false); // Estado de loading
-  const [modalVisible, setModalVisible] = useState(false); // Controla la visibilidad del modal
-
-
   const [formData, setFormData] = useState({
     id_socio: "",
     nombre: "",
@@ -224,8 +204,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const handleCloseModal = () => {
     limpiarCamposSocio();
     handleClose();
-    setModalVisible(false); // Cierra el modal
-
   };
 
   const limpiarCamposSocio = () => {
@@ -322,40 +300,42 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); // Activa el loading
+    setLoading(true); 
     const { id_socio, id_block, ...dataToSend } = formData; // Extraer datos aquí
 
     try {
-      // Intenta registrar el socio
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
 
-      if (response.status === 200) {
-        mostrarAlerta(
-          "Registro exitoso",
-          "El socio se registró correctamente",
-          "success"
-        );
-        limpiarCamposSocio();
-        onSocioRegistrado();
-        handleClose(); // Cierra el modal
-      } else {
-        mostrarAlerta(
-          "Error",
-          "No se pudo registrar el socio. Inténtalo nuevamente.",
-          "error"
-        );
-      }
+        if (response.status === 200) {
+            const mensaje = response.data.message || "El socio se registró correctamente";
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            limpiarCamposSocio();
+            onSocioRegistrado();
+            handleClose();
+        } else {
+            mostrarAlerta(
+                "Error",
+                "No se pudo registrar el socio. Inténtalo nuevamente.",
+                "error"
+            );
+        }
     } catch (error) {
-      console.error("Error al registrar el socio:", error);
-      mostrarAlerta(
-        "Error",
-        "Ocurrió un error al registrar. Inténtalo nuevamente.",
-        "error"
-      );
+        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data?.message) {
+                mensajeError = error.response.data.message;
+            } else if (error.response?.data) {
+                mensajeError = error.response.data;
+            }
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+            mensajeError = "Por favor, completa todos los campos obligatorios.";
+        }
+        mostrarAlerta("Error", mensajeError, "error");
     } finally {
-      setLoading(false);
+        setLoading(false); 
     }
-  };
+};
 
 
   // Editar socio
