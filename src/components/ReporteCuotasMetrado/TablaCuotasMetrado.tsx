@@ -1,13 +1,20 @@
-import { Download } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Download } from '@mui/icons-material';
+import axios from 'axios';
 
-interface Socio {
-  id_socio: string;
+interface Cuota {
+  id_cuota: string;
+  fecha_registro: string;
+}
+
+interface Data {
   nombre_completo: string;
+  numero_puesto: string;
+  area: string;
+  total: string;
+  importe_pagado: string;
 }
 
 interface Column {
@@ -17,118 +24,52 @@ interface Column {
   align?: "center";
 }
 
-interface Data {
-  numero: string;
-  serie: string;
-  aporte: string;
-  total: string;
-  fecha: string;
-  detalle_pagos: {
-    descripcion: string; 
-    importe: string;
-  }
-}
-
 const columns: readonly Column[] = [
-  { id: "numero", label: "N° Pago", minWidth: 50, align: "center" },
-  { id: "serie", label: "N° Serie", minWidth: 50, align: "center" },
-  { id: "fecha", label: "Fec. Pago", minWidth: 50, align: "center" },
-  { id: "aporte", label: "Aporte (S/)", minWidth: 50, align: "center" },
-  { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
-  { id: "detalle_pagos", label: "Detalle Pago", minWidth: 50, align: "center" },
+  { id: "nombre_completo", label: "Nombre completo", minWidth: 50, align: "center" },
+  { id: "numero_puesto", label: "N° Puesto", minWidth: 50, align: "center" },
+  { id: "area", label: "Área", minWidth: 50, align: "center" },
+  { id: "total", label: "Total", minWidth: 50, align: "center" },
+  { id: "importe_pagado", label: "Importe pagado (S/)", minWidth: 50, align: "center" },
 ]
 
-const TablaReportePagos: React.FC = () => {
+const TablaReporteCuotasMetrado: React.FC = () => {
 
   // Variables para el responsive
   const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
-  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null); 
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
-  // Para seleccionar el socio
-  const [socios, setSocios] = useState<Socio[]>([]);
-  const [socioSeleccionado, setSocioSeleccionado] = useState<number>(0);
+  // Para el select
+  const [cuotasSelect, setCuotasSelect] = useState<Cuota[]>([]);
+  const [cuotaSeleccionada, setCuotaSeleccionada] = useState<number>(0);
 
   // Para la tabla
-  const [pagos, setPagos] = useState<Data[]>([]);
+  const [cuotas, setCuotas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
 
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
 
-  // Para obtener el parametro socio de la URL
-  const [searchParams] = useSearchParams();
-  const idSocio = searchParams.get("socio");
-
-  const navigate = useNavigate();
-
-  // Si el parametro puesto existe, obtener las deudas del puesto
   useEffect(() => {
-    if (idSocio) {
-      setSocioSeleccionado(Number(idSocio));
-      fetchPagos(Number(idSocio));
-    }
-  }, [idSocio]);
-
-  // Metodo para obtener los socios
-  useEffect(() => {
-    const fetchSocios = async () => {
+    const fetchCuotas = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=100");
-        setSocios(response.data.data);
+        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas?per_page=50");
+        setCuotasSelect(response.data.data);
       } catch (error) {
         console.log("Error:", error);
       }
     }
-    fetchSocios();
+    fetchCuotas();
   }, []);
 
-  // Metodo para obtener los pagos realizados por un socio
-  const fetchPagos = async (idSocio: number) => {
+  const listarCuotas = async (idCuota: number) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/pagos?id_socio=${idSocio}`);
-      setPagos(response.data.data);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-metros?id_cuota=${idCuota}`);
+      setCuotasSelect(response.data.data);
     } catch (error) {
       console.log("Error:", error);
     }
   }
-
-  // Metodo para exportar el reporte de pagos
-  const handleExportReporteDeudas = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    e.preventDefault();
-
-    try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-pagos/exportar");
-      // Si no hay problemas
-      if (response.status === 200) {
-        if (exportFormat === "1") { // PDF
-          alert("En proceso de actualizacion. Intentelo más tarde.");
-        } else if (exportFormat === "2") { // Excel
-          alert("El reporte de pagos se descargará en breve.");
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          const hoy = new Date();
-          const formatDate = hoy.toISOString().split('T')[0];
-          link.setAttribute('download', `reporte-pagos-${formatDate}.xlsx`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode?.removeChild(link);
-          setExportFormat("");
-        } else {
-          alert("Formato de exportación no válido.");
-        }
-      } else {
-        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-      }
-      
-    } catch (error) {
-      console.log("Error:", error);
-      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-    }
-
-  };
 
   return (
     <Box
@@ -170,7 +111,7 @@ const TablaReportePagos: React.FC = () => {
             borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
             mb: isMobile ? 2 : 3,
             p: 0,
-            pb: 1
+            pb: 1,
           }}
         >
           <Box
@@ -184,34 +125,34 @@ const TablaReportePagos: React.FC = () => {
               mr: isMobile ? "0px" : "auto",
             }}
           >
-            {/* Seleccionar socio */}
+            {/* Seleccionar puesto */}
             <FormControl fullWidth required 
               sx={{ 
-                width: isTablet ? "70%" : isMobile ? "100%" : "300px"
+                width: isTablet ? "70%" : isMobile ? "100%" : "300px" 
               }}
             >
               <Autocomplete
-                options={socios}
-                getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
-                onChange={(event, value) => { // Obtener el id del socio seleccionado
-                  if (value) { // Si se selecciona un socio
-                    setSocioSeleccionado(Number(value.id_socio)); // Guardar el id del socio
+                options={cuotasSelect}
+                getOptionLabel={(cuota) => cuota.fecha_registro} 
+                onChange={(event, value) => {
+                  if (value) { 
+                    setCuotaSeleccionada(Number(value.id_cuota));
                   }
                 }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Seleccionar socio" // Etiqueta del input
-                    InputProps={{...params.InputProps }} // Propiedades del input
+                    label="Seleccionar cuota"
+                    InputProps={{...params.InputProps }}
                   />
                 )}
                 ListboxProps={{
                   style: {
-                    maxHeight: 270, // Altura máxima de la lista de opciones
-                    overflow: 'auto', // Hacer scroll si hay muchos elementos
+                    maxHeight: 270,
+                    overflow: 'auto',
                   },
                 }}
-                isOptionEqualToValue={(option, value) => option.id_socio === value.id_socio}
+                isOptionEqualToValue={(option, value) => option.id_cuota === value.id_cuota}
               />
             </FormControl>
             {/* Botón "Generar Reporte" */}
@@ -227,8 +168,7 @@ const TablaReportePagos: React.FC = () => {
                 borderRadius: "30px",
               }}
               onClick={(e) => {
-                fetchPagos(socioSeleccionado);
-                navigate("/home/reporte-pagos");
+                listarCuotas(cuotaSeleccionada);
               }}
             >
               Generar
@@ -307,14 +247,14 @@ const TablaReportePagos: React.FC = () => {
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
               disabled={ exportFormat === "" }
-              onClick={handleExportReporteDeudas}
+              // onClick={handleExportReporteDeudas}
             >
               Descargar
             </Button>
           </Box>
         </Box>
 
-        {/* Tabla reporte pagos */}
+        {/* Tabla reporte cuotas por metrado */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
@@ -323,36 +263,36 @@ const TablaReportePagos: React.FC = () => {
               <TableHead>
                 <TableRow>
                   {isTablet || isMobile
-                  ? <Typography
-                      sx={{
-                        mt: 2,
-                        mb: 1,
-                        fontSize: "1.5rem",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                        textAlign: "center",
-                      }}
-                    >
-                      Lista de Pagos
-                    </Typography>
-                  : columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                      sx={{
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
+                    ? <Typography
+                        sx={{
+                          mt: 2,
+                          mb: 1,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          textAlign: "center",
+                        }}
+                      >
+                        Lista de Deudas
+                      </Typography>
+                    : columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth }}
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {pagos
+                {cuotas
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
-                  .map((pago) => (
+                  .map((cuota) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isTablet || isMobile
                       ? <TableCell padding="checkbox" colSpan={columns.length}>
@@ -360,20 +300,20 @@ const TablaReportePagos: React.FC = () => {
                             <Typography 
                               sx={{ 
                                 p: 2,
-                                // Seleccionar el pago y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === pago.numero ? "#f0f0f0" : "inherit",
+                                // Seleccionar la deuda y cambiar el color de fondo
+                                bgcolor: mostrarDetalles === cuota.numero_puesto ? "#f0f0f0" : "inherit",
                                 "&:hover": {
                                   cursor: "pointer",
                                   bgcolor: "#f0f0f0",
                                 }
                               }}
                               onClick={() => setMostrarDetalles(
-                                mostrarDetalles === pago.numero ? null : pago.numero
+                                mostrarDetalles === cuota.numero_puesto ? null : cuota.numero_puesto
                               )}
                             >
-                              N°{pago.numero} - {pago.fecha} - S/{pago.total}
+                              {cuota.nombre_completo} - {cuota.numero_puesto}
                             </Typography>
-                            {mostrarDetalles === pago.numero && (
+                            {mostrarDetalles === cuota.numero_puesto && (
                               <Box 
                                 sx={{
                                   p: 2,
@@ -383,24 +323,17 @@ const TablaReportePagos: React.FC = () => {
                                 }}
                               >
                                 {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (pago as any)[column.id];
+                                  const value = column.id === "accion" ? "" : (cuota as any)[column.id];
                                   return (
                                     <Box>
                                       {/* Mostrar titulo del campo */}
                                       <Typography sx={{ fontWeight: "bold", mb: 1 }}>
                                         {column.label}
                                       </Typography>
-                                      {/* Mostrar los detalles del pago */}
-                                      {Array.isArray(value) // Si es un array de servicios
-                                      ? (value.map((detalle, index) => ( // Mostrar los servicios
-                                          <Typography key={index}>
-                                            {detalle.descripcion}: S/ {detalle.importe}
-                                          </Typography>
-                                        ))
-                                      ) : <Typography>
+                                      {/* Mostrar los detalles de la deuda */}
+                                      <Typography>
                                         {value}
                                       </Typography>
-                                    }
                                     </Box>
                                   )
                                 })}
@@ -409,35 +342,28 @@ const TablaReportePagos: React.FC = () => {
                           </Box>
                         </TableCell>
                       : columns.map((column) => {
-                        const value = column.id === "accion" ? "" : (pago as any)[column.id];
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                          >
-                            {Array.isArray(value) ? (value.map((detalle, index) => ( // Mostrar los servicios
-                                          <Typography textAlign="left" key={index}>
-                                            {detalle.descripcion}: S/ {detalle.importe}
-                                          </Typography>
-                                        ))
-                                      )  : (value)
-                            }
-                          </TableCell>
-                        );
-                      })}
+                          const value = column.id === "accion" ? "" : (cuota as any)[column.id];
+                          return (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                            >
+                              {value}
+                            </TableCell>
+                          );
+                        })}
                     </TableRow>
                   ))}
               </TableBody>
             </Table>
           </TableContainer>
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={3} color="primary"/>
+            <Pagination count={3} color="primary" />
           </Box>
         </Paper>
       </Card>
     </Box>
-  );
-
+  )
 }
 
-export default TablaReportePagos;
+export default TablaReporteCuotasMetrado;

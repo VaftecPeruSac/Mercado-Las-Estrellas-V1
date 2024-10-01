@@ -79,7 +79,7 @@ interface Socio {
 const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) => {
 
   // Variables para el diseño responsivo
-  const { isTablet, isMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile } = useResponsive();
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -1382,7 +1382,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       <Card
         sx={{
           width: isTablet ? "90%" : isMobile ? "95%" : "740px",
-          height: isTablet || isMobile ? "90%" : "670px",
+          height: isLaptop || isTablet || isMobile ? "90%" : "670px",
           p: isMobile ? 3 : "40px",
           bgcolor: "#f0f0f0",
           boxShadow: 24,

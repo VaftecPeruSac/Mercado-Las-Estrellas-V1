@@ -29,7 +29,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
 
   // Variables para el responsive
-  const { isTablet, isMobile, isSmallMobile } = useResponsive();
+  const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { logout } = useAuth();
@@ -84,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     color: 'black', 
                     fontWeight: "bold", 
                     text: "center", 
-                    fontSize: isSmallMobile ? 12 : isMobile || isTablet ? 14 : 18,
+                    fontSize: isSmallMobile ? 12 : isMobile || isTablet ? 14 : isLaptop ? 16 : 18,
                     ml: isMobile ? 2 : open ? 30 : 3, 
                     mb: isMobile ? -4 : -5 
                   }}
@@ -202,7 +202,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
           sx={{
             display: isTablet || isMobile || isSmallMobile ? "none" : "flex",
             position: "absolute",
-            top: "80vh",
+            top: "83vh",
             left: open ? "240px" : "0px",
             borderRadius: "16px",
             transition: "left 0.3s, opacity 0.5s",

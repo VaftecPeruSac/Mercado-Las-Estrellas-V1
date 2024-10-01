@@ -11,6 +11,8 @@ import TablaReporteDeudas from "../components/ReporteDeudas/TablaReporteDeudas";
 import Login from "../components/Login/Login";
 import { AuthProvider } from "../context/AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
+import TablaReporteCuotasMetrado from "../components/ReporteCuotasMetrado/TablaCuotasMetrado";
+import TablaCuotasPuesto from "../components/ReporteCuotasPuesto/TablaCuotasPuesto";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +60,14 @@ export const router = createBrowserRouter([
         path: "reporte-deudas",
         element: <TablaReporteDeudas />,
       },
+      {
+        path: "reporte-cuotas-metrado",
+        element: <TablaReporteCuotasMetrado />,
+      },
+      {
+        path: "reporte-cuotas-puesto",
+        element: <TablaCuotasPuesto />,
+      }
     ],
   },
 ]);

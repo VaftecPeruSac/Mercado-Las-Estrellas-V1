@@ -10,6 +10,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+
 import useResponsive from "./Responsive";
 
 const data = [
@@ -41,7 +42,7 @@ interface PieData {
 const Dashboard: React.FC = () => {
   
   // Variables para el responsive
-  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
+  const { isSmallLaptop, isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
 
   const [itemData, setItemData] = React.useState<PieData | null>(null);
   const formatTooltipValue = (value: number) => `${value}%`;
@@ -62,7 +63,7 @@ const Dashboard: React.FC = () => {
       <Box
         sx={{
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",
+          flexDirection: isMobile || isSmallLaptop ? "column" : "row",
           flexWrap: isMobile ? "none" : "wrap",
           justifyContent: "space-between",
           mb: 3,
@@ -79,7 +80,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: isTablet || isMobile ? "100%" : "32%", // Ancho del card
+            width: isSmallLaptop || isTablet || isMobile ? "100%" : "32%", // Ancho del card
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease", // Suaviza la transición de colores
@@ -150,7 +151,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: isTablet || isMobile ? "100%" : "32%", // Ancho del card
+            width: isSmallLaptop || isTablet || isMobile ? "100%" : "32%", // Ancho del card
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -219,7 +220,7 @@ const Dashboard: React.FC = () => {
             },
             padding: "1rem",
             borderRadius: "30px",
-            width: isTablet || isMobile ? "100%" : "32%", // Ancho del card
+            width: isSmallLaptop || isTablet || isMobile ? "100%" : "32%", // Ancho del card
             textAlign: "left",
             position: "relative",
             transition: "all 0.3s ease",
@@ -288,7 +289,7 @@ const Dashboard: React.FC = () => {
         }}
       >
         <Card sx={{
-          width: isTablet || isMobile ? "100%" : "70%",
+          width: isSmallLaptop || isTablet || isMobile ? "100%" : "70%",
           padding: isMobile ? "0" : "20px",
           borderRadius: '30px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -325,7 +326,7 @@ const Dashboard: React.FC = () => {
 
         <Card 
           sx={{ 
-            width: isTablet || isMobile ? "100%" : "28%", 
+            width: isSmallLaptop || isTablet || isMobile ? "100%" : "28%", 
             borderRadius: '30px', 
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
             display: "-ms-inline-flexbox" 

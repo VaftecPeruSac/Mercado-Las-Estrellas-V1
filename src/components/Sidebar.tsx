@@ -40,13 +40,19 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   // Variables para el responsive
   const { isMobile, isTablet } = useResponsive();
 
-  const [openPanel, setOpenPanel] = useState(isMobile ? true : false);
+  const [collapseDashboard, setCollapseDashboard] = useState(isMobile ? true : false);
+  const [collapseReportes, setCollapseReportes] = useState(isMobile ? true : false);
+
   const location = useLocation();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleOpenPanel = () => {
-    setOpenPanel(!openPanel);
+    setCollapseDashboard(!collapseDashboard);
+  };
+
+  const handleOpenReportes = () => {
+    setCollapseReportes(!collapseReportes);
   };
 
   // Estilos de los items de la lista
@@ -84,7 +90,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       display: "flex", 
       flexDirection: "column",
       bgcolor: "#1f2022", 
-      pl: 2, pr: 2
+      pl: 2, pr: 2,
+      overflowY: "auto", // Hace que el sidebar tenga scroll
+      "&::-webkit-scrollbar": {
+      display: "none", // Oculta el scrollbar en navegadores basados en WebKit
+      },
     }}>
 
     <Box sx={{ 
@@ -139,10 +149,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 sx={{ ml: -3, }}
               />
             )}
-            {openPanel ? <ExpandLess /> : <ExpandMore />}
+            {collapseDashboard ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
 
-          <Collapse in={openPanel} timeout="auto" unmountOnExit>
+          <Collapse in={collapseDashboard} timeout="auto" unmountOnExit>
 
             <List component="div" disablePadding>
 
@@ -248,41 +258,97 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
         <Divider sx={{ bgcolor: "#505155", m: 3 }} />
 
-        {/* Reporte de pagos */}
         <ListItemButton
-          component={Link}
-          to="reporte-pagos"
-          sx={getEstilos("/home/reporte-pagos", {})}
-          onClick={isTablet || isMobile ? onClose : undefined}
+          sx={getEstilos("/home", { mt: 3 })}
+          onClick={() => handleOpenReportes()}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
-            <Description />
+            <DashboardIcon />
           </ListItemIcon>
           {open && (
             <ListItemText
-              primary="Reporte Pagos"
-              sx={{ ml: -3 }}
+              primary="Reportes"
+              sx={{ ml: -3, }}
             />
           )}
+          {collapseReportes ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
 
-        {/* Reporte de deudas */}
-        <ListItemButton
-          component={Link}
-          to="reporte-deudas"
-          sx={getEstilos("/home/reporte-deudas", {})}
-          onClick={isTablet || isMobile ? onClose : undefined}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <Description />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Reporte Deudas"
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
+        <Collapse in={collapseReportes} timeout="auto" unmountOnExit>
+
+          {/* Reporte de pagos */}
+          <ListItemButton
+            component={Link}
+            to="reporte-pagos"
+            sx={getEstilos("/home/reporte-pagos", { ml: 2 })}
+            onClick={isTablet || isMobile ? onClose : undefined}
+          >
+            <ListItemIcon sx={{ color: "inherit" }}>
+              <Description />
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary="Reporte Pagos"
+                sx={{ ml: -3 }}
+              />
+            )}
+          </ListItemButton>
+
+          {/* Reporte de deudas */}
+          <ListItemButton
+            component={Link}
+            to="reporte-deudas"
+            sx={getEstilos("/home/reporte-deudas", { ml: 2 })}
+            onClick={isTablet || isMobile ? onClose : undefined}
+          >
+            <ListItemIcon sx={{ color: "inherit" }}>
+              <Description />
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary="Reporte Deudas"
+                sx={{ ml: -3 }}
+              />
+            )}
+          </ListItemButton>
+
+          {/* Reporte de cuotas por metrado */}
+          <ListItemButton
+            component={Link}
+            to="reporte-cuotas-metrado"
+            sx={getEstilos("/home/reporte-cuotas-metrado", { ml: 2 })}
+            onClick={isTablet || isMobile ? onClose : undefined}
+          >
+            <ListItemIcon sx={{ color: "inherit" }}>
+              <Description />
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary="Reporte de cuotas por metrado"
+                sx={{ ml: -3 }}
+              />
+            )}
+          </ListItemButton>
+
+          {/* Reporte de cuotas por puestos */}
+          <ListItemButton
+            component={Link}
+            to="reporte-cuotas-puesto"
+            sx={getEstilos("/home/reporte-cuotas-puesto", { ml: 2 })}
+            onClick={isTablet || isMobile ? onClose : undefined}
+          >
+            <ListItemIcon sx={{ color: "inherit" }}>
+              <Description />
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary="Reporte de cuotas por puestos"
+                sx={{ ml: -3 }}
+              />
+            )}
+          </ListItemButton>
+
+        </Collapse>
 
         <Divider sx={{ bgcolor: "#505155", m: 3 }} />
 
@@ -303,7 +369,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             />
           )}
         </ListItemButton>
-
       </Box>
 
       <Box sx={{ mt: "auto", mb: 2 }}>
