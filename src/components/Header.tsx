@@ -202,7 +202,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
           sx={{
             display: isTablet || isMobile || isSmallMobile ? "none" : "flex",
             position: "absolute",
-            top: "80vh",
+            top: "83vh",
             left: open ? "240px" : "0px",
             borderRadius: "16px",
             transition: "left 0.3s, opacity 0.5s",
