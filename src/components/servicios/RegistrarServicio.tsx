@@ -1,8 +1,9 @@
 import { AttachMoney, Bolt, Event, Storefront, Straighten } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, Card, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
+import { mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
 
 interface AgregarProps {
   open: boolean;
@@ -22,6 +23,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
   
   // Variables para el diseño responsivo
   const { isLaptop, isTablet, isMobile } = useResponsive();
+  const [loading, setLoading] = useState(false); // Estado de loading
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -96,36 +98,39 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
 
   // Registrar servicio
   const registrarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
     e.preventDefault();
-
-    // Data a enviar
+    setLoading(true);
     const { id_servicio, ...dataToSend } = formData;
 
     try {
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
 
-      // Conexión al servicio
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
-
-      // Manejar la respuesta del servidor
-      if(response.status === 200) {
-        alert("Servicio registrado con exito");
-        // Limpiar los campos del formulario
-        limpiarRegistarServicio();
-        // Cerrar el formulario
-        handleClose();
-      } else {
-        alert("No se pudo registrar el servicio. Intentelo nuevamente.")
-      }
-
+        if (response.status === 200) {
+            const mensaje = response.data || "El servicio se registró correctamente";
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            limpiarRegistarServicio();
+            handleClose();
+        } else {
+            mostrarAlerta("Error", "No se pudo registrar el servicio. Inténtalo nuevamente.", "error");
+        }
     } catch (error) {
-      console.error("Error al registrar el servicio:", error);
-      alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data?.message) {
+                mensajeError = error.response.data.message;
+            } else if (error.response?.data) {
+                mensajeError = error.response.data;
+            }
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+            mensajeError = "Por favor, completa todos los campos obligatorios.";
+        }
+        mostrarAlerta("Error", mensajeError, "error");
+    } finally {
+        setLoading(false);
     }
+};
 
-  }
 
   // Actualizar servicio
   const editarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -583,6 +588,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             Registrar Servicio
           </Typography>
         </Box>
+        {loading && (
+          <div style={{ textAlign: "center", marginBottom: "5px" }}>
+            <LinearProgress aria-description="dd" color="primary" />
+            {/* <p>Cargando...</p> */}
+          </div>
+        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs 
             value={activeTab} 
@@ -629,8 +640,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             borderColor: "divider",
           }}
         >
-          <Button
-            variant="contained"
+         <Button
+            variant="outlined"
             sx={{
               width: "140px",
               height: "45px",
@@ -656,18 +667,40 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 backgroundColor: "#388E3C",
               },
             }}
-            onClick={(e) => {
-              if(servicio){ 
-                // Si se selecciono un servicio
-                editarServicio(e);
-              } else {
-                // Si servicio es nulo
-                registrarServicio(e);
+            onClick={async (e) => {
+              let result; 
+            
+              // Caso cuando activeTab es 0
+              if (activeTab === 0) {
+                result = await mostrarAlertaConfirmacion(
+                  "¿Está seguro de registrar un nuevo servicio?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  if (servicio) {
+                    editarServicio(e); 
+                  } else {
+                    registrarServicio(e); 
+                  }
+                }
+              }
+            
+              // Caso cuando activeTab es 1
+              if (activeTab === 1) {
+                result = await mostrarAlertaConfirmacion(
+                  "¿Está seguro de realizar otra acción para el servicio?",
+                  "Verifique la información antes de continuar."
+                );
+                if (result.isConfirmed) {
+                  // registrarServicioCompartido(e); }
               }
             }}
+          }
+          disabled={loading} // Deshabilita el botón cuando está en loading
+
           >
-            Registrar
-          </Button>
+            {loading ? "Cargando..." : "Registrar"}
+            </Button>
         </Box>
       </Card>
     </Modal>
