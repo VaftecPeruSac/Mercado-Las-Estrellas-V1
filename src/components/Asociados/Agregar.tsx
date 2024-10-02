@@ -32,7 +32,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
 import useResponsive from "../Responsive";
 import Swal from "sweetalert2";
-import { mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 interface AgregarProps {
   open: boolean;
@@ -315,24 +315,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
             handleClose();
         } else {
             mostrarAlerta(
-                "Error",
-                "No se pudo registrar el socio. Inténtalo nuevamente.",
                 "error"
             );
         }
-    } catch (error) {
-        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
-        if (axios.isAxiosError(error)) {
-            if (error.response?.data?.message) {
-                mensajeError = error.response.data.message;
-            } else if (error.response?.data) {
-                mensajeError = error.response.data;
-            }
-        }
-        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
-            mensajeError = "Por favor, completa todos los campos obligatorios.";
-        }
-        mostrarAlerta("Error", mensajeError, "error");
+      } catch (error) {
+        manejarError(error); 
     } finally {
         setLoading(false); 
     }
@@ -813,7 +800,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
             {/* <p>Cargando...</p> */}
           </div>
         )}
-
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 0 }}>
           {/* <Tabs
             value={activeTab}
@@ -881,19 +867,15 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                 backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
-            onClick={async (e) => { // Cambiar a función asíncrona
+            onClick={async (e) => { 
               if (activeTab === 0) {
-                const result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
-                  "¿Está seguro de registrar un nuevo socio?",
-                  "Verifique la información antes de continuar."
+                const result = await mostrarAlertaConfirmacion( 
+                  "¿Está seguro de registrar un nuevo socio?"
                 );
-
                 if (result.isConfirmed) {
                   if (socio) {
-                    // Si se seleccionó un socio
                     editarSocio(e);
                   } else {
-                    // Si no se seleccionó un socio
                     registrarSocio(e);
                   }
                 }

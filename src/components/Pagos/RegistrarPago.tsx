@@ -23,10 +23,12 @@ import {
   MenuItem,
   Select,
   Autocomplete,
+  LinearProgress,
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../Responsive";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 interface AgregarProps {
   open: boolean;
@@ -103,6 +105,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Para el modal
   const [activeTab, setActiveTab] = useState(0);
+  const [loading, setLoading] = useState(false); // Estado de loading
 
   // Para registrar el pago
   const [formData, setFormData] = useState({
@@ -305,27 +308,26 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // REGISTRAR PAGO
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
-
-    const { ...dataToSend } = formData;
+    setLoading(true);
+    const dataToSend = { ...formData };
 
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
 
-      if(response.status === 200){
-        alert("El pago fue registrado correctamente");
-        handleCloseModal();
-      } else {
-        alert("No se pudo registrar el pago. Por favor intentelo nuevamente");
-      }
-
-    } catch (error) {
-      console.error("Error al registrar el pago:", error);
-      alert("Ocurrio un error durante el registro. Intentelo nuevamente más tarde");
+        if (response.status === 200) {
+            const mensaje = response.data || "El pago fue registrado correctamente";
+            mostrarAlerta("Registro exitoso", mensaje, "success");
+            handleCloseModal();
+        } else {
+            mostrarAlerta("Error");
+        }
+      } catch (error) {
+        manejarError(error); 
+    } finally {
+        setLoading(false); 
     }
-
-  }
+};
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
@@ -644,8 +646,15 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             Registrar Pago
           </Typography>
         </Box>
+        {loading && (
+          <div style={{ textAlign: "center", marginBottom: "5px" }}>
+            <LinearProgress aria-description="dd" color="primary" />
+            {/* <p>Cargando...</p> */}
+          </div>
+        )}
+
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs 
+          {/* <Tabs 
             value={activeTab} 
             onChange={handleTabChange} 
             sx={{ 
@@ -671,7 +680,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             }}
           >
             <Tab label="Registrar Pago" />
-          </Tabs>
+          </Tabs> */}
         </Box>
 
         {renderTabContent()}
@@ -707,15 +716,24 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             sx={{
               width: "140px",
               height: "45px",
-              backgroundColor: "#008001",
+              backgroundColor: loading ? "#aaa" : "#008001",
               color: "#fff",
               "&:hover": {
-                backgroundColor: "#388E3C",
+                backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
-            onClick={registrarPago}
-          >
-            Pagar
+            onClick={async (e) => {
+              const result = await mostrarAlertaConfirmacion(
+                  "¿Está seguro de registrar este pago?",
+              );
+              if (result.isConfirmed) {
+                  registrarPago(e);
+              }
+          }}   
+          disabled={loading}
+        >
+          {loading ? "Cargando..." : "Registrar"}
+
           </Button>
         </Box>
       </Card>
