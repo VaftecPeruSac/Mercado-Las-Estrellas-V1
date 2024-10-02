@@ -1,27 +1,28 @@
 import Swal from "sweetalert2";
 import '../../App.css'; // Subimos dos niveles para acceder a src
+import axios from "axios";
 
 export const mostrarAlerta = (
     titulo: string,
-    texto: string,
-    icono: "success" | "error" | "warning" | "info" | "question"
+    texto: string = "Ocurrio un error en el registro. Intentelo Nuevamente",
+    icono: "success" | "error" | "warning" | "info" | "question" = "info" // <- Valor predeterminado agregado
 ) => {
     return Swal.fire({
         title: titulo,
         text: texto,
         icon: icono,
         confirmButtonText: "Aceptar",
+        allowOutsideClick: false,
         customClass: {
-            confirmButton: 'custom-confirm-button', // Agrega una clase personalizada
+            confirmButton: 'custom-confirm-button',
             popup: 'custom-popup'
-
         }
     });
 };
 
 export const mostrarAlertaConfirmacion = (
     titulo: string,
-    texto: string,
+    texto: string="Verifique la información antes de continuar",
     confirmButtonText: string = "Confirmar",
     cancelButtonText: string = "Cancelar"
 ) => {
@@ -40,4 +41,22 @@ export const mostrarAlertaConfirmacion = (
             cancelButton: 'custom-cancel-button' // Clase para el botón de cancelar
         }
     });
+};
+
+export const manejarError = (error: any) => {
+    let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
+
+    if (axios.isAxiosError(error)) {
+        if (error.response?.data?.message) {
+            mensajeError = error.response.data.message;
+        } else if (error.response?.data) {
+            mensajeError = error.response.data;
+        }
+    }
+
+    if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+        mensajeError = "Por favor, completa todos los campos obligatorios.";
+    }
+
+    mostrarAlerta("Error", mensajeError, "error");
 };

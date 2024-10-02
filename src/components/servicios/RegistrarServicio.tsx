@@ -3,7 +3,7 @@ import { Box, Button, Card, FormControl, Grid, InputLabel, LinearProgress, MenuI
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
-import { mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
 
 interface AgregarProps {
   open: boolean;
@@ -111,23 +111,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             limpiarRegistarServicio();
             handleClose();
         } else {
-            mostrarAlerta("Error", "No se pudo registrar el servicio. Inténtalo nuevamente.", "error");
+            mostrarAlerta("Error");
         }
-    } catch (error) {
-        let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
-        if (axios.isAxiosError(error)) {
-            if (error.response?.data?.message) {
-                mensajeError = error.response.data.message;
-            } else if (error.response?.data) {
-                mensajeError = error.response.data;
-            }
-        }
-        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
-            mensajeError = "Por favor, completa todos los campos obligatorios.";
-        }
-        mostrarAlerta("Error", mensajeError, "error");
+      } catch (error) {
+        manejarError(error); 
     } finally {
-        setLoading(false);
+        setLoading(false); 
     }
 };
 
@@ -674,7 +663,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               if (activeTab === 0) {
                 result = await mostrarAlertaConfirmacion(
                   "¿Está seguro de registrar un nuevo servicio?",
-                  "Verifique la información antes de continuar."
                 );
                 if (result.isConfirmed) {
                   if (servicio) {
@@ -689,7 +677,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               if (activeTab === 1) {
                 result = await mostrarAlertaConfirmacion(
                   "¿Está seguro de realizar otra acción para el servicio?",
-                  "Verifique la información antes de continuar."
                 );
                 if (result.isConfirmed) {
                   // registrarServicioCompartido(e); }

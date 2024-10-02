@@ -22,11 +22,13 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  LinearProgress,
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
 import axios from "axios";
 import useResponsive from "../Responsive";
+import { mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 interface AgregarProps {
   open: boolean;
@@ -80,6 +82,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Datos del formulario
   const [fechaEmision, setFechaEmision] = useState("");
   const [fechaVencimiento, setFechaVencimiento] = useState("");
+  const [loading, setLoading] = useState(false); 
+
 
   const [formData, setFormData] = useState({
     id_servicio: "",
@@ -143,41 +147,58 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     setImporteTotal(total);
   }, [serviciosAgregados]);
 
-  // Generar cuota
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    e.preventDefault();
-
-    const dataToSend = {
-      ...formData,
-      servicios: serviciosIds,
-      importe: importeTotal,
-    };
-
-    try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
-
-      if (response.status === 200) {
-        alert("La cuota fue registrada con exito");
-        setFormData({
+  const limpiarCuota=()=>{
+    setFormData({
           id_servicio: "",
           importe: "",
           fecha_registro: "",
           fecha_vencimiento: ""
         });
-        setServiciosAgregados([]);
-        setServiciosIds([]);
-        setImporteTotal(0);
-      } else {
-        alert("No se pudo registrar la cuota. Inténtalo nuevamente.");
-      }
-    } catch (error) {
-      console.error("Error al registrar la cuota:", error);
-      alert("Ocurrio un error durante el registro. Inténtalo nuevamente.");
-    }
+  }
 
-  };
+  // Generar cuota
+  const registrarCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true); // Establecer loading en true
+
+    const dataToSend = {
+        ...formData,
+        servicios: serviciosIds,
+        importe: importeTotal,
+    };
+
+    try {
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
+        // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
+
+        if (response.status === 200) {
+            const mensaje = response.data || "La cuota fue registrada con éxito";
+            mostrarAlerta("Registro exitoso", mensaje,"success");
+            
+            setServiciosAgregados([]);
+            setServiciosIds([]);
+            setImporteTotal(0);
+        } else {
+            mostrarAlerta("Error", "No se pudo registrar la cuota. Inténtalo nuevamente.", "error");
+        }
+    } catch (error) {
+        let mensajeError = "Ocurrió un error al registrar la cuota. Inténtalo nuevamente.";
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data?.message) {
+                mensajeError = error.response.data.message;
+            } else if (error.response?.data) {
+                mensajeError = error.response.data;
+            }
+        }
+        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+            mensajeError = "Por favor, completa todos los campos obligatorios.";
+        }
+        mostrarAlerta("Error", mensajeError, "error");
+    } finally {
+        setLoading(false); 
+    }
+};
+
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
@@ -404,8 +425,14 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
             Nueva Cuota
           </Typography>
         </Box>
+        {loading && (
+          <div style={{ textAlign: "center", marginBottom: "5px" }}>
+            <LinearProgress aria-description="dd" color="primary" />
+            {/* <p>Cargando...</p> */}
+          </div>
+        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
+          {/* <Tabs
             value={activeTab}
             onChange={handleTabChange}
             sx={{
@@ -431,7 +458,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
             }}
           >
             <Tab label="Registrar Cuota" />
-          </Tabs>
+          </Tabs> */}
         </Box>
 
         {renderTabContent()}
@@ -467,16 +494,26 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
             sx={{
               width: "140px",
               height: "45px",
-              backgroundColor: "#008001",
+              backgroundColor: loading ? "#aaa" : "#008001",
               color: "#fff",
               "&:hover": {
-                backgroundColor: "#388E3C",
+                backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
-            onClick={handleSubmit}
-          >
-            Registrar
-          </Button>
+            onClick={async (e) => {
+              // Cambiar a función asíncrona
+              const result = await mostrarAlertaConfirmacion(
+                "¿Está seguro de registrar un nuevo socio?"
+              );
+          
+              if (result.isConfirmed) {
+                  registrarCuota(e); // Llamar a la función para registrar la cuota
+              }
+          }}
+          disabled={loading} // Deshabilita el botón cuando está en loading
+        >
+            {loading ? "Cargando..." : "Registrar"}
+            </Button>
         </Box>
       </Card>
     </Modal>
