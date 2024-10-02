@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import emailjs from '@emailjs/browser';
+
 import {
   Divider,
   List,
@@ -10,6 +12,12 @@ import {
   ListItemButton,
   Collapse,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import {
   Assignment,
@@ -17,7 +25,6 @@ import {
   ExpandMore,
   ShoppingBasket,
   Article,
-  Settings,
   Description,
   Storefront,
   Groups,
@@ -29,6 +36,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from "../context/AuthContext";
 import useResponsive from "./Responsive";
+import Swal from "sweetalert2";
 
 interface SidebarProps {
   open: boolean;
@@ -43,6 +51,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [collapseDashboard, setCollapseDashboard] = useState(isMobile ? true : false);
   const [collapseReportes, setCollapseReportes] = useState(isMobile ? true : false);
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const [nombreUsuario, setNombreUsuario] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [emailUsuario, setEmailUsuario] = useState("");
+
   const location = useLocation();
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -53,6 +66,47 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   const handleOpenReportes = () => {
     setCollapseReportes(!collapseReportes);
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setNombreUsuario("");
+    setEmailUsuario("");
+    setMensaje("");
+  };
+  
+  const formData = useRef<HTMLFormElement>(null);
+
+  const handleSendEmail = () => {
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!nombreUsuario || !emailUsuario || !mensaje) {
+      Swal.fire("¡Formulario incompleto!", "Por favor completa todos los campos.", "error");
+      return;
+    }
+
+    if (!emailRegex.test(emailUsuario)) {
+      Swal.fire("¡Correo inválido!", "Por favor ingresa un correo electrónico válido.", "error");
+      return;
+    }
+
+    if (formData.current) {
+      emailjs.sendForm('service_dqutkuh', 'template_eeifnsc', formData.current, "DBrhXyzM6llItxs8c")
+        .then((result) => {
+          Swal.fire("¡Correo enviado!", "Hemos recibido tu mensaje, nos pondremos en contacto contigo lo más pronto posible.", "success");
+          handleCloseDialog();
+        }, (error) => {
+          Swal.fire("¡Error al enviar correo!", "Por favor intenta de nuevo más tarde.", "error");
+        });
+    } else {
+      Swal.fire("¡Error al enviar correo!", "Por favor intenta de nuevo más tarde.", "error");
+    }
+
   };
 
   // Estilos de los items de la lista
@@ -97,28 +151,28 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       },
     }}>
 
-    <Box sx={{ 
-      display: "flex", 
-      alignItems: "center", 
-      alignContent: "center",
-      justifyContent: "space-between" 
-    }}>
-      <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 1 }}>
-        <BackupTableIcon />
-        <Typography
-          variant="subtitle1"
-          color="#FFFFFF"
-          sx={{ ml: 1, }}
-        >
-          <h3><b>SISTEM MERCADO</b></h3>
-        </Typography>
+      <Box sx={{ 
+        display: "flex", 
+        alignItems: "center", 
+        alignContent: "center",
+        justifyContent: "space-between" 
+      }}>
+        <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 1 }}>
+          <BackupTableIcon />
+          <Typography
+            variant="subtitle1"
+            color="#FFFFFF"
+            sx={{ ml: 1, }}
+          >
+            <h3><b>SISTEM MERCADO</b></h3>
+          </Typography>
+        </Box>
+        {(isTablet || isMobile) && (
+          <IconButton onClick={onClose} sx={{ color: '#fff', pt: 4 }}>
+            <Close />
+          </IconButton>
+        )}
       </Box>
-      {(isTablet || isMobile) && (
-        <IconButton onClick={onClose} sx={{ color: '#fff', pt: 4 }}>
-          <Close />
-        </IconButton>
-      )}
-    </Box>
 
       <Box>
 
@@ -127,10 +181,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           <ListItemButton
             component={Link}
             to="/home"
-            sx={getEstilos("/home", { mt: 3 })}
+            sx={getEstilos("/home", { mt: 2 })}
             onClick={() => {
               if(!isMobile && !isTablet) {
-                handleOpenPanel();
+                if(location.pathname === "/home") {
+                  handleOpenPanel();
+                }
               } else {
                 if(location.pathname === "/home") {
                   handleOpenPanel();
@@ -259,7 +315,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         <Divider sx={{ bgcolor: "#505155", m: 3 }} />
 
         <ListItemButton
-          sx={getEstilos("/home", { mt: 3 })}
+          sx={getEstilos("", { mt: 3 })}
           onClick={() => handleOpenReportes()}
         >
           <ListItemIcon sx={{ color: "inherit" }}>
@@ -352,33 +408,22 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
         <Divider sx={{ bgcolor: "#505155", m: 3 }} />
 
-        {/* Configuracion */}
-        <ListItemButton
-          component={Link}
-          to="configuracion"
-          sx={getEstilos("/home/configuracion", { mb: "auto" })}
-          onClick={isTablet || isMobile ? onClose : undefined}
-        >
-          <ListItemIcon sx={{ color: "inherit" }}>
-            <Settings />
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Configuracion"
-              sx={{ ml: -3 }}
-            />
-          )}
-        </ListItemButton>
       </Box>
 
       <Box sx={{ mt: "auto", mb: 2 }}>
 
         {/* Ayuda */}
         <ListItemButton
-          component={Link}
-          to="ayuda"
-          sx={getEstilos("/home/ayuda", {})}
-          onClick={isTablet || isMobile ? onClose : undefined}
+          component="button"
+          onClick={() => {
+            if(isTablet || isMobile) {
+              handleOpenDialog();
+              onClose();
+            } else {
+              handleOpenDialog();
+            }
+          }}
+          sx={getEstilos("/home/ayuda", { width: "100%" })}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
           </ListItemIcon>
@@ -390,22 +435,54 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           )}
         </ListItemButton>
 
-        {/* Contactanos */}
-        <ListItemButton
-          component={Link}
-          to="contactenos"
-          sx={getEstilos("/home/contactenos", {})}
-          onClick={isTablet || isMobile ? onClose : undefined}
-        >
-          <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
-          </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Contactenos"
-              sx={{ ml: -7 }}
-            />
-          )}
-        </ListItemButton>
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          <DialogTitle sx={{ textAlign: "center" }}>
+            <Typography variant="h5">¿Estas experimentando algún problema?</Typography>
+            <Typography sx={{ mt: 2, fontSize: "1rem" }}>Cuentanos ¿Que paso?</Typography>
+          </DialogTitle>
+          <DialogContent sx={{ width: "500px" }}>
+            <Box component="form" ref={formData}>
+              <TextField
+                fullWidth
+                required
+                type="text"
+                margin="dense"
+                label="Nombre de usuario"
+                name="user_name"
+                placeholder="Ingrese su nombre"
+                value={nombreUsuario}
+                onChange={(e) => setNombreUsuario(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                required
+                type="email"
+                margin="dense"
+                label="Correo Electrónico"
+                name="user_email"
+                placeholder="Ingrese su correo electrónico"
+                value={emailUsuario}
+                onChange={(e) => setEmailUsuario(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                multiline
+                rows={8}
+                type="text"
+                margin="dense"
+                label="Problema"
+                name="message"
+                placeholder="Describe tu problema aquí"
+                value={mensaje}
+                onChange={(e) => setMensaje(e.target.value)}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: "center" }}>
+            <Button variant="contained" color="error" onClick={handleCloseDialog}>Cancelar</Button>
+            <Button variant="contained" color="success" type="submit" onClick={handleSendEmail}>Enviar</Button>
+          </DialogActions>
+        </Dialog>
 
         {/* Salir / Cerrar sesión */}
         <ListItemButton

@@ -28,7 +28,7 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  { id: "id_cuota", label: "#ID CUOTA", minWidth: 50, align: "center" },
+  { id: "id_cuota", label: "#ID", minWidth: 50, align: "center" },
   { id: "anio", label: "Año", minWidth: 50, align: "center" },
   { id: "mes", label: "Mes", minWidth: 50, align: "center" },
   { id: "servicio_descripcion", label: "Servicios", minWidth: 50, align: "center" },
@@ -352,7 +352,8 @@ const TablaReporteDeudas: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {deudas
+                {deudas.length > 0
+                ? deudas
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((deuda) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
@@ -422,7 +423,14 @@ const TablaReporteDeudas: React.FC = () => {
                           );
                         })}
                     </TableRow>
-                  ))}
+                  ))
+                : <TableRow>
+                    <TableCell colSpan={columns.length} align="center">
+                      No hay datos para mostrar. <br />
+                      Para generar el reporte, seleccione un puesto y de clic en el botón "GENERAR".
+                    </TableCell>
+                  </TableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

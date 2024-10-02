@@ -27,8 +27,8 @@ interface Column {
 const columns: readonly Column[] = [
   { id: "nombre_completo", label: "Nombre completo", minWidth: 50, align: "center" },
   { id: "numero_puesto", label: "N° Puesto", minWidth: 50, align: "center" },
-  { id: "area", label: "Área", minWidth: 50, align: "center" },
-  { id: "total", label: "Total", minWidth: 50, align: "center" },
+  { id: "area", label: "Área m2", minWidth: 50, align: "center" },
+  { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
   { id: "importe_pagado", label: "Importe pagado (S/)", minWidth: 50, align: "center" },
 ]
 
@@ -50,6 +50,15 @@ const TablaReporteCuotasMetrado: React.FC = () => {
   // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
 
+  // Para el formato de fecha
+  const formatDate = (date: string) => {
+    const fecha = new Date(date);
+    const mes = fecha.getMonth() + 1 < 10 ? `0${fecha.getMonth() + 1}` : fecha.getMonth() + 1;
+    const dia = fecha.getDate() < 10 ? `0${fecha.getDate()}` : fecha.getDate();
+    return `${dia}/${mes}/${fecha.getFullYear()}`;
+  }
+
+  // Obtener las cuotas
   useEffect(() => {
     const fetchCuotas = async () => {
       try {
@@ -62,10 +71,11 @@ const TablaReporteCuotasMetrado: React.FC = () => {
     fetchCuotas();
   }, []);
 
+  // Listar cuotas por metrado
   const listarCuotas = async (idCuota: number) => {
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-metros?id_cuota=${idCuota}`);
-      setCuotasSelect(response.data.data);
+      setCuotas(response.data.data);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -105,7 +115,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
+            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" },
             justifyContent: "space-between",
             alignItems: "center",
             borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
@@ -125,7 +135,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
               mr: isMobile ? "0px" : "auto",
             }}
           >
-            {/* Seleccionar puesto */}
+            {/* Seleccionar cuota */}
             <FormControl fullWidth required 
               sx={{ 
                 width: isTablet ? "70%" : isMobile ? "100%" : "300px" 
@@ -133,7 +143,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
             >
               <Autocomplete
                 options={cuotasSelect}
-                getOptionLabel={(cuota) => cuota.fecha_registro} 
+                getOptionLabel={(cuota) => `${cuota.id_cuota} - ${formatDate(cuota.fecha_registro)}`} 
                 onChange={(event, value) => {
                   if (value) { 
                     setCuotaSeleccionada(Number(value.id_cuota));
@@ -273,7 +283,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
                           textAlign: "center",
                         }}
                       >
-                        Lista de Deudas
+                        Lista de cuotas
                       </Typography>
                     : columns.map((column) => (
                       <TableCell
@@ -290,7 +300,8 @@ const TablaReporteCuotasMetrado: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {cuotas
+                {cuotas.length > 0
+                ? cuotas
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((cuota) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
@@ -300,7 +311,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
                             <Typography 
                               sx={{ 
                                 p: 2,
-                                // Seleccionar la deuda y cambiar el color de fondo
+                                // Al seleccionar la cuota se cambia el color de fondo
                                 bgcolor: mostrarDetalles === cuota.numero_puesto ? "#f0f0f0" : "inherit",
                                 "&:hover": {
                                   cursor: "pointer",
@@ -353,7 +364,14 @@ const TablaReporteCuotasMetrado: React.FC = () => {
                           );
                         })}
                     </TableRow>
-                  ))}
+                  ))
+                : <TableRow>
+                    <TableCell colSpan={columns.length} align="center">
+                      No hay datos para mostrar. <br />
+                      Para generar el reporte, seleccione una cuota y de clic en el botón "GENERAR".
+                    </TableCell>
+                  </TableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

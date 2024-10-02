@@ -50,11 +50,11 @@ const Login: React.FC = () => {
         <Box sx={{
           boxSizing: isSmallMobile || isLaptop ? "border-box" : "content-box",
           width: isSmallMobile ? "100%" : isMobile ? "280px" : isTablet ? "50%" : isLaptop ? "35%" : "440px",
-          height: isSmallMobile ? "90%" : "80%",
+          height: isLaptop || isSmallMobile ? "90%" : "80%",
           maxHeight: "680px",
           border: "1px solid",
           borderRadius: "15px",
-          p: isSmallMobile ? "30px" : "50px 35px",
+          p: isSmallMobile ? "30px" : isLaptop ? "30px 35px" : "50px 35px",
           display: "flex",
           flexDirection: "column",
         }}>
@@ -155,8 +155,9 @@ const Login: React.FC = () => {
               variant="contained"
               type="submit"
               sx={{
-                width: isSmallMobile ? "100%" : "215px",
-                mt: isSmallMobile ? 3 : 4,
+                width: isLaptop || isSmallMobile ? "100%" : "215px",
+                mt: isLaptop || isSmallMobile ? 3 : 4,
+                mb: isLaptop ? 2 : 0,
                 p: "10px 50px",
                 textTransform: "inherit",
                 fontSize: "16px",
@@ -177,7 +178,7 @@ const Login: React.FC = () => {
             <Typography
               sx={{ 
                 mb: "2px",
-                fontSize: isSmallMobile ? "16px" : "18px",
+                fontSize: isLaptop || isSmallMobile ? "16px" : "18px",
                 fontWeight: "bold",
                 color: "#0AB544",
               }}
@@ -185,7 +186,7 @@ const Login: React.FC = () => {
               Busqueda rápida de puesto
             </Typography>
 
-            <Typography sx={{ color: "#9C9C9C", fontSize: isSmallMobile ? "12px" : "auto" }}>
+            <Typography sx={{ color: "#9C9C9C", fontSize: isSmallMobile ? "12px" : isLaptop ? "14px" : "auto" }}>
               Realiza una busqueda de reporte global de cada puesto
             </Typography>
 
@@ -193,8 +194,8 @@ const Login: React.FC = () => {
               variant="contained"
               type="submit"
               sx={{
-                width: isSmallMobile ? "100%" : "215px",
-                mt: isSmallMobile ? 2 : 4,
+                width: isLaptop || isSmallMobile ? "100%" : "215px",
+                mt: isLaptop || isSmallMobile ? 2 : 4,
                 p: "10px 50px",
                 textTransform: "inherit",
                 fontSize: "16px",
