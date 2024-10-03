@@ -30,6 +30,7 @@ import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import GenerarCuota from "./GenerarCuota";
 import useResponsive from "../Responsive";
+import LoadingSpinner from "../PogressBar/ProgressBarV1";
 
 interface Cuotas {
   id_deuda: string; // Nombre del socio
@@ -104,6 +105,8 @@ const TablaCuota: React.FC = () => {
   const [mes, setMes] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [cuotas, setCuotas] = useState<Data[]>([]);
+  const [isLoading, setIsLoading] = useState(false); 
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -163,11 +166,11 @@ const TablaCuota: React.FC = () => {
   };
 
   const fetchCuotas = async (page: number = 1) => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}&anio=${anio}&mes=${mes}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas?page=${page}"); //local
 
-      // console.log(anio, mes);
       const data = response.data.data.map((item: Cuotas) => ({
         id_deuda: item.id_deuda,
         fecha_registro: formatDate(item.fecha_registro),
@@ -184,6 +187,8 @@ const TablaCuota: React.FC = () => {
       console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -457,7 +462,10 @@ const TablaCuota: React.FC = () => {
           </Box>
 
         )}
-
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
         {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -636,6 +644,8 @@ const TablaCuota: React.FC = () => {
 
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   );

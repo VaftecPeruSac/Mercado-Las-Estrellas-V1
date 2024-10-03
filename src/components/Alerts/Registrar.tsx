@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import '../../App.css'; // Subimos dos niveles para acceder a src
+import '../../App.css'; 
 import axios from "axios";
 
 export const mostrarAlerta = (

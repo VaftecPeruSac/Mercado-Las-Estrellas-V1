@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useResponsive from '../Responsive';
+import { mostrarAlerta } from '../Alerts/Registrar';
 
 const Login: React.FC = () => {
 
@@ -19,18 +20,31 @@ const Login: React.FC = () => {
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
   // Iniciar sesion
+  // const IniciarSesion = (event: React.FormEvent) => {
+  //   event.preventDefault();
+  //   if(usuario === "Admin" && password === "12345" && rol === "3"){
+  //     alert(`Bienvenido ${usuario} \nSesión iniciada con exito`);
+  //     // Iniciamos sesión
+  //     login();
+  //     // Redirigimos a la pagina de inicio
+  //     navigate("/home");
+  //   } else {
+  //     alert("Credenciales no validas. Por favor intentelo nuevamente.");
+  //   }
+  // }
+
   const IniciarSesion = (event: React.FormEvent) => {
     event.preventDefault();
-    if(usuario === "Admin" && password === "12345" && rol === "3"){
-      alert(`Bienvenido ${usuario} \nSesión iniciada con exito`);
-      // Iniciamos sesión
-      login();
-      // Redirigimos a la pagina de inicio
-      navigate("/home");
+    if (usuario === "Admin" && password === "12345" && rol === "3") {
+        mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
+        // Iniciamos sesión
+        login();
+        // Redirigimos a la página de inicio
+        navigate("/home");
     } else {
-      alert("Credenciales no validas. Por favor intentelo nuevamente.");
+        mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
     }
-  }
+};
 
   return (
     <Container 

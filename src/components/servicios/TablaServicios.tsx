@@ -24,6 +24,7 @@ import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
 import useResponsive from "../Responsive";
+import LoadingSpinner from "../PogressBar/ProgressBarV1";
 
 interface Servicio {
   id_servicio: string;
@@ -72,6 +73,8 @@ const TablaServicios: React.FC = () => {
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
   const [exportFormat, setExportFormat] = React.useState("");
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
+
 
   // Abrir modal con un servicio seleccionado o vacio
   const handleOpen = (servicio?: Servicio) => {
@@ -141,6 +144,7 @@ const TablaServicios: React.FC = () => {
 
   const fetchServicios = async (page: number = 1) => {
     try {
+      setIsLoading(true);
       // const response = await axios.get("http://127.0.0.1:8000/v1/servicios?page=${page}"); //local
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}&buscar_texto=${buscarTexto}`);
 
@@ -157,6 +161,8 @@ const TablaServicios: React.FC = () => {
       console.log("la data es", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -369,7 +375,10 @@ const TablaServicios: React.FC = () => {
           Buscar
         </Button>
       </Box>
-
+      {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
@@ -546,6 +555,8 @@ const TablaServicios: React.FC = () => {
             />
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   );

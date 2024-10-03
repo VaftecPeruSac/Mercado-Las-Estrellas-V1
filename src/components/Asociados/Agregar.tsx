@@ -94,6 +94,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [loading, setLoading] = useState(false); // Estado de loading
+  
   const [formData, setFormData] = useState({
     id_socio: "",
     nombre: "",

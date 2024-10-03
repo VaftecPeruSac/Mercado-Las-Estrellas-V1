@@ -31,6 +31,7 @@ import axios from "axios";
 import Agregar from "./Agregar";
 import useResponsive from "../Responsive";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../PogressBar/ProgressBarV1";
 
 interface Socio {
   id_socio: string;
@@ -111,6 +112,7 @@ const TablaAsociados: React.FC = () => {
 
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("");
+  const [isLoading, setIsLoading] = useState(false); 
 
   // Para ir a los reportes
   const navigate = useNavigate();
@@ -192,6 +194,7 @@ const TablaAsociados: React.FC = () => {
 
   const fetchSocios = async (page: number = 1) => {
     try {
+      setIsLoading(true)
       // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}&buscar_texto=${nombreIngresado}`); //publico
 
@@ -224,6 +227,8 @@ const TablaAsociados: React.FC = () => {
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
       console.error("Error al traer datos", error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -443,7 +448,10 @@ const TablaAsociados: React.FC = () => {
             Buscar
           </Button>
         </Box>
-
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+<>
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
@@ -702,8 +710,9 @@ const TablaAsociados: React.FC = () => {
             />
 
           </Box>
-
         </Paper>
+        </>
+          )}
       </Card>
     </Box>
   );
