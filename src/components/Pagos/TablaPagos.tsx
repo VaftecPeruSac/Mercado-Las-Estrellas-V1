@@ -29,6 +29,7 @@ import RegistrarPago from "./RegistrarPago";
 import axios from "axios";
 import useResponsive from "../Responsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
+import * as XLSX from 'xlsx';
 
 interface Pagos {
   id_pago: string;
@@ -90,6 +91,13 @@ const TablaPago: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const formatDate = (date: string) => {
+    const fecha = new Date(date);
+    const mes = fecha.getMonth() + 1 < 10 ? `0${fecha.getMonth() + 1}` : fecha.getMonth() + 1;
+    const dia = fecha.getDate() < 10 ? `0${fecha.getDate()}` : fecha.getDate();
+    return `${dia}/${mes}/${fecha.getFullYear()}`;
+  }
+
   // Metodo para exportar el listado de pagos
   const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
@@ -129,6 +137,51 @@ const TablaPago: React.FC = () => {
     }
 
   };
+
+  const handleAccionesPago = async (accion: number, telefono: string, pago: Pagos) => {
+
+    const data = [
+      ["ID", pago.id_pago],
+      ["Puesto", pago.puesto],
+      ["Socio", pago.socio],
+      ["DNI", pago.dni],
+      ["Fecha", pago.fecha_registro],
+      ["Teléfono", pago.telefono],
+      ["Correo", pago.correo],
+      ["A Cuenta", pago.total_pago],
+      ["Monto Actual", pago.total_deuda]
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Pagos");
+
+    ws['A1'].s = { font: { bold: true } };
+    ws['B2'].s = { alignment: { horizontal: 'left' } };
+    ws['!cols'] = [ { wch: 18 }, { wch: 30 } ];
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    const blob = new Blob([excelBuffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Pago-${pago.socio}-${formatDate(pago.fecha_registro)}.xlsx`);
+    document.body.appendChild(link);
+
+    // Accion 1: Descargar
+    if (accion === 1) {
+      link.click();
+      link.parentNode?.removeChild(link);
+    } else {
+      // Accion 2: Enviar por WhatsApp
+      const mensaje = `¡Hola ${pago.socio}! \n Copia el siguiente enlace en tu navegador para descargar el detalle de tu pago. \n ${url}`;
+      const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWhatsApp, '_blank');
+    }
+
+  }
 
   // Metodo para buscar pagos por socio
   const handleSearchPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -481,6 +534,7 @@ const TablaPago: React.FC = () => {
                                                 backgroundColor: "black", 
                                                 color: "white"
                                               }}
+                                              onClick={() => handleAccionesPago(1, "", pago)}
                                             >
                                               <Download sx={{ mr: 1 }} />
                                               Descargar
@@ -492,6 +546,7 @@ const TablaPago: React.FC = () => {
                                                 backgroundColor: "green", 
                                                 color: "white"
                                               }}
+                                              onClick={() => handleAccionesPago(2, pago.telefono, pago)}
                                             >
                                               <WhatsApp sx={{ mr: 1 }} />
                                               Enviar
@@ -521,18 +576,11 @@ const TablaPago: React.FC = () => {
                                   justifyContent: "center",
                                 }}
                               >
-                                {/* Boton Ver pago */}
-                                {/* <IconButton
-                                  aria-label="file"
-                                  sx={{ color: "#000" }}
-                                >
-                                  <InsertDriveFile />
-                                </IconButton> */}
-
                                 {/* Boton Descargar */}
                                 <IconButton
                                   aria-label="download"
                                   sx={{ color: "#002B7E" }}
+                                  onClick={() => handleAccionesPago(1, "", pago)}
                                 >
                                   <FileDownload />
                                 </IconButton>
@@ -541,6 +589,7 @@ const TablaPago: React.FC = () => {
                                 <IconButton
                                   aria-label="share"
                                   sx={{ color: "#008001" }}
+                                  onClick={() => handleAccionesPago(2, pago.telefono, pago)}
                                 >
                                   <WhatsApp />
                                 </IconButton>

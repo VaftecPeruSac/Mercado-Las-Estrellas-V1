@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { mostrarAlerta } from "../components/Alerts/Registrar";
 
 const TemporizadorInactividad = (tiempoCerrarSesion: number, tiempoAlerta: number) => {
 
@@ -20,7 +21,7 @@ const TemporizadorInactividad = (tiempoCerrarSesion: number, tiempoAlerta: numbe
 
       // Mostramos una alerta de inactividad
       alerta = setTimeout(() => {
-        alert("Su sesión se cerrará por inactividad en 5 minutos");
+        mostrarAlerta("Sesión por caducar", "Su sesión se cerrará por inactividad en 5 minutos", "warning");
       }, tiempoCerrarSesion - tiempoAlerta);
 
       // Iniciamos el temporizador

@@ -32,6 +32,7 @@ import Agregar from "./Agregar";
 import useResponsive from "../Responsive";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
+import * as XLSX from 'xlsx';
 
 interface Socio {
   id_socio: string;
@@ -112,7 +113,11 @@ const TablaAsociados: React.FC = () => {
 
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("");
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [socios, setSocios] = useState<Data[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [paginaActual, setPaginaActual] = useState(1);
 
   // Para ir a los reportes
   const navigate = useNavigate();
@@ -131,6 +136,17 @@ const TablaAsociados: React.FC = () => {
   }
 
   const handleClose = () => setOpen(false);
+
+  const formatDate = (fecha: string): string => {
+    const date = new Date(fecha);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
+
+    return `${formattedDay}/${formattedMonth}/${year}`;
+  };
 
   // Metodo para exportar el listado de socios
   const handleExportSocios = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -177,20 +193,61 @@ const TablaAsociados: React.FC = () => {
 
   };
 
-  const [socios, setSocios] = useState<Data[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [paginaActual, setPaginaActual] = useState(1);
+  const handleAccionesSocio = async (accion: number, telefono: string, socio: Socio) => {
 
-  const formatDate = (fecha: string): string => {
-    const date = new Date(fecha);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    const formattedDay = day.toString().padStart(2, "0");
-    const formattedMonth = month.toString().padStart(2, "0");
+    // Transformar los datos del socio a formato vertical
+    const data = [
+      ["ID", socio.id_socio],
+      ["Nombre", socio.nombre_socio],
+      ["Apellido Paterno", socio.apellido_paterno],
+      ["Apellido Materno", socio.apellido_materno],
+      ["DNI", socio.dni],
+      ["Sexo", socio.sexo],
+      ["Dirección", socio.direccion],
+      ["Teléfono", socio.telefono],
+      ["Correo", socio.correo],
+      ["Nombre Block", socio.block_nombre],
+      ["Número Puesto", socio.numero_puesto],
+      ["Giro Negocio", socio.gironegocio_nombre],
+      ["Nombre Inquilino", socio.nombre_inquilino],
+      ["Estado", socio.estado],
+      ["Fecha Registro", socio.fecha_registro],
+      ["Deuda", socio.deuda],
+    ];
 
-    return `${formattedDay}/${formattedMonth}/${year}`;
-  };
+    // Generar el archivo Excel
+    const ws = XLSX.utils.aoa_to_sheet(data); // Crea una hoja de trabajo
+    const wb = XLSX.utils.book_new(); // Crea un libro de trabajo
+    XLSX.utils.book_append_sheet(wb, ws, "Socio"); // Agrega la hoja de trabajo al libro
+    
+    // Aplicamos estilos a las columnas
+    ws['A1'].s = { font: { bold: true } };
+    ws['B2'].s = { alignment: { horizontal: 'left' } };
+    ws['!cols'] = [ { wch: 18 }, { wch: 30 } ];
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    // Crear el archivo excel
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+
+    // Crear el enlace de descarga
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ','-')}.xlsx`);
+    document.body.appendChild(link);
+
+    if (accion === 1) {
+      link.click();
+      link.parentNode?.removeChild(link);
+    } else {
+      // Enviar mensaje de WhatsApp
+      const mensaje = `¡Hola ${socio.nombre_completo}! \n Copia el siguiente enlace en tu navegador para visualizar en formato Excel. \n ${url}`;
+      const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWhatsApp, '_blank');
+    }
+
+  }
 
   const fetchSocios = async (page: number = 1) => {
     try {
@@ -603,6 +660,7 @@ const TablaAsociados: React.FC = () => {
                                                 backgroundColor: "black", 
                                                 color: "white"
                                               }}
+                                              onClick={() => handleAccionesSocio(1, "", socio)}
                                             >
                                               <Download sx={{ mr: 1 }} />
                                               Descargar
@@ -616,6 +674,7 @@ const TablaAsociados: React.FC = () => {
                                                 backgroundColor: "green", 
                                                 color: "white"
                                               }}
+                                              onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
                                             >
                                               <WhatsApp sx={{ mr: 1 }} />
                                               Enviar
@@ -675,12 +734,14 @@ const TablaAsociados: React.FC = () => {
                                   <IconButton
                                     aria-label="download"
                                     sx={{ color: "black" }}
+                                    onClick={() => handleAccionesSocio(1, "", socio)}
                                   >
                                     <Download />
                                   </IconButton>
                                   <IconButton
                                     aria-label="whatsapp"
                                     sx={{ color: "green" }}
+                                    onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
                                   >
                                     <WhatsApp />
                                   </IconButton>
