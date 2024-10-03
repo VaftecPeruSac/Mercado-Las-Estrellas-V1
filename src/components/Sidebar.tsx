@@ -96,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     }
 
     if (formData.current) {
-      emailjs.sendForm('service_dqutkuh', 'template_eeifnsc', formData.current, "DBrhXyzM6llItxs8c")
+      emailjs.sendForm('service_9bvnfok', 'template_et36ked', formData.current, "vyDUK-OuHPsdQAaPJ")
         .then((result) => {
           Swal.fire("¡Correo enviado!", "Hemos recibido tu mensaje, nos pondremos en contacto contigo lo más pronto posible.", "success");
           handleCloseDialog();
@@ -415,14 +415,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         {/* Ayuda */}
         <ListItemButton
           component="button"
-          onClick={() => {
-            if(isTablet || isMobile) {
-              handleOpenDialog();
-              onClose();
-            } else {
-              handleOpenDialog();
-            }
-          }}
+          onClick={handleOpenDialog}
           sx={getEstilos("/home/ayuda", { width: "100%" })}
         >
           <ListItemIcon sx={{ color: "inherit", ml: -0.5 }}>
@@ -440,7 +433,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             <Typography variant="h5">¿Estas experimentando algún problema?</Typography>
             <Typography sx={{ mt: 2, fontSize: "1rem" }}>Cuentanos ¿Que paso?</Typography>
           </DialogTitle>
-          <DialogContent sx={{ width: "500px" }}>
+          <DialogContent sx={{ width: isMobile ? "100%" : "500px" }}>
             <Box component="form" ref={formData}>
               <TextField
                 fullWidth
