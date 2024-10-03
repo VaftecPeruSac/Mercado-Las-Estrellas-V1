@@ -350,7 +350,8 @@ const TablaReportePagos: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {pagos
+                {pagos.length > 0
+                ? pagos
                   .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((pago) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
@@ -426,7 +427,14 @@ const TablaReportePagos: React.FC = () => {
                         );
                       })}
                     </TableRow>
-                  ))}
+                  ))
+                : <TableRow>
+                    <TableCell colSpan={columns.length} align="center">
+                      No hay datos para mostrar. <br />
+                      Para generar el reporte, seleccione un socio y de clic en el botón "GENERAR".
+                    </TableCell>
+                  </TableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

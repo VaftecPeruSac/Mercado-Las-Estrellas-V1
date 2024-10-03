@@ -162,7 +162,7 @@ const TablaCuota: React.FC = () => {
     const year = date.getFullYear();
     const formattedDay = day.toString().padStart(2, "0");
     const formattedMonth = month.toString().padStart(2, "0");
-    return `${formattedDay} / ${formattedMonth} / ${year}`;
+    return `${formattedDay}/${formattedMonth}/${year}`;
   };
 
   const fetchCuotas = async (page: number = 1) => {
