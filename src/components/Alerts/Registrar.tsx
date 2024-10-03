@@ -2,23 +2,23 @@ import Swal from "sweetalert2";
 import '../../App.css'; 
 import axios from "axios";
 
-export const mostrarAlerta = (
-    titulo: string,
-    texto: string = "Ocurrio un error en el registro. Intentelo Nuevamente",
-    icono: "success" | "error" | "warning" | "info" | "question" = "info" // <- Valor predeterminado agregado
-) => {
-    return Swal.fire({
-        title: titulo,
-        text: texto,
-        icon: icono,
-        confirmButtonText: "Aceptar",
-        allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'custom-confirm-button',
-            popup: 'custom-popup'
-        }
-    });
-};
+    export const mostrarAlerta = (
+        titulo: string,
+        texto: string = "Ocurrio un error en el registro. Intentelo Nuevamente",
+        icono: "success" | "error" | "warning" | "info" | "question" = "info" // <- Valor predeterminado agregado
+    ) => {
+        return Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: icono,
+            confirmButtonText: "Aceptar",
+            allowOutsideClick: false,
+            customClass: {
+                confirmButton: 'custom-confirm-button',
+                popup: 'custom-popup'
+            }
+        });
+    };
 
 export const mostrarAlertaConfirmacion = (
     titulo: string,

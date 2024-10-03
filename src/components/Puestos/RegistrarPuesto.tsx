@@ -402,8 +402,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
         const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
         if (response.status === 200) {
-            const mensaje = response.data;
-            mostrarAlerta("Registro exitoso", mensaje, "success");
+          const mensaje = response.data.message || "Puesto registrado con éxito";
+          mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarAsignarPuesto();
             handleCloseModal();
         } else {
