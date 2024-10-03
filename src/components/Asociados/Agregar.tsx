@@ -138,73 +138,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     }
   }, [socio]);
 
-  // Validaciones del formulario
-  // const validateForm = () => {
-  //   const newErrors: { [key: string]: string } = {};
-  //   if (!tipoPersona) newErrors.tipoPersona = "Tipo de Persona es obligatorio";
-  //   if (!nombre) newErrors.nombre = "Nombre es obligatorio";
-  //   if (!apellidoPaterno)
-  //     newErrors.apellidoPaterno = "Apellido Paterno es obligatorio";
-  //   if (!apellidoMaterno)
-  //     newErrors.apellidoMaterno = "Apellido Materno es obligatorio";
-  //   if (!dni || !/^\d{8}$/.test(dni))
-  //     newErrors.dni = "DNI debe ser numérico y tener 8 caracteres";
-  //   if (!telefono || !/^\d{9}$/.test(telefono))
-  //     newErrors.telefono = "Teléfono debe ser numérico y tener 9 caracteres";
-  //   if (!correo || !/^[A-Za-z0-9._%+-]+@gmail\.com$/.test(correo))
-  //     newErrors.correo = "Correo debe ser un Gmail válido";
-  //   if (!direccion) newErrors.direccion = "Dirección es obligatoria";
-
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
-
-  // const handleEstadoChange = (event: SelectChangeEvent<string>) => {
-  //   setEstado(event.target.value);
-  // };
-
-  // const handleCuotaChange = (event: SelectChangeEvent<string>) => {
-  //   setCuota(event.target.value);
-  // };
-
-  // const manejarDniCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const valor = e.target.value;
-  //   // Permitir solo números y restringir a una longitud mínima
-  //   const regex = /^\d{0,8}$/; // Solo números, hasta 8 dígitos
-  //   if (regex.test(valor)) {
-  //     setDni(valor);
-  //   }
-  // };
-
-  // const manejarTelefonoCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const valor = e.target.value;
-  //   // Permitir solo números y restringir a una longitud mínima
-  //   const regex = /^[0-9]{0,9}$/; // Solo números, hasta 9 dígitos
-  //   if (regex.test(valor)) {
-  //     setTelefono(valor);
-  //   }
-  // };
-
-  // const manejarCambioCorreo = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const valor = event.target.value;
-  //   const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/; // Valida que sea un Gmail
-  //   setCorreo(valor);
-
-  //   if (!regex.test(valor)) {
-  //     console.error("Por favor ingrese un correo válido de Gmail.");
-  //   }
-  // };
-
-  // const manejarNombreCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const valor = e.target.value;
-  //   // Permitir solo caracteres alfabéticos y espacios
-  //   if (/^[a-zA-Z\s]*$/.test(valor)) {
-  //     setNombre(valor);
-  //   }
-  // };
-
   const handleCloseModal = () => {
     limpiarCamposSocio();
+    window.location.reload();
     handleClose();
   };
 
@@ -278,14 +214,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     });
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    // Validar el formato de fecha YYYY-MM-DD
-    if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
-      setFecha(valor);
-    }
-  };
-
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
@@ -303,8 +231,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true); 
-    const { id_socio, id_block, ...dataToSend } = formData; // Extraer datos aquí
-
+    const { id_socio, id_block, ...dataToSend } = formData; 
     try {
         const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
 
@@ -313,7 +240,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
             mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarCamposSocio();
             onSocioRegistrado();
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta(
                 "error"
@@ -329,31 +256,30 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   // Editar socio
   const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
     setLoading(true);
-
+  
     const { id_puesto, id_block, ...dataToSend } = formData;
-
+  
     try {
       const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+  
       if (response.status === 200) {
-        alert("Se registró correctamente");
-        setLoading(false);
+        const mensaje = response.data || "El socio se actualizó correctamente";
+        mostrarAlerta("Actualización exitosa", mensaje, "success");
         limpiarCamposSocio();
         onSocioRegistrado();
-        handleClose()
+        handleCloseModal();
       } else {
-        alert("No se pudo actualizar los datos del socio. Inténtalo nuevamente.");
-        setLoading(false);
+        mostrarAlerta("Error");
       }
     } catch (error) {
-      console.error("Error al editar los datos del socio:", error);
-      alert("Ocurrió un error al actualizar los datos del puesto. Inténtalo nuevamente.");
-      setLoading(false);
-    }
-
+      manejarError(error); 
+  } finally {
+      setLoading(false); 
   }
+  };
+  
 
   const renderTabContent = () => {
     switch (activeTab) {

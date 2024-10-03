@@ -4,6 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import LoadingSpinner from '../PogressBar/ProgressBarV1';
 
 interface Puesto {
   id_puesto: string;
@@ -38,23 +39,17 @@ const columns: readonly Column[] = [
 ]
 
 const TablaReporteDeudas: React.FC = () => {
-
-  // Variables para el responsive
   const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
-  // Para seleccionar un puesto
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
-
-  // Para la tabla
   const [deudas, setDeudas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
-
-  // Para obtener el parametro puesto de la URL
   const [searchParams] = useSearchParams();
   const idPuesto = searchParams.get("puesto");
+  const [isLoading, setIsLoading] = useState(false); 
+
 
   const navigate = useNavigate();
 
@@ -84,11 +79,13 @@ const TablaReporteDeudas: React.FC = () => {
 
   // Metodo para obtener las deudas de un puesto
   const fetchDeudas = async (idPuesto: number) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/deudas?id_puesto=${idPuesto}`);
       setDeudas(response.data.data);
     } catch (error) {
-      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); 
     }
   }
 
@@ -315,7 +312,10 @@ const TablaReporteDeudas: React.FC = () => {
             </Button>
           </Box>
         </Box>
-
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
         {/* Tabla reporte deudas */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -438,6 +438,8 @@ const TablaReporteDeudas: React.FC = () => {
             <Pagination count={3} color="primary" />
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   )

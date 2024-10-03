@@ -226,7 +226,6 @@ const TablaAsociados: React.FC = () => {
       setTotalPages(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
-      console.error("Error al traer datos", error);
     } finally {
       setIsLoading(false); 
     }
@@ -451,7 +450,7 @@ const TablaAsociados: React.FC = () => {
         {isLoading ? (
           <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
         ) : (
-<>
+        <>
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}

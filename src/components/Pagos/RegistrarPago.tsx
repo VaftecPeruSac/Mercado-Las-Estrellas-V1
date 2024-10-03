@@ -303,6 +303,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleCloseModal = () => {
     setMontoPagar({}); // Limpiamos los montos a pagar
     handleClose();
+    window.location.reload();
     limpiarCampos();
   };
 

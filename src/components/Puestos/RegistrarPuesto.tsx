@@ -334,6 +334,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
+    window.location.reload();
     limpiarRegistrarPuesto();
     limpiarAsignarPuesto();
     limpiarNuevoBloque();
@@ -352,7 +353,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             const mensaje = response.data || "Puesto registrado con éxito";
             mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarRegistrarPuesto();
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta(
                 "Error",
@@ -367,37 +368,30 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Editar Puesto
   const editarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
+    // Evita el comportamiento por defecto del clic
     e.preventDefault();
-
+    setLoading(true);
+  
     // Data a enviar
     const { ...dataToSend } = formDataPuesto;
-
+  
     try {
-
       // Conexión al servicio
-      // console.log('puesto >>>> ',puesto?.id_puesto);
       const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/puestos/${puesto?.id_puesto}`, dataToSend);
-      // const response = await axios.put("http://127.0.0.1:8000/v1/puestos", dataToSend);
-
-      // Manejar la respuesta del servidor
       if (response.status === 200) {
-        alert(`Los datos del puesto: "${dataToSend.numero_puesto}" fue actualizado con exito`);
-        // Limpiar los campos del formulario
+        const mensaje = `Los datos del puesto: "${dataToSend.numero_puesto}" fueron actualizados con éxito`;
+        mostrarAlerta("Actualización exitosa", mensaje, "success");
         limpiarRegistrarPuesto();
-        // Cerrar el formulario
-        handleClose();
+        handleCloseModal();
       } else {
-        alert("No se pudo actualizar los datos del puesto. Intentelo nuevamente.");
+        mostrarAlerta("Errror");
       }
-
     } catch (error) {
-      console.error("Error al editar los datos del puesto:", error);
-      alert("Ocurrió un error al actualizar los datos del puesto. Inténtalo nuevamente.");
-    }
-
+      manejarError(error); 
+  } finally {
+      setLoading(false); 
   }
+  };
 
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -411,7 +405,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             const mensaje = response.data;
             mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarAsignarPuesto();
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta("Error");
         }
@@ -435,7 +429,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         if (response.status === 200) {
             const mensaje = response.data || "El inquilino se registró correctamente";
             mostrarAlerta("Registro exitoso", mensaje, "success");
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta("Error");
         }
@@ -459,7 +453,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             const mensaje = response.data || "El bloque se registró correctamente";
             mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarNuevoBloque();
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta("Error");
         }
@@ -481,7 +475,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             const mensaje = response.data || "El giro de negocio se registró correctamente";
             mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarGiroNegocio();
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta("Error");
         }
@@ -594,10 +588,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                         <Abc sx={{ mr: 1, color: "gray" }} />
                       ),
                     }}
-                  // error={!!errors.area}
-                  // helperText={errors.area}
                   />
-
                   {/* Ingresar el area */}
                   <TextField
                     fullWidth

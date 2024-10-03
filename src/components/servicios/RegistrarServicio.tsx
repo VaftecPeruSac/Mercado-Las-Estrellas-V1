@@ -92,6 +92,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
 
   // Cerrar modal
   const handleCloseModal = () => {
+    window.location.reload();
     handleClose();
     limpiarRegistarServicio();
   };
@@ -109,7 +110,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             const mensaje = response.data || "El servicio se registró correctamente";
             mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarRegistarServicio();
-            handleClose();
+            handleCloseModal();
         } else {
             mostrarAlerta("Error");
         }
@@ -123,36 +124,26 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
 
   // Actualizar servicio
   const editarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
-    // Evita el comportamiente por defecto del clic
     e.preventDefault();
-
-    // Data a enviar
+    setLoading(true);  
     const { ...dataToSend } = formData;
-
     try {
-
-      // Conexión al servicio
       const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/servicios/${servicio?.id_servicio}`, dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/servicios", dataToSend);
-
-      // Manejar la respuesta del servidor
-      if(response.status === 200) {
-        alert(`Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con exito`);
-        // Limpiar los campos del formulario
+        if (response.status === 200) {
+        const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
+        mostrarAlerta("Actualización exitosa", mensaje, "success");
         limpiarRegistarServicio();
-        // Cerrar el formulario
-        handleClose();
+        handleCloseModal();
       } else {
-        alert("No se pudo actualizar los datos del servicio. Intentelo nuevamente.")
+        mostrarAlerta("Error");
       }
-
     } catch (error) {
-      console.error("Error al editar los datos del servicio:", error);
-      alert("Ocurrió un error al editar los datos del servicio. Inténtalo nuevamente.");
-    }
-
+      manejarError(error); 
+  } finally {
+      setLoading(false); 
   }
+  };
+  
 
   // Contenido del modal
   const renderTabContent = () => {

@@ -4,6 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import LoadingSpinner from '../PogressBar/ProgressBarV1';
 
 interface Socio {
   id_socio: string;
@@ -39,27 +40,17 @@ const columns: readonly Column[] = [
 ]
 
 const TablaReportePagos: React.FC = () => {
-
-  // Variables para el responsive
   const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null); 
-
-  // Para seleccionar el socio
   const [socios, setSocios] = useState<Socio[]>([]);
   const [socioSeleccionado, setSocioSeleccionado] = useState<number>(0);
-
-  // Para la tabla
   const [pagos, setPagos] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
-
-  // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
-
-  // Para obtener el parametro socio de la URL
   const [searchParams] = useSearchParams();
   const idSocio = searchParams.get("socio");
-
+  const [isLoading, setIsLoading] = useState(false); 
   const navigate = useNavigate();
 
   // Si el parametro puesto existe, obtener las deudas del puesto
@@ -85,11 +76,13 @@ const TablaReportePagos: React.FC = () => {
 
   // Metodo para obtener los pagos realizados por un socio
   const fetchPagos = async (idSocio: number) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/pagos?id_socio=${idSocio}`);
       setPagos(response.data.data);
     } catch (error) {
-      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); 
     }
   }
 
@@ -313,7 +306,10 @@ const TablaReportePagos: React.FC = () => {
             </Button>
           </Box>
         </Box>
-
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
         {/* Tabla reporte pagos */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -442,6 +438,8 @@ const TablaReportePagos: React.FC = () => {
             <Pagination count={3} color="primary"/>
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   );

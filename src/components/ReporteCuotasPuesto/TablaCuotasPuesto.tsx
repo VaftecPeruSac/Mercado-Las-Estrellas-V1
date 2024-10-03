@@ -3,6 +3,7 @@ import useResponsive from "../Responsive";
 import axios from "axios";
 import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { Download } from "@mui/icons-material";
+import LoadingSpinner from "../PogressBar/ProgressBarV1";
 
 interface Puesto {
   id_puesto: number;
@@ -40,18 +41,14 @@ const TablaCuotasPuesto: React.FC = () => {
   // Variables para el responsive
   const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
-  // Para el select
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
-
-  // Para la tabla
   const [cuotas, setCuotas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
-
-  // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false); 
+
 
   const meses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
@@ -84,11 +81,13 @@ const TablaCuotasPuesto: React.FC = () => {
 
   // Obtener las cuotas por puesto
   const fetchCuotas = async (idPuesto: number) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-puestos?id_puesto=${idPuesto}`);
       setCuotas(response.data.data);
     } catch (error) {
-      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); 
     }
   }
 
@@ -274,9 +273,11 @@ const TablaCuotasPuesto: React.FC = () => {
             </Button>
           </Box>
         </Box>
-
-        {/* Tabla reporte cuotas por metrado */}
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+        {isLoading ? (
+          <LoadingSpinner /> 
+        ) : (
+        <>
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
           >
@@ -402,6 +403,8 @@ const TablaCuotasPuesto: React.FC = () => {
             <Pagination count={3} color="primary" />
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   )

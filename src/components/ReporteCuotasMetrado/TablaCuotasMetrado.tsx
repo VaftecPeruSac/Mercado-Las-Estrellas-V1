@@ -3,6 +3,7 @@ import useResponsive from '../Responsive';
 import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { Download } from '@mui/icons-material';
 import axios from 'axios';
+import LoadingSpinner from '../PogressBar/ProgressBarV1';
 
 interface Cuota {
   id_cuota: string;
@@ -34,21 +35,16 @@ const columns: readonly Column[] = [
 
 const TablaReporteCuotasMetrado: React.FC = () => {
 
-  // Variables para el responsive
   const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
-  // Para el select
   const [cuotasSelect, setCuotasSelect] = useState<Cuota[]>([]);
   const [cuotaSeleccionada, setCuotaSeleccionada] = useState<number>(0);
-
-  // Para la tabla
   const [cuotas, setCuotas] = useState<Data[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPage, setRowsPage] = useState(5);
-
-  // Para exportar
   const [exportFormat, setExportFormat] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false); 
+
 
   // Para el formato de fecha
   const formatDate = (date: string) => {
@@ -73,11 +69,13 @@ const TablaReporteCuotasMetrado: React.FC = () => {
 
   // Listar cuotas por metrado
   const listarCuotas = async (idCuota: number) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-metros?id_cuota=${idCuota}`);
       setCuotas(response.data.data);
     } catch (error) {
-      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); 
     }
   }
 
@@ -263,9 +261,11 @@ const TablaReporteCuotasMetrado: React.FC = () => {
             </Button>
           </Box>
         </Box>
-
-        {/* Tabla reporte cuotas por metrado */}
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
             sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
           >
@@ -379,6 +379,8 @@ const TablaReporteCuotasMetrado: React.FC = () => {
             <Pagination count={3} color="primary" />
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   )

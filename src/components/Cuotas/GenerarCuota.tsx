@@ -174,7 +174,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
         if (response.status === 200) {
             const mensaje = response.data || "La cuota fue registrada con éxito";
             mostrarAlerta("Registro exitoso", mensaje,"success");
-            
+            handleCloseModal()
             setServiciosAgregados([]);
             setServiciosIds([]);
             setImporteTotal(0);
@@ -206,6 +206,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Cerrar modal
   const handleCloseModal = () => {
+    window.location.reload();
     handleClose();
   };
 
