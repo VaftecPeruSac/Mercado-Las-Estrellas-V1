@@ -28,6 +28,7 @@ import React, { useEffect, useState } from "react";
 import RegistrarPago from "./RegistrarPago";
 import axios from "axios";
 import useResponsive from "../Responsive";
+import LoadingSpinner from "../PogressBar/ProgressBarV1";
 
 interface Pagos {
   id_pago: string;
@@ -84,6 +85,8 @@ const TablaPago: React.FC = () => {
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
   const [exportFormat, setExportFormat] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -142,6 +145,7 @@ const TablaPago: React.FC = () => {
   }
 
   const fetchPagos = async (page: number = 1) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/pagos?page=${page}`);
       // const response = await axios.get("http://127.0.0.1:8000/v1/pagos?page=${page}");
@@ -161,7 +165,9 @@ const TablaPago: React.FC = () => {
       setPaginaActual(response.data.meta.current_page); // Página actual
       // console.log("La data es:", response.data.data);
     } catch (error) {
-      console.error("Error al traer los datos", error);
+      console.error("Error al traer datos", error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -364,7 +370,10 @@ const TablaPago: React.FC = () => {
             Buscar
           </Button>
         </Box>
-
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
         {/* Tabla Deudas */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -559,6 +568,8 @@ const TablaPago: React.FC = () => {
             />
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   );

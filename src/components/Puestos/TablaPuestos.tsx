@@ -24,6 +24,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import RegistrarPuesto from "./RegistrarPuesto";
 import useResponsive from "../Responsive";
+import LoadingSpinner from "../PogressBar/ProgressBarV1";
 
 interface Puesto {
   id_puesto: string;
@@ -110,6 +111,7 @@ const TablaPuestos: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1); // Total de páginas
   const [paginaActal, setPaginaActual] = useState(1); // Página actual
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<Puesto | null>(null);
+  const [isLoading, setIsLoading] = useState(false); 
 
   // Para exportar la información
   const [exportFormat, setExportFormat] = useState<string>("");
@@ -214,6 +216,7 @@ const TablaPuestos: React.FC = () => {
 
   // Listar puestos
   const fetchPuestos = async (page: number = 1) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?page=${page}&id_gironegocio=${giroSeleccionado}&id_block=${bloqueSeleccionado}&numero_puesto=${nroPuestoIngresado}`); //publico
       // const response = await axios.get("http://127.0.0.1:8000/v1/puestos?page=${page}"); //local
@@ -242,6 +245,8 @@ const TablaPuestos: React.FC = () => {
       console.log("Datos recuperados con exito", response.data);
     } catch (error) {
       console.error("Error al traer datos", error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -559,7 +564,10 @@ const TablaPuestos: React.FC = () => {
           </Box>
 
         )}
-
+        {isLoading ? (
+          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        ) : (
+        <>
         {/* Tabla */}
         <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
           <TableContainer
@@ -743,6 +751,8 @@ const TablaPuestos: React.FC = () => {
             />
           </Box>
         </Paper>
+        </>
+        )}
       </Card>
     </Box>
   );
