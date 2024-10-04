@@ -82,8 +82,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
-  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
   const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
+  const [puestoSeleccionado, setPuestoSeleccionado] = useState<number | "">("");
 
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
@@ -135,12 +136,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         estado: socio.estado || '',
         fecha_registro: formatDate(socio.fecha_registro) || '',
       });
+      setBloqueSeleccionado(Number(socio.id_block));
+      setPuestoSeleccionado(Number(socio.id_puesto));
     }
   }, [socio]);
 
   const handleCloseModal = () => {
     limpiarCamposSocio();
-    window.location.reload();
+    // window.location.reload();
     handleClose();
   };
 
@@ -227,6 +230,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         return "";
     }
   }
+  
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -237,7 +241,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
         if (response.status === 200) {
             const mensaje = response.data || "El socio se registró correctamente";
-             mostrarAlerta("Registro exitoso", mensaje, "success");
+            mostrarAlerta("Registro exitoso", mensaje, "success");
             limpiarCamposSocio();
             onSocioRegistrado();
             handleCloseModal();
@@ -251,8 +255,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     } finally {
         setLoading(false); 
     }
-};
-
+  };
 
   // Editar socio
   const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -279,7 +282,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
       setLoading(false); 
   }
   };
-  
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -297,7 +299,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+            <pre>{JSON.stringify(formData, null, 2)}</pre>
 
             <Box component="form" noValidate autoComplete="off">
 
@@ -568,14 +570,20 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                     {/* Nro. Puesto */}
                     <FormControl fullWidth required>
                       <Autocomplete
+                        disabled={socio !== null}
                         options={puestosFiltrados}
                         getOptionLabel={(puesto) => puesto.numero_puesto.toString()} // Convertir numero_puesto a string para mostrarlo correctamente
+                        value={
+                          puestoSeleccionado 
+                          ? puestosFiltrados.find(puesto => puesto.id_puesto === puestoSeleccionado) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
+                          : null // Si no hay puesto seleccionado, mostrar null
+                        }
                         onChange={(event, newValue) => {
                           if (newValue) {
-                            setFormData({
-                              ...formData,
-                              id_puesto: newValue.id_puesto.toString(), // Convertir id_puesto a string
-                            });
+                            setFormData({ ...formData, id_puesto: newValue.id_puesto.toString() });
+                            setPuestoSeleccionado(Number(newValue.id_puesto));
+                          } else {
+                            setPuestoSeleccionado("");
                           }
                         }}
                         renderInput={(params) => (
