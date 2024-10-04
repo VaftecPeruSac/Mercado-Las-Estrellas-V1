@@ -28,7 +28,7 @@ import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
 import axios from "axios";
 import useResponsive from "../Responsive";
-import { mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion, validarCamposCuotas } from "../Alerts/Registrar";
 
 interface AgregarProps {
   open: boolean;
@@ -82,7 +82,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Datos del formulario
   const [fechaEmision, setFechaEmision] = useState("");
   const [fechaVencimiento, setFechaVencimiento] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
 
   const [formData, setFormData] = useState({
@@ -147,57 +147,51 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     setImporteTotal(total);
   }, [serviciosAgregados]);
 
-  const limpiarCuota=()=>{
+  const limpiarCuota = () => {
     setFormData({
-          id_servicio: "",
-          importe: "",
-          fecha_registro: "",
-          fecha_vencimiento: ""
-        });
+      id_servicio: "",
+      importe: "",
+      fecha_registro: "",
+      fecha_vencimiento: ""
+    });
   }
 
   // Generar cuota
   const registrarCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); // Establecer loading en true
+    setLoading(true);
+    const isValid = validarCamposCuotas(formData, ['fecha_registro', 'fecha_vencimiento']) && servicioSeleccionado;
+    if (!isValid) {
+      setLoading(false);
+      return;
+    }
 
     const dataToSend = {
-        ...formData,
-        servicios: serviciosIds,
-        importe: importeTotal,
+      ...formData,
+      servicios: serviciosIds,
+      importe: importeTotal,
     };
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
-        // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
+      // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
 
-        if (response.status === 200) {
-            const mensaje = response.data || "La cuota fue registrada con éxito";
-            mostrarAlerta("Registro exitoso", mensaje,"success");
-            handleCloseModal()
-            setServiciosAgregados([]);
-            setServiciosIds([]);
-            setImporteTotal(0);
-        } else {
-            mostrarAlerta("Error", "No se pudo registrar la cuota. Inténtalo nuevamente.", "error");
-        }
+      if (response.status === 200) {
+        const mensaje = response.data || "La cuota fue registrada con éxito";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        // handleCloseModal()
+        setServiciosAgregados([]);
+        setServiciosIds([]);
+        setImporteTotal(0);
+      } else {
+        mostrarAlerta("Error");
+      }
     } catch (error) {
-        let mensajeError = "Ocurrió un error al registrar la cuota. Inténtalo nuevamente.";
-        if (axios.isAxiosError(error)) {
-            if (error.response?.data?.message) {
-                mensajeError = error.response.data.message;
-            } else if (error.response?.data) {
-                mensajeError = error.response.data;
-            }
-        }
-        if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
-            mensajeError = "Por favor, completa todos los campos obligatorios.";
-        }
-        mostrarAlerta("Error", mensajeError, "error");
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
 
   // Cambiar entre pestañas
@@ -506,15 +500,15 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
               const result = await mostrarAlertaConfirmacion(
                 "¿Está seguro de registrar un nuevo socio?"
               );
-          
+
               if (result.isConfirmed) {
-                  registrarCuota(e); // Llamar a la función para registrar la cuota
+                registrarCuota(e); // Llamar a la función para registrar la cuota
               }
-          }}
-          disabled={loading} // Deshabilita el botón cuando está en loading
-        >
+            }}
+            disabled={loading} // Deshabilita el botón cuando está en loading
+          >
             {loading ? "Cargando..." : "Registrar"}
-            </Button>
+          </Button>
         </Box>
       </Card>
     </Modal>

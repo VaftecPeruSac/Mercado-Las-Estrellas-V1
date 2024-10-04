@@ -37,6 +37,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from "../context/AuthContext";
 import useResponsive from "./Responsive";
 import Swal from "sweetalert2";
+import { CustomButton, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 
 interface SidebarProps {
   open: boolean;
@@ -78,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     setEmailUsuario("");
     setMensaje("");
   };
-  
+
   const formData = useRef<HTMLFormElement>(null);
 
   const handleSendEmail = () => {
@@ -86,76 +87,82 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!nombreUsuario || !emailUsuario || !mensaje) {
-      Swal.fire("¡Formulario incompleto!", "Por favor completa todos los campos.", "error");
+      mostrarAlerta("Formulario incompleto", "Por favor completa todos los campos.", "error");
       return;
     }
 
     if (!emailRegex.test(emailUsuario)) {
-      Swal.fire("¡Correo inválido!", "Por favor ingresa un correo electrónico válido.", "error");
+      mostrarAlerta("Correo inválido", "Por favor ingresa un correo electrónico válido.", "error");
       return;
     }
+
 
     if (formData.current) {
       emailjs.sendForm('service_9bvnfok', 'template_et36ked', formData.current, "vyDUK-OuHPsdQAaPJ")
         .then((result) => {
-          Swal.fire("¡Correo enviado!", "Hemos recibido tu mensaje, nos pondremos en contacto contigo lo más pronto posible.", "success");
+          mostrarAlerta("Correo enviado", "Hemos recibido tu mensaje, nos pondremos en contacto contigo lo más pronto posible.", "success");
           handleCloseDialog();
         }, (error) => {
-          Swal.fire("¡Error al enviar correo!", "Por favor intenta de nuevo más tarde.", "error");
+          mostrarAlerta("Error al enviar correo", "Por favor intenta de nuevo más tarde.", "error");
         });
     } else {
-      Swal.fire("¡Error al enviar correo!", "Por favor intenta de nuevo más tarde.", "error");
+      mostrarAlerta("Error al enviar correo", "Por favor intenta de nuevo más tarde.", "error");
     }
-
   };
 
   // Estilos de los items de la lista
   const getEstilos = (ubicacion: string, estilosAdicionales = {}) => {
     // Si la ubicacion actual es igual a la ubicacion del item de la lista
     return location.pathname === ubicacion
-    // Retornar los estilos del item de la lista con el color de fondo #404040 y el texto en negrita
-      ? { 
-        ...listItemStyle, 
-        ...estilosAdicionales, 
-        backgroundColor: "#404040", 
+      // Retornar los estilos del item de la lista con el color de fondo #404040 y el texto en negrita
+      ? {
+        ...listItemStyle,
+        ...estilosAdicionales,
+        backgroundColor: "#404040",
         "& .MuiListItemText-primary": {
           fontWeight: "550",
         },
       }
-    // De lo contrario, retornar los estilos del item de la lista con el color de fondo por defecto 
-    // y el texto en color #888
-      : { 
-        ...listItemStyle, 
-        ...estilosAdicionales, 
-        color: "#888" 
+      // De lo contrario, retornar los estilos del item de la lista con el color de fondo por defecto 
+      // y el texto en color #888
+      : {
+        ...listItemStyle,
+        ...estilosAdicionales,
+        color: "#888"
       }
   };
 
   const handleCerrarSesion = () => {
-    logout();
-    navigate("/");
-    onClose();
+    mostrarAlertaConfirmacion(
+      "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
+    ).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate("/");
+        onClose();
+      }
+    });
   };
 
   return (
     <Box sx={{
       height: "100vh",
       width: isMobile || isTablet ? "100vw" : "260px",
-      display: "flex", 
+      display: "flex",
       flexDirection: "column",
-      bgcolor: "#1f2022", 
+      bgcolor: "#1f2022",
       pl: 2, pr: 2,
       overflowY: "auto", // Hace que el sidebar tenga scroll
       "&::-webkit-scrollbar": {
-      display: "none", // Oculta el scrollbar en navegadores basados en WebKit
+        display: "none", // Oculta el scrollbar en navegadores basados en WebKit
       },
     }}>
 
-      <Box sx={{ 
-        display: "flex", 
-        alignItems: "center", 
+      <Box sx={{
+        display: "flex",
+        alignItems: "center",
         alignContent: "center",
-        justifyContent: "space-between" 
+        justifyContent: "space-between"
       }}>
         <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 1 }}>
           <BackupTableIcon />
@@ -183,12 +190,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             to="/home"
             sx={getEstilos("/home", { mt: 2 })}
             onClick={() => {
-              if(!isMobile && !isTablet) {
-                if(location.pathname === "/home") {
+              if (!isMobile && !isTablet) {
+                if (location.pathname === "/home") {
                   handleOpenPanel();
                 }
               } else {
-                if(location.pathname === "/home") {
+                if (location.pathname === "/home") {
                   handleOpenPanel();
                 } else {
                   onClose();
@@ -472,8 +479,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             </Box>
           </DialogContent>
           <DialogActions sx={{ justifyContent: "center" }}>
-            <Button variant="contained" color="error" onClick={handleCloseDialog}>Cancelar</Button>
-            <Button variant="contained" color="success" type="submit" onClick={handleSendEmail}>Enviar</Button>
+            <CustomButton variant="contained" color="#202123" onClick={handleCloseDialog}>Cancelar</CustomButton>
+            <CustomButton variant="contained" color="#008001" onClick={handleSendEmail} type="submit">Enviar</CustomButton>
           </DialogActions>
         </Dialog>
 

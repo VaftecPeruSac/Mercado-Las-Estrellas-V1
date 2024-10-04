@@ -94,7 +94,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [loading, setLoading] = useState(false); // Estado de loading
-  
+
   const [formData, setFormData] = useState({
     id_socio: "",
     nombre: "",
@@ -230,40 +230,40 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); 
-    const { id_socio, id_block, ...dataToSend } = formData; 
+    setLoading(true);
+    const { id_socio, id_block, ...dataToSend } = formData;
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
 
-        if (response.status === 200) {
-            const mensaje = response.data || "El socio se registró correctamente";
-             mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarCamposSocio();
-            onSocioRegistrado();
-            handleCloseModal();
-        } else {
-            mostrarAlerta(
-                "error"
-            );
-        }
-      } catch (error) {
-        manejarError(error); 
+      if (response.status === 200) {
+        const mensaje = response.data || "El socio se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        limpiarCamposSocio();
+        onSocioRegistrado();
+        handleCloseModal();
+      } else {
+        mostrarAlerta(
+          "error"
+        );
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
 
   // Editar socio
   const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const { id_puesto, id_block, ...dataToSend } = formData;
-  
+
     try {
       const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
-  
+
       if (response.status === 200) {
         const mensaje = response.data || "El socio se actualizó correctamente";
         mostrarAlerta("Actualización exitosa", mensaje, "success");
@@ -274,12 +274,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         mostrarAlerta("Error");
       }
     } catch (error) {
-      manejarError(error); 
-  } finally {
-      setLoading(false); 
-  }
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -760,15 +760,15 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
         {/* <Agregar onSocioRegistrado={handleSocioRegistrado} />
         <Tabla socios={socios} /> */}
 
-        <Box 
-          sx={{ 
-            display: "flex", 
+        <Box
+          sx={{
+            display: "flex",
             justifyContent: isTablet || isMobile ? "center" : "flex-end",
-            mt: 3 
+            mt: 3
           }}
         >
           <Button
-            variant="outlined"
+            variant="contained"
             sx={{
               width: "140px",
               height: "45px",
@@ -794,9 +794,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                 backgroundColor: loading ? "#aaa" : "#388E3C",
               },
             }}
-            onClick={async (e) => { 
+            onClick={async (e) => {
               if (activeTab === 0) {
-                const result = await mostrarAlertaConfirmacion( 
+                const result = await mostrarAlertaConfirmacion(
                   "¿Está seguro de registrar un nuevo socio?"
                 );
                 if (result.isConfirmed) {
