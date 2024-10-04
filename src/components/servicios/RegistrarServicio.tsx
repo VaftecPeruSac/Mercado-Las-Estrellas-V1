@@ -20,7 +20,7 @@ interface Editarservicio {
 }
 
 const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
-  
+
   // Variables para el diseño responsivo
   const { isLaptop, isTablet, isMobile } = useResponsive();
   const [loading, setLoading] = useState(false); // Estado de loading
@@ -49,7 +49,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
 
   // Llenar campos con los datos del servicio seleccionado
   useEffect(() => {
-    if(servicio){
+    if (servicio) {
       console.log("Servicio obtenido:", servicio);
       setFormData({
         id_servicio: servicio.id_servicio || "",
@@ -88,7 +88,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       estado: "Activo",
       fecha_registro: "",
     });
-  };  
+  };
 
   // Cerrar modal
   const handleCloseModal = () => {
@@ -96,6 +96,10 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     handleClose();
     limpiarRegistarServicio();
   };
+  const CerrarModal = () => {
+    handleClose();
+    limpiarRegistarServicio();
+  }
 
   // Registrar servicio
   const registrarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -104,32 +108,32 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     const { id_servicio, ...dataToSend } = formData;
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
 
-        if (response.status === 200) {
-            const mensaje = response.data || "El servicio se registró correctamente";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarRegistarServicio();
-            handleCloseModal();
-        } else {
-            mostrarAlerta("Error");
-        }
-      } catch (error) {
-        manejarError(error); 
+      if (response.status === 200) {
+        const mensaje = response.data || "El servicio se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        limpiarRegistarServicio();
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
 
   // Actualizar servicio
   const editarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true);  
+    setLoading(true);
     const { ...dataToSend } = formData;
     try {
       const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/servicios/${servicio?.id_servicio}`, dataToSend);
-        if (response.status === 200) {
+      if (response.status === 200) {
         const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success");
         limpiarRegistarServicio();
@@ -138,12 +142,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
         mostrarAlerta("Error");
       }
     } catch (error) {
-      manejarError(error); 
-  } finally {
-      setLoading(false); 
-  }
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
 
   // Contenido del modal
   const renderTabContent = () => {
@@ -211,8 +215,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                     InputProps={{
                       startAdornment: <Bolt sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.fechaRegistro}
-                    // helperText={errors.fechaRegistro}
+                  // error={!!errors.fechaRegistro}
+                  // helperText={errors.fechaRegistro}
                   />
                   {/* Seleccionar tipo de servicio */}
                   <FormControl fullWidth required sx={{ mt: 2 }}>
@@ -244,8 +248,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                       startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
                     }}
                     sx={{ mt: 2 }}
-                    // error={!!errors.costoUnitario}
-                    // helperText={errors.costoUnitario}
+                  // error={!!errors.costoUnitario}
+                  // helperText={errors.costoUnitario}
                   />
                 </Grid>
 
@@ -289,8 +293,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                     InputProps={{
                       startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.fechaRegistro}
-                    // helperText={errors.fechaRegistro}
+                  // error={!!errors.fechaRegistro}
+                  // helperText={errors.fechaRegistro}
                   />
                 </Grid>
               </Grid>
@@ -309,17 +313,17 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 p: isMobile ? "0px" : "0px 58px"
               }}
             >
-              El monto total ingresado en este servicio sera repartido entre 
+              El monto total ingresado en este servicio sera repartido entre
               el área total de todos los puestos que se encuentren activos. (*)
             </Typography>
-            
+
             <Box
               component="form"
               noValidate
               autoComplete="off"
               sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
-              
+
               <Grid container spacing={2}>
 
                 <Grid item xs={12} sm={6}>
@@ -364,8 +368,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                     InputProps={{
                       startAdornment: <Bolt sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.fechaRegistro}
-                    // helperText={errors.fechaRegistro}
+                  // error={!!errors.fechaRegistro}
+                  // helperText={errors.fechaRegistro}
                   />
 
                   {/* Ingresar costo total del servicio */}
@@ -378,8 +382,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                     InputProps={{
                       startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.fechaRegistro}
-                    // helperText={errors.fechaRegistro}
+                  // error={!!errors.fechaRegistro}
+                  // helperText={errors.fechaRegistro}
                   />
 
                 </Grid>
@@ -425,8 +429,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                     InputProps={{
                       startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
                     }}
-                    // error={!!errors.fechaRegistro}
-                    // helperText={errors.fechaRegistro}
+                  // error={!!errors.fechaRegistro}
+                  // helperText={errors.fechaRegistro}
                   />
 
                 </Grid>
@@ -476,8 +480,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                           readOnly: true,
                           startAdornment: <Storefront sx={{ mr: 1, color: "gray" }} />
                         }}
-                        // error={!!errors.fechaRegistro}
-                        // helperText={errors.fechaRegistro}
+                      // error={!!errors.fechaRegistro}
+                      // helperText={errors.fechaRegistro}
                       />
 
                       {/* Costo por metro cuadrado */}
@@ -490,8 +494,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                           readOnly: true,
                           startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />,
                         }}
-                        // error={!!errors.fechaRegistro}
-                        // helperText={errors.fechaRegistro}
+                      // error={!!errors.fechaRegistro}
+                      // helperText={errors.fechaRegistro}
                       />
 
                     </Grid>
@@ -509,8 +513,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                           startAdornment: <Straighten sx={{ mr: 1, color: "gray" }} />,
                           endAdornment: <> m2 </>,
                         }}
-                        // error={!!errors.fechaRegistro}
-                        // helperText={errors.fechaRegistro}
+                      // error={!!errors.fechaRegistro}
+                      // helperText={errors.fechaRegistro}
                       />
 
                     </Grid>
@@ -528,7 +532,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
         return <Typography>Seleccione una pestaña</Typography>;
     }
   }
-  
+
   return (
     <Modal
       open={open}
@@ -575,12 +579,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
           </div>
         )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs 
-            value={activeTab} 
+          <Tabs
+            value={activeTab}
             onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
-            sx={{ 
+            sx={{
               "& .MuiTabs-flexContainer": {
                 minHeight: "36px",
               },
@@ -620,7 +624,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             borderColor: "divider",
           }}
         >
-         <Button
+          <Button
             variant="outlined"
             sx={{
               width: "140px",
@@ -632,7 +636,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={handleCloseModal}
+            onClick={CerrarModal}
           >
             Cerrar
           </Button>
@@ -648,8 +652,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
               },
             }}
             onClick={async (e) => {
-              let result; 
-            
+              let result;
+
               // Caso cuando activeTab es 0
               if (activeTab === 0) {
                 result = await mostrarAlertaConfirmacion(
@@ -657,13 +661,13 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 );
                 if (result.isConfirmed) {
                   if (servicio) {
-                    editarServicio(e); 
+                    editarServicio(e);
                   } else {
-                    registrarServicio(e); 
+                    registrarServicio(e);
                   }
                 }
               }
-            
+
               // Caso cuando activeTab es 1
               if (activeTab === 1) {
                 result = await mostrarAlertaConfirmacion(
@@ -671,14 +675,15 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 );
                 if (result.isConfirmed) {
                   // registrarServicioCompartido(e); }
+                }
               }
-            }}
-          }
-          disabled={loading} // Deshabilita el botón cuando está en loading
+            }
+            }
+            disabled={loading} // Deshabilita el botón cuando está en loading
 
           >
             {loading ? "Cargando..." : "Registrar"}
-            </Button>
+          </Button>
         </Box>
       </Card>
     </Modal>

@@ -35,17 +35,17 @@ interface AgregarProps {
   handleClose: () => void;
 }
 
-interface Socio{
+interface Socio {
   id_socio: number;
   nombre_completo: string;
 }
 
-interface Puesto{
-  id_puesto:number;
+interface Puesto {
+  id_puesto: number;
   numero_puesto: string;
 }
 
-interface Deuda{
+interface Deuda {
   id_deuda: number;
   total: string;
   anio: string;
@@ -91,10 +91,10 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [idSocioSeleccionado, setIdSocioSeleccionado] = useState("");
   const [idPuestoSeleccionado, setIdPuestoSeleccionado] = useState("");
-  
+
   // Para la tabla
   const [deudas, setDeudas] = useState<Data[]>([]);
-  const [filasSeleccionadas, setFilasSeleccionadas] = useState<({[key: string]: boolean;})>({});
+  const [filasSeleccionadas, setFilasSeleccionadas] = useState<({ [key: string]: boolean; })>({});
 
   // Para guardar el monto por deuda
   const [montoPagar, setMontoPagar] = useState<{ [key: number]: number }>({});
@@ -110,8 +110,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Para registrar el pago
   const [formData, setFormData] = useState({
     id_socio: "",
-    deudas:[{
-      id_deuda: 0, 
+    deudas: [{
+      id_deuda: 0,
       importe: 0
     }]
   });
@@ -169,9 +169,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const calcularTotalDeudaSeleccionado = () => {
     let total = 0;
     Object.keys(filasSeleccionadas).forEach((id_deuda) => {
-      if(filasSeleccionadas[id_deuda]){
+      if (filasSeleccionadas[id_deuda]) {
         const fila = deudas.find((deuda) => deuda.id_deuda === parseInt(id_deuda));
-        if(fila){
+        if (fila) {
           total += parseFloat(fila.deuda);
         }
       }
@@ -183,7 +183,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const calcularTotalSeleccionado = () => {
     let total = 0;
     Object.keys(filasSeleccionadas).forEach((id_deuda) => {
-      if(filasSeleccionadas[id_deuda]){
+      if (filasSeleccionadas[id_deuda]) {
         // Obtener el elemento del TextField que corresponde a esta deuda
         const inputElement = document.getElementById(`pago-${id_deuda}`) as HTMLInputElement;
         // Si el elemento existe, tomar su valor actual
@@ -206,12 +206,12 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
     // Manejamos las filas seleccionadas
     setFilasSeleccionadas((estadoPrevio) => ({
-      ...estadoPrevio, 
+      ...estadoPrevio,
       [idDeuda]: seleccionado
     }));
 
-    if(seleccionado) {
-      
+    if (seleccionado) {
+
       // Para almacenar el arreglo de deudas en el formulario
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -220,7 +220,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
           ...prevFormData.deudas.filter(deuda => deuda.id_deuda !== idDeuda),
           // Agregamos la nuevas deudas y su monto a pagar
           { id_deuda: idDeuda, importe: montoPagar }
-        ]        
+        ]
       }));
 
     } else {
@@ -265,9 +265,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       deudas: prevFormData.deudas.map(
-        deuda => deuda.id_deuda === idDeuda 
-        ? {...deuda, importe: validarMonto } // Actualizar el importe
-        : deuda // Mantener la deuda sin cambios
+        deuda => deuda.id_deuda === idDeuda
+          ? { ...deuda, importe: validarMonto } // Actualizar el importe
+          : deuda // Mantener la deuda sin cambios
       )
     }));
 
@@ -288,8 +288,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     // Limpiar formulario
     setFormData({
       id_socio: "",
-      deudas:[{
-        id_deuda: 0, 
+      deudas: [{
+        id_deuda: 0,
         importe: 0
       }]
     });
@@ -301,11 +301,18 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Cerrar modal
   const handleCloseModal = () => {
-    setMontoPagar({}); // Limpiamos los montos a pagar
+    setMontoPagar({});
     handleClose();
     window.location.reload();
     limpiarCampos();
   };
+
+  const CerrarModal = () => {
+    handleClose();
+    setMontoPagar({});
+    limpiarCampos();
+  }
+
 
   // REGISTRAR PAGO
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -314,21 +321,21 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const dataToSend = { ...formData };
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
 
-        if (response.status === 200) {
-            const mensaje = response.data || "El pago fue registrado correctamente";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            handleCloseModal();
-        } else {
-            mostrarAlerta("Error");
-        }
-      } catch (error) {
-        manejarError(error); 
+      if (response.status === 200) {
+        const mensaje = response.data || "El pago fue registrado correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
@@ -351,8 +358,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} marginTop={1}>
                   {/* Seleccionar socio */}
-                  <FormControl 
-                    sx={{ 
+                  <FormControl
+                    sx={{
                       width: isMobile ? "100%" : "48%",
                       mb: isMobile ? "15px" : "0px"
                     }}
@@ -396,10 +403,10 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   </FormControl>
 
                   {/* Seleccionar puesto */}
-                  <FormControl 
-                    sx={{ 
-                      ml: isTablet ? "1rem" : isMobile ? "0px" : "23px", 
-                      width: isMobile ? "100%" : "48%" 
+                  <FormControl
+                    sx={{
+                      ml: isTablet ? "1rem" : isMobile ? "0px" : "23px",
+                      width: isMobile ? "100%" : "48%"
                     }}
                   >
                     <InputLabel id="seleccionar-puesto-label">
@@ -708,7 +715,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={handleCloseModal}
+            onClick={CerrarModal}
           >
             Cerrar
           </Button>
@@ -725,15 +732,15 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             }}
             onClick={async (e) => {
               const result = await mostrarAlertaConfirmacion(
-                  "¿Está seguro de registrar este pago?",
+                "¿Está seguro de registrar este pago?",
               );
               if (result.isConfirmed) {
-                  registrarPago(e);
+                registrarPago(e);
               }
-          }}   
-          disabled={loading}
-        >
-          {loading ? "Cargando..." : "Registrar"}
+            }}
+            disabled={loading}
+          >
+            {loading ? "Cargando..." : "Registrar"}
 
           </Button>
         </Box>
