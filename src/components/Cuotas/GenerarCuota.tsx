@@ -204,6 +204,11 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     handleClose();
   };
 
+  const CerrarModal = () => {
+    handleClose();
+    limpiarCuota();
+  }
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -480,7 +485,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={handleCloseModal}
+            onClick={CerrarModal}
           >
             Cerrar
           </Button>

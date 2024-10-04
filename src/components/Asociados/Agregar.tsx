@@ -144,6 +144,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     handleClose();
   };
 
+  const CerrarModal = () => {
+    handleClose();
+    limpiarCamposSocio();
+  }
+
   const limpiarCamposSocio = () => {
     setBloqueSeleccionado("");
     setFormData({
@@ -779,7 +784,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={handleCloseModal}
+            onClick={CerrarModal}
           >
             Cerrar
           </Button>

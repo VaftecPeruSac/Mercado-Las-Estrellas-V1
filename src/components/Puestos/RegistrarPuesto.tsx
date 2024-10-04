@@ -308,7 +308,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     });
   };
 
-  const limpiarAsignarInquilino =() =>{
+  const limpiarAsignarInquilino = () => {
     setformDataInquilino({
       nombre: "",
       apellido_paterno: "",
@@ -317,7 +317,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       telefono: "",
       bloque: "",
       id_puesto: "",
-  });
+    });
   }
 
   const limpiarNuevoBloque = () => {
@@ -341,40 +341,48 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     limpiarGiroNegocio();
   };
 
+  const cerrarModal = () => {
+    handleClose();
+    limpiarRegistrarPuesto();
+    limpiarAsignarPuesto();
+    limpiarNuevoBloque();
+    limpiarGiroNegocio();
+  }
+
   // Registrar Puesto
   const registrarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
     const { id_puesto, ...dataToSend } = formDataPuesto;
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
-        if (response.status === 200) {
-            const mensaje = response.data || "Puesto registrado con éxito";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarRegistrarPuesto();
-            handleCloseModal();
-        } else {
-            mostrarAlerta(
-                "Error",
-            );
-        }
-      } catch (error) {
-        manejarError(error); 
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
+      if (response.status === 200) {
+        const mensaje = response.data || "Puesto registrado con éxito";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        limpiarRegistrarPuesto();
+        handleCloseModal();
+      } else {
+        mostrarAlerta(
+          "Error",
+        );
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
   // Editar Puesto
   const editarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // Evita el comportamiento por defecto del clic
     e.preventDefault();
     setLoading(true);
-  
+
     // Data a enviar
     const { ...dataToSend } = formDataPuesto;
-  
+
     try {
       // Conexión al servicio
       const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/puestos/${puesto?.id_puesto}`, dataToSend);
@@ -387,82 +395,82 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         mostrarAlerta("Errror");
       }
     } catch (error) {
-      manejarError(error); 
-  } finally {
-      setLoading(false); 
-  }
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
     const dataToSend = formDataAsginarPuesto;
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
-        if (response.status === 200) {
-          const mensaje = response.data.message || "Puesto registrado con éxito";
-          mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarAsignarPuesto();
-            handleCloseModal();
-        } else {
-            mostrarAlerta("Error");
-        }
-      } catch (error) {
-        manejarError(error); 
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
+      if (response.status === 200) {
+        const mensaje = response.data.message || "Puesto registrado con éxito";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        limpiarAsignarPuesto();
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
   // Registar inquilino
   const asignarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
 
     const { bloque, ...dataToSend } = formDataInquilino;
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); // Publico
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); // Publico
 
-        if (response.status === 200) {
-            const mensaje = response.data || "El inquilino se registró correctamente";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            handleCloseModal();
-        } else {
-            mostrarAlerta("Error");
-        }
+      if (response.status === 200) {
+        const mensaje = response.data || "El inquilino se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
     } catch (error) {
-        manejarError(error);
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
 
   // Registrar Bloque
   const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true); 
-    const dataToSend = { ...formDataBloque }; 
+    setLoading(true);
+    const dataToSend = { ...formDataBloque };
 
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
-        if (response.status === 200) {
-            const mensaje = response.data || "El bloque se registró correctamente";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarNuevoBloque();
-            handleCloseModal();
-        } else {
-            mostrarAlerta("Error");
-        }
-      } catch (error) {
-        manejarError(error); 
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
+      if (response.status === 200) {
+        const mensaje = response.data || "El bloque se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        limpiarNuevoBloque();
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
 
   // Registrar Giro de negocio
   const registrarGiroNegocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -470,21 +478,21 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const dataToSend = { ...formDataGiroNegocio };
     try {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
-        if (response.status === 200) {
-            const mensaje = response.data || "El giro de negocio se registró correctamente";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarGiroNegocio();
-            handleCloseModal();
-        } else {
-            mostrarAlerta("Error");
-        }
-      } catch (error) {
-        manejarError(error); 
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
+      if (response.status === 200) {
+        const mensaje = response.data || "El giro de negocio se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success");
+        limpiarGiroNegocio();
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
-};
+  };
   // Contenido del modal
   const renderTabContent = () => {
     switch (activeTab) {
@@ -1407,7 +1415,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={handleCloseModal}
+            onClick={cerrarModal}
           >
             Cerrar
           </Button>
@@ -1454,7 +1462,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   asignarInquilino(e); // Asignar inquilino
                 }
               }
-            
+
               if (activeTab === 3) {
                 result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar bloque
                   "¿Está seguro de registrar un bloque?",
@@ -1463,7 +1471,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   registrarBloque(e); // Registrar bloque
                 }
               }
-            
+
               if (activeTab === 4) {
                 result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
                   "¿Está seguro de registrar un giro de negocio?",
