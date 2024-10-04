@@ -3,8 +3,6 @@ import {
   Box,
   Card,
   Modal,
-  Tabs,
-  Tab,
   Typography,
   Button,
   Grid,
@@ -29,6 +27,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../Responsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import jsPDF from "jspdf";
 
 interface AgregarProps {
   open: boolean;
@@ -43,6 +42,9 @@ interface Socio {
 interface Puesto {
   id_puesto: number;
   numero_puesto: string;
+  block: {
+    nombre: string;
+  }
 }
 
 interface Deuda {
@@ -110,6 +112,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Para registrar el pago
   const [formData, setFormData] = useState({
     id_socio: "",
+    nombre_socio: "",
+    nombre_block: "",
+    numero_puesto: "",
     deudas: [{
       id_deuda: 0,
       importe: 0
@@ -140,6 +145,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       const data = response.data.data.map((item: Puesto) => ({
         id_puesto: item.id_puesto,
         numero_puesto: item.numero_puesto,
+        block: {
+          nombre: item.block.nombre
+        }
       }));
       setPuestos(data);
     } catch (error) {
@@ -288,6 +296,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     // Limpiar formulario
     setFormData({
       id_socio: "",
+      nombre_socio: "",
+      nombre_block: "",
+      numero_puesto: "",
       deudas: [{
         id_deuda: 0,
         importe: 0
@@ -313,18 +324,18 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     limpiarCampos();
   }
 
-
   // REGISTRAR PAGO
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const dataToSend = { ...formData };
+    const {nombre_socio, nombre_block, numero_puesto, ...dataToSend}  = formData;
 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
 
       if (response.status === 200) {
         const mensaje = response.data || "El pago fue registrado correctamente";
+        generarTicketPDF(formData);
         mostrarAlerta("Registro exitoso", mensaje, "success");
         handleCloseModal();
       } else {
@@ -337,9 +348,69 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     }
   };
 
-  // Cambiar entre pestañas
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
-    setActiveTab(newValue);
+  const generarTicketPDF = (data: typeof formData) => {
+
+    const ticket = new jsPDF();
+    const pageWidth = ticket.internal.pageSize.getWidth(); // Ancho de la página
+
+    const centerText = (text: string, y: number) => {
+      const textWidth = ticket.getTextWidth(text);
+      const x = (pageWidth - textWidth) / 2;
+      ticket.text(text, x, y);
+    };
+
+    const rightText = (text: string, y: number) => {
+      const textWidth = ticket.getTextWidth(text);
+      const x = (pageWidth - textWidth) - 20;
+      ticket.text(text, x, y);
+    };
+
+    const textoMezclado = (textoNegrita: string, textoNormal: string, x: number, y: number, ticket: jsPDF) => {
+      const textoNegritaWidth = ticket.getTextWidth(textoNegrita);
+      ticket.setFont("helvetica", "bold");
+      ticket.text(textoNegrita, x, y);
+      ticket.setFont("helvetica", "normal");
+      ticket.text(textoNormal, x + textoNegritaWidth, y);
+    };
+
+    ticket.setFontSize(12);
+    ticket.setFont("helvetica", "bold");
+    centerText('Asociación comercial de Propietarios del Mercado "Nstra. Sra.de Las Estrellas"', 10);
+
+    ticket.setFontSize(10);
+    centerText('Fundado el 07 de Abril de 1977 Inscrito en la Sunarp Partida N°11012575.', 20);
+    centerText('Calle 9 Asociación de Viv. "Hijos de Apurimac Primera Etapa - Santa Clara - Ate', 30);
+
+    textoMezclado('N° Recibo: ', '00000000', 20, 50, ticket);
+    textoMezclado('Socio: ', data.nombre_socio, 20, 60, ticket);
+
+    const posTextoCompleto = pageWidth - ticket.getTextWidth(`Block: ${data.nombre_block} - Puesto: ${data.numero_puesto}`) - 20;
+    const anchoBloque = pageWidth - ticket.getTextWidth(`Block: ${data.nombre_block}`) - 20;
+    textoMezclado('Block: ', data.nombre_block, posTextoCompleto, 60, ticket);
+    textoMezclado(' - Puesto: ', data.numero_puesto, posTextoCompleto + anchoBloque, 60, ticket);
+
+    let y = 80;
+    data.deudas.forEach((deuda, index) => {
+
+      ticket.setFont("helvetica", "normal");
+      ticket.text(`#${index + 1}`, 20, y);
+
+      ticket.setFont("helvetica", "bold");
+      ticket.text(`ID Deuda: ${deuda.id_deuda}`, 30, y);
+      rightText(`Importe: S/${deuda.importe.toFixed(2)}`, y);
+
+      y += 10; // Espaciado entre las deudas
+    });
+
+    ticket.setFont("helvetica", "bold");
+    rightText(`Total a pagar: S/${totalPagar.toFixed(2)}`, y + 20);
+
+    const date = new Date();
+    const fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+
+    ticket.save(`Recibo-Pago-${data.nombre_socio}-${fecha}.pdf`);
+
+  };
 
   // Contenido del modal
   const renderTabContent = () => {
@@ -371,7 +442,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         if (newValue) {
                           const socioId = String(newValue.id_socio); // Convertimos id_socio a string
                           setIdSocioSeleccionado(socioId); // Asignamos el string
-                          setFormData({ ...formData, id_socio: socioId }); // Mantenemos el string en formData
+                          setFormData({ ...formData, id_socio: socioId, nombre_socio: newValue.nombre_completo }); // Mantenemos el string en formData
                           fetchPuestos(socioId); // Pasamos el id_socio como string
                         }
                       }}
@@ -420,6 +491,11 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       onChange={(e) => {
                         const value = e.target.value;
                         setIdPuestoSeleccionado(value);
+                        setFormData({ 
+                          ...formData, 
+                          numero_puesto: puestos.find(p => p.id_puesto === Number(value))?.numero_puesto || "",
+                          nombre_block: puestos.find(p => p.id_puesto === Number(value))?.block.nombre || "",
+                        });
                         fetchDeudaPuesto(idSocioSeleccionado, value);
                       }}
                       startAdornment={
