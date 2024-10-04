@@ -44,11 +44,17 @@ const TablaCuotasPuesto: React.FC = () => {
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
   const [cuotas, setCuotas] = useState<Data[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPage, setRowsPage] = useState(5);
   const [exportFormat, setExportFormat] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false); 
 
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+
+  const cambiarPagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
+    fetchCuotas(value, puestoSeleccionado);
+  };
 
   const meses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
@@ -80,12 +86,15 @@ const TablaCuotasPuesto: React.FC = () => {
   }, []);
 
   // Obtener las cuotas por puesto
-  const fetchCuotas = async (idPuesto: number) => {
+  const fetchCuotas = async (pagina: number = 1, idPuesto: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-puestos?id_puesto=${idPuesto}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-puestos?page=${pagina}&id_puesto=${idPuesto}`);
       setCuotas(response.data.data);
+      setTotalPaginas(response.data.meta.last_page);
+      setPaginaActual(response.data.meta.current_page);
     } catch (error) {
+      console.log(error);
     } finally {
       setIsLoading(false); 
     }
@@ -188,7 +197,7 @@ const TablaCuotasPuesto: React.FC = () => {
                 borderRadius: "30px",
               }}
               onClick={(e) => {
-                fetchCuotas(puestoSeleccionado);
+                fetchCuotas(undefined, puestoSeleccionado);
               }}
             >
               Generar
@@ -314,7 +323,6 @@ const TablaCuotasPuesto: React.FC = () => {
               <TableBody>
                 {cuotas.length > 0
                 ? cuotas
-                  .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((cuota) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isTablet || isMobile
@@ -400,7 +408,12 @@ const TablaCuotasPuesto: React.FC = () => {
             </Table>
           </TableContainer>
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={3} color="primary" />
+            <Pagination 
+              count={totalPaginas}
+              page={paginaActual}
+              onChange={cambiarPagina} 
+              color="primary" 
+            />
           </Box>
         </Paper>
         </>

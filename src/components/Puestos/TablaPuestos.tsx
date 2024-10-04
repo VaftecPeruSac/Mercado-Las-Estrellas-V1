@@ -125,7 +125,10 @@ const TablaPuestos: React.FC = () => {
     setOpen(true);
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setPuestoSeleccionado(null);
+    setOpen(false);
+  }
 
   // Metodo para exportar el listado de puestos
   const handleExportPuestos = async (e: React.MouseEvent<HTMLButtonElement>) => {

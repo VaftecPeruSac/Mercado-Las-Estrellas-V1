@@ -31,7 +31,6 @@ import {
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
 import useResponsive from "../Responsive";
-import Swal from "sweetalert2";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 interface AgregarProps {
@@ -86,12 +85,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number | "">("");
 
-  const [anio, setAnio] = useState<string>("");
-  const [mes, setMes] = useState<string>("");
-  const [itemsSeleccionados, setItemsSeleccionados] = useState<string[]>([]);
-
   const [activeTab, setActiveTab] = useState(0)
-  const [fecha, setFecha] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [loading, setLoading] = useState(false); // Estado de loading
@@ -153,7 +147,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
   }
 
   const limpiarCamposSocio = () => {
-    setBloqueSeleccionado("");
     setFormData({
       id_socio: "",
       nombre: "",
@@ -169,6 +162,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
       id_block: "",
       id_puesto: "",
     });
+    setBloqueSeleccionado("");
+    setPuestoSeleccionado("");
   };
 
   // Obtener bloques
@@ -222,17 +217,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     });
   };
 
-  // Cambiar entre pestañas
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
-    setActiveTab(newValue);
-
   // Metodo para obtener el titulo del modal
   const obtenerTituloModal = (): string => {
-    switch (activeTab) {
-      case 0:
-        return "REGISTRAR NUEVO SOCIO";
-      default:
-        return "";
+    if(socio !== null) { 
+      return "EDITAR SOCIO"; 
+    }
+    else { 
+      return "REGISTRAR NUEVO SOCIO"; 
     }
   }
   
@@ -304,7 +295,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
               Recuerde leer los campos obligatorios antes de escribir. (*)
             </Typography>
 
-            <pre>{JSON.stringify(formData, null, 2)}</pre>
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Box component="form" noValidate autoComplete="off">
 

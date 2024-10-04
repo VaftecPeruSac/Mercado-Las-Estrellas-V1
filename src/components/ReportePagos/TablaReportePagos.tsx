@@ -45,19 +45,26 @@ const TablaReportePagos: React.FC = () => {
   const [socios, setSocios] = useState<Socio[]>([]);
   const [socioSeleccionado, setSocioSeleccionado] = useState<number>(0);
   const [pagos, setPagos] = useState<Data[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPage, setRowsPage] = useState(5);
   const [exportFormat, setExportFormat] = useState<string>("");
   const [searchParams] = useSearchParams();
   const idSocio = searchParams.get("socio");
   const [isLoading, setIsLoading] = useState(false); 
   const navigate = useNavigate();
 
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+
+  const cambiarPagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
+    fetchPagos(value, socioSeleccionado);
+  };
+
   // Si el parametro puesto existe, obtener las deudas del puesto
   useEffect(() => {
     if (idSocio) {
       setSocioSeleccionado(Number(idSocio));
-      fetchPagos(Number(idSocio));
+      fetchPagos(undefined, Number(idSocio));
     }
   }, [idSocio]);
 
@@ -75,12 +82,15 @@ const TablaReportePagos: React.FC = () => {
   }, []);
 
   // Metodo para obtener los pagos realizados por un socio
-  const fetchPagos = async (idSocio: number) => {
+  const fetchPagos = async (pagina: number = 1, idSocio: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/pagos?id_socio=${idSocio}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/pagos?page=${pagina}&id_socio=${idSocio}`);
       setPagos(response.data.data);
+      setTotalPaginas(response.data.meta.last_page);
+      setPaginaActual(response.data.meta.current_page);
     } catch (error) {
+      console.log("Error:", error);
     } finally {
       setIsLoading(false); 
     }
@@ -219,8 +229,8 @@ const TablaReportePagos: React.FC = () => {
                 width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
-              onClick={(e) => {
-                fetchPagos(socioSeleccionado);
+              onClick={() => {
+                fetchPagos(undefined, socioSeleccionado);
                 navigate("/home/reporte-pagos");
               }}
             >
@@ -348,7 +358,6 @@ const TablaReportePagos: React.FC = () => {
               <TableBody>
                 {pagos.length > 0
                 ? pagos
-                  .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((pago) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isTablet || isMobile
@@ -435,7 +444,12 @@ const TablaReportePagos: React.FC = () => {
             </Table>
           </TableContainer>
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={3} color="primary"/>
+            <Pagination 
+              count={totalPaginas} 
+              page={paginaActual}
+              onChange={cambiarPagina}
+              color="primary"
+            />
           </Box>
         </Paper>
         </>

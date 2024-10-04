@@ -40,11 +40,17 @@ const TablaReporteCuotasMetrado: React.FC = () => {
   const [cuotasSelect, setCuotasSelect] = useState<Cuota[]>([]);
   const [cuotaSeleccionada, setCuotaSeleccionada] = useState<number>(0);
   const [cuotas, setCuotas] = useState<Data[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPage, setRowsPage] = useState(5);
   const [exportFormat, setExportFormat] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false); 
 
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState<number>(1);
+  const [totalPaginas, setTotalPaginas] = useState<number>(1);
+
+  const cambiarPagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
+    listarCuotas(value, cuotaSeleccionada);
+  };
 
   // Para el formato de fecha
   const formatDate = (date: string) => {
@@ -68,10 +74,10 @@ const TablaReporteCuotasMetrado: React.FC = () => {
   }, []);
 
   // Listar cuotas por metrado
-  const listarCuotas = async (idCuota: number) => {
+  const listarCuotas = async (pagina: number = 1, idCuota: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-metros?id_cuota=${idCuota}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-metros?page=${pagina}&id_cuota=${idCuota}`);
       setCuotas(response.data.data);
     } catch (error) {
     } finally {
@@ -176,7 +182,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
                 borderRadius: "30px",
               }}
               onClick={(e) => {
-                listarCuotas(cuotaSeleccionada);
+                listarCuotas(undefined, cuotaSeleccionada);
               }}
             >
               Generar
@@ -302,7 +308,6 @@ const TablaReporteCuotasMetrado: React.FC = () => {
               <TableBody>
                 {cuotas.length > 0
                 ? cuotas
-                  .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((cuota) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isTablet || isMobile
@@ -376,7 +381,12 @@ const TablaReporteCuotasMetrado: React.FC = () => {
             </Table>
           </TableContainer>
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={3} color="primary" />
+            <Pagination 
+              count={totalPaginas}
+              page={paginaActual}
+              onChange={cambiarPagina}
+              color="primary" 
+            />
           </Box>
         </Paper>
         </>

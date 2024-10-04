@@ -275,7 +275,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const obtenerTituloModal = (): string => {
     switch (activeTab) {
       case 0:
-        return "REGISTRAR PUESTO";
+        if(puesto) {
+          return "EDITAR PUESTO";
+        } else {
+          return "REGISTRAR PUESTO";
+        }
       case 1:
         return "ASIGNAR PUESTO SOCIO";
       case 2:

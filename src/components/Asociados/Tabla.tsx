@@ -135,7 +135,10 @@ const TablaAsociados: React.FC = () => {
     setOpen(true);
   }
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setSocioSeleccionado(null);
+    setOpen(false);
+  }
 
   const formatDate = (fecha: string): string => {
     const date = new Date(fecha);

@@ -569,7 +569,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
             component="h2"
             sx={{ textAlign: "center", textTransform: "uppercase" }}
           >
-            Registrar Servicio
+            {servicio ? "Editar Servicio" : "Registrar Servicio"}
           </Typography>
         </Box>
         {loading && (

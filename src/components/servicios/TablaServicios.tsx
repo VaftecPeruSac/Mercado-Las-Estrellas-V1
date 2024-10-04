@@ -82,7 +82,10 @@ const TablaServicios: React.FC = () => {
     setOpen(true);
   }
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setServicioSeleccionado(null);
+    setOpen(false);
+  }
 
   // Metodo para exportar el listado de servicios
   const handleExportServicios = async (e: React.MouseEvent<HTMLButtonElement>) => {

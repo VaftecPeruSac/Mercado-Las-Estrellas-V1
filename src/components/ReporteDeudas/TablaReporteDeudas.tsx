@@ -44,20 +44,25 @@ const TablaReporteDeudas: React.FC = () => {
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
   const [deudas, setDeudas] = useState<Data[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPage, setRowsPage] = useState(5);
   const [searchParams] = useSearchParams();
   const idPuesto = searchParams.get("puesto");
   const [isLoading, setIsLoading] = useState(false); 
-
-
   const navigate = useNavigate();
+
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+
+  const cambiarPagina = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPaginaActual(value);
+    fetchDeudas(value, puestoSeleccionado);
+  };
 
   // Si el parametro puesto existe, obtener las deudas del puesto
   useEffect(() => {
     if (idPuesto) {
       setPuestoSeleccionado(Number(idPuesto));
-      fetchDeudas(Number(idPuesto));
+      fetchDeudas(undefined, Number(idPuesto));
     }
   }, [idPuesto]);
 
@@ -78,12 +83,15 @@ const TablaReporteDeudas: React.FC = () => {
   }, []);
 
   // Metodo para obtener las deudas de un puesto
-  const fetchDeudas = async (idPuesto: number) => {
+  const fetchDeudas = async (pagina: number = 1, idPuesto: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/deudas?id_puesto=${idPuesto}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/deudas?page=${pagina}&id_puesto=${idPuesto}`);
       setDeudas(response.data.data);
+      setTotalPaginas(response.data.meta.last_page);
+      setPaginaActual(response.data.meta.current_page);
     } catch (error) {
+      console.log("Error:", error);
     } finally {
       setIsLoading(false); 
     }
@@ -225,8 +233,8 @@ const TablaReporteDeudas: React.FC = () => {
                 width: isMobile ? "100%" : "150px",
                 borderRadius: "30px",
               }}
-              onClick={(e) => {
-                fetchDeudas(puestoSeleccionado);
+              onClick={() => {
+                fetchDeudas(undefined, puestoSeleccionado);
                 navigate(`/home/reporte-deudas`);
               }}
             >
@@ -354,7 +362,6 @@ const TablaReporteDeudas: React.FC = () => {
               <TableBody>
                 {deudas.length > 0
                 ? deudas
-                  .slice(page * rowsPage, page * rowsPage + rowsPage)
                   .map((deuda) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isTablet || isMobile
@@ -435,7 +442,11 @@ const TablaReporteDeudas: React.FC = () => {
             </Table>
           </TableContainer>
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination count={3} color="primary" />
+            <Pagination 
+              count={totalPaginas}
+              page={paginaActual}
+              onChange={cambiarPagina} 
+              color="primary" />
           </Box>
         </Paper>
         </>
