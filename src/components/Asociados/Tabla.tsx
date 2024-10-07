@@ -96,7 +96,7 @@ const columns: readonly Column[] = [
   { id: "gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
   { id: "nombre_inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
   { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
-  { id: "deuda", label: "Deuda Total", minWidth: 50 }, // Deuda total
+  { id: "deuda", label: "Deuda Total", minWidth: 30 }, // Deuda total
   { id: "ver_reporte", label: "Deudas / Pagos", minWidth: 10 }, // Ver Deuda / Pagos
   { id: "accion", label: "Acción", minWidth: 20 },    // Acción
 ];
@@ -534,7 +534,7 @@ const TablaAsociados: React.FC = () => {
                     : columns.map((column) => (
                       <TableCell
                         key={column.id}
-                        align={column.align}
+                        align="center"
                         style={{ minWidth: column.minWidth }}
                         sx={{
                           backgroundColor:
@@ -700,16 +700,18 @@ const TablaAsociados: React.FC = () => {
                           return (
                             <TableCell
                               key={column.id}
-                              align={column.align}
+                              align={column.id === "deuda" ? "center" : column.align}
                               sx={{
                                 backgroundColor:
-                                  column.id === "deuda" ? "#f8d7da" : undefined,
+                                  column.id === "deuda" && value === 0 ? "#B5F598" : column.id === "deuda" ? "#f8d7da" : undefined,
                                 color:
-                                  column.id === "deuda" ? "#721c24" : undefined,
+                                column.id === "deuda" && value === 0 ? "green" : column.id === "deuda" ? "#721c24" : undefined,
                               }}
                             >
-                              {column.id === "ver_reporte" ? (
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                              {column.id === "deuda" 
+                              ? value === 0 ? "No existen deudas" : `S/ ${value}`
+                              : column.id === "ver_reporte" ? (
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                   <IconButton
                                     aria-label="payment"
                                     sx={{ color: "crimson" }}
@@ -769,9 +771,7 @@ const TablaAsociados: React.FC = () => {
               page={paginaActual} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-            // sx={{ marginLeft: "25%" }}
             />
-
           </Box>
         </Paper>
         </>

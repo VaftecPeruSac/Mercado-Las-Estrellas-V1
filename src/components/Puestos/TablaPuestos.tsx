@@ -595,7 +595,7 @@ const TablaPuestos: React.FC = () => {
                     : columns.map((column) => (
                       <TableCell
                         key={column.id}
-                        align={column.align}
+                        align={column.id === "accion" ? "center" : column.align}
                         style={{ minWidth: column.minWidth }}
                         sx={{
                           fontWeight: "bold",
@@ -750,7 +750,6 @@ const TablaPuestos: React.FC = () => {
               page={paginaActal} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-              // sx={{ marginLeft: "25%" }}
             />
           </Box>
         </Paper>

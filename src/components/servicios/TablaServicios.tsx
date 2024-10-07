@@ -55,7 +55,7 @@ const columns: readonly Column[] = [
   { id: "costo_unitario", label: "Costo Unitario", minWidth: 50 },
   { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
   { id: "tipo_servicio", label: "Tipo de Servicio", minWidth: 50 },
-  { id: "accion", label: "Acción", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
+  { id: "accion", label: "Acciones", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
 ];
 
 const TablaServicios: React.FC = () => {
@@ -74,7 +74,6 @@ const TablaServicios: React.FC = () => {
   const [exportFormat, setExportFormat] = React.useState("");
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false); 
-
 
   // Abrir modal con un servicio seleccionado o vacio
   const handleOpen = (servicio?: Servicio) => {
@@ -405,7 +404,7 @@ const TablaServicios: React.FC = () => {
                     : columns.map((column) => (
                       <TableCell
                         key={column.id}
-                        align={column.align}
+                        align={column.id === "accion" ? "center" : column.align}
                         style={{ minWidth: column.minWidth }}
                         sx={{ fontWeight: "bold", }}
                       >
@@ -517,9 +516,15 @@ const TablaServicios: React.FC = () => {
                           ? ""
                           : (servicio as any)[column.id];
                         return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.id === "accion" ? (
-                                <Box sx={{ display: "flex" }}>
+                          <TableCell key={column.id} align={column.align}>
+                            { column.id === "tipo_servicio" 
+                            ? (parseInt(servicio.tipo_servicio) === 1 
+                              ? "Ordinario (Pagos fijos)" 
+                              : parseInt(servicio.tipo_servicio) === 2
+                              ? "Extraordinario (Pagos extras)"
+                              : "Por metrado (Pagos por metraje)")
+                            : column.id === "accion" ? (
+                              <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
                                 <IconButton
                                   aria-label="edit"
                                   sx={{ color: "#0478E3" }}
@@ -554,7 +559,6 @@ const TablaServicios: React.FC = () => {
               page={paginaActual} // Página actual
               onChange={CambioDePagina} // Manejar el cambio de página
               color="primary"
-              // sx={{ marginLeft: "25%" }}
             />
           </Box>
         </Paper>
