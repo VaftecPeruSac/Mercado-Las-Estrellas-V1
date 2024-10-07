@@ -314,7 +314,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleCloseModal = () => {
     setMontoPagar({});
     handleClose();
-    window.location.reload();
     limpiarCampos();
   };
 
@@ -348,14 +347,17 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     }
   };
 
-  const generarTicketPDF = (data: typeof formData) => {
+  const generarTicketPDF = async (data: typeof formData) => {
 
     const ticket = new jsPDF();
     const pageWidth = ticket.internal.pageSize.getWidth(); // Ancho de la página
 
+    const response = await fetch('/logoBase64.txt');
+    const imagenLogo = await response.text();
+
     const centerText = (text: string, y: number) => {
       const textWidth = ticket.getTextWidth(text);
-      const x = (pageWidth - textWidth) / 2;
+      const x = (pageWidth - textWidth) / 2 + 20;
       ticket.text(text, x, y);
     };
 
@@ -375,19 +377,22 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
     ticket.setFontSize(12);
     ticket.setFont("helvetica", "bold");
-    centerText('Asociación comercial de Propietarios del Mercado "Nstra. Sra.de Las Estrellas"', 10);
+
+    ticket.addImage(imagenLogo, 'JPEG', 20, 10, 30, 30);
+    centerText('Asociación comercial de Propietarios del Mercado', 18);
+    centerText('"Nstra. Sra.de Las Estrellas"', 25)
 
     ticket.setFontSize(10);
-    centerText('Fundado el 07 de Abril de 1977 Inscrito en la Sunarp Partida N°11012575.', 20);
-    centerText('Calle 9 Asociación de Viv. "Hijos de Apurimac Primera Etapa - Santa Clara - Ate', 30);
+    centerText('Fundado el 07 de Abril de 1977 Inscrito en la Sunarp Partida N°11012575.', 32);
+    centerText('Calle 9 Asociación de Viv. "Hijos de Apurimac Primera Etapa - Santa Clara - Ate', 36);
 
     textoMezclado('N° Recibo: ', '00000000', 20, 50, ticket);
-    textoMezclado('Socio: ', data.nombre_socio, 20, 60, ticket);
+    textoMezclado('Socio:  ', data.nombre_socio, 20, 60, ticket);
 
-    const posTextoCompleto = pageWidth - ticket.getTextWidth(`Block: ${data.nombre_block} - Puesto: ${data.numero_puesto}`) - 20;
-    const anchoBloque = pageWidth - ticket.getTextWidth(`Block: ${data.nombre_block}`) - 20;
-    textoMezclado('Block: ', data.nombre_block, posTextoCompleto, 60, ticket);
-    textoMezclado(' - Puesto: ', data.numero_puesto, posTextoCompleto + anchoBloque, 60, ticket);
+    const posTextoCompleto = pageWidth - ticket.getTextWidth(`Block:  ${data.nombre_block} - Puesto:  ${data.numero_puesto}`) - 20;
+    const anchoPuesto = ticket.getTextWidth(`Puesto:  ${data.numero_puesto}`);
+    textoMezclado('Block:  ', `${data.nombre_block} - `, posTextoCompleto, 60, ticket);
+    textoMezclado('Puesto:  ', data.numero_puesto, pageWidth - anchoPuesto - 20, 60, ticket);
 
     let y = 80;
     data.deudas.forEach((deuda, index) => {
@@ -424,7 +429,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
               autoComplete="off"
               sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
-              {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+              <pre>{JSON.stringify(formData, null, 2)}</pre>
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} marginTop={1}>
