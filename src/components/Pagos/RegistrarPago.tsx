@@ -429,7 +429,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
               autoComplete="off"
               sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
             >
-              <pre>{JSON.stringify(formData, null, 2)}</pre>
+              {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} marginTop={1}>
