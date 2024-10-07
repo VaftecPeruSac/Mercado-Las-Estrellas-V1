@@ -222,11 +222,11 @@ const TablaAsociados: React.FC = () => {
     const ws = XLSX.utils.aoa_to_sheet(data); // Crea una hoja de trabajo
     const wb = XLSX.utils.book_new(); // Crea un libro de trabajo
     XLSX.utils.book_append_sheet(wb, ws, "Socio"); // Agrega la hoja de trabajo al libro
-    
+
     // Aplicamos estilos a las columnas
     ws['A1'].s = { font: { bold: true } };
     ws['B2'].s = { alignment: { horizontal: 'left' } };
-    ws['!cols'] = [ { wch: 18 }, { wch: 30 } ];
+    ws['!cols'] = [{ wch: 18 }, { wch: 30 }];
 
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
@@ -237,7 +237,7 @@ const TablaAsociados: React.FC = () => {
     // Crear el enlace de descarga
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ','-')}.xlsx`);
+    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ', '-')}.xlsx`);
     document.body.appendChild(link);
 
     if (accion === 1) {
@@ -287,7 +287,7 @@ const TablaAsociados: React.FC = () => {
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -373,7 +373,7 @@ const TablaAsociados: React.FC = () => {
             open={open}
             handleClose={handleClose}
             socio={socioSeleccionado}
-            onSocioRegistrado={handleSocioRegistrado}
+          // onSocioRegistrado={handleSocioRegistrado}
           />
 
           <Box
@@ -444,8 +444,8 @@ const TablaAsociados: React.FC = () => {
                 borderRadius: "30px",
                 fontSize: isMobile ? "0.8rem" : "auto"
               }}
-              disabled={ exportFormat === "" }
-              onClick={ handleExportSocios }
+              disabled={exportFormat === ""}
+              onClick={handleExportSocios}
             >
               Descargar
             </Button>
@@ -463,10 +463,10 @@ const TablaAsociados: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <Typography 
-            sx={{ 
+          <Typography
+            sx={{
               display: isTablet || isMobile ? "none" : "inline-block",
-              fontWeight: "bold", 
+              fontWeight: "bold",
               mr: 2,
             }}>
             Buscar por:
@@ -474,10 +474,10 @@ const TablaAsociados: React.FC = () => {
 
           {/* Input Nombre Socio */}
           <TextField
-            sx={{ 
+            sx={{
               width: isTablet || isMobile ? "60%" : "30%",
               "& .MuiInputLabel-root": {
-              fontSize: isSmallMobile ? "0.9rem" : "auto",
+                fontSize: isSmallMobile ? "0.9rem" : "auto",
               },
               "& .MuiInputBase-input": {
                 fontSize: isSmallMobile ? "0.9rem" : "auto",
@@ -510,272 +510,272 @@ const TablaAsociados: React.FC = () => {
         {isLoading ? (
           <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
         ) : (
-        <>
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile 
-                    ? <Typography
-                        sx={{
-                          mt: 2,
-                          mb: 1,
-                          fontSize: "1.5rem",
-                          fontWeight: "bold",
-                          textTransform: "uppercase",
-                          textAlign: "center",
-                        }}
-                      >
-                        Lista de socios
-                      </Typography> 
-                    : columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align="center"
-                        style={{ minWidth: column.minWidth }}
-                        sx={{
-                          backgroundColor:
-                            column.id === "deuda" ? "#f8d7da" : undefined,
-                          color: column.id === "deuda" ? "#721c24" : undefined,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))
-                  }
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {socios.map((socio) => (
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile 
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
-                                p: 2,
-                                // Seleccionar el socio y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === socio.id_socio ? "#f0f0f0" : "inherit",
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  bgcolor: "#f0f0f0",
-                                }
-                              }}
-                              onClick={() => setMostrarDetalles(
-                                // Si el socio seleccionado es igual al socio actual, ocultar detalles
-                                mostrarDetalles === socio.id_socio ? null : socio.id_socio
-                              )}
-                            >
-                              {socio.nombre_completo}
-                            </Typography>
-                            {mostrarDetalles === socio.id_socio && (
-                              <Box 
+          <>
+            <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+              <TableContainer
+                sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+              >
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      {isTablet || isMobile
+                        ? <Typography
+                          sx={{
+                            mt: 2,
+                            mb: 1,
+                            fontSize: "1.5rem",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            textAlign: "center",
+                          }}
+                        >
+                          Lista de socios
+                        </Typography>
+                        : columns.map((column) => (
+                          <TableCell
+                            key={column.id}
+                            align="center"
+                            style={{ minWidth: column.minWidth }}
+                            sx={{
+                              backgroundColor:
+                                column.id === "deuda" ? "#f8d7da" : undefined,
+                              color: column.id === "deuda" ? "#721c24" : undefined,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {column.label}
+                          </TableCell>
+                        ))
+                      }
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {socios.map((socio) => (
+                      <TableRow hover role="checkbox" tabIndex={-1}>
+                        {isTablet || isMobile
+                          ? <TableCell padding="checkbox" colSpan={columns.length}>
+                            <Box sx={{ display: "flex", flexDirection: "column" }}>
+                              <Typography
                                 sx={{
-                                  p: isSmallMobile ? 1 : 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
+                                  p: 2,
+                                  // Seleccionar el socio y cambiar el color de fondo
+                                  bgcolor: mostrarDetalles === socio.id_socio ? "#f0f0f0" : "inherit",
+                                  "&:hover": {
+                                    cursor: "pointer",
+                                    bgcolor: "#f0f0f0",
+                                  }
+                                }}
+                                onClick={() => setMostrarDetalles(
+                                  // Si el socio seleccionado es igual al socio actual, ocultar detalles
+                                  mostrarDetalles === socio.id_socio ? null : socio.id_socio
+                                )}
+                              >
+                                {socio.nombre_completo}
+                              </Typography>
+                              {mostrarDetalles === socio.id_socio && (
+                                <Box
+                                  sx={{
+                                    p: isSmallMobile ? 1 : 2,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 1
+                                  }}
+                                >
+                                  {columns.map((column) => {
+                                    const value = column.id === "accion" ? "" : (socio as any)[column.id];
+                                    return (
+                                      <Box>
+                                        {/* Mostrar titulo del campo */}
+                                        <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                          {column.label}
+                                        </Typography>
+                                        {/* Mostrar los detalles del socio */}
+                                        <Typography>
+                                          {column.id === "deuda" ? (
+                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                              <Typography
+                                                sx={{
+                                                  color: value === "No" ? "green" : "crimson"
+                                                }}>
+                                                {value === "No" ? "No existen deudas" : value}
+                                              </Typography>
+                                            </Box>
+                                          ) : column.id === "ver_reporte" ? (
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: "50%",
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "crimson",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleVerReporteDeudas(socio.id_puesto)}
+                                              >
+                                                <Payments sx={{ mr: 1 }} />
+                                                Deudas
+                                              </Button>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: "50%",
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "green",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleVerReportePagos(socio.id_socio)}
+                                              >
+                                                <Payments sx={{ mr: 1 }} />
+                                                Pagos
+                                              </Button>
+                                            </Box>
+                                          ) : column.id === "accion" ? (
+                                            <Box
+                                              sx={{
+                                                width: "100%",
+                                                display: "flex",
+                                                flexDirection: isTablet ? "row" : "column",
+                                                justifyContent: "center",
+                                                gap: isTablet ? 1 : 0
+                                              }}
+                                            >
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: isTablet ? "33%" : "100%",
+                                                  mb: isTablet ? 1 : 0,
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "#0478E3",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleOpen(socio)}
+                                              >
+                                                <SaveAs sx={{ mr: 1 }} />
+                                                Editar
+                                              </Button>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: isTablet ? "33%" : "100%",
+                                                  mt: isTablet ? 0 : 1,
+                                                  mb: 1,
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "black",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleAccionesSocio(1, "", socio)}
+                                              >
+                                                <Download sx={{ mr: 1 }} />
+                                                Descargar
+                                              </Button>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: isTablet ? "33%" : "100%",
+                                                  mb: isTablet ? 1 : 0,
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "green",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
+                                              >
+                                                <WhatsApp sx={{ mr: 1 }} />
+                                                Enviar
+                                              </Button>
+                                            </Box>
+                                          ) : (
+                                            value
+                                          )}
+                                        </Typography>
+                                      </Box>
+                                    )
+                                  })}
+                                </Box>
+                              )}
+                            </Box>
+                          </TableCell>
+                          : columns.map((column) => {
+                            const value =
+                              column.id === "accion" ? "" : (socio as any)[column.id];
+                            return (
+                              <TableCell
+                                key={column.id}
+                                align={column.id === "deuda" ? "center" : column.align}
+                                sx={{
+                                  backgroundColor:
+                                    column.id === "deuda" && value === 0 ? "#B5F598" : column.id === "deuda" ? "#f8d7da" : undefined,
+                                  color:
+                                    column.id === "deuda" && value === 0 ? "green" : column.id === "deuda" ? "#721c24" : undefined,
                                 }}
                               >
-                                {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (socio as any)[column.id];
-                                  return (
-                                    <Box>
-                                      {/* Mostrar titulo del campo */}
-                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                                        {column.label}
-                                      </Typography>
-                                      {/* Mostrar los detalles del socio */}
-                                      <Typography>
-                                        {column.id === "deuda" ? (
-                                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            <Typography 
-                                              sx={{ 
-                                                color: value === "No" ? "green" : "crimson" 
-                                              }}>
-                                              {value === "No" ? "No existen deudas" : value}
-                                            </Typography>
-                                          </Box>
-                                        ) : column.id === "ver_reporte" ? (
-                                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <Button
-                                              variant="contained"
-                                              sx={{ 
-                                                width: "50%",
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "crimson", 
-                                                color: "white" 
-                                              }}
-                                              onClick={() => handleVerReporteDeudas(socio.id_puesto)}
-                                            >
-                                              <Payments sx={{ mr: 1 }} />
-                                              Deudas
-                                            </Button>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: "50%",
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green", 
-                                                color: "white" 
-                                              }}
-                                              onClick={() => handleVerReportePagos(socio.id_socio)}
-                                            >
-                                              <Payments sx={{ mr: 1 }} />
-                                              Pagos
-                                            </Button>
-                                          </Box>
-                                        ) : column.id === "accion" ? (
-                                          <Box 
-                                            sx={{
-                                              width: "100%",
-                                              display: "flex", 
-                                              flexDirection: isTablet ? "row" : "column",
-                                              justifyContent: "center",
-                                              gap: isTablet ? 1 : 0
-                                            }}
-                                          >
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: isTablet ? "33%" : "100%",
-                                                mb: isTablet ? 1 : 0,
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "#0478E3", 
-                                                color: "white" 
-                                              }}
-                                              onClick={() => handleOpen(socio)}
-                                            >
-                                              <SaveAs sx={{ mr: 1 }} />
-                                              Editar
-                                            </Button>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: isTablet ? "33%" : "100%",
-                                                mt: isTablet ? 0 : 1,
-                                                mb: 1,
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "black", 
-                                                color: "white"
-                                              }}
-                                              onClick={() => handleAccionesSocio(1, "", socio)}
-                                            >
-                                              <Download sx={{ mr: 1 }} />
-                                              Descargar
-                                            </Button>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: isTablet ? "33%" : "100%",
-                                                mb: isTablet ? 1 : 0,
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green", 
-                                                color: "white"
-                                              }}
-                                              onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
-                                            >
-                                              <WhatsApp sx={{ mr: 1 }} />
-                                              Enviar
-                                            </Button>
-                                          </Box>
-                                        ) : (
-                                          value
-                                        )}
-                                      </Typography>
+                                {column.id === "deuda"
+                                  ? value === 0 ? "No existen deudas" : `S/ ${value}`
+                                  : column.id === "ver_reporte" ? (
+                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                      <IconButton
+                                        aria-label="payment"
+                                        sx={{ color: "crimson" }}
+                                        onClick={() => handleVerReporteDeudas((socio as any).id_puesto)}
+                                      >
+                                        <Payments />
+                                      </IconButton>
+                                      <IconButton
+                                        aria-label="payment"
+                                        sx={{ color: "green" }}
+                                        onClick={() => handleVerReportePagos((socio as any).id_socio)}
+                                      >
+                                        <Payments />
+                                      </IconButton>
                                     </Box>
-                                  )
-                                })}
-                              </Box>
-                            )}
-                          </Box>
-                        </TableCell>             
-                      : columns.map((column) => {
-                          const value =
-                            column.id === "accion" ? "" : (socio as any)[column.id];
-                          return (
-                            <TableCell
-                              key={column.id}
-                              align={column.id === "deuda" ? "center" : column.align}
-                              sx={{
-                                backgroundColor:
-                                  column.id === "deuda" && value === 0 ? "#B5F598" : column.id === "deuda" ? "#f8d7da" : undefined,
-                                color:
-                                column.id === "deuda" && value === 0 ? "green" : column.id === "deuda" ? "#721c24" : undefined,
-                              }}
-                            >
-                              {column.id === "deuda" 
-                              ? value === 0 ? "No existen deudas" : `S/ ${value}`
-                              : column.id === "ver_reporte" ? (
-                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <IconButton
-                                    aria-label="payment"
-                                    sx={{ color: "crimson" }}
-                                    onClick={() => handleVerReporteDeudas((socio as any).id_puesto)}
-                                  >
-                                    <Payments />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="payment"
-                                    sx={{ color: "green" }}
-                                    onClick={() => handleVerReportePagos((socio as any).id_socio)}
-                                  >
-                                    <Payments />
-                                  </IconButton>
-                                </Box>
-                              ) : column.id === "accion" ? (
-                                <Box sx={{ display: "flex" }}>
-                                  <IconButton
-                                    aria-label="edit"
-                                    sx={{ color: "#0478E3" }}
-                                    onClick={() => handleOpen(socio)}
-                                  >
-                                    <SaveAs />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="download"
-                                    sx={{ color: "black" }}
-                                    onClick={() => handleAccionesSocio(1, "", socio)}
-                                  >
-                                    <Download />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="whatsapp"
-                                    sx={{ color: "green" }}
-                                    onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
-                                  >
-                                    <WhatsApp />
-                                  </IconButton>
-                                </Box>
-                              ) : (
-                                value
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                                  ) : column.id === "accion" ? (
+                                    <Box sx={{ display: "flex" }}>
+                                      <IconButton
+                                        aria-label="edit"
+                                        sx={{ color: "#0478E3" }}
+                                        onClick={() => handleOpen(socio)}
+                                      >
+                                        <SaveAs />
+                                      </IconButton>
+                                      <IconButton
+                                        aria-label="download"
+                                        sx={{ color: "black" }}
+                                        onClick={() => handleAccionesSocio(1, "", socio)}
+                                      >
+                                        <Download />
+                                      </IconButton>
+                                      <IconButton
+                                        aria-label="whatsapp"
+                                        sx={{ color: "green" }}
+                                        onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
+                                      >
+                                        <WhatsApp />
+                                      </IconButton>
+                                    </Box>
+                                  ) : (
+                                    value
+                                  )}
+                              </TableCell>
+                            );
+                          })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
 
-          <Box
-            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
-          >
-            <Pagination
-              count={totalPages} // Total de páginas
-              page={paginaActual} // Página actual
-              onChange={CambioDePagina} // Manejar el cambio de página
-              color="primary"
-            />
-          </Box>
-        </Paper>
-        </>
-          )}
+              <Box
+                sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+              >
+                <Pagination
+                  count={totalPages} // Total de páginas
+                  page={paginaActual} // Página actual
+                  onChange={CambioDePagina} // Manejar el cambio de página
+                  color="primary"
+                />
+              </Box>
+            </Paper>
+          </>
+        )}
       </Card>
     </Box>
   );

@@ -90,17 +90,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     });
   };
 
-  // Cerrar modal
-  const handleCloseModal = () => {
-    window.location.reload();
-    handleClose();
-    limpiarRegistarServicio();
-  };
-  const CerrarModal = () => {
-    handleClose();
-    limpiarRegistarServicio();
-  }
-
   // Registrar servicio
   const registrarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -109,12 +98,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
-
       if (response.status === 200) {
         const mensaje = response.data || "El servicio se registró correctamente";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        limpiarRegistarServicio();
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onServicioRegistrado();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -124,6 +113,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       setLoading(false);
     }
   };
+
 
 
   // Actualizar servicio
@@ -147,7 +137,15 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       setLoading(false);
     }
   };
+  // Cerrar modal
+  const handleCloseModal = () => {
+    limpiarRegistarServicio();
+    handleClose();
+  };
 
+  const onServicioRegistrado = () => {
+    window.location.reload();
+  };
 
   // Contenido del modal
   const renderTabContent = () => {
@@ -636,7 +634,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={CerrarModal}
+            onClick={handleCloseModal}
           >
             Cerrar
           </Button>

@@ -155,7 +155,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       fecha_vencimiento: ""
     });
   }
-
   // Generar cuota
   const registrarCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -177,12 +176,14 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
 
       if (response.status === 200) {
-        const mensaje = response.data || "La cuota fue registrada con éxito";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        // handleCloseModal()
-        setServiciosAgregados([]);
-        setServiciosIds([]);
-        setImporteTotal(0);
+        const mensaje = response.data.message || "La cuota fue registrada con éxito";
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          setServiciosAgregados([]);
+          setServiciosIds([]);
+          setImporteTotal(0);
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -200,14 +201,13 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Cerrar modal
   const handleCloseModal = () => {
-    window.location.reload();
+    limpiarCuota();
     handleClose();
   };
 
-  const CerrarModal = () => {
-    handleClose();
-    limpiarCuota();
-  }
+  const onRegistrar = () => {
+    window.location.reload();
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -485,7 +485,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={CerrarModal}
+            onClick={handleCloseModal}
           >
             Cerrar
           </Button>
