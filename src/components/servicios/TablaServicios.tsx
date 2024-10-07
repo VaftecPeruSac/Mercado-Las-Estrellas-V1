@@ -20,59 +20,39 @@ import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
 import useResponsive from "../Responsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
+import { Servicio, Data } from "../../interface/Servicios"; // se esta importando la interface servicios
+import { columns } from "../../Columns/Servicios"
+import useServicioState from "../../hooks/useServicioState";
+import { API_ROUTES } from "../../service/ServiceApi"; // Asegúrate de que la ruta sea correcta
 import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 
-interface Servicio {
-  id_servicio: string;
-  descripcion: string;
-  costo_unitario: string;
-  tipo_servicio: string;
-  fecha_registro: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "right";
-  format?: (value: any) => string;
-}
-
-interface Data {
-  id_servicio: string;
-  descripcion: string;
-  costo_unitario: string;
-  fecha_registro: string;
-  tipo_servicio: string;
-}
-
-const columns: readonly Column[] = [
-  { id: "descripcion", label: "Descripción", minWidth: 50 },
-  { id: "costo_unitario", label: "Costo Unitario", minWidth: 50 },
-  { id: "fecha_registro", label: "Fecha Registro", minWidth: 50 },
-  { id: "tipo_servicio", label: "Tipo de Servicio", minWidth: 50 },
-  { id: "accion", label: "Acciones", minWidth: 20 }, // Puede ajustarse según las acciones disponibles
-];
-
 const TablaServicios: React.FC = () => {
 
   // Variables para el responsive
   const { isTablet, isMobile, isSmallMobile } = useResponsive();
-  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
-  const [buscarTexto, setBuscarTexto] = useState<string>("");
-  // Para la tabla
-  const [servicios, setServicios] = useState<Data[]>([]);
-  const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
-
-  const [totalPages, setTotalPages] = useState(1); // Total de páginas
-  const [paginaActual, setPaginaActual] = useState(1); // Página actual
-  const [exportFormat, setExportFormat] = React.useState("");
-  const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); 
+  const {
+    mostrarDetalles,
+    setMostrarDetalles,
+    buscarTexto,
+    setBuscarTexto,
+    servicios,
+    setServicios,
+    servicioSeleccionado,
+    setServicioSeleccionado,
+    totalPages,
+    setTotalPages,
+    paginaActual,
+    setPaginaActual,
+    exportFormat,
+    setExportFormat,
+    open,
+    setOpen,
+    isLoading,
+    setIsLoading,
+  } = useServicioState();
 
   // Abrir modal con un servicio seleccionado o vacio
   const handleOpen = (servicio?: Servicio) => {
@@ -87,15 +67,13 @@ const TablaServicios: React.FC = () => {
 
   // Metodo para exportar el listado de servicios
   const handleExportServicios = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios/exportar",
-        {responseType: 'blob'}
-      );
-      
-      // Si no hay problemas
+      const response = await axios.get(API_ROUTES.servicios.exportar(), {
+        responseType: 'blob',
+      });
+
       if (response.status === 200) {
         if (exportFormat === "1") { // PDF
           alert("En proceso de actualización. Inténtelo más tarde.");
@@ -119,17 +97,13 @@ const TablaServicios: React.FC = () => {
       }
 
     } catch (error) {
-      console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
     }
 
   };
 
   const formatDate = (fecha: string): string => {
-    // Crear un objeto Date a partir de la cadena de fecha
-
     const date = new Date(fecha);
-
     // Obtener el día, mes y año
     const day = date.getDate();
     const month = date.getMonth() + 1; // Los meses en JavaScript son 0-indexados
@@ -146,8 +120,7 @@ const TablaServicios: React.FC = () => {
   const fetchServicios = async (page: number = 1) => {
     try {
       setIsLoading(true);
-      // const response = await axios.get("http://127.0.0.1:8000/v1/servicios?page=${page}"); //local
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/servicios?page=${page}&buscar_texto=${buscarTexto}`);
+      const response = await axios.get(API_ROUTES.servicios.fetch(page, buscarTexto));
 
       const data = response.data.data.map((item: Servicio) => ({
         id_servicio: item.id_servicio,
@@ -163,7 +136,7 @@ const TablaServicios: React.FC = () => {
     } catch (error) {
       console.error("Error al traer datos", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -182,28 +155,28 @@ const TablaServicios: React.FC = () => {
 
   return (
     <Contenedor>
-        <ContenedorBotones>
+      <ContenedorBotones>
 
-          <BotonAgregar
-            handleAction={() => handleOpen()}
-            texto="Agregar Servicio"
-          />
+        <BotonAgregar
+          handleAction={() => handleOpen()}
+          texto="Agregar Servicio"
+        />
 
-          <RegistrarServicio 
-            open={open} 
-            handleClose={handleClose} 
-            servicio={servicioSeleccionado} 
-          />
+        <RegistrarServicio
+          open={open}
+          handleClose={handleClose}
+          servicio={servicioSeleccionado}
+        />
 
-          <BotonExportar 
-            exportFormat={exportFormat} 
-            setExportFormat={setExportFormat} 
-            handleExport={handleExportServicios}
-          />
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={handleExportServicios}
+        />
 
-        </ContenedorBotones>
+      </ContenedorBotones>
 
-        <Box
+      <Box
         sx={{
           padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
           borderTop: "1px solid rgba(0, 0, 0, 0.25)",
@@ -213,22 +186,22 @@ const TablaServicios: React.FC = () => {
           alignItems: "center",
         }}
       >
-        <Typography 
-          sx={{ 
+        <Typography
+          sx={{
             display: isTablet || isMobile ? "none" : "inline-block",
-            fontWeight: "bold", 
-            mr: 2 
+            fontWeight: "bold",
+            mr: 2
           }}
         >
           Buscar por:
         </Typography>
 
         {/* Input Nombre Servicio */}
-        <TextField 
-          sx={{ 
+        <TextField
+          sx={{
             width: isTablet || isMobile ? "60%" : "30%",
             "& .MuiInputLabel-root": {
-            fontSize: isSmallMobile ? "0.9rem" : "auto",
+              fontSize: isSmallMobile ? "0.9rem" : "auto",
             },
             "& .MuiInputBase-input": {
               fontSize: isSmallMobile ? "0.9rem" : "auto",
@@ -261,50 +234,50 @@ const TablaServicios: React.FC = () => {
         </Button>
       </Box>
       {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
         <>
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                {isTablet || isMobile 
-                    ? <Typography
-                        sx={{ 
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
+                        sx={{
                           mt: 2,
                           mb: 1,
                           fontSize: "1.5rem",
                           fontWeight: "bold",
-                          textTransform: "uppercase", 
-                          textAlign: "center" 
+                          textTransform: "uppercase",
+                          textAlign: "center"
                         }}
                       >
                         Lista de Servicios
                       </Typography>
-                    : columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.id === "accion" ? "center" : column.align}
-                        style={{ minWidth: column.minWidth }}
-                        sx={{ fontWeight: "bold", }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))
-                  }
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {servicios.map((servicio) => (
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.id === "accion" ? "center" : column.align}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{ fontWeight: "bold", }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))
+                    }
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {servicios.map((servicio) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile 
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
+                      {isTablet || isMobile
+                        ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column" }}>
+                            <Typography
+                              sx={{
                                 p: 2,
                                 // Seleccionar el servicio y cambiar el color de fondo
                                 bgcolor: mostrarDetalles === servicio.id_servicio ? "#f0f0f0" : "inherit",
@@ -319,18 +292,18 @@ const TablaServicios: React.FC = () => {
                               )}
                             >
                               {servicio.descripcion} - {parseInt(servicio.tipo_servicio) === 1
-                                ? "Ordinario" 
+                                ? "Ordinario"
                                 : parseInt(servicio.tipo_servicio) === 2
-                                ? "Extraordinario"
-                                : "Por metrado"}
+                                  ? "Extraordinario"
+                                  : "Por metrado"}
                             </Typography>
                             {mostrarDetalles === servicio.id_servicio && (
-                              <Box 
+                              <Box
                                 sx={{
                                   p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 1
                                 }}
                               >
                                 {columns.map((column) => {
@@ -345,11 +318,11 @@ const TablaServicios: React.FC = () => {
                                       <Typography>
                                         {column.id === "tipo_servicio" ? (
                                           // Si el campo es tipo_servicio, mostrar el tipo de servicio
-                                          parseInt(servicio.tipo_servicio) === 1 
-                                            ? "Ordinario (Pagos fijos)" 
+                                          parseInt(servicio.tipo_servicio) === 1
+                                            ? "Ordinario (Pagos fijos)"
                                             : parseInt(servicio.tipo_servicio) === 2
-                                            ? "Extraordinario (Pagos extras)"
-                                            : "Por metrado (Pagos por metraje)"
+                                              ? "Extraordinario (Pagos extras)"
+                                              : "Por metrado (Pagos por metraje)"
                                         ) : column.id === "accion" ? (
                                           <Box
                                             sx={{
@@ -360,33 +333,33 @@ const TablaServicios: React.FC = () => {
                                           >
                                             <Button
                                               variant="contained"
-                                              sx={{ 
+                                              sx={{
                                                 width: "50%",
-                                                bgcolor: "#EA9A00", 
-                                                color: "#fff" 
+                                                bgcolor: "#EA9A00",
+                                                color: "#fff"
                                               }}
                                               onClick={() => handleOpen(servicio)}
                                             >
-                                              <SaveAs sx={{ mr: 1 }}/>
+                                              <SaveAs sx={{ mr: 1 }} />
                                               Editar
                                             </Button>
                                             <Button
                                               variant="contained"
-                                              sx={{ 
+                                              sx={{
                                                 width: "50%",
-                                                bgcolor: "crimson", 
-                                                color: "#fff" 
+                                                bgcolor: "crimson",
+                                                color: "#fff"
                                               }}
                                               onClick={() => alert("En proceso de actualización. Intentelo más tarde.")}
                                             >
-                                              <DeleteForever sx={{ mr: 1 }}/>
+                                              <DeleteForever sx={{ mr: 1 }} />
                                               Eliminar
                                             </Button>
                                           </Box>
                                         ) : (
                                           value
                                         )}
-                                      </Typography> 
+                                      </Typography>
                                     </Box>
                                   )
                                 })}
@@ -394,61 +367,60 @@ const TablaServicios: React.FC = () => {
                             )}
                           </Box>
                         </TableCell>
-                      : columns.map((column) => {
-                        const value = column.id === "accion" 
-                          ? ""
-                          : (servicio as any)[column.id];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            { column.id === "tipo_servicio" 
-                            ? (parseInt(servicio.tipo_servicio) === 1 
-                              ? "Ordinario (Pagos fijos)" 
-                              : parseInt(servicio.tipo_servicio) === 2
-                              ? "Extraordinario (Pagos extras)"
-                              : "Por metrado (Pagos por metraje)")
-                            : column.id === "accion" ? (
-                              <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                                <IconButton
-                                  aria-label="edit"
-                                  sx={{ color: "#0478E3" }}
-                                  onClick={() => handleOpen(servicio)}
-                                >
-                                  <SaveAs />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="delete"
-                                  sx={{ color: "red" }}
-                                >
-                                  <DeleteForever />
-                                </IconButton>
-                              </Box>
-                              ) : (
-                                value
-                              )}
+                        : columns.map((column) => {
+                          const value = column.id === "accion"
+                            ? ""
+                            : (servicio as any)[column.id];
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.id === "tipo_servicio"
+                                ? (parseInt(servicio.tipo_servicio) === 1
+                                  ? "Ordinario (Pagos fijos)"
+                                  : parseInt(servicio.tipo_servicio) === 2
+                                    ? "Extraordinario (Pagos extras)"
+                                    : "Por metrado (Pagos por metraje)")
+                                : column.id === "accion" ? (
+                                  <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                                    <IconButton
+                                      aria-label="edit"
+                                      sx={{ color: "#0478E3" }}
+                                      onClick={() => handleOpen(servicio)}
+                                    >
+                                      <SaveAs />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="delete"
+                                      sx={{ color: "red" }}
+                                    >
+                                      <DeleteForever />
+                                    </IconButton>
+                                  </Box>
+                                ) : (
+                                  value
+                                )}
                             </TableCell>
                           );
                         })}
                     </TableRow>
                   ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-          <Box
-            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
             >
-            <Pagination
-              count={totalPages} // Total de páginas
-              page={paginaActual} // Página actual
-              onChange={CambioDePagina} // Manejar el cambio de página
-              color="primary"
-            />
-          </Box>
-        </Paper>
+              <Pagination
+                count={totalPages} // Total de páginas
+                page={paginaActual} // Página actual
+                onChange={CambioDePagina} // Manejar el cambio de página
+                color="primary"
+              />
+            </Box>
+          </Paper>
         </>
-        )}
+      )}
     </Contenedor>
   );
 };
-
 export default TablaServicios;

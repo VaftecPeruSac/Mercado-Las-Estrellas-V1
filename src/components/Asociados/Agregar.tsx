@@ -37,7 +37,7 @@ interface AgregarProps {
   open: boolean;
   handleClose: () => void;
   socio: EditarSocio | null;
-  onSocioRegistrado: () => void;  // Nuevo callback para actualizar la lista
+  // onSocioRegistrado: () => void;  // Nuevo callback para actualizar la lista
 }
 
 interface EditarSocio {
@@ -73,7 +73,7 @@ interface Puesto {
   numero_puesto: string;
 }
 
-const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegistrado }) => {
+const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
 
   // Variables para el diseño responsivo
   const { isLaptop, isMobile, isTablet } = useResponsive();
@@ -135,17 +135,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     }
   }, [socio]);
 
-  const handleCloseModal = () => {
-    limpiarCamposSocio();
-    // window.location.reload();
-    handleClose();
-  };
-
-  const CerrarModal = () => {
-    handleClose();
-    limpiarCamposSocio();
-  }
-
   const limpiarCamposSocio = () => {
     setFormData({
       id_socio: "",
@@ -165,7 +154,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     setBloqueSeleccionado("");
     setPuestoSeleccionado("");
   };
-
   // Obtener bloques
   useEffect(() => {
     const fetchBloques = async () => {
@@ -186,7 +174,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
       try {
         const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/select"); // publico
         console.log("Puestos cargados:", response.data);
-        setPuestos(response.data); // Almacenar los datos en el estado
+        setPuestos(response.data);
       } catch (error) {
         console.error("Error al obtener los puestos", error);
       }
@@ -219,14 +207,14 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
 
   // Metodo para obtener el titulo del modal
   const obtenerTituloModal = (): string => {
-    if(socio !== null) { 
-      return "EDITAR SOCIO"; 
+    if (socio !== null) {
+      return "EDITAR SOCIO";
     }
-    else { 
-      return "REGISTRAR NUEVO SOCIO"; 
+    else {
+      return "REGISTRAR NUEVO SOCIO";
     }
   }
-  
+
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -234,20 +222,19 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     const { id_socio, id_block, ...dataToSend } = formData;
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
-
-        if (response.status === 200) {
-            const mensaje = response.data || "El socio se registró correctamente";
-            mostrarAlerta("Registro exitoso", mensaje, "success");
-            limpiarCamposSocio();
-            onSocioRegistrado();
-            handleCloseModal();
-        } else {
-            mostrarAlerta(
-                "error"
-            );
-        }
-      } catch (error) {
-        manejarError(error); 
+      if (response.status === 200) {
+        const mensaje = response.data || "El socio se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onSocioRegistrado();
+          handleCloseModal();
+        });
+      } else {
+        mostrarAlerta(
+          "error"
+        );
+      }
+    } catch (error) {
+      manejarError(error);
     } finally {
       setLoading(false);
     }
@@ -277,6 +264,15 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    limpiarCamposSocio();
+    handleClose();
+  };
+
+  const onSocioRegistrado = () => {
+    window.location.reload();
   };
 
   const renderTabContent = () => {
@@ -570,9 +566,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                         options={puestosFiltrados}
                         getOptionLabel={(puesto) => puesto.numero_puesto.toString()} // Convertir numero_puesto a string para mostrarlo correctamente
                         value={
-                          puestoSeleccionado 
-                          ? puestosFiltrados.find(puesto => puesto.id_puesto === puestoSeleccionado) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
-                          : null // Si no hay puesto seleccionado, mostrar null
+                          puestoSeleccionado
+                            ? puestosFiltrados.find(puesto => puesto.id_puesto === puestoSeleccionado) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
+                            : null // Si no hay puesto seleccionado, mostrar null
                         }
                         onChange={(event, newValue) => {
                           if (newValue) {
@@ -783,7 +779,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio, onSocioRegi
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={CerrarModal}
+            onClick={handleCloseModal}
           >
             Cerrar
           </Button>

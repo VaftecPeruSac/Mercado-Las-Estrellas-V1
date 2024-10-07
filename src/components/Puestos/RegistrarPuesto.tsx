@@ -275,7 +275,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const obtenerTituloModal = (): string => {
     switch (activeTab) {
       case 0:
-        if(puesto) {
+        if (puesto) {
           return "EDITAR PUESTO";
         } else {
           return "REGISTRAR PUESTO";
@@ -338,20 +338,15 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Cerrar modal
   const handleCloseModal = () => {
     handleClose();
-    window.location.reload();
     limpiarRegistrarPuesto();
     limpiarAsignarPuesto();
     limpiarNuevoBloque();
     limpiarGiroNegocio();
   };
 
-  const cerrarModal = () => {
-    handleClose();
-    limpiarRegistrarPuesto();
-    limpiarAsignarPuesto();
-    limpiarNuevoBloque();
-    limpiarGiroNegocio();
-  }
+  const onRegistrar = () => {
+    window.location.reload();
+  };
 
   // Registrar Puesto
   const registrarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -363,9 +358,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
       if (response.status === 200) {
         const mensaje = response.data || "Puesto registrado con éxito";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        limpiarRegistrarPuesto();
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta(
           "Error",
@@ -393,7 +389,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = `Los datos del puesto: "${dataToSend.numero_puesto}" fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success");
-        limpiarRegistrarPuesto();
+        onRegistrar();
         handleCloseModal();
       } else {
         mostrarAlerta("Errror");
@@ -415,9 +411,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "Puesto registrado con éxito";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        limpiarAsignarPuesto();
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -440,8 +437,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
       if (response.status === 200) {
         const mensaje = response.data || "El inquilino se registró correctamente";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -463,9 +462,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
       if (response.status === 200) {
         const mensaje = response.data || "El bloque se registró correctamente";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        limpiarNuevoBloque();
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -485,9 +485,10 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
       if (response.status === 200) {
         const mensaje = response.data || "El giro de negocio se registró correctamente";
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        limpiarGiroNegocio();
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -1419,7 +1420,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={cerrarModal}
+            onClick={handleCloseModal}
           >
             Cerrar
           </Button>

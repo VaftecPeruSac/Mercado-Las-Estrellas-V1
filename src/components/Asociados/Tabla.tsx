@@ -221,11 +221,11 @@ const TablaAsociados: React.FC = () => {
     const ws = XLSX.utils.aoa_to_sheet(data); // Crea una hoja de trabajo
     const wb = XLSX.utils.book_new(); // Crea un libro de trabajo
     XLSX.utils.book_append_sheet(wb, ws, "Socio"); // Agrega la hoja de trabajo al libro
-    
+
     // Aplicamos estilos a las columnas
     ws['A1'].s = { font: { bold: true } };
     ws['B2'].s = { alignment: { horizontal: 'left' } };
-    ws['!cols'] = [ { wch: 18 }, { wch: 30 } ];
+    ws['!cols'] = [{ wch: 18 }, { wch: 30 }];
 
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
@@ -236,7 +236,7 @@ const TablaAsociados: React.FC = () => {
     // Crear el enlace de descarga
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ','-')}.xlsx`);
+    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ', '-')}.xlsx`);
     document.body.appendChild(link);
 
     if (accion === 1) {
@@ -286,7 +286,7 @@ const TablaAsociados: React.FC = () => {
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -309,96 +309,96 @@ const TablaAsociados: React.FC = () => {
 
   return (
     <Contenedor>
-        <ContenedorBotones>
+      <ContenedorBotones>
 
-          <BotonAgregar
-            handleAction={() => handleOpen()}
-            texto="Agregar Socio"
-          />
+        <BotonAgregar
+          handleAction={() => handleOpen()}
+          texto="Agregar Socio"
+        />
 
-          <Agregar
-            open={open}
-            handleClose={handleClose}
-            socio={socioSeleccionado}
-            onSocioRegistrado={handleSocioRegistrado}
-          />
+        <Agregar
+          open={open}
+          handleClose={handleClose}
+          socio={socioSeleccionado}
+        // onSocioRegistrado={handleSocioRegistrado}
+        />
 
-          <BotonExportar 
-            exportFormat={exportFormat} 
-            setExportFormat={setExportFormat}
-            handleExport={handleExportSocios}
-          />
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={handleExportSocios}
+        />
 
-        </ContenedorBotones>
+      </ContenedorBotones>
 
-        {/* Buscar socio */}
-        <Box
+      {/* Buscar socio */}
+      <Box
+        sx={{
+          padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
+          borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Typography
           sx={{
-            padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
-            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Typography 
-            sx={{ 
-              display: isTablet || isMobile ? "none" : "inline-block",
-              fontWeight: "bold", 
-              mr: 2,
-            }}>
-            Buscar por:
-          </Typography>
+            display: isTablet || isMobile ? "none" : "inline-block",
+            fontWeight: "bold",
+            mr: 2,
+          }}>
+          Buscar por:
+        </Typography>
 
-          {/* Input Nombre Socio */}
-          <TextField
-            sx={{ 
-              width: isTablet || isMobile ? "60%" : "30%",
-              "& .MuiInputLabel-root": {
+        {/* Input Nombre Socio */}
+        <TextField
+          sx={{
+            width: isTablet || isMobile ? "60%" : "30%",
+            "& .MuiInputLabel-root": {
               fontSize: isSmallMobile ? "0.9rem" : "auto",
-              },
-              "& .MuiInputBase-input": {
-                fontSize: isSmallMobile ? "0.9rem" : "auto",
-              },
-            }}
-            label="Nombre del socio"
-            onChange={(e) => setNombreIngresado(e.target.value)}
-          />
+            },
+            "& .MuiInputBase-input": {
+              fontSize: isSmallMobile ? "0.9rem" : "auto",
+            },
+          }}
+          label="Nombre del socio"
+          onChange={(e) => setNombreIngresado(e.target.value)}
+        />
 
-          {/* Boton Buscar */}
-          <Button
-            variant="contained"
-            startIcon={<Search />}
-            sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: isTablet || isMobile ? "40%" : "170px",
-              marginLeft: isMobile ? "10px" : "1rem",
-              fontSize: isSmallMobile ? "0.8rem" : "auto",
-              borderRadius: "30px",
-            }}
-            onClick={buscarSocios}
-          >
-            Buscar
-          </Button>
-        </Box>
-        {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
+        {/* Boton Buscar */}
+        <Button
+          variant="contained"
+          startIcon={<Search />}
+          sx={{
+            backgroundColor: "#008001",
+            "&:hover": {
+              backgroundColor: "#2c6d33",
+            },
+            height: "50px",
+            width: isTablet || isMobile ? "40%" : "170px",
+            marginLeft: isMobile ? "10px" : "1rem",
+            fontSize: isSmallMobile ? "0.8rem" : "auto",
+            borderRadius: "30px",
+          }}
+          onClick={buscarSocios}
+        >
+          Buscar
+        </Button>
+      </Box>
+      {isLoading ? (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
         <>
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile 
-                    ? <Typography
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
                         sx={{
                           mt: 2,
                           mb: 1,
@@ -409,33 +409,33 @@ const TablaAsociados: React.FC = () => {
                         }}
                       >
                         Lista de socios
-                      </Typography> 
-                    : columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align="center"
-                        style={{ minWidth: column.minWidth }}
-                        sx={{
-                          backgroundColor:
-                            column.id === "deuda" ? "#f8d7da" : undefined,
-                          color: column.id === "deuda" ? "#721c24" : undefined,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))
-                  }
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {socios.map((socio) => (
+                      </Typography>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align="center"
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            backgroundColor:
+                              column.id === "deuda" ? "#f8d7da" : undefined,
+                            color: column.id === "deuda" ? "#721c24" : undefined,
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))
+                    }
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {socios.map((socio) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile 
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
+                      {isTablet || isMobile
+                        ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column" }}>
+                            <Typography
+                              sx={{
                                 p: 2,
                                 // Seleccionar el socio y cambiar el color de fondo
                                 bgcolor: mostrarDetalles === socio.id_socio ? "#f0f0f0" : "inherit",
@@ -452,12 +452,12 @@ const TablaAsociados: React.FC = () => {
                               {socio.nombre_completo}
                             </Typography>
                             {mostrarDetalles === socio.id_socio && (
-                              <Box 
+                              <Box
                                 sx={{
                                   p: isSmallMobile ? 1 : 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 1
                                 }}
                               >
                                 {columns.map((column) => {
@@ -472,9 +472,9 @@ const TablaAsociados: React.FC = () => {
                                       <Typography>
                                         {column.id === "deuda" ? (
                                           <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            <Typography 
-                                              sx={{ 
-                                                color: value === "No" ? "green" : "crimson" 
+                                            <Typography
+                                              sx={{
+                                                color: value === "No" ? "green" : "crimson"
                                               }}>
                                               {value === "No" ? "No existen deudas" : value}
                                             </Typography>
@@ -483,11 +483,11 @@ const TablaAsociados: React.FC = () => {
                                           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                             <Button
                                               variant="contained"
-                                              sx={{ 
+                                              sx={{
                                                 width: "50%",
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "crimson", 
-                                                color: "white" 
+                                                backgroundColor: "crimson",
+                                                color: "white"
                                               }}
                                               onClick={() => handleVerReporteDeudas(socio.id_puesto)}
                                             >
@@ -499,8 +499,8 @@ const TablaAsociados: React.FC = () => {
                                               sx={{
                                                 width: "50%",
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green", 
-                                                color: "white" 
+                                                backgroundColor: "green",
+                                                color: "white"
                                               }}
                                               onClick={() => handleVerReportePagos(socio.id_socio)}
                                             >
@@ -509,10 +509,10 @@ const TablaAsociados: React.FC = () => {
                                             </Button>
                                           </Box>
                                         ) : column.id === "accion" ? (
-                                          <Box 
+                                          <Box
                                             sx={{
                                               width: "100%",
-                                              display: "flex", 
+                                              display: "flex",
                                               flexDirection: isTablet ? "row" : "column",
                                               justifyContent: "center",
                                               gap: isTablet ? 1 : 0
@@ -524,8 +524,8 @@ const TablaAsociados: React.FC = () => {
                                                 width: isTablet ? "33%" : "100%",
                                                 mb: isTablet ? 1 : 0,
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "#0478E3", 
-                                                color: "white" 
+                                                backgroundColor: "#0478E3",
+                                                color: "white"
                                               }}
                                               onClick={() => handleOpen(socio)}
                                             >
@@ -539,7 +539,7 @@ const TablaAsociados: React.FC = () => {
                                                 mt: isTablet ? 0 : 1,
                                                 mb: 1,
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "black", 
+                                                backgroundColor: "black",
                                                 color: "white"
                                               }}
                                               onClick={() => handleAccionesSocio(1, "", socio)}
@@ -553,7 +553,7 @@ const TablaAsociados: React.FC = () => {
                                                 width: isTablet ? "33%" : "100%",
                                                 mb: isTablet ? 1 : 0,
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green", 
+                                                backgroundColor: "green",
                                                 color: "white"
                                               }}
                                               onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
@@ -572,8 +572,8 @@ const TablaAsociados: React.FC = () => {
                               </Box>
                             )}
                           </Box>
-                        </TableCell>             
-                      : columns.map((column) => {
+                        </TableCell>
+                        : columns.map((column) => {
                           const value =
                             column.id === "accion" ? "" : (socio as any)[column.id];
                           return (
@@ -584,75 +584,75 @@ const TablaAsociados: React.FC = () => {
                                 backgroundColor:
                                   column.id === "deuda" && value === 0 ? "#B5F598" : column.id === "deuda" ? "#f8d7da" : undefined,
                                 color:
-                                column.id === "deuda" && value === 0 ? "green" : column.id === "deuda" ? "#721c24" : undefined,
+                                  column.id === "deuda" && value === 0 ? "green" : column.id === "deuda" ? "#721c24" : undefined,
                               }}
                             >
-                              {column.id === "deuda" 
-                              ? value === 0 ? "No existen deudas" : `S/ ${value}`
-                              : column.id === "ver_reporte" ? (
-                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <IconButton
-                                    aria-label="payment"
-                                    sx={{ color: "crimson" }}
-                                    onClick={() => handleVerReporteDeudas((socio as any).id_puesto)}
-                                  >
-                                    <Payments />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="payment"
-                                    sx={{ color: "green" }}
-                                    onClick={() => handleVerReportePagos((socio as any).id_socio)}
-                                  >
-                                    <Payments />
-                                  </IconButton>
-                                </Box>
-                              ) : column.id === "accion" ? (
-                                <Box sx={{ display: "flex" }}>
-                                  <IconButton
-                                    aria-label="edit"
-                                    sx={{ color: "#0478E3" }}
-                                    onClick={() => handleOpen(socio)}
-                                  >
-                                    <SaveAs />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="download"
-                                    sx={{ color: "black" }}
-                                    onClick={() => handleAccionesSocio(1, "", socio)}
-                                  >
-                                    <Download />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="whatsapp"
-                                    sx={{ color: "green" }}
-                                    onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
-                                  >
-                                    <WhatsApp />
-                                  </IconButton>
-                                </Box>
-                              ) : (
-                                value
-                              )}
+                              {column.id === "deuda"
+                                ? value === 0 ? "No existen deudas" : `S/ ${value}`
+                                : column.id === "ver_reporte" ? (
+                                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <IconButton
+                                      aria-label="payment"
+                                      sx={{ color: "crimson" }}
+                                      onClick={() => handleVerReporteDeudas((socio as any).id_puesto)}
+                                    >
+                                      <Payments />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="payment"
+                                      sx={{ color: "green" }}
+                                      onClick={() => handleVerReportePagos((socio as any).id_socio)}
+                                    >
+                                      <Payments />
+                                    </IconButton>
+                                  </Box>
+                                ) : column.id === "accion" ? (
+                                  <Box sx={{ display: "flex" }}>
+                                    <IconButton
+                                      aria-label="edit"
+                                      sx={{ color: "#0478E3" }}
+                                      onClick={() => handleOpen(socio)}
+                                    >
+                                      <SaveAs />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="download"
+                                      sx={{ color: "black" }}
+                                      onClick={() => handleAccionesSocio(1, "", socio)}
+                                    >
+                                      <Download />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="whatsapp"
+                                      sx={{ color: "green" }}
+                                      onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
+                                    >
+                                      <WhatsApp />
+                                    </IconButton>
+                                  </Box>
+                                ) : (
+                                  value
+                                )}
                             </TableCell>
                           );
                         })}
                     </TableRow>
                   ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-          <Box
-            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
-          >
-            <Pagination
-              count={totalPages} // Total de páginas
-              page={paginaActual} // Página actual
-              onChange={CambioDePagina} // Manejar el cambio de página
-              color="primary"
-            />
-          </Box>
-        </Paper>
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            >
+              <Pagination
+                count={totalPages} // Total de páginas
+                page={paginaActual} // Página actual
+                onChange={CambioDePagina} // Manejar el cambio de página
+                color="primary"
+              />
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

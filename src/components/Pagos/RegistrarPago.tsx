@@ -317,17 +317,15 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     limpiarCampos();
   };
 
-  const CerrarModal = () => {
-    handleClose();
-    setMontoPagar({});
-    limpiarCampos();
-  }
+  const onRegistrar = () => {
+    window.location.reload();
+  };
 
   // REGISTRAR PAGO
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const {nombre_socio, nombre_block, numero_puesto, ...dataToSend}  = formData;
+    const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } = formData;
 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
@@ -335,8 +333,10 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       if (response.status === 200) {
         const mensaje = response.data || "El pago fue registrado correctamente";
         generarTicketPDF(formData);
-        mostrarAlerta("Registro exitoso", mensaje, "success");
-        handleCloseModal();
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Error");
       }
@@ -496,8 +496,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       onChange={(e) => {
                         const value = e.target.value;
                         setIdPuestoSeleccionado(value);
-                        setFormData({ 
-                          ...formData, 
+                        setFormData({
+                          ...formData,
                           numero_puesto: puestos.find(p => p.id_puesto === Number(value))?.numero_puesto || "",
                           nombre_block: puestos.find(p => p.id_puesto === Number(value))?.block.nombre || "",
                         });
@@ -796,7 +796,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                 backgroundColor: "#3F4145",
               },
             }}
-            onClick={CerrarModal}
+            onClick={handleCloseModal}
           >
             Cerrar
           </Button>
