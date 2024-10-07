@@ -11,7 +11,6 @@ import {
   Button,
   IconButton,
   Box,
-  Card,
   Pagination,
   Select,
   MenuItem,
@@ -26,11 +25,14 @@ import {
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
-import { GridAddIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import GenerarCuota from "./GenerarCuota";
 import useResponsive from "../Responsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
+import Contenedor from "../Shared/Contenedor";
+import ContenedorBotones from "../Shared/ContenedorBotones";
+import BotonExportar from "../Shared/BotonExportar";
+import BotonAgregar from "../Shared/BotonAgregar";
 
 interface Cuotas {
   id_deuda: string; // Nombre del socio
@@ -93,7 +95,7 @@ interface IMeses {
 const TablaCuota: React.FC = () => {
 
   // Variables para el responsive
-  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
@@ -205,144 +207,26 @@ const TablaCuota: React.FC = () => {
   }, []);
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        p: isSmallMobile ? 2 : 3,
-        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
-        backgroundColor: "#f0f0f0",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        overflowX: "auto",
-      }}
-    >
-      <Box sx={{ mb: 3 }}/>
+    <Contenedor>
+        <ContenedorBotones>
 
-      <Card
-        sx={{
-          backgroundColor: "#ffffff",
-          borderRadius: "30px",
-          width: "100%",
-          height: "100%",
-          textAlign: "left",
-          position: "relative",
-          transition: "all 0.3s ease",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: isSmallMobile ? 2 : 3,
-          overflow: "auto",
-          display: "-ms-inline-flexbox",
-          margin: "0 auto",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: isMobile ? 2 : 3,
-            p: 0,
-          }}
-        >
-          {/* Botón "Generar Cuota" */}
-          <Button
-            variant="contained"
-            startIcon={<GridAddIcon />}
-            sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: isTablet || isMobile ? "100%" : "230px",
-              marginBottom: isTablet || isMobile ? "1em" : "0",
-              borderRadius: "30px",
-            }}
-            onClick={handleOpen}
-          >
-            Generar Cuota
-          </Button>
+          <BotonAgregar
+            handleAction={handleOpen}
+            texto="Generar Cuota"
+          />
 
-          <GenerarCuota open={open} handleClose={handleClose} />
+          <GenerarCuota 
+            open={open} 
+            handleClose={handleClose} 
+          />
 
-          <Box
-            sx={{
-              width: isTablet ? "100%" : isMobile ? "100%" : "auto", 
-              display: "flex",
-              gap: 2,
-              alignItems: "center",
-              ml: "auto",
-            }}
-          >
-            {/* Formulario para el Select "Exportar" */}
-            <FormControl
-              variant="outlined"
-              sx={{
-                width: isTablet || isMobile ? "50%" : "150px",
-                height: "50px",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#dcdcdc",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#dcdcdc",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#dcdcdc",
-                    boxShadow: "none",
-                  },
-                },
-              }}
-            >
-              <Select
-                value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value as string)}
-                displayEmpty
-                sx={{
-                  backgroundColor: "white",
-                  "&:hover": {
-                    backgroundColor: "#e0e0e0",
-                  },
-                  height: "50px",
-                  minWidth: "100%",
-                  padding: "0 15px",
-                  borderRadius: "30px",
-                  color: exportFormat ? "#000" : "#999",
-                  "& .MuiSelect-icon": {
-                    color: "#000",
-                  },
-                }}
-              >
-                <MenuItem disabled value="">
-                  Exportar
-                </MenuItem>
-                <MenuItem value="1">PDF</MenuItem>
-                <MenuItem value="2">Excel</MenuItem>
-              </Select>
-            </FormControl>
+          <BotonExportar
+            exportFormat={exportFormat}
+            setExportFormat={setExportFormat}
+            handleExport={handleExportCuotas}
+          />
 
-            {/* Botón "Descargar" */}
-            <Button
-              variant="contained"
-              startIcon={<Download />}
-              sx={{
-                backgroundColor: "#008001",
-                "&:hover": {
-                  backgroundColor: "#2c6d33",
-                },
-                height: "50px",
-                width: isTablet || isMobile ? "50%" : "200px",
-                borderRadius: "30px",
-                fontSize: isMobile ? "0.8rem" : "auto"
-              }}
-              disabled={ exportFormat === "" }
-              onClick={handleExportCuotas}
-            >
-              Descargar
-            </Button>
-          </Box>
-        </Box>
+        </ContenedorBotones>
 
         {isMobile && (
           // Botón "Filtros" para mostrar/ocultar los filtros
@@ -645,9 +529,8 @@ const TablaCuota: React.FC = () => {
           </Box>
         </Paper>
         </>
-        )}
-      </Card>
-    </Box>
+      )}
+    </Contenedor>
   );
 };
 

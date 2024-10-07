@@ -1,10 +1,13 @@
-import { Download } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Card, FormControl, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../PogressBar/ProgressBarV1';
+import Contenedor from '../Shared/Contenedor';
+import ContenedorBotonesReportes from '../Shared/ContenedorBotonesReportes';
+import BotonExportar from '../Shared/BotonExportar';
+import BotonAgregar from '../Shared/BotonAgregar';
 
 interface Puesto {
   id_puesto: string;
@@ -39,7 +42,7 @@ const columns: readonly Column[] = [
 ]
 
 const TablaReporteDeudas: React.FC = () => {
-  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
@@ -138,48 +141,8 @@ const TablaReporteDeudas: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        p: isSmallMobile ? 2 : 3,
-        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
-        backgroundColor: "#f0f0f0",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        overflowX: "auto",
-      }}
-    >
-      <Box sx={{ mb: 3 }}/>
-      
-      <Card
-        sx={{
-          backgroundColor: "#ffffff",
-          borderRadius: "30px",
-          width: "100%",
-          height: "100%",
-          textAlign: "left",
-          position: "relative",
-          transition: "all 0.3s ease",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: isSmallMobile ? 2 : 3,
-          overflow: "auto",
-          display: "-ms-inline-flexbox",
-          margin: "0 auto",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-            mb: isMobile ? 2 : 3,
-            p: 0,
-            pb: 1,
-          }}
-        >
+    <Contenedor>
+        <ContenedorBotonesReportes>
           <Box
             sx={{
               width: isTablet || isMobile ? "100%" : "auto",
@@ -222,104 +185,19 @@ const TablaReporteDeudas: React.FC = () => {
               />
             </FormControl>
             {/* Botón "Generar Reporte" */}
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#008001",
-                "&:hover": {
-                  backgroundColor: "#2c6d33",
-                },
-                height: "50px",
-                width: isMobile ? "100%" : "150px",
-                borderRadius: "30px",
-              }}
-              onClick={() => {
-                fetchDeudas(undefined, puestoSeleccionado);
-                navigate(`/home/reporte-deudas`);
-              }}
-            >
-              Generar
-            </Button>
+            <BotonAgregar
+              handleAction={() => fetchDeudas(undefined, puestoSeleccionado)}
+              texto="Generar"
+            />
           </Box>
-          <Box
-            sx={{
-              width: isTablet || isMobile ? "100%" : "auto",
-              display: "flex",
-              gap: 2,
-              alignItems: "center",
-              ml: "auto",
-              mt: 2,
-              mb: 1
-            }}
-          >
-            {/* Formulario para el Select "Exportar" */}
-            <FormControl
-              variant="outlined"
-              sx={{
-                width: isTablet || isMobile ? "50%" : "150px",
-                height: "50px",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#dcdcdc",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#dcdcdc",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#dcdcdc",
-                    boxShadow: "none",
-                  },
-                },
-              }}
-            >
-              <Select
-                value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value as string)}
-                displayEmpty
-                sx={{
-                  backgroundColor: "white",
-                  "&:hover": {
-                    backgroundColor: "#e0e0e0",
-                  },
-                  height: "50px",
-                  width: "100%",
-                  padding: "0 15px",
-                  borderRadius: "30px",
-                  color: exportFormat ? "#000" : "#999",
-                  "& .MuiSelect-icon": {
-                    color: "#000",
-                  },
-                }}
-              >
-                <MenuItem disabled value="">
-                  Exportar
-                </MenuItem>
-                <MenuItem value="1">PDF</MenuItem>
-                <MenuItem value="2">Excel</MenuItem>
-              </Select>
-            </FormControl>
+          
+          <BotonExportar 
+            exportFormat={exportFormat} 
+            setExportFormat={setExportFormat} 
+            handleExport={handleExportReporteDeudas}
+          />
 
-            {/* Botón "Descargar" */}
-            <Button
-              variant="contained"
-              startIcon={<Download />}
-              sx={{
-                backgroundColor: "#008001",
-                "&:hover": {
-                  backgroundColor: "#2c6d33",
-                },
-                height: "50px",
-                width: isTablet || isMobile ? "50%" : "200px",
-                borderRadius: "30px",
-                fontSize: isMobile ? "0.8rem" : "auto"
-              }}
-              disabled={ exportFormat === "" }
-              onClick={handleExportReporteDeudas}
-            >
-              Descargar
-            </Button>
-          </Box>
-        </Box>
+        </ContenedorBotonesReportes>
         {isLoading ? (
           <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
         ) : (
@@ -450,9 +328,8 @@ const TablaReporteDeudas: React.FC = () => {
           </Box>
         </Paper>
         </>
-        )}
-      </Card>
-    </Box>
+      )}
+    </Contenedor>
   )
 
 }

@@ -11,20 +11,19 @@ import {
   Button,
   IconButton,
   Box,
-  Card,
   Pagination,
-  Select,
-  MenuItem,
-  FormControl,
   TextField,
   Typography,
 } from "@mui/material";
-import { SaveAs, DeleteForever, Search, Download } from "@mui/icons-material";
-import { GridAddIcon } from "@mui/x-data-grid";
+import { SaveAs, DeleteForever, Search } from "@mui/icons-material";
 import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
 import useResponsive from "../Responsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
+import Contenedor from "../Shared/Contenedor";
+import ContenedorBotones from "../Shared/ContenedorBotones";
+import BotonExportar from "../Shared/BotonExportar";
+import BotonAgregar from "../Shared/BotonAgregar";
 
 interface Servicio {
   id_servicio: string;
@@ -61,7 +60,7 @@ const columns: readonly Column[] = [
 const TablaServicios: React.FC = () => {
 
   // Variables para el responsive
-  const { isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
+  const { isTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
 
   const [buscarTexto, setBuscarTexto] = useState<string>("");
@@ -182,143 +181,27 @@ const TablaServicios: React.FC = () => {
   }
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        p: isSmallMobile ? 2 : 3,
-        pt: isSmallTablet || isMobile ? 16 : isSmallMobile ? 14 : 10,
-        backgroundColor: "#f0f0f0",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        overflowX: "auto",
-      }}
-    >
+    <Contenedor>
+        <ContenedorBotones>
 
-      <Box sx={{ mb: 3 }}/>
+          <BotonAgregar
+            handleAction={() => handleOpen()}
+            texto="Agregar Servicio"
+          />
 
-      <Card
-        sx={{
-          backgroundColor: "#ffffff",
-          borderRadius: "30px",
-          width: "100%",
-          height: "100%",
-          textAlign: "left",
-          position: "relative",
-          transition: "all 0.3s ease",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          p: isSmallMobile ? 2 : 3,
-          overflow: "auto",
-          display: "-ms-inline-flexbox",
-          margin: "0 auto",
-          // Centra el Card horizontalmente y añade espacio a los lados
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isTablet ? "column" : { xs: "column", sm: "row" }, // Columna en mobile, fila en desktop
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: isMobile ? 2 : 3,
-            P: 0,
-          }}
-        >
-          <Button
-            variant="contained"
-            startIcon={<GridAddIcon />}
-            sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: isTablet || isMobile ? "100%" : "230px",
-              marginBottom: isTablet || isMobile ? "1em" : "0",
-              borderRadius: "30px",
-            }}
-            onClick={() => handleOpen()}
-          >
-            Agregar Servicio
-          </Button>
+          <RegistrarServicio 
+            open={open} 
+            handleClose={handleClose} 
+            servicio={servicioSeleccionado} 
+          />
 
-          <RegistrarServicio open={open} handleClose={handleClose} servicio={servicioSeleccionado} />
+          <BotonExportar 
+            exportFormat={exportFormat} 
+            setExportFormat={setExportFormat} 
+            handleExport={handleExportServicios}
+          />
 
-          <Box
-            sx={{
-              width: isTablet ? "100%" : isMobile ? "100%" : "auto",
-              display: "flex",
-              gap: 2,
-              alignItems: "center",
-              ml: "auto",
-            }}
-          >
-            <FormControl
-              variant="outlined"
-              sx={{
-                width: isTablet || isMobile ? "50%" : "150px",
-                height: "50px",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#dcdcdc", // Color del borde inicial (gris claro)
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#dcdcdc", // Color del borde al hacer hover (gris claro)
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#dcdcdc", // Color del borde cuando está enfocado (gris claro)
-                    boxShadow: "none", // Elimina la sombra del enfoque
-                  },
-                },
-              }}
-            >
-              <Select
-                value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value)}
-                displayEmpty
-                sx={{
-                  backgroundColor: "white", // Color de fondo suave y clásico
-                  "&:hover": {
-                    backgroundColor: "#e0e0e0", // Cambio sutil al hacer hover
-                  },
-                  height: "50px",
-                  width: "100%",
-                  padding: "0 15px",
-                  borderRadius: "30px",
-                  color: exportFormat ? "#000" : "#999", // Texto negro si hay selección, gris si es el placeholder
-                  "& .MuiSelect-icon": {
-                    color: "#000", // Color del icono del menú desplegable
-                  },
-                }}
-              >
-                <MenuItem disabled value="">
-                  Exportar
-                </MenuItem>
-                <MenuItem value="1">PDF</MenuItem>
-                <MenuItem value="2">Excel</MenuItem>
-              </Select>
-            </FormControl>
-
-            <Button
-              variant="contained"
-              startIcon={<Download />}
-              sx={{
-                backgroundColor: "#008001",
-                "&:hover": {
-                  backgroundColor: "#2c6d33",
-                },
-                height: "50px",
-                width: isTablet || isMobile ? "50%" : "200px",
-                borderRadius: "30px",
-                fontSize: isMobile ? "0.8rem" : "auto"
-              }}
-              disabled={ exportFormat === "" }
-              onClick={handleExportServicios}
-            >
-              Descargar
-            </Button>
-          </Box>
-        </Box>
+        </ContenedorBotones>
 
         <Box
         sx={{
@@ -564,8 +447,7 @@ const TablaServicios: React.FC = () => {
         </Paper>
         </>
         )}
-      </Card>
-    </Box>
+    </Contenedor>
   );
 };
 
