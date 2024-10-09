@@ -544,10 +544,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
       activeTab={activeTab}
       handleTabChange={handleTabChange}
       tabs={["Registrar servicio", "Registrar servicio compartido"]}
-    >
-
-        {renderTabContent()}
-
+      botones={
         <BotonesModal
           loading={loading}
           action={async (e) => {
@@ -579,7 +576,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
           }}
           close={handleCloseModal}
         />
-
+      }
+    >
+      {renderTabContent()}
     </ContenedorModal>
   )
 
