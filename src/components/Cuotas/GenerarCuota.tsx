@@ -25,6 +25,7 @@ import useResponsive from "../../hooks/Responsive/useResponsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion, validarCamposCuotas } from "../Alerts/Registrar";
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
+import { AvisoFormulario, TxtFormulario } from "../Shared/ElementosFormulario";
 
 interface AgregarProps {
   open: boolean;
@@ -205,171 +206,159 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       case 0:
         return (
           <>
-            <Typography
-              sx={{
-                mt: 1,
-                mb: 2,
-                color: "#333",
-                textAlign: "center",
-                fontSize: "12px",
-              }}
-            >
-              Leer detenidamente los campos antes de registrar. (*)
-            </Typography>
+            <AvisoFormulario />
 
             {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
-            <Box
-              component="form"
-              noValidate
-              autoComplete="off"
-              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    required
-                    type="date"
-                    label="Fecha de emisión"
-                    value={formData.fecha_registro = fechaEmision}
-                    onChange={manejarFechaEmisionCambio}
-                    InputProps={{
-                      startAdornment: (
-                        <CalendarIcon sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                  // error={!!errors.fechaEmision}
-                  // helperText={errors.fechaEmision}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    type="date"
-                    label="Fecha de vencimiento"
-                    value={formData.fecha_vencimiento = fechaVencimiento}
-                    InputProps={{
-                      readOnly: true,
-                      startAdornment: (
-                        <CalendarIcon sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                  // error={!!errors.fechaVencimiento}
-                  // helperText={errors.fechaVencimiento}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="servicio-label">Seleccionar Servicio</InputLabel>
-                    <Select
-                      labelId="servicio-label"
-                      label="Seleccionar servicio"
-                      value={servicioSeleccionado}
-                      onChange={handleServicioChange}
-                      startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            maxHeight: 200,
-                            overflowY: 'auto', // Habilita el desplazamiento
-                          },
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TxtFormulario
+                  type="date"
+                  label="Fecha de emisión"
+                  name="fecha_registro"
+                  value={fechaEmision}
+                  onChange={manejarFechaEmisionCambio}
+                  noMargin={true}
+                  icono={<CalendarIcon sx={{ mr: 1, color: "gray" }} />}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TxtFormulario
+                  type="date"
+                  label="Fecha de vencimiento"
+                  name="fecha_vencimiento"
+                  value={formData.fecha_vencimiento = fechaVencimiento}
+                  onChange={(e) => setFechaVencimiento(e.target.value)}
+                  noMargin={true}
+                  icono={<CalendarIcon sx={{ mr: 1, color: "gray" }} />}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <FormControl fullWidth required>
+                  <InputLabel id="servicio-label">
+                    Seleccionar Servicio
+                  </InputLabel>
+                  <Select
+                    labelId="servicio-label"
+                    label="Seleccionar servicio"
+                    value={servicioSeleccionado}
+                    onChange={handleServicioChange}
+                    startAdornment={<Bolt sx={{ mr: 1, color: "gray" }} />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 200,
+                          overflowY: "auto", // Habilita el desplazamiento
                         },
-                      }}
-                    >
-                      {servicios.map((servicio: Servicio) => (
-                        <MenuItem key={servicio.id_servicio} value={servicio.id_servicio}>
-                          {`${servicio.descripcion} - S/ ${servicio.costo_unitario}`}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                {/* Tabla servicios */}
-                <Grid item xs={12} sm={12}>
-                  <Paper
-                    sx={{
-                      width: isLaptop || isTablet || isMobile ? "100%" : "524px",
-                      overflow: "hidden",
-                      boxShadow: "none",
+                      },
                     }}
                   >
-                    <TableContainer
-                      sx={{
-                        height: "220px",
-                        mb: "5px",
-                        borderRadius: "10px",
-                        border: "1px solid #202123",
-                      }}
-                    >
-                      <Table>
-                        <TableHead sx={{ backgroundColor: "#202123" }}>
-                          <TableRow>
-                            {columns.map((column) => (
-                              <TableCell
-                                key={column.id}
-                                align={column.align}
-                                style={{ minWidth: column.minWidth }}
-                                sx={{ color: "white" }}
-                              >
-                                {column.label}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {serviciosAgregados.map((servicio) => (
-                            <TableRow hover role="checkbox" tabIndex={-1}>
-                              {columns.map((column) => {
-                                const value = column.id === "accion" ? "" : (servicio as any)[column.id];
-                                return (
-                                  <TableCell padding="checkbox" key={column.id} align="center">
-                                    {column.id === "accion" ? (
-                                      <Box
-                                        sx={{
-                                          display: "flex",
-                                          gap: 1,
-                                          justifyContent: "center",
-                                        }}
-                                      >
-                                        <IconButton
-                                          aria-label="delete"
-                                          sx={{ color: "#840202" }}
-                                          onClick={() => handleServicioDelete(servicio.id_servicio)}
-                                        >
-                                          <Delete />
-                                        </IconButton>
-                                      </Box>
-                                    ) : (
-                                      value
-                                    )}
-                                  </TableCell>
-                                );
-                              })}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Paper>
-                </Grid>
-                {/* Importe */}
-                <Grid item xs={12} sm={6} sx={{ m: "auto auto 0 auto" }}>
-                  <TextField
-                    fullWidth
-                    required
-                    label="Importe (S/)"
-                    value={importeTotal.toFixed(2)}
-                    InputProps={{
-                      readOnly: true,
-                      startAdornment: <AttachMoney sx={{ mr: 1, color: "gray" }} />
-                    }}
-                  // error={!!errors.importe}
-                  // helperText={errors.importe}
-                  />
-                </Grid>
+                    {servicios.map((servicio: Servicio) => (
+                      <MenuItem
+                        key={servicio.id_servicio}
+                        value={servicio.id_servicio}
+                      >
+                        {`${servicio.descripcion} - S/ ${servicio.costo_unitario}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-            </Box>
+              {/* Tabla servicios */}
+              <Grid item xs={12} sm={12}>
+                <Paper
+                  sx={{
+                    width: isLaptop || isTablet || isMobile ? "100%" : "524px",
+                    overflow: "hidden",
+                    boxShadow: "none",
+                  }}
+                >
+                  <TableContainer
+                    sx={{
+                      height: "220px",
+                      mb: "5px",
+                      borderRadius: "10px",
+                      border: "1px solid #202123",
+                    }}
+                  >
+                    <Table>
+                      <TableHead sx={{ backgroundColor: "#202123" }}>
+                        <TableRow>
+                          {columns.map((column) => (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                              style={{ minWidth: column.minWidth }}
+                              sx={{ color: "white" }}
+                            >
+                              {column.label}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {serviciosAgregados.map((servicio) => (
+                          <TableRow hover role="checkbox" tabIndex={-1}>
+                            {columns.map((column) => {
+                              const value =
+                                column.id === "accion"
+                                  ? ""
+                                  : (servicio as any)[column.id];
+                              return (
+                                <TableCell
+                                  padding="checkbox"
+                                  key={column.id}
+                                  align="center"
+                                >
+                                  {column.id === "accion" ? (
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <IconButton
+                                        aria-label="delete"
+                                        sx={{ color: "#840202" }}
+                                        onClick={() =>
+                                          handleServicioDelete(
+                                            servicio.id_servicio
+                                          )
+                                        }
+                                      >
+                                        <Delete />
+                                      </IconButton>
+                                    </Box>
+                                  ) : (
+                                    value
+                                  )}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              </Grid>
+              {/* Importe */}
+              <Grid item xs={12} sm={6} sx={{ m: "0 auto 0 auto"  }}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Importe (S/)"
+                  value={importeTotal.toFixed(2)}
+                  InputProps={{
+                    readOnly: true,
+                    startAdornment: (
+                      <AttachMoney sx={{ mr: 1, color: "gray" }} />
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
           </>
         );
       default:
@@ -380,15 +369,12 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   return (
     <ContenedorModal
       ancho="720px"
-      alto="800px"
+      alto="auto"
       abrir={open}
       cerrar={handleCloseModal}
       loading={loading}
       titulo="Nueva Cuota"
-    >
-
-        {renderTabContent()}
-
+      botones={
         <BotonesModal
           loading={loading}
           action={async (e) => {
@@ -403,7 +389,9 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
           }}
           close={handleCloseModal}
         />
-
+      }
+    >
+      {renderTabContent()}
     </ContenedorModal>
   );
 };

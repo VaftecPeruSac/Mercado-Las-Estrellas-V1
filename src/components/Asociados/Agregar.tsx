@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
   TextField,
   Grid,
   Typography,
@@ -27,6 +26,7 @@ import axios from "axios";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
+import { AvisoFormulario, SeparadorBloque, TxtFormulario } from "../Shared/ElementosFormulario";
 
 interface AgregarProps {
   open: boolean;
@@ -78,7 +78,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number | "">("");
 
   const [activeTab, setActiveTab] = useState(0)
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [loading, setLoading] = useState(false); // Estado de loading
 
@@ -272,401 +271,221 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       case 0: // REGISTRAR SOCIO
         return (
           <>
-            <Typography
-              sx={{
-                mb: 1,
-                color: "#333",
-                textAlign: "center",
-                fontSize: "0.8rem",
-              }}
-            >
-              Recuerde leer los campos obligatorios antes de escribir. (*)
-            </Typography>
+            <AvisoFormulario />
 
             {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
-            <Box component="form" noValidate autoComplete="off">
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <SeparadorBloque nombre="Datos personales" />
 
-              <Grid container spacing={2}> {" "}
+                <TxtFormulario
+                  label="Nombre (*)"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={manejarCambio}
+                  icono={<AccountCircle sx={{ mr: 1, color: "gray" }} />}
+                />
 
-                <Grid item xs={12} sm={6}>
+                <TxtFormulario
+                  label="Apellido Paterno (*)"
+                  name="apellido_paterno"
+                  value={formData.apellido_paterno}
+                  onChange={manejarCambio}
+                  icono={<AccountCircle sx={{ mr: 1, color: "gray" }} />}
+                />
 
-                  {/* Nombre bloque */}
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "bold",
+                <TxtFormulario
+                  label="Apellido Materno (*)"
+                  name="apellido_materno"
+                  value={formData.apellido_materno}
+                  onChange={manejarCambio}
+                  icono={<AccountCircle sx={{ mr: 1, color: "gray" }} />}
+                />
 
-                      fontSize: "0.8rem",
-                      color: "black",
-                      textAlign: "center",
-                      mb: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      "&::before": {
-                        content: '""',
-                        flexGrow: 1,
-                        borderBottom: "1px solid #333",
-                        marginRight: "8px",
-                      },
-                      "&::after": {
-                        content: '""',
-                        flexGrow: 1,
-                        borderBottom: "1px solid #333",
-                        marginLeft: "8px",
-                      },
-                    }}
+                {/* Sexo */}
+                <FormControl fullWidth required>
+                  <InputLabel id="sexo-label">Sexo</InputLabel>
+                  <Select
+                    labelId="sexo-label"
+                    fullWidth
+                    label="Sexo (*)"
+                    name="sexo"
+                    value={formData.sexo}
+                    onChange={manejarCambio}
+                    sx={{ mb: 2 }}
+                    startAdornment={<Wc sx={{ mr: 1, color: "gray" }} />}
                   >
-                    DATOS PERSONALES
-                  </Typography>
+                    <MenuItem value="Masculino">Masculino</MenuItem>
+                    <MenuItem value="Femenino">Femenino</MenuItem>
+                  </Select>
+                </FormControl>
 
-                  {/* Nombre */}
-                  <TextField
-                    fullWidth
-                    label="Nombre (*)"
-                    name="nombre"
-                    value={formData.nombre}
+                <TxtFormulario
+                  label="DNI (*)"
+                  name="dni"
+                  value={formData.dni}
+                  onChange={manejarCambio}
+                  icono={<Badge sx={{ mr: 1, color: "gray" }} />}
+                />
+
+                <TxtFormulario
+                  label="Dirección (*)"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={manejarCambio}
+                  icono={<Home sx={{ mr: 1, color: "gray" }} />}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
+                  <SeparadorBloque nombre="Contacto" />
+
+                  <TxtFormulario
+                    label="Nro. Telefono (*)"
+                    name="telefono"
+                    value={formData.telefono}
                     onChange={manejarCambio}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    error={!!errors.nombre}
-                    helperText={errors.nombre}
+                    icono={<Phone sx={{ mr: 1, color: "gray" }} />}
                   />
 
-                  {/* Apellido Paterno */}
-                  <TextField
-                    fullWidth
-                    label="Apellido Paterno (*)"
-                    name="apellido_paterno"
-                    value={formData.apellido_paterno}
+                  <TxtFormulario
+                    label="Correo (*)"
+                    name="correo"
+                    value={formData.correo}
                     onChange={manejarCambio}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    error={!!errors.apellidoPaterno}
-                    helperText={errors.apellidoPaterno}
+                    noMargin={true}
+                    icono={<Email sx={{ mr: 1, color: "gray" }} />}
                   />
+                </Grid>
 
-                  {/* Apellido Materno */}
-                  <TextField
-                    fullWidth
-                    label="Apellido Materno (*)"
-                    name="apellido_materno"
-                    value={formData.apellido_materno}
-                    onChange={manejarCambio}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircle sx={{ mr: 1, color: "gray" }} />
-                      ),
-                    }}
-                    error={!!errors.apellidoMaterno}
-                    helperText={errors.apellidoMaterno}
-                  />
+                <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
+                  <SeparadorBloque nombre="Asignar Puesto" />
 
-                  {/* Sexo */}
+                  {/* Seleccionar bloque */}
                   <FormControl fullWidth required>
-                    <InputLabel id="sexo-label">Sexo</InputLabel>
+                    <InputLabel id="bloque-label">Bloque</InputLabel>
                     <Select
-                      labelId="sexo-label"
-                      fullWidth
-                      label="Sexo (*)"
-                      name="sexo"
-                      value={formData.sexo}
-                      onChange={manejarCambio}
+                      labelId="bloque-label"
+                      id="select-bloque"
+                      label="Bloque"
+                      value={bloqueSeleccionado}
+                      disabled={socio !== null}
+                      onChange={(e) => {
+                        const value = e.target.value as number;
+                        setBloqueSeleccionado(value);
+                        setFormData({
+                          ...formData,
+                          id_block: value.toString(),
+                        });
+                      }}
+                      startAdornment={
+                        <Business sx={{ mr: 1, color: "gray" }} />
+                      }
                       sx={{ mb: 2 }}
-                      startAdornment={<Wc sx={{ mr: 1, color: "gray" }} />}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 200,
+                            overflowY: "auto",
+                          },
+                        },
+                      }}
                     >
-                      <MenuItem value="Masculino">Masculino</MenuItem>
-                      <MenuItem value="Femenino">Femenino</MenuItem>
+                      {bloques.map((bloque: Bloque) => (
+                        <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                          {bloque.nombre}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
 
-                  {/* DNI */}
-                  <TextField
-                    fullWidth
-                    label="DNI (*)"
-                    required
-                    name="dni"
-                    value={formData.dni}
-                    onChange={manejarCambio}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: <Badge sx={{ mr: 1, color: "gray" }} />,
-                    }}
-                    error={!!errors.dni}
-                    helperText={errors.dni}
-                  />
-
-                  {/* Dirección */}
-                  <TextField
-                    fullWidth
-                    label="Dirección (*)"
-                    required
-                    name="direccion"
-                    value={formData.direccion}
-                    onChange={manejarCambio}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: <Home sx={{ mr: 1, color: "gray" }} />,
-                    }}
-                    error={!!errors.direccion}
-                    helperText={errors.direccion}
-                  />
-
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-
-                  {/* CONTACTO */}
-                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
-
-                    {/* Nombre bloque */}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "0.8rem",
-                        color: "black",
-                        textAlign: "center",
-                        mb: 2,
-                        display: "flex",
-                        alignItems: "center",
-                        "&::before": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginRight: "8px",
-                        },
-                        "&::after": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginLeft: "8px",
-                        },
-                      }}
-                    >
-                      CONTACTO
-                    </Typography>
-
-                    {/* Numero de Telefono */}
-                    <TextField
-                      fullWidth
-                      label="Nro. Telefono (*)"
-                      name="telefono"
-                      value={formData.telefono}
-                      onChange={manejarCambio}
-                      InputProps={{
-                        startAdornment: <Phone sx={{ mr: 1, color: "gray" }} />,
-                      }}
-                      error={!!errors.telefono}
-                      helperText={errors.telefono}
-                    />
-
-                    {/* Correo  */}
-                    <TextField
-                      fullWidth
-                      label="Correo (*)"
-                      sx={{ mt: 2 }}
-                      name="correo"
-                      value={formData.correo}
-                      onChange={manejarCambio}
-                      InputProps={{
-                        startAdornment: <Email sx={{ mr: 1, color: "gray" }} />,
-                      }}
-                      error={!!errors.correo}
-                      helperText={errors.correo}
-                    />
-                  </Grid>
-
-                  {/* ASIGNAR PUESTO */}
-                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
-
-                    {/* Nombre bloque */}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "0.8rem",
-                        color: "black",
-                        textAlign: "center",
-                        mb: 2,
-                        display: "flex",
-                        alignItems: "center",
-                        "&::before": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginRight: "8px",
-                        },
-                        "&::after": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginLeft: "8px",
-                        },
-                      }}
-                    >
-                      ASIGNAR PUESTO
-                    </Typography>
-
-                    {/* Seleccionar bloque */}
-                    <FormControl fullWidth required>
-                      <InputLabel id="bloque-label">Bloque</InputLabel>
-                      <Select
-                        labelId="bloque-label"
-                        id="select-bloque"
-                        label="Bloque"
-                        value={bloqueSeleccionado}
-                        disabled={socio !== null}
-                        onChange={(e) => {
-                          const value = e.target.value as number;
-                          setBloqueSeleccionado(value);
-                          setFormData({ ...formData, id_block: value.toString() });
-                        }}
-                        startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
-                        sx={{ mb: 2 }}
-                        MenuProps={{
-                          PaperProps: {
-                            style: {
-                              maxHeight: 200,
-                              overflowY: 'auto',
-                            },
-                          },
-                        }}
-                      >
-                        {bloques.map((bloque: Bloque) => (
-                          <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                            {bloque.nombre}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-
-                    {/* Nro. Puesto */}
-                    <FormControl fullWidth required>
-                      <Autocomplete
-                        disabled={socio !== null}
-                        options={puestosFiltrados}
-                        getOptionLabel={(puesto) => puesto.numero_puesto.toString()} // Convertir numero_puesto a string para mostrarlo correctamente
-                        value={
-                          puestoSeleccionado
-                            ? puestosFiltrados.find(puesto => puesto.id_puesto === puestoSeleccionado) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
-                            : null // Si no hay puesto seleccionado, mostrar null
+                  {/* Nro. Puesto */}
+                  <FormControl fullWidth required>
+                    <Autocomplete
+                      disabled={socio !== null}
+                      options={puestosFiltrados}
+                      getOptionLabel={(puesto) =>
+                        puesto.numero_puesto.toString()
+                      } // Convertir numero_puesto a string para mostrarlo correctamente
+                      value={
+                        puestoSeleccionado
+                          ? puestosFiltrados.find(
+                              (puesto) =>
+                                puesto.id_puesto === puestoSeleccionado
+                            ) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
+                          : null // Si no hay puesto seleccionado, mostrar null
+                      }
+                      onChange={(event, newValue) => {
+                        if (newValue) {
+                          setFormData({
+                            ...formData,
+                            id_puesto: newValue.id_puesto.toString(),
+                          });
+                          setPuestoSeleccionado(Number(newValue.id_puesto));
+                        } else {
+                          setPuestoSeleccionado("");
                         }
-                        onChange={(event, newValue) => {
-                          if (newValue) {
-                            setFormData({ ...formData, id_puesto: newValue.id_puesto.toString() });
-                            setPuestoSeleccionado(Number(newValue.id_puesto));
-                          } else {
-                            setPuestoSeleccionado("");
-                          }
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Nro. Puesto"
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  <Abc sx={{ mr: 1, color: "gray" }} />
-                                  {params.InputProps.startAdornment}
-                                </>
-                              ),
-                            }}
-                          />
-                        )}
-                        ListboxProps={{
-                          style: {
-                            maxHeight: 200,
-                            overflow: 'auto',
-                          },
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id_puesto === Number(value)} // Comparación de valores
-                      />
-                    </FormControl>
-                  </Grid>
-
-                  {/* Informacion de registro */}
-                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
-
-                    {/* Nombre Bloque */}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "0.8rem",
-                        color: "black",
-                        textAlign: "center",
-                        mb: 2,
-                        display: "flex",
-                        alignItems: "center",
-                        "&::before": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginRight: "8px",
-                        },
-                        "&::after": {
-                          content: '""',
-                          flexGrow: 1,
-                          borderBottom: "1px solid #333",
-                          marginLeft: "8px",
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Nro. Puesto"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <Abc sx={{ mr: 1, color: "gray" }} />
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      ListboxProps={{
+                        style: {
+                          maxHeight: 200,
+                          overflow: "auto",
                         },
                       }}
-                    >
-                      INFORMACION DE REGISTRO
-                    </Typography>
-
-                    {/* Seleccionar estado */}
-                    <FormControl fullWidth required>
-                      <InputLabel id="estado-label">Estado</InputLabel>
-                      <Select
-                        labelId="estado-label"
-                        label="Estado"
-                        name="estado"
-                        value={formData.estado}
-                        onChange={manejarCambio}
-                        startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
-                      >
-                        <MenuItem value="Activo">Activo</MenuItem>
-                        <MenuItem value="Inactivo">Inactivo</MenuItem>
-                      </Select>
-                    </FormControl>
-
-                    {/* Fecha de registro */}
-                    <TextField
-                      fullWidth
-                      label="Fecha de Registro"
-                      type="date"
-                      name="fecha_registro"
-                      value={formData.fecha_registro}
-                      onChange={manejarCambio}
-                      sx={{ mt: 2 }}
-                      InputProps={{
-                        startAdornment: <Event sx={{ mr: 1, color: "gray" }} />,
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id_puesto === Number(value)
+                      } // Comparación de valores
                     />
-
-                  </Grid>
-
+                  </FormControl>
                 </Grid>
 
-              </Grid>
+                <Grid item xs={12} sm={12}>
+                  <SeparadorBloque nombre="Información de registro" />
 
-            </Box>
+                  {/* Seleccionar estado */}
+                  <FormControl fullWidth required sx={{ mb: 2 }}>
+                    <InputLabel id="estado-label">Estado</InputLabel>
+                    <Select
+                      labelId="estado-label"
+                      label="Estado"
+                      name="estado"
+                      value={formData.estado}
+                      onChange={manejarCambio}
+                      startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
+                    >
+                      <MenuItem value="Activo">Activo</MenuItem>
+                      <MenuItem value="Inactivo">Inactivo</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <TxtFormulario
+                    type="date"
+                    label="Fecha de Registro"
+                    name="fecha_registro"
+                    value={formData.fecha_registro}
+                    onChange={manejarCambio}
+                    icono={<Event sx={{ mr: 1, color: "gray" }} />}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
           </>
         );
       default:
@@ -682,11 +501,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       cerrar={handleCloseModal}
       titulo={obtenerTituloModal()}
       loading={loading}
-    >
-
-      {renderTabContent()}
-
-      <BotonesModal
+      botones={
+        <BotonesModal
         loading={loading}
         action={async (e) => {
           if (activeTab === 0) {
@@ -704,7 +520,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
         }}
         close={handleCloseModal}
       />
-
+      }
+    >
+      {renderTabContent()}
     </ContenedorModal>
   );
 };
