@@ -48,7 +48,7 @@ const useServicioState = () => {
 
   useEffect(() => {
     fetchServicios(paginaActual);
-  }, [fetchServicios, paginaActual]);
+  }, []);
 
   return {
     mostrarDetalles,

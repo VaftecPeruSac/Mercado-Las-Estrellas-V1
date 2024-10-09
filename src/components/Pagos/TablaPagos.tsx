@@ -30,50 +30,8 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
-
-interface Pagos {
-  id_pago: string;
-  puesto: string;
-  socio: string;
-  dni: string;
-  telefono: string;
-  correo: string;
-  total_pago: string;
-  total_deuda: string;
-  fecha_registro: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "center";
-}
-
-interface Data {
-  id_pago: string;
-  puesto: string;
-  socio: string;
-  dni: string;
-  telefono: string;
-  correo: string;
-  total_pago: string;
-  total_deuda: string;
-  fecha_registro: string;
-}
-
-const columns: readonly Column[] = [
-  { id: "id_pago", label: "#ID", minWidth: 50, align: "center" },
-  { id: "puesto", label: "N° Puesto", minWidth: 50, align: "center" },
-  { id: "socio", label: "Socio", minWidth: 50, align: "center" },
-  { id: "dni", label: "DNI", minWidth: 50, align: "center" },
-  { id: "fecha_registro", label: "Fecha", minWidth: 50, align: "center" },
-  { id: "telefono", label: "Teléfono", minWidth: 50, align: "center" },
-  { id: "correo", label: "Correo", minWidth: 50, align: "center" },
-  { id: "total_pago", label: "A Cuenta", minWidth: 50, align: "center" },
-  { id: "total_deuda", label: "Monto Actual", minWidth: 50, align: "center" },
-  { id: "accion", label: "Acciones", minWidth: 50, align: "center" },
-];
+import { Pagos, Data } from "../../interface/Pagos";
+import { columns } from "../../Columns/Puesto";
 
 const TablaPago: React.FC = () => {
 
@@ -91,8 +49,6 @@ const TablaPago: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-
-  // Metodo para exportar el listado de pagos
   const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
 
     e.preventDefault();

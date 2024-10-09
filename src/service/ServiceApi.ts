@@ -1,4 +1,3 @@
-// ServiceApi.ts
 const BASE_URL = "https://mercadolasestrellas.online/intranet/public/v1";
 
 export const API_ROUTES = {

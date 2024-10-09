@@ -142,7 +142,6 @@ const TablaPuestos: React.FC = () => {
       )}
 
       {(!isMobile || mostrarFiltros) && (!isTablet || mostrarFiltros) && (
-        // Filtros de búsqueda
         <Box
           sx={{
             padding: isLaptop || isTablet || isMobile ? "15px 0" : "15px 35px",

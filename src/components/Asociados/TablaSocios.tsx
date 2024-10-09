@@ -23,104 +23,43 @@ import {
   Search,
 } from "@mui/icons-material";
 import axios from "axios";
-import Agregar from "./Agregar";
-import useResponsive from "../../hooks/Responsive/useResponsive";
-import { useNavigate } from "react-router-dom";
+import Agregar from "./RegistrarSocio";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
-import * as XLSX from 'xlsx';
 import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
-
-interface Socio {
-  id_socio: string;
-  nombre_completo: string;
-  nombre_socio: string;
-  apellido_paterno: string;
-  apellido_materno: string;
-  dni: string;
-  sexo: string;
-  direccion: string;
-  telefono: string;
-  correo: string;
-  id_puesto: string;
-  numero_puesto: string;
-  id_block: string;
-  block_nombre: string;
-  gironegocio_nombre: string;
-  nombre_inquilino: string;
-  estado: string;
-  fecha_registro: string;
-  deuda: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "right";
-  format?: (value: any) => string;
-}
-interface Data {
-  id_socio: string;
-  nombre_completo: string;
-  nombre_socio: string;
-  apellido_paterno: string;
-  apellido_materno: string;
-  dni: string;
-  sexo: string;
-  direccion: string;
-  telefono: string;
-  correo: string;
-  id_puesto: string;
-  numero_puesto: string;
-  id_block: string;
-  block_nombre: string;
-  gironegocio_nombre: string;
-  nombre_inquilino: string;
-  estado: string;
-  fecha_registro: string;
-  deuda: string;
-  ver_reporte: string;
-}
-
-const columns: readonly Column[] = [
-  { id: "nombre_completo", label: "Nombre", minWidth: 50 }, // Nombre del socio
-  { id: "dni", label: "DNI", minWidth: 50 },      // DNI
-  { id: "telefono", label: "Teléfono", minWidth: 50 },  // Teléfono
-  { id: "correo", label: "Correo", minWidth: 50 },      // Correo
-  { id: "block_nombre", label: "Block", minWidth: 50 }, // Nombre del bloque
-  { id: "numero_puesto", label: "Puesto", minWidth: 50 }, // Número del puesto
-  { id: "gironegocio_nombre", label: "Giro", minWidth: 50 }, // Nombre del giro de negocio
-  { id: "nombre_inquilino", label: "Inquilino", minWidth: 50 }, // Inquilino
-  { id: "fecha_registro", label: "Fecha", minWidth: 50 }, // Fecha de registro
-  { id: "deuda", label: "Deuda Total", minWidth: 30 }, // Deuda total
-  { id: "ver_reporte", label: "Deudas / Pagos", minWidth: 10 }, // Ver Deuda / Pagos
-  { id: "accion", label: "Acción", minWidth: 20 },    // Acción
-];
+import { Data, Socio } from "../../interface/Socios";
+import { columns } from "../../Columns/Socios";
+import { handleExport } from "../../Utils/exportUtils";
+import { Api_Global_Socios } from "../../service/SocioApi";
+import useSocios from "../../hooks/Socios/useSocios";
+import { handleAccionesSocio } from "../../Utils/downloadDataSocio";
 
 const TablaAsociados: React.FC = () => {
-
-  // Variables para el responsive
-  const { isTablet, isMobile, isSmallMobile } = useResponsive();
-  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
-  // Para filtrar los registros
-  const [nombreIngresado, setNombreIngresado] = useState<string>("");
-  const [socioSeleccionado, setSocioSeleccionado] = useState<Socio | null>(null);
-
-  const [open, setOpen] = useState(false);
-  const [exportFormat, setExportFormat] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [socios, setSocios] = useState<Data[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [paginaActual, setPaginaActual] = useState(1);
-
-  // Para ir a los reportes
-  const navigate = useNavigate();
+  const {
+    isTablet,
+    isMobile,
+    isSmallMobile,
+    mostrarDetalles,
+    setMostrarDetalles,
+    nombreIngresado,
+    setNombreIngresado,
+    socioSeleccionado,
+    setSocioSeleccionado,
+    open,
+    setOpen,
+    exportFormat,
+    setExportFormat,
+    isLoading,
+    socios,
+    totalPages,
+    paginaActual,
+    setPaginaActual,
+    navigate,
+    fetchSocios,
+  } = useSocios();
 
   const handleVerReportePagos = (id_socio: string) => {
     navigate(`/home/reporte-pagos?socio=${id_socio}`);
@@ -142,155 +81,22 @@ const TablaAsociados: React.FC = () => {
 
   // Metodo para exportar el listado de socios
   const handleExportSocios = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
-
-    try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios/exportar",
-        { responseType: 'blob' } // Para manejar archivos
-      );
-
-      // Si no hay error
-      if (response.status === 200) {
-        if (exportFormat === "1") { // PDF
-          alert("En proceso de actualización. Intentelo más tarde.");
-        } else if (exportFormat === "2") { // Excel
-          alert("La lista de socios se descargará en breve.");
-          // Creamos un elemento a partir del blob
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          // Creamos el enlace de descarga
-          const link = document.createElement('a');
-          link.href = url;
-          // Para obtener la fecha
-          const hoy = new Date();
-          const formatDate = hoy.toISOString().split('T')[0];
-          link.setAttribute('download', `lista-socios-${formatDate}.xlsx`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          // Para limpiar el enlace
-          link.parentNode?.removeChild(link);
-          // Limpiamos el formato de exportación
-          setExportFormat("");
-        } else {
-          alert("Formato de exportación no válido.");
-        }
-      } else {
-        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-      }
-
-    } catch (error) {
-      console.log("Error:", error);
-      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-    }
-
+    const exportUrl = Api_Global_Socios.socios.exportar(); // URL específica para exportar socios
+    const fileNamePrefix = "lista-socios"; // Prefijo del nombre del archivo
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
-  const handleAccionesSocio = async (accion: number, telefono: string, socio: Socio) => {
-
-    // Transformar los datos del socio a formato vertical
-    const data = [
-      ["ID", socio.id_socio],
-      ["Nombre", socio.nombre_socio],
-      ["Apellido Paterno", socio.apellido_paterno],
-      ["Apellido Materno", socio.apellido_materno],
-      ["DNI", socio.dni],
-      ["Sexo", socio.sexo],
-      ["Dirección", socio.direccion],
-      ["Teléfono", socio.telefono],
-      ["Correo", socio.correo],
-      ["Nombre Block", socio.block_nombre],
-      ["Número Puesto", socio.numero_puesto],
-      ["Giro Negocio", socio.gironegocio_nombre],
-      ["Nombre Inquilino", socio.nombre_inquilino],
-      ["Estado", socio.estado],
-      ["Fecha Registro", socio.fecha_registro],
-      ["Deuda", socio.deuda],
-    ];
-
-    // Generar el archivo Excel
-    const ws = XLSX.utils.aoa_to_sheet(data); // Crea una hoja de trabajo
-    const wb = XLSX.utils.book_new(); // Crea un libro de trabajo
-    XLSX.utils.book_append_sheet(wb, ws, "Socio"); // Agrega la hoja de trabajo al libro
-
-    // Aplicamos estilos a las columnas
-    ws['A1'].s = { font: { bold: true } };
-    ws['B2'].s = { alignment: { horizontal: 'left' } };
-    ws['!cols'] = [{ wch: 18 }, { wch: 30 }];
-
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-    // Crear el archivo excel
-    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-
-    // Crear el enlace de descarga
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ', '-')}.xlsx`);
-    document.body.appendChild(link);
-
-    if (accion === 1) {
-      link.click();
-      link.parentNode?.removeChild(link);
-    } else {
-      // Enviar mensaje de WhatsApp
-      const mensaje = `¡Hola ${socio.nombre_completo}! \n Copia el siguiente enlace en tu navegador para visualizar en formato Excel. \n ${url}`;
-      const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
-      window.open(urlWhatsApp, '_blank');
-    }
-
-  }
-
-  const fetchSocios = async (page: number = 1) => {
-    try {
-      setIsLoading(true)
-      // const response = await axios.get(`http://127.0.0.1:8000/v1/socios?page=${page}`);
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?page=${page}&buscar_texto=${nombreIngresado}`); //publico
-
-      const data = response.data.data.map((item: Socio) => ({
-        id_socio: item.id_socio,
-        nombre_completo: item.nombre_completo,
-        nombre_socio: item.nombre_socio,
-        apellido_paterno: item.apellido_paterno,
-        apellido_materno: item.apellido_materno,
-        dni: item.dni,
-        sexo: item.sexo,
-        direccion: item.direccion,
-        telefono: item.telefono,
-        correo: item.correo,
-        id_puesto: item.id_puesto,
-        numero_puesto: item.numero_puesto,
-        id_block: item.id_block,
-        block_nombre: item.block_nombre,
-        gironegocio_nombre: item.gironegocio_nombre,
-        nombre_inquilino: item.nombre_inquilino,
-        estado: item.estado,
-        fecha_registro: formatDate(item.fecha_registro),
-        deuda: item.deuda
-      }));
-
-      console.log('Total Pages:', totalPages);
-      setSocios(data);
-      console.log(data);
-      setTotalPages(response.data.meta.last_page);
-      setPaginaActual(response.data.meta.current_page);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-    }
+  const downloadDataSocios = (accion: number, telefono: string, socio: Socio) => {
+    handleAccionesSocio(accion, telefono, socio);
   };
-
-  useEffect(() => {
-    fetchSocios();
-  }, []);
 
   const buscarSocios = () => {
     fetchSocios();
   }
-
-  const handleSocioRegistrado = () => {
-    fetchSocios();
-  };
+  // const handleSocioRegistrado = () => {
+  //   fetchSocios();
+  // };
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
@@ -532,7 +338,7 @@ const TablaAsociados: React.FC = () => {
                                                 backgroundColor: "black",
                                                 color: "white"
                                               }}
-                                              onClick={() => handleAccionesSocio(1, "", socio)}
+                                              onClick={() => downloadDataSocios(1, "", socio)}
                                             >
                                               <Download sx={{ mr: 1 }} />
                                               Descargar
@@ -546,7 +352,7 @@ const TablaAsociados: React.FC = () => {
                                                 backgroundColor: "green",
                                                 color: "white"
                                               }}
-                                              onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
+                                              onClick={() => downloadDataSocios(2, socio.telefono, socio)}
                                             >
                                               <WhatsApp sx={{ mr: 1 }} />
                                               Enviar
@@ -608,14 +414,14 @@ const TablaAsociados: React.FC = () => {
                                     <IconButton
                                       aria-label="download"
                                       sx={{ color: "black" }}
-                                      onClick={() => handleAccionesSocio(1, "", socio)}
+                                      onClick={() => downloadDataSocios(1, "", socio)}
                                     >
                                       <Download />
                                     </IconButton>
                                     <IconButton
                                       aria-label="whatsapp"
                                       sx={{ color: "green" }}
-                                      onClick={() => handleAccionesSocio(2, socio.telefono, socio)}
+                                      onClick={() => downloadDataSocios(2, socio.telefono, socio)}
                                     >
                                       <WhatsApp />
                                     </IconButton>

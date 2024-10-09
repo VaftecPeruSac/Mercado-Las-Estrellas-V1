@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Principal from "../Layout/Principal";
-import Tabla from "../components/Asociados/Tabla";
+import Tabla from "../components/Asociados/TablaSocios";
 import Dashboard from "../components/Dashboard";
 import TablaServicios from "../components/Servicios/TablaServicios";
 import TablaPagos from "../components/Pagos/TablaPagos";

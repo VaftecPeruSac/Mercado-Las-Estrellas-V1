@@ -21,22 +21,12 @@ const usePuestos = () => {
   );
   const [exportFormat, setExportFormat] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false); 
 
   const fetchPuestos = useCallback(
     async (page: number = 1) => {
-      if (hasFetched) return; 
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          Api_Global_Puestos.puestos.fetch(
-            page,
-            giroSeleccionado,
-            bloqueSeleccionado,
-            nroPuestoIngresado
-          )
-        );
-
+        const response = await axios.get(Api_Global_Puestos.puestos.fetch(page, giroSeleccionado, bloqueSeleccionado, nroPuestoIngresado));
         const data = response.data.data.map((item: Puesto) => ({
           id_puesto: item.id_puesto,
           numero_puesto: item.numero_puesto,
@@ -58,14 +48,13 @@ const usePuestos = () => {
         setPuestos(data);
         setTotalPages(response.data.meta.last_page);
         setPaginaActual(response.data.meta.current_page);
-        setHasFetched(true); // Marcamos que hemos hecho la llamada
       } catch (error) {
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     },
-    [giroSeleccionado, bloqueSeleccionado, nroPuestoIngresado, hasFetched]
+    [giroSeleccionado, bloqueSeleccionado, nroPuestoIngresado]
   );
 
   useEffect(() => {

@@ -34,45 +34,9 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
+import { Cuotas, Data, IMeses } from "../../interface/Cuotas";
+import { columns } from "../../Columns/Cuotas";
 
-interface Cuotas {
-  id_deuda: string; // Nombre del socio
-  fecha_registro: string;
-  fecha_vencimiento: string;
-  importe: string;
-  socio_nombre: string;
-  puesto_descripcion: string;
-  servicio_descripcion: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "right";
-  format?: (value: any) => string;
-}
-
-interface Data {
-  id_deuda: string;
-  socio_nombre: string;
-  puesto_descripcion: string;
-  servicio_descripcion: string;
-  fecha_registro: string;
-  fecha_vencimiento: string;
-  importe: string;
-}
-
-const columns: readonly Column[] = [
-  { id: "id_deuda", label: "# ID", minWidth: 50 }, // Nombre del socio
-  { id: "socio_nombre", label: "Socio", minWidth: 50 },
-  { id: "puesto_descripcion", label: "Puesto", minWidth: 50 },
-  { id: "servicio_descripcion", label: "Servicio", minWidth: 50 },
-  { id: "fecha_registro", label: "Fecha Emisión", minWidth: 50 }, // DNI
-  { id: "fecha_vencimiento", label: "Fecha Vencimiento", minWidth: 50 }, // Nombre del bloque
-  { id: "importe", label: "Importe", minWidth: 50 }, // Número del puesto
-  { id: "accion", label: "Acción", minWidth: 20 }, // Acciones
-];
 
 const optMeses = [
   { value: "1", label: "Enero" },
@@ -88,10 +52,6 @@ const optMeses = [
   { value: "11", label: "Noviembre" },
   { value: "12", label: "Diciembre" },
 ];
-interface IMeses {
-  value: string;
-  label: string;
-}
 
 const TablaCuota: React.FC = () => {
 
