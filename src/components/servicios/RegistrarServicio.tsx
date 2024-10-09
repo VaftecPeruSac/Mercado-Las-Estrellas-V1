@@ -1,9 +1,11 @@
 import { AttachMoney, Bolt, Event, Storefront, Straighten } from '@mui/icons-material';
-import { Box, Button, Card, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
+import BotonesModal from '../Shared/BotonesModal';
+import ContenedorModal from '../Shared/ContenedorModal';
 
 interface AgregarProps {
   open: boolean;
@@ -22,7 +24,7 @@ interface Editarservicio {
 const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio }) => {
 
   // Variables para el diseño responsivo
-  const { isLaptop, isTablet, isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
   const [loading, setLoading] = useState(false); // Estado de loading
 
   const [activeTab, setActiveTab] = useState(0);
@@ -532,159 +534,53 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={handleCloseModal}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+    <ContenedorModal
+      ancho="720px"
+      alto="720px"
+      abrir={open}
+      cerrar={handleCloseModal}
+      loading={loading}
+      titulo={servicio ? "Editar servicio" : "Registrar servicio"}
+      activeTab={activeTab}
+      handleTabChange={handleTabChange}
+      tabs={["Registrar servicio", "Registrar servicio compartido"]}
     >
-      <Card
-        sx={{
-          width: isTablet ? "90%" : isMobile ? "95%" : "720px",
-          height: isLaptop || isTablet || isMobile ? "90%" : "720px",
-          p: isMobile ? 3 : "40px",
-          bgcolor: "#f0f0f0",
-          boxShadow: 24,
-          borderRadius: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          overflowY: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#008001",
-            p: 2,
-            color: "#fff",
-            borderRadius: 1,
-          }}
-        >
-          <Typography
-            id="modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ textAlign: "center", textTransform: "uppercase" }}
-          >
-            {servicio ? "Editar Servicio" : "Registrar Servicio"}
-          </Typography>
-        </Box>
-        {loading && (
-          <div style={{ textAlign: "center", marginBottom: "5px" }}>
-            <LinearProgress aria-description="dd" color="primary" />
-            {/* <p>Cargando...</p> */}
-          </div>
-        )}
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              "& .MuiTabs-flexContainer": {
-                minHeight: "36px",
-              },
-              "& .MuiTab-root": {
-                fontSize: "0.8rem",
-                fontWeight: "normal",
-                color: "gray",
-                textTransform: "uppercase",
-                minWidth: "auto",
-                px: 2,
-              },
-              "& .MuiTab-root.Mui-selected": {
-                fontWeight: "bold",
-                color: "black !important",
-              },
-              "& .MuiTabs-indicator": {
-                display: "none",
-              },
-              mb: -1,
-              overflowX: "auto",
-            }}
-          >
-            <Tab label="Registrar Servicio" />
-            <Tab label="Registrar Servicio Compartido" />
-          </Tabs>
-        </Box>
 
         {renderTabContent()}
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: isTablet || isMobile ? "center" : "flex-end",
-            mt: "auto",
-            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
-            borderTop: 1,
-            borderColor: "divider",
+        <BotonesModal
+          loading={loading}
+          action={async (e) => {
+            let result;
+
+            // Caso cuando activeTab es 0
+            if (activeTab === 0) {
+              result = await mostrarAlertaConfirmacion(
+                "¿Está seguro de registrar un nuevo servicio?",
+              );
+              if (result.isConfirmed) {
+                if (servicio) {
+                  editarServicio(e);
+                } else {
+                  registrarServicio(e);
+                }
+              }
+            }
+
+            // Caso cuando activeTab es 1
+            if (activeTab === 1) {
+              result = await mostrarAlertaConfirmacion(
+                "¿Está seguro de realizar otra acción para el servicio?",
+              );
+              if (result.isConfirmed) {
+                // registrarServicioCompartido(e); }
+              }
+            }
           }}
-        >
-          <Button
-            variant="outlined"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: "#202123",
-              color: "#fff",
-              mr: 1,
-              "&:hover": {
-                backgroundColor: "#3F4145",
-              },
-            }}
-            onClick={handleCloseModal}
-          >
-            Cerrar
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: "#008001",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "#388E3C",
-              },
-            }}
-            onClick={async (e) => {
-              let result;
+          close={handleCloseModal}
+        />
 
-              // Caso cuando activeTab es 0
-              if (activeTab === 0) {
-                result = await mostrarAlertaConfirmacion(
-                  "¿Está seguro de registrar un nuevo servicio?",
-                );
-                if (result.isConfirmed) {
-                  if (servicio) {
-                    editarServicio(e);
-                  } else {
-                    registrarServicio(e);
-                  }
-                }
-              }
-
-              // Caso cuando activeTab es 1
-              if (activeTab === 1) {
-                result = await mostrarAlertaConfirmacion(
-                  "¿Está seguro de realizar otra acción para el servicio?",
-                );
-                if (result.isConfirmed) {
-                  // registrarServicioCompartido(e); }
-                }
-              }
-            }
-            }
-            disabled={loading} // Deshabilita el botón cuando está en loading
-
-          >
-            {loading ? "Cargando..." : "Registrar"}
-          </Button>
-        </Box>
-      </Card>
-    </Modal>
+    </ContenedorModal>
   )
 
 }

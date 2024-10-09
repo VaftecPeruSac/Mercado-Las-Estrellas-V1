@@ -11,18 +11,12 @@ import {
 import {
   Autocomplete,
   Box,
-  Button,
-  Card,
   FormControl,
   Grid,
   InputLabel,
-  LinearProgress,
   MenuItem,
-  Modal,
   Select,
   SelectChangeEvent,
-  Tab,
-  Tabs,
   TextField,
   Typography
 } from '@mui/material';
@@ -30,6 +24,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../Responsive';
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
+import BotonesModal from '../Shared/BotonesModal';
+import ContenedorModal from '../Shared/ContenedorModal';
 
 interface AgregarProps {
   open: boolean;
@@ -281,7 +277,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           return "REGISTRAR PUESTO";
         }
       case 1:
-        return "ASIGNAR PUESTO SOCIO";
+        return "ASIGNAR SOCIO";
       case 2:
         return "ASIGNAR INQUILINO";
       case 3:
@@ -1315,183 +1311,78 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={handleCloseModal}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+    <ContenedorModal
+      ancho="740px"
+      alto="670px"
+      abrir={open}
+      cerrar={handleCloseModal}
+      loading={loading}
+      titulo={obtenerTituloModal()}
+      activeTab={activeTab}
+      handleTabChange={handleTabChange}
+      tabs={["Registrar Puesto","Asignar Puesto", "Asignar Inquilino", 
+            "Registrar Bloque", "Registrar Giro de Negocio"]}
     >
-      <Card
-        sx={{
-          width: isTablet ? "90%" : isMobile ? "95%" : "740px",
-          height: isLaptop || isTablet || isMobile ? "90%" : "670px",
-          p: isMobile ? 3 : "40px",
-          bgcolor: "#f0f0f0",
-          boxShadow: 24,
-          borderRadius: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          overflowY: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#008001",
-            p: 2,
-            color: "#fff",
-            borderRadius: 1,
-          }}
-        >
-          <Typography
-            id="modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ textAlign: "center", textTransform: "uppercase" }}
-          >
-            {obtenerTituloModal()}
-          </Typography>
-        </Box>
-        {loading && (
-          <div style={{ textAlign: "center", marginBottom: "5px" }}>
-            <LinearProgress aria-description="dd" color="primary" />
-            {/* <p>Cargando...</p> */}
-          </div>
-        )}
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              "& .MuiTabs-flexContainer": {
-                minHeight: "36px",
-              },
-              "& .MuiTab-root": {
-                fontSize: "0.8rem",
-                fontWeight: "normal",
-                color: "gray",
-                textTransform: "uppercase",
-                minWidth: "auto",
-                px: 2,
-              },
-              "& .MuiTab-root.Mui-selected": {
-                fontWeight: "bold",
-                color: "black !important",
-              },
-              "& .MuiTabs-indicator": {
-                display: "none",
-              },
-              mb: -1,
-              overflowX: "auto",
-            }}
-          >
-            <Tab label="Registrar Puesto" />
-            <Tab label="Asignar Puesto" />
-            <Tab label="Asignar Inquilino" />
-            <Tab label="Nuevo Bloque" />
-            <Tab label="Nuevo Giro" />
-          </Tabs>
-        </Box>
 
         {renderTabContent()}
+        
+        <BotonesModal
+          loading={loading}
+          action={async (e) => {
+            let result; // Variable para almacenar el resultado de la alerta de confirmación
+            // Cambiar a función asíncrona
+            if (activeTab === 0) {
+              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
+                "¿Está seguro de registrar un nuevo Puesto?",
+              );
+              if (result.isConfirmed) {
+                if (puesto) {
+                  editarPuesto(e);
+                } else {
+                  registrarPuesto(e);
+                }
+              }
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: isTablet || isMobile ? "center" : "flex-end",
-            mt: "auto",
-            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
-            borderTop: 1,
-            borderColor: "divider",
+            }
+            if (activeTab === 1) {
+              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
+                "¿Está seguro de asignar un puesto a un socio?",
+              );
+              if (result.isConfirmed) {
+                asignarPuestoSocio(e); // Asignar puesto
+              }
+            }
+            if (activeTab === 2) {
+              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar inquilino
+                "¿Está seguro de asignar un inquilino?",
+              );
+              if (result.isConfirmed) {
+                asignarInquilino(e); // Asignar inquilino
+              }
+            }
+
+            if (activeTab === 3) {
+              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar bloque
+                "¿Está seguro de registrar un bloque?",
+              );
+              if (result.isConfirmed) {
+                registrarBloque(e); // Registrar bloque
+              }
+            }
+
+            if (activeTab === 4) {
+              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
+                "¿Está seguro de registrar un giro de negocio?",
+              );
+              if (result.isConfirmed) {
+                registrarGiroNegocio(e); // Registrar giro de negocio
+              }
+            }
           }}
-        >
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: "#202123",
-              color: "#fff",
-              mr: 1,
-              "&:hover": {
-                backgroundColor: "#3F4145",
-              },
-            }}
-            onClick={handleCloseModal}
-          >
-            Cerrar
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: "#008001",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "#388E3C",
-              },
-            }}
-            onClick={async (e) => {
-              let result; // Variable para almacenar el resultado de la alerta de confirmación
-              // Cambiar a función asíncrona
-              if (activeTab === 0) {
-                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
-                  "¿Está seguro de registrar un nuevo Puesto?",
-                );
-                if (result.isConfirmed) {
-                  if (puesto) {
-                    editarPuesto(e);
-                  } else {
-                    registrarPuesto(e);
-                  }
-                }
+          close={handleCloseModal}
+        />
 
-              }
-              if (activeTab === 1) {
-                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
-                  "¿Está seguro de asignar un puesto a un socio?",
-                );
-                if (result.isConfirmed) {
-                  asignarPuestoSocio(e); // Asignar puesto
-                }
-              }
-              if (activeTab === 2) {
-                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar inquilino
-                  "¿Está seguro de asignar un inquilino?",
-                );
-                if (result.isConfirmed) {
-                  asignarInquilino(e); // Asignar inquilino
-                }
-              }
-
-              if (activeTab === 3) {
-                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar bloque
-                  "¿Está seguro de registrar un bloque?",
-                );
-                if (result.isConfirmed) {
-                  registrarBloque(e); // Registrar bloque
-                }
-              }
-
-              if (activeTab === 4) {
-                result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
-                  "¿Está seguro de registrar un giro de negocio?",
-                );
-                if (result.isConfirmed) {
-                  registrarGiroNegocio(e); // Registrar giro de negocio
-                }
-              }
-            }}
-          >
-            Registrar
-          </Button>
-        </Box>
-      </Card>
-    </Modal>
+    </ContenedorModal>
   )
 
 }

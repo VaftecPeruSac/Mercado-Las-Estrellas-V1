@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Button,
-  Modal,
   TextField,
   Grid,
   Typography,
-  Card,
   MenuItem,
   Select,
   InputLabel,
   FormControl,
-  Tabs,
-  Tab,
-  LinearProgress,
   Autocomplete,
 } from "@mui/material";
 import {
@@ -30,8 +24,9 @@ import {
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
-import useResponsive from "../Responsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import BotonesModal from "../Shared/BotonesModal";
+import ContenedorModal from "../Shared/ContenedorModal";
 
 interface AgregarProps {
   open: boolean;
@@ -74,9 +69,6 @@ interface Puesto {
 }
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
-
-  // Variables para el diseño responsivo
-  const { isLaptop, isMobile, isTablet } = useResponsive();
 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -683,139 +675,37 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleCloseModal}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200, }}
+    <ContenedorModal
+      ancho="720px"
+      alto="auto"
+      abrir={open}
+      cerrar={handleCloseModal}
+      titulo={obtenerTituloModal()}
+      loading={loading}
     >
-      <Card
-        sx={{
-          width: isTablet ? "90%" : isMobile ? "95%" : "720px",
-          height: isLaptop || isTablet || isMobile ? "90%" : "auto",
-          p: 3,
-          bgcolor: "white",
-          boxShadow: 24,
-          borderRadius: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          overflowY: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#008001",
-            p: 2,
-            color: "#fff",
-            borderRadius: 1,
-          }}
-        >
-          <Typography
-            id="modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ textAlign: "center", fontSize: "0.9rem" }}
-          >
-            {obtenerTituloModal()}
-          </Typography>
-        </Box>
-        {loading && (
-          <div style={{ textAlign: "center", marginBottom: "5px" }}>
-            <LinearProgress aria-description="dd" color="primary" />
-            {/* <p>Cargando...</p> */}
-          </div>
-        )}
-        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 0 }}>
-          {/* <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            sx={{
-              "& .MuiTabs-flexContainer": {
-                minHeight: "36px",
-              },
-              "& .MuiTab-root": {
-                fontSize: "0.8rem",
-                fontWeight: "normal",
-                color: "gray",
-                textTransform: "none",
-                minWidth: "auto",
-                px: 2,
-              },
-              "& .MuiTab-root.Mui-selected": {
-                fontWeight: "bold",
-                color: "black !important",
-              },
-              "& .MuiTabs-indicator": {
-                display: "none",
-              },
-              mb: -1,
-            }}
-          >
-            <Tab label="REGISTRAR SOCIO" />
-          </Tabs> */}
-        </Box>
-        {renderTabContent()}
-        {/* <Agregar onSocioRegistrado={handleSocioRegistrado} />
-        <Tabla socios={socios} /> */}
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: isTablet || isMobile ? "center" : "flex-end",
-            mt: 3
-          }}
-        >
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: "#202123",
-              color: "#fff",
-              mr: 1,
-              "&:hover": {
-                backgroundColor: "#3F4145",
-              },
-            }}
-            onClick={handleCloseModal}
-          >
-            Cerrar
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: loading ? "#aaa" : "#008001",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: loading ? "#aaa" : "#388E3C",
-              },
-            }}
-            onClick={async (e) => {
-              if (activeTab === 0) {
-                const result = await mostrarAlertaConfirmacion(
-                  "¿Está seguro de registrar un nuevo socio?"
-                );
-                if (result.isConfirmed) {
-                  if (socio) {
-                    editarSocio(e);
-                  } else {
-                    registrarSocio(e);
-                  }
-                }
+      {renderTabContent()}
+
+      <BotonesModal
+        loading={loading}
+        action={async (e) => {
+          if (activeTab === 0) {
+            const result = await mostrarAlertaConfirmacion(
+              "¿Está seguro de registrar un nuevo socio?"
+            );
+            if (result.isConfirmed) {
+              if (socio) {
+                editarSocio(e);
+              } else {
+                registrarSocio(e);
               }
-            }}
-            disabled={loading} // Deshabilita el botón cuando está en loading
-          >
-            {loading ? "Cargando..." : "Registrar"}
-          </Button>
+            }
+          }
+        }}
+        close={handleCloseModal}
+      />
 
-        </Box>
-      </Card>
-    </Modal>
+    </ContenedorModal>
   );
 };
 

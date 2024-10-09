@@ -1,10 +1,7 @@
 import { Business } from "@mui/icons-material";
 import {
   Box,
-  Card,
-  Modal,
   Typography,
-  Button,
   Grid,
   TextField,
   IconButton,
@@ -21,13 +18,14 @@ import {
   MenuItem,
   Select,
   Autocomplete,
-  LinearProgress,
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../Responsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import jsPDF from "jspdf";
+import BotonesModal from "../Shared/BotonesModal";
+import ContenedorModal from "../Shared/ContenedorModal";
 
 interface AgregarProps {
   open: boolean;
@@ -86,7 +84,7 @@ const columns: readonly Column[] = [
 const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   // Variables para el diseño responsivo
-  const { isLaptop, isTablet, isMobile } = useResponsive();
+  const { isTablet, isMobile } = useResponsive();
 
   // Para los select
   const [socios, setSocios] = useState<Socio[]>([]);
@@ -697,136 +695,31 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleCloseModal}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+    <ContenedorModal
+      ancho="1000px"
+      alto="710px"
+      abrir={open}
+      cerrar={handleCloseModal}
+      loading={loading}
+      titulo="Registrar Pago"
     >
-      <Card
-        sx={{
-          width: isLaptop ? "60%" : isTablet ? "90%" : isMobile ? "95%" : "1000px",
-          height: isLaptop || isTablet || isMobile ? "90%" : "720px",
-          p: isMobile ? 3 : "40px",
-          bgcolor: "#f0f0f0",
-          boxShadow: 24,
-          borderRadius: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          overflowY: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#008001",
-            p: 2,
-            color: "#fff",
-            borderRadius: 1,
-          }}
-        >
-          <Typography
-            id="modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ textAlign: "center", textTransform: "uppercase" }}
-          >
-            Registrar Pago
-          </Typography>
-        </Box>
-        {loading && (
-          <div style={{ textAlign: "center", marginBottom: "5px" }}>
-            <LinearProgress aria-description="dd" color="primary" />
-            {/* <p>Cargando...</p> */}
-          </div>
-        )}
-
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          {/* <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange} 
-            sx={{ 
-              "& .MuiTabs-flexContainer": {
-                minHeight: "36px",
-              },
-              "& .MuiTab-root": {
-                fontSize: "0.8rem",
-                fontWeight: "normal",
-                color: "gray",
-                textTransform: "uppercase",
-                minWidth: "auto",
-                px: 2,
-              },
-              "& .MuiTab-root.Mui-selected": {
-                fontWeight: "bold",
-                color: "black !important",
-              },
-              "& .MuiTabs-indicator": {
-                display: "none",
-              },
-              mb: -1,
-            }}
-          >
-            <Tab label="Registrar Pago" />
-          </Tabs> */}
-        </Box>
 
         {renderTabContent()}
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: isTablet || isMobile ? "center" : "flex-end",
-            mt: "auto",
-            p: isTablet || isMobile ? "20px 0px 0px 0px" : "20px 58px 0 58px",
-            borderTop: 1,
-            borderColor: "divider",
+        <BotonesModal
+          loading={loading}
+          action={async (e) => {
+            const result = await mostrarAlertaConfirmacion(
+              "¿Está seguro de registrar este pago?",
+            );
+            if (result.isConfirmed) {
+              registrarPago(e);
+            }
           }}
-        >
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: "#202123",
-              color: "#fff",
-              mr: 1,
-              "&:hover": {
-                backgroundColor: "#3F4145",
-              },
-            }}
-            onClick={handleCloseModal}
-          >
-            Cerrar
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              width: "140px",
-              height: "45px",
-              backgroundColor: loading ? "#aaa" : "#008001",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: loading ? "#aaa" : "#388E3C",
-              },
-            }}
-            onClick={async (e) => {
-              const result = await mostrarAlertaConfirmacion(
-                "¿Está seguro de registrar este pago?",
-              );
-              if (result.isConfirmed) {
-                registrarPago(e);
-              }
-            }}
-            disabled={loading}
-          >
-            {loading ? "Cargando..." : "Registrar"}
+          close={handleCloseModal}
+        />
 
-          </Button>
-        </Box>
-      </Card>
-    </Modal>
+    </ContenedorModal>
   );
 };
 
