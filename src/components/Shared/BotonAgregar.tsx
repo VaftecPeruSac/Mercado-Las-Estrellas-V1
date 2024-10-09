@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import React from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 
 interface BotonAgregarProps {
   handleAction: (e: React.MouseEvent<HTMLButtonElement>) => void;

@@ -27,12 +27,13 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import GenerarCuota from "./GenerarCuota";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
+import { formatDate } from "../../Utils/dateUtils";
 
 interface Cuotas {
   id_deuda: string; // Nombre del socio
@@ -74,18 +75,18 @@ const columns: readonly Column[] = [
 ];
 
 const optMeses = [
-  {value: "1", label: "Enero"},
-  {value: "2", label: "Febrero"},
-  {value: "3", label: "Marzo"},
-  {value: "4", label: "Abril"},
-  {value: "5", label: "Mayo"},
-  {value: "6", label: "Junio"},
-  {value: "7", label: "Julio"},
-  {value: "8", label: "Agosto"},
-  {value: "9", label: "Septiembre"},
-  {value: "10", label: "Octubre"},
-  {value: "11", label: "Noviembre"},
-  {value: "12", label: "Diciembre"},
+  { value: "1", label: "Enero" },
+  { value: "2", label: "Febrero" },
+  { value: "3", label: "Marzo" },
+  { value: "4", label: "Abril" },
+  { value: "5", label: "Mayo" },
+  { value: "6", label: "Junio" },
+  { value: "7", label: "Julio" },
+  { value: "8", label: "Agosto" },
+  { value: "9", label: "Septiembre" },
+  { value: "10", label: "Octubre" },
+  { value: "11", label: "Noviembre" },
+  { value: "12", label: "Diciembre" },
 ];
 interface IMeses {
   value: string;
@@ -107,7 +108,7 @@ const TablaCuota: React.FC = () => {
   const [mes, setMes] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [cuotas, setCuotas] = useState<Data[]>([]);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -119,11 +120,11 @@ const TablaCuota: React.FC = () => {
 
     try {
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas/exportar",
-        {responseType: 'blob'}
+        { responseType: 'blob' }
       );
 
       // Si no hay problemas
-      if(response.status === 200){
+      if (response.status === 200) {
         if (exportFormat === "1") { // PDF
           alert("En proceso de actualización. Intentelo más tarde.");
         } else if (exportFormat === "2") { // Excel
@@ -157,15 +158,6 @@ const TablaCuota: React.FC = () => {
     fetchCuotas();
   }
 
-  const formatDate = (fecha: string): string => {
-    const date = new Date(fecha);
-    const day = date.getDate();
-    const month = date.getMonth() + 1; 
-    const year = date.getFullYear();
-    const formattedDay = day.toString().padStart(2, "0");
-    const formattedMonth = month.toString().padStart(2, "0");
-    return `${formattedDay}/${formattedMonth}/${year}`;
-  };
 
   const fetchCuotas = async (page: number = 1) => {
     setIsLoading(true);
@@ -190,13 +182,14 @@ const TablaCuota: React.FC = () => {
     } catch (error) {
       console.error("Error al traer datos", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
-  fetchCuotas(value)  };
+    fetchCuotas(value)
+  };
 
   useEffect(() => {
     fetchCuotas(paginaActual);
@@ -208,191 +201,191 @@ const TablaCuota: React.FC = () => {
 
   return (
     <Contenedor>
-        <ContenedorBotones>
+      <ContenedorBotones>
 
-          <BotonAgregar
-            handleAction={handleOpen}
-            texto="Generar Cuota"
-          />
+        <BotonAgregar
+          handleAction={handleOpen}
+          texto="Generar Cuota"
+        />
 
-          <GenerarCuota 
-            open={open} 
-            handleClose={handleClose} 
-          />
+        <GenerarCuota
+          open={open}
+          handleClose={handleClose}
+        />
 
-          <BotonExportar
-            exportFormat={exportFormat}
-            setExportFormat={setExportFormat}
-            handleExport={handleExportCuotas}
-          />
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={handleExportCuotas}
+        />
 
-        </ContenedorBotones>
+      </ContenedorBotones>
 
-        {isMobile && (
-          // Botón "Filtros" para mostrar/ocultar los filtros
-          <Box 
+      {isMobile && (
+        // Botón "Filtros" para mostrar/ocultar los filtros
+        <Box
+          sx={{
+            width: "100%",
+            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+            borderBottom: !mostrarFiltros ? "1px solid rgba(0, 0, 0, 0.25)" : "none",
+            pt: "1rem",
+          }}
+        >
+          <Button
+            variant="contained"
             sx={{
+              height: "50px",
               width: "100%",
-              borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-              borderBottom: !mostrarFiltros ? "1px solid rgba(0, 0, 0, 0.25)" : "none",
-              pt: "1rem",
+              borderRadius: "30px",
+              mb: "1rem",
             }}
+            onClick={() => setMostrarFiltros(!mostrarFiltros)}
+            endIcon={mostrarFiltros
+              ? <ExpandLess />
+              : <ExpandMore />}
           >
-            <Button
-              variant="contained"
-              sx={{
-                height: "50px",
-                width: "100%",
-                borderRadius: "30px",
-                mb: "1rem",
-              }}
-              onClick={() => setMostrarFiltros(!mostrarFiltros)}
-              endIcon={mostrarFiltros 
-                ? <ExpandLess /> 
-                : <ExpandMore />}
-            >
-              {mostrarFiltros ? "Ocultar Filtros" : "Mostrar Filtros"}
-            </Button>
-          </Box>
-        )}
+            {mostrarFiltros ? "Ocultar Filtros" : "Mostrar Filtros"}
+          </Button>
+        </Box>
+      )}
 
-        {(!isMobile || mostrarFiltros) && (
+      {(!isMobile || mostrarFiltros) && (
 
-          // Filtros de búsqueda
-          <Box
+        // Filtros de búsqueda
+        <Box
+          sx={{
+            padding: isTablet || isMobile ? "15px 0" : "15px 35px",
+            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "left" : "center",
+          }}
+        >
+          <Typography
             sx={{
-              padding: isTablet || isMobile ? "15px 0" : "15px 35px",
-              borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-              borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              alignItems: isMobile ? "left" : "center",
+              display: isTablet ? "none" : "block",
+              textAlign: "left",
+              fontWeight: "bold",
+              mr: 2,
+              mt: isMobile ? 1 : 0,
+              mb: isMobile ? 2 : 0
             }}
           >
-            <Typography 
-              sx={{
-                display: isTablet ? "none" : "block",
-                textAlign: "left",
-                fontWeight: "bold", 
-                mr: 2,
-                mt: isMobile ? 1 : 0,
-                mb: isMobile ? 2 : 0
-              }}
-            >
-              Buscar por:
-            </Typography>
+            Buscar por:
+          </Typography>
 
-            {/* Seleccionar año */}
-            <FormControl 
-              sx={{ 
-                width: isMobile ? "100%" : "200px", 
-                mr: isMobile ? 0 : 1, 
-              }}
-            >
-              <InputLabel id="cuota-anio-label">Año</InputLabel>
-              <Select value={anio} onChange={(e) => setAnio(e.target.value)} label="Año">
-                {[
-                  2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
-                  2014, 2013, 2012,
-                ].map((año) => (
-                  <MenuItem
-                    sx={{ padding: "10px 25px !important" }}
-                    key={año}
-                    value={año}
-                  >
-                    {año}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* Seleccionar mes */}
-            <FormControl
-              sx={{ 
-                width: isMobile ? "100%" : "200px", 
-                mr: isMobile ? 0 : 1,
-                mt: isMobile ? 2 : 0,
-                mb: isMobile ? 2 : 0,
-              }}
-            >
-              <InputLabel id="cuota-mes-label">Mes</InputLabel>
-              <Select value={mes} onChange={(e) => setMes(e.target.value)} label="Mes">
-              {iMeses.map((iMes: IMeses) => (
-                          <MenuItem key={iMes.value} value={iMes.value}>
-                            {iMes.label}
-                          </MenuItem>
-                        ))}
-              </Select>
-            </FormControl>
-
-            {/* Boton Buscar */}
-            <Button
-              variant="contained"
-              startIcon={<Search />}
-              sx={{
-                backgroundColor: "#008001",
-                "&:hover": {
-                  backgroundColor: "#2c6d33",
-                },
-                height: "50px",
-                width: isMobile ? "100%" : "170px",
-                marginLeft: isMobile ? 0 : "1rem",
-                borderRadius: "30px",
-              }}
-              onClick={handleSearchCuota}
-            >
-              Buscar
-            </Button>
-          </Box>
-
-        )}
-        {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
-        <>
-        {/* Tabla */}
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+          {/* Seleccionar año */}
+          <FormControl
+            sx={{
+              width: isMobile ? "100%" : "200px",
+              mr: isMobile ? 0 : 1,
+            }}
           >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile
-                  ? <Typography
-                      sx={{
-                        mt: 2,
-                        mb: 1,
-                        fontSize: "1.5rem",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                        textAlign: "center",
-                      }}
-                    >
-                      Listado de Cuotas
-                    </Typography>
-                  : columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.id === "accion" ? "center" : column.align} // Alinear 'accion' a la derecha
-                      style={{ minWidth: column.minWidth }}
-                      sx={{
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {cuotas.map((cuota) => (
+            <InputLabel id="cuota-anio-label">Año</InputLabel>
+            <Select value={anio} onChange={(e) => setAnio(e.target.value)} label="Año">
+              {[
+                2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
+                2014, 2013, 2012,
+              ].map((año) => (
+                <MenuItem
+                  sx={{ padding: "10px 25px !important" }}
+                  key={año}
+                  value={año}
+                >
+                  {año}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Seleccionar mes */}
+          <FormControl
+            sx={{
+              width: isMobile ? "100%" : "200px",
+              mr: isMobile ? 0 : 1,
+              mt: isMobile ? 2 : 0,
+              mb: isMobile ? 2 : 0,
+            }}
+          >
+            <InputLabel id="cuota-mes-label">Mes</InputLabel>
+            <Select value={mes} onChange={(e) => setMes(e.target.value)} label="Mes">
+              {iMeses.map((iMes: IMeses) => (
+                <MenuItem key={iMes.value} value={iMes.value}>
+                  {iMes.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Boton Buscar */}
+          <Button
+            variant="contained"
+            startIcon={<Search />}
+            sx={{
+              backgroundColor: "#008001",
+              "&:hover": {
+                backgroundColor: "#2c6d33",
+              },
+              height: "50px",
+              width: isMobile ? "100%" : "170px",
+              marginLeft: isMobile ? 0 : "1rem",
+              borderRadius: "30px",
+            }}
+            onClick={handleSearchCuota}
+          >
+            Buscar
+          </Button>
+        </Box>
+
+      )}
+      {isLoading ? (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
+        <>
+          {/* Tabla */}
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
+                        sx={{
+                          mt: 2,
+                          mb: 1,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          textAlign: "center",
+                        }}
+                      >
+                        Listado de Cuotas
+                      </Typography>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.id === "accion" ? "center" : column.align} // Alinear 'accion' a la derecha
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {cuotas.map((cuota) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                       {isTablet || isMobile
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
+                        ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column" }}>
+                            <Typography
+                              sx={{
                                 p: 2,
                                 // Seleccionar la cuota y cambiar el color de fondo
                                 bgcolor: mostrarDetalles === cuota.id_deuda ? "#f0f0f0" : "inherit",
@@ -409,12 +402,12 @@ const TablaCuota: React.FC = () => {
                               {cuota.fecha_registro} - {cuota.socio_nombre}
                             </Typography>
                             {mostrarDetalles === cuota.id_deuda && (
-                              <Box 
+                              <Box
                                 sx={{
                                   p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 1
                                 }}
                               >
                                 {columns.map((column) => {
@@ -428,10 +421,10 @@ const TablaCuota: React.FC = () => {
                                       {/* Mostrar los detalles de la cuota */}
                                       <Typography>
                                         {column.id === "accion" ? (
-                                          <Box 
+                                          <Box
                                             sx={{
                                               width: "100%",
-                                              display: "flex", 
+                                              display: "flex",
                                               flexDirection: "column",
                                               justifyContent: "center"
                                             }}
@@ -442,7 +435,7 @@ const TablaCuota: React.FC = () => {
                                                 mt: 1,
                                                 mb: 1,
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "black", 
+                                                backgroundColor: "black",
                                                 color: "white"
                                               }}
                                             >
@@ -453,7 +446,7 @@ const TablaCuota: React.FC = () => {
                                               variant="contained"
                                               sx={{
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green", 
+                                                backgroundColor: "green",
                                                 color: "white"
                                               }}
                                             >
@@ -472,62 +465,62 @@ const TablaCuota: React.FC = () => {
                             )}
                           </Box>
                         </TableCell>
-                      : columns.map((column) => {
-                        const value =
-                          column.id === "accion" ? "" : (cuota as any)[column.id];
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={
-                              column.id === "accion" ? "center" : column.align
-                            }
-                          >
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                            {column.id === "accion" && (
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                {/* Alinea los íconos a la derecha */}
-                                <IconButton
-                                  aria-label="copy"
-                                  sx={{ color: "black" }}
+                        : columns.map((column) => {
+                          const value =
+                            column.id === "accion" ? "" : (cuota as any)[column.id];
+                          return (
+                            <TableCell
+                              key={column.id}
+                              align={
+                                column.id === "accion" ? "center" : column.align
+                              }
+                            >
+                              {column.format && typeof value === "number"
+                                ? column.format(value)
+                                : value}
+                              {column.id === "accion" && (
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                  }}
                                 >
-                                  <Download />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="whatsapp"
-                                  sx={{ color: "green" }}
-                                >
-                                  <WhatsApp />
-                                </IconButton>
-                              </Box>
-                            )}
-                          </TableCell>
-                        );
-                      })}
+                                  {/* Alinea los íconos a la derecha */}
+                                  <IconButton
+                                    aria-label="copy"
+                                    sx={{ color: "black" }}
+                                  >
+                                    <Download />
+                                  </IconButton>
+                                  <IconButton
+                                    aria-label="whatsapp"
+                                    sx={{ color: "green" }}
+                                  >
+                                    <WhatsApp />
+                                  </IconButton>
+                                </Box>
+                              )}
+                            </TableCell>
+                          );
+                        })}
                     </TableRow>
                   ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-          <Box
-            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
             >
-            <Pagination
-              count={totalPages} // Total de páginas
-              page={paginaActual} // Página actual
-              onChange={CambioDePagina} // Manejar el cambio de página
-              color="primary"
-            />
+              <Pagination
+                count={totalPages} // Total de páginas
+                page={paginaActual} // Página actual
+                onChange={CambioDePagina} // Manejar el cambio de página
+                color="primary"
+              />
 
-          </Box>
-        </Paper>
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

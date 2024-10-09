@@ -2,7 +2,7 @@ import { AttachMoney, Bolt, Event, Storefront, Straighten } from '@mui/icons-mat
 import { Box, Button, Card, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Modal, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
 
 interface AgregarProps {
@@ -99,7 +99,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({ open, handleClose, servicio
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios", dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data || "El servicio se registró correctamente";
+        const mensaje = response.data.messsage || "El servicio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onServicioRegistrado();
           handleCloseModal();

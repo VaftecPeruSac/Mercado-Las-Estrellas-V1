@@ -2,7 +2,7 @@ import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typog
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { mostrarAlerta } from '../Alerts/Registrar';
 
 const Login: React.FC = () => {
@@ -15,7 +15,7 @@ const Login: React.FC = () => {
 
   // Para redirigir
   const navigate = useNavigate();
-  
+
   // Variables para el responsive
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
@@ -36,18 +36,18 @@ const Login: React.FC = () => {
   const IniciarSesion = (event: React.FormEvent) => {
     event.preventDefault();
     if (usuario === "Admin" && password === "12345" && rol === "3") {
-        mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
-        // Iniciamos sesión
-        login();
-        // Redirigimos a la página de inicio
-        navigate("/home");
+      mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
+      // Iniciamos sesión
+      login();
+      // Redirigimos a la página de inicio
+      navigate("/home");
     } else {
-        mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
+      mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
     }
-};
+  };
 
   return (
-    <Container 
+    <Container
       component="main"
       sx={{ maxWidth: "100vw", maxHeight: "100vh" }}
     >
@@ -77,7 +77,7 @@ const Login: React.FC = () => {
             component="h1"
             sx={{
               textAlign: "center",
-              fontSize: isSmallMobile? "20px" : isLaptop ? "22px" : isMobile ? "24px" :  "28px",
+              fontSize: isSmallMobile ? "20px" : isLaptop ? "22px" : isMobile ? "24px" : "28px",
               fontWeight: "bold",
               mb: isSmallMobile || isLaptop ? 2 : 4
             }}
@@ -89,8 +89,8 @@ const Login: React.FC = () => {
 
             {/* Usuario */}
             <Box sx={{ mb: 2 }}>
-              <Typography 
-                sx={{ 
+              <Typography
+                sx={{
                   mb: "2px",
                   fontWeight: "bold",
                   fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
@@ -106,7 +106,7 @@ const Login: React.FC = () => {
                 name="usuario"
                 placeholder="Ingrese su nombre completo"
                 InputProps={{ style: { height: "3rem" } }}
-                InputLabelProps={{ style: { color: "#0AB544" }}}
+                InputLabelProps={{ style: { color: "#0AB544" } }}
                 value={usuario}
                 onChange={(e) => setUsuario(e.target.value)}
               />
@@ -114,8 +114,8 @@ const Login: React.FC = () => {
 
             {/* Contraseña */}
             <Box sx={{ mb: 2 }}>
-              <Typography 
-                sx={{ 
+              <Typography
+                sx={{
                   mb: "2px",
                   fontWeight: "bold",
                   fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
@@ -132,7 +132,7 @@ const Login: React.FC = () => {
                 name="password"
                 placeholder="Ingrese su contraseña"
                 InputProps={{ style: { height: "3rem" } }}
-                InputLabelProps={{ style: { color: "#0AB544" }}}
+                InputLabelProps={{ style: { color: "#0AB544" } }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -140,8 +140,8 @@ const Login: React.FC = () => {
 
             {/* Seleccionar rol */}
             <Box>
-              <Typography 
-                sx={{ 
+              <Typography
+                sx={{
                   mb: "2px",
                   fontWeight: "bold",
                   fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
@@ -156,7 +156,7 @@ const Login: React.FC = () => {
                   value={rol}
                   inputProps={{ style: { height: "3rem" } }}
                   onChange={(e) => setRol(e.target.value)}
-                  >
+                >
                   <MenuItem value="1">Socio</MenuItem>
                   <MenuItem value="2">Cajero</MenuItem>
                   <MenuItem value="3">Administrador</MenuItem>
@@ -187,10 +187,10 @@ const Login: React.FC = () => {
 
           </Box>
 
-          <Box sx={{ mt: "auto"}}>
+          <Box sx={{ mt: "auto" }}>
 
             <Typography
-              sx={{ 
+              sx={{
                 mb: "2px",
                 fontSize: isLaptop || isSmallMobile ? "16px" : "18px",
                 fontWeight: "bold",
@@ -219,7 +219,7 @@ const Login: React.FC = () => {
                 border: "1px solid #0AB544",
                 "&:hover": { bgcolor: "#0AB544", color: "#FFF" }
               }}
-              // onClick={}
+            // onClick={}
             >
               Buscar puesto
             </Button>
@@ -230,7 +230,7 @@ const Login: React.FC = () => {
 
       </Box>
 
-    </Container>  
+    </Container>
   )
 }
 

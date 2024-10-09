@@ -11,7 +11,7 @@ import {
   Cell,
 } from 'recharts';
 
-import useResponsive from "./Responsive";
+import useResponsive from "../hooks/Responsive/useResponsive";
 
 const data = [
   { name: 'Enero', uv: 40, pv: 24, amt: 24 },
@@ -40,7 +40,7 @@ interface PieData {
   value: number;
 }
 const Dashboard: React.FC = () => {
-  
+
   // Variables para el responsive
   const { isSmallLaptop, isTablet, isSmallTablet, isMobile, isSmallMobile } = useResponsive();
 
@@ -130,11 +130,11 @@ const Dashboard: React.FC = () => {
             }}>
               +15.6%
             </Typography>
-            <Typography variant="subtitle2" 
-              sx={{ 
+            <Typography variant="subtitle2"
+              sx={{
                 marginLeft: "auto",
                 marginRight: "10px",
-                color: 'gray' 
+                color: 'gray'
               }}>
               Consolidado por semana
             </Typography>
@@ -199,11 +199,11 @@ const Dashboard: React.FC = () => {
             }}>
               +15.6%
             </Typography>
-            <Typography variant="subtitle2" 
-              sx={{ 
+            <Typography variant="subtitle2"
+              sx={{
                 marginLeft: "auto",
                 marginRight: "10px",
-                color: 'gray' 
+                color: 'gray'
               }}>
               +1.4k por año
             </Typography>
@@ -267,11 +267,11 @@ const Dashboard: React.FC = () => {
             }}>
               +15.6%
             </Typography>
-            <Typography variant="subtitle2" 
-              sx={{ 
-                marginLeft: "auto", 
-                marginRight: "10px", 
-                color: 'gray' 
+            <Typography variant="subtitle2"
+              sx={{
+                marginLeft: "auto",
+                marginRight: "10px",
+                color: 'gray'
               }}>
               Ver más
             </Typography>
@@ -296,8 +296,8 @@ const Dashboard: React.FC = () => {
         }}>
           <CardContent>
             <Box sx={{ textAlign: 'left', mb: 4 }}>
-              <Typography variant="h5" 
-                sx={{ 
+              <Typography variant="h5"
+                sx={{
                   fontWeight: 'bold',
                   marginLeft: "10px",
                   marginTop: isMobile ? "10px" : "0",
@@ -307,7 +307,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Box>
             <ResponsiveContainer
-              width="100%" 
+              width="100%"
               height={300}
               style={{ marginLeft: "-25px" }}
             >
@@ -324,12 +324,12 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card 
-          sx={{ 
-            width: isSmallLaptop || isTablet || isMobile ? "100%" : "28%", 
-            borderRadius: '30px', 
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
-            display: "-ms-inline-flexbox" 
+        <Card
+          sx={{
+            width: isSmallLaptop || isTablet || isMobile ? "100%" : "28%",
+            borderRadius: '30px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            display: "-ms-inline-flexbox"
           }}
         >
           <CardContent>

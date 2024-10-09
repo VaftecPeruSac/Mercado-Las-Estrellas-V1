@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import jsPDF from "jspdf";
 

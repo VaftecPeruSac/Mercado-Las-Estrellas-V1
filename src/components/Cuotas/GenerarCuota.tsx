@@ -27,7 +27,7 @@ import {
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
 import axios from "axios";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion, validarCamposCuotas } from "../Alerts/Registrar";
 
 interface AgregarProps {

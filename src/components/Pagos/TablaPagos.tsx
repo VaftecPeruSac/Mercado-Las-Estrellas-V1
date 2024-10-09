@@ -22,13 +22,14 @@ import {
 import React, { useEffect, useState } from "react";
 import RegistrarPago from "./RegistrarPago";
 import axios from "axios";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import * as XLSX from 'xlsx';
 import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
+import { formatDate } from "../../Utils/dateUtils";
 
 interface Pagos {
   id_pago: string;
@@ -85,17 +86,11 @@ const TablaPago: React.FC = () => {
   const [paginaActual, setPaginaActual] = useState(1); // Página actual
   const [exportFormat, setExportFormat] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const formatDate = (date: string) => {
-    const fecha = new Date(date);
-    const mes = fecha.getMonth() + 1 < 10 ? `0${fecha.getMonth() + 1}` : fecha.getMonth() + 1;
-    const dia = fecha.getDate() < 10 ? `0${fecha.getDate()}` : fecha.getDate();
-    return `${dia}/${mes}/${fecha.getFullYear()}`;
-  }
 
   // Metodo para exportar el listado de pagos
   const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -104,7 +99,7 @@ const TablaPago: React.FC = () => {
 
     try {
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos/exportar",
-        {responseType: 'blob'}
+        { responseType: 'blob' }
       );
 
       // Si no hay problemas
@@ -129,7 +124,7 @@ const TablaPago: React.FC = () => {
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
-      
+
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -157,11 +152,11 @@ const TablaPago: React.FC = () => {
 
     ws['A1'].s = { font: { bold: true } };
     ws['B2'].s = { alignment: { horizontal: 'left' } };
-    ws['!cols'] = [ { wch: 18 }, { wch: 30 } ];
+    ws['!cols'] = [{ wch: 18 }, { wch: 30 }];
 
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
-    const blob = new Blob([excelBuffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement('a');
@@ -219,7 +214,7 @@ const TablaPago: React.FC = () => {
     } catch (error) {
       console.error("Error al traer datos", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -235,119 +230,119 @@ const TablaPago: React.FC = () => {
 
   return (
     <Contenedor>
-        <ContenedorBotones>
+      <ContenedorBotones>
 
-          <BotonAgregar
-            handleAction={handleOpen}
-            texto="Registrar Pago"
-          />
+        <BotonAgregar
+          handleAction={handleOpen}
+          texto="Registrar Pago"
+        />
 
-          {/* Modal Registrar Pago */}
-          <RegistrarPago open={open} handleClose={handleClose} />
+        {/* Modal Registrar Pago */}
+        <RegistrarPago open={open} handleClose={handleClose} />
 
-          <BotonExportar 
-            exportFormat={exportFormat}
-            setExportFormat={setExportFormat}
-            handleExport={handleExportPagos}
-          />
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={handleExportPagos}
+        />
 
-        </ContenedorBotones>
+      </ContenedorBotones>
 
-        {/* Buscar Pagos X Socio */}
-        <Box
+      {/* Buscar Pagos X Socio */}
+      <Box
+        sx={{
+          padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
+          borderTop: "1px solid rgba(0, 0, 0, 0.25)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Typography
           sx={{
-            padding: isTablet || isMobile ? "15px 0px" : "15px 35px",
-            borderTop: "1px solid rgba(0, 0, 0, 0.25)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
+            display: isTablet || isMobile ? "none" : "inline-block",
+            fontWeight: "bold",
+            mr: 2
           }}
         >
-          <Typography 
-            sx={{ 
-              display: isTablet || isMobile ? "none" : "inline-block",
-              fontWeight: "bold", 
-              mr: 2 
-            }}
-          >
-            Buscar por:
-          </Typography>
+          Buscar por:
+        </Typography>
 
-          {/* Input Nombre Socio */}
-          <TextField 
-            sx={{ width: isTablet || isMobile ? "60%" : "30%" }} 
-            label="Nombre del socio" 
-            type="text"
-          />
+        {/* Input Nombre Socio */}
+        <TextField
+          sx={{ width: isTablet || isMobile ? "60%" : "30%" }}
+          label="Nombre del socio"
+          type="text"
+        />
 
-          {/* Boton Buscar */}
-          <Button
-            variant="contained"
-            startIcon={<Search />}
-            sx={{
-              backgroundColor: "#008001",
-              "&:hover": {
-                backgroundColor: "#2c6d33",
-              },
-              height: "50px",
-              width: isTablet || isMobile ? "40%" : "170px",
-              marginLeft: isMobile ? "10px" : "1rem",
-              borderRadius: "30px",
-              fontSize: isSmallMobile ? "0.8rem" : "auto"
-            }}
-            onClick={handleSearchPagos}
-          >
-            Buscar
-          </Button>
-        </Box>
-        {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
+        {/* Boton Buscar */}
+        <Button
+          variant="contained"
+          startIcon={<Search />}
+          sx={{
+            backgroundColor: "#008001",
+            "&:hover": {
+              backgroundColor: "#2c6d33",
+            },
+            height: "50px",
+            width: isTablet || isMobile ? "40%" : "170px",
+            marginLeft: isMobile ? "10px" : "1rem",
+            borderRadius: "30px",
+            fontSize: isSmallMobile ? "0.8rem" : "auto"
+          }}
+          onClick={handleSearchPagos}
+        >
+          Buscar
+        </Button>
+      </Box>
+      {isLoading ? (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
         <>
-        {/* Tabla Deudas */}
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                {isTablet || isMobile 
-                  ? <Typography
-                      sx={{
-                        mt: 2,
-                        mb: 1,
-                        fontSize: "1.5rem",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                        textAlign: "center",
-                      }}
-                    >
-                      Lista de pagos
-                    </Typography>
-                  : columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                      sx={{
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {pagos.map((pago) => (
+          {/* Tabla Deudas */}
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
+                        sx={{
+                          mt: 2,
+                          mb: 1,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          textAlign: "center",
+                        }}
+                      >
+                        Lista de pagos
+                      </Typography>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {pagos.map((pago) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile 
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
+                      {isTablet || isMobile
+                        ? <TableCell padding="checkbox" colSpan={columns.length}>
+                          <Box sx={{ display: "flex", flexDirection: "column" }}>
+                            <Typography
+                              sx={{
                                 p: 2,
                                 // Seleccionar el pago y cambiar el color de fondo
                                 bgcolor: mostrarDetalles === pago.id_pago ? "#f0f0f0" : "inherit",
@@ -364,12 +359,12 @@ const TablaPago: React.FC = () => {
                               {pago.fecha_registro} - {pago.socio} - {pago.total_pago}
                             </Typography>
                             {mostrarDetalles === pago.id_pago && (
-                              <Box 
+                              <Box
                                 sx={{
                                   p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 1
                                 }}
                               >
                                 {columns.map((column) => {
@@ -383,10 +378,10 @@ const TablaPago: React.FC = () => {
                                       {/* Mostrar los detalles del pago */}
                                       <Typography>
                                         {column.id === "accion" ? (
-                                          <Box 
+                                          <Box
                                             sx={{
                                               width: "100%",
-                                              display: "flex", 
+                                              display: "flex",
                                               flexDirection: "column",
                                               justifyContent: "center"
                                             }}
@@ -409,7 +404,7 @@ const TablaPago: React.FC = () => {
                                                 mt: 1,
                                                 mb: 1,
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "black", 
+                                                backgroundColor: "black",
                                                 color: "white"
                                               }}
                                               onClick={() => handleAccionesPago(1, "", pago)}
@@ -421,7 +416,7 @@ const TablaPago: React.FC = () => {
                                               variant="contained"
                                               sx={{
                                                 padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green", 
+                                                backgroundColor: "green",
                                                 color: "white"
                                               }}
                                               onClick={() => handleAccionesPago(2, pago.telefono, pago)}
@@ -441,60 +436,60 @@ const TablaPago: React.FC = () => {
                             )}
                           </Box>
                         </TableCell>
-                      : columns.map((column) => {
-                        const value =
-                          column.id === "accion" ? "" : (pago as any)[column.id];
-                        return (
-                          <TableCell key={column.id} align="center">
-                            {column.id === "accion" ? (
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  gap: 1,
-                                  justifyContent: "center",
-                                }}
-                              >
-                                {/* Boton Descargar */}
-                                <IconButton
-                                  aria-label="download"
-                                  sx={{ color: "#002B7E" }}
-                                  onClick={() => handleAccionesPago(1, "", pago)}
+                        : columns.map((column) => {
+                          const value =
+                            column.id === "accion" ? "" : (pago as any)[column.id];
+                          return (
+                            <TableCell key={column.id} align="center">
+                              {column.id === "accion" ? (
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    justifyContent: "center",
+                                  }}
                                 >
-                                  <FileDownload />
-                                </IconButton>
+                                  {/* Boton Descargar */}
+                                  <IconButton
+                                    aria-label="download"
+                                    sx={{ color: "#002B7E" }}
+                                    onClick={() => handleAccionesPago(1, "", pago)}
+                                  >
+                                    <FileDownload />
+                                  </IconButton>
 
-                                {/* Boton Whatsapp */}
-                                <IconButton
-                                  aria-label="share"
-                                  sx={{ color: "#008001" }}
-                                  onClick={() => handleAccionesPago(2, pago.telefono, pago)}
-                                >
-                                  <WhatsApp />
-                                </IconButton>
-                              </Box>
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                        
+                                  {/* Boton Whatsapp */}
+                                  <IconButton
+                                    aria-label="share"
+                                    sx={{ color: "#008001" }}
+                                    onClick={() => handleAccionesPago(2, pago.telefono, pago)}
+                                  >
+                                    <WhatsApp />
+                                  </IconButton>
+                                </Box>
+                              ) : (
+                                value
+                              )}
+                            </TableCell>
+                          );
+                        })}
+
                     </TableRow>
                   ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box
-            sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
-          >
-            <Pagination
-              count={totalPages} // Total de páginas
-              page={paginaActual} // Página actual
-              onChange={CambioDePagina} // Manejar el cambio de página
-              color="primary"
-            />
-          </Box>
-        </Paper>
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            >
+              <Pagination
+                count={totalPages} // Total de páginas
+                page={paginaActual} // Página actual
+                onChange={CambioDePagina} // Manejar el cambio de página
+                color="primary"
+              />
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

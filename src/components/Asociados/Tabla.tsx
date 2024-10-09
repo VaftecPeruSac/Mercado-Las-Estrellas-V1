@@ -24,7 +24,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import Agregar from "./Agregar";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import * as XLSX from 'xlsx';
@@ -32,6 +32,7 @@ import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
+import { formatDate } from "../../Utils/dateUtils";
 
 interface Socio {
   id_socio: string;
@@ -138,17 +139,6 @@ const TablaAsociados: React.FC = () => {
     setSocioSeleccionado(null);
     setOpen(false);
   }
-
-  const formatDate = (fecha: string): string => {
-    const date = new Date(fecha);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    const formattedDay = day.toString().padStart(2, "0");
-    const formattedMonth = month.toString().padStart(2, "0");
-
-    return `${formattedDay}/${formattedMonth}/${year}`;
-  };
 
   // Metodo para exportar el listado de socios
   const handleExportSocios = async (e: React.MouseEvent<HTMLButtonElement>) => {

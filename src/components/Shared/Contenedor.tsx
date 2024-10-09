@@ -1,5 +1,5 @@
 import { Box, Card } from "@mui/material";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 
 interface ContenedorProps {
   children: React.ReactNode;

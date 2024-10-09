@@ -19,7 +19,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { ExpandLess, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import useResponsive from "./Responsive";
+import useResponsive from "../hooks/Responsive/useResponsive";
 
 interface HeaderProps {
   open: boolean;
@@ -80,13 +80,13 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
             >
               <Grid item xs={12}>
                 <Typography
-                  sx={{ 
-                    color: 'black', 
-                    fontWeight: "bold", 
-                    text: "center", 
+                  sx={{
+                    color: 'black',
+                    fontWeight: "bold",
+                    text: "center",
                     fontSize: isSmallMobile ? 12 : isMobile || isTablet ? 14 : isLaptop ? 16 : 18,
-                    ml: isMobile ? 2 : open ? 30 : 3, 
-                    mb: isMobile ? -4 : -5 
+                    ml: isMobile ? 2 : open ? 30 : 3,
+                    mb: isMobile ? -4 : -5
                   }}
                 >
                   <h2>Bienvenido al Sistema, Administrador</h2>

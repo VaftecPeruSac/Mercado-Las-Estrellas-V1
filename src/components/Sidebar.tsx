@@ -35,7 +35,7 @@ import BackupTableIcon from '@mui/icons-material/BackupTable';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from "../context/AuthContext";
-import useResponsive from "./Responsive";
+import useResponsive from "../hooks/Responsive/useResponsive";
 import Swal from "sweetalert2";
 import { CustomButton, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 

@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import React from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 
 interface ContenedorBotonesProps {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ const ContenedorBotones: React.FC<ContenedorBotonesProps> = ({ children }) => {
       }}
     >
 
-      { children }
+      {children}
 
     </Box>
   );

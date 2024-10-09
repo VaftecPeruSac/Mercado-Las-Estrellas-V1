@@ -28,7 +28,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from '../Alerts/Registrar';
 
 interface AgregarProps {
@@ -357,7 +357,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data || "Puesto registrado con éxito";
+        const mensaje = response.data.message || "Puestoss registrado con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();
@@ -436,7 +436,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); // Publico
 
       if (response.status === 200) {
-        const mensaje = response.data || "El inquilino se registró correctamente";
+        const mensaje = response.data.message || "E l inquilino se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import axios from "axios";
 import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
@@ -48,7 +48,7 @@ const TablaCuotasPuesto: React.FC = () => {
   const [puestoSeleccionado, setPuestoSeleccionado] = useState<number>(0);
   const [cuotas, setCuotas] = useState<Data[]>([]);
   const [exportFormat, setExportFormat] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1);
@@ -60,7 +60,7 @@ const TablaCuotasPuesto: React.FC = () => {
   };
 
   const meses = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
   ];
 
@@ -99,81 +99,81 @@ const TablaCuotasPuesto: React.FC = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   }
 
   return (
     <Contenedor>
-        <ContenedorBotonesReportes>
-          <Box
+      <ContenedorBotonesReportes>
+        <Box
+          sx={{
+            width: isTablet || isMobile ? "100%" : "auto",
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            alignItems: "center",
+            ml: isTablet || isMobile ? "0px" : "10px",
+            mr: isMobile ? "0px" : "auto",
+          }}
+        >
+          {/* Seleccionar cuota */}
+          <FormControl fullWidth required
             sx={{
-              width: isTablet || isMobile ? "100%" : "auto",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 2,
-              alignItems: "center",
-              ml: isTablet || isMobile ? "0px" : "10px",
-              mr: isMobile ? "0px" : "auto",
+              width: isTablet ? "70%" : isMobile ? "100%" : "300px"
             }}
           >
-            {/* Seleccionar cuota */}
-            <FormControl fullWidth required 
-              sx={{ 
-                width: isTablet ? "70%" : isMobile ? "100%" : "300px" 
+            <Autocomplete
+              options={puestos}
+              getOptionLabel={(puesto) => puesto.numero_puesto}
+              onChange={(event, value) => {
+                if (value) {
+                  setPuestoSeleccionado(value.id_puesto);
+                }
               }}
-            >
-              <Autocomplete
-                options={puestos}
-                getOptionLabel={(puesto) => puesto.numero_puesto} 
-                onChange={(event, value) => {
-                  if (value) { 
-                    setPuestoSeleccionado(value.id_puesto);
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Seleccionar puesto"
-                    InputProps={{...params.InputProps }}
-                  />
-                )}
-                ListboxProps={{
-                  style: {
-                    maxHeight: 270,
-                    overflow: 'auto',
-                  },
-                }}
-                isOptionEqualToValue={(option, value) => option.id_puesto === value.id_puesto}
-              />
-            </FormControl>
-            {/* Botón "Generar Reporte" */}
-            <BotonAgregar
-              handleAction={() => fetchCuotas(undefined, puestoSeleccionado)}
-              texto="Generar"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Seleccionar puesto"
+                  InputProps={{ ...params.InputProps }}
+                />
+              )}
+              ListboxProps={{
+                style: {
+                  maxHeight: 270,
+                  overflow: 'auto',
+                },
+              }}
+              isOptionEqualToValue={(option, value) => option.id_puesto === value.id_puesto}
             />
-          </Box>
-          
-          <BotonExportar 
-            exportFormat={exportFormat}
-            setExportFormat={setExportFormat}
-            handleExport={() => alert("En proceso...")}
+          </FormControl>
+          {/* Botón "Generar Reporte" */}
+          <BotonAgregar
+            handleAction={() => fetchCuotas(undefined, puestoSeleccionado)}
+            texto="Generar"
           />
+        </Box>
 
-        </ContenedorBotonesReportes>
-        {isLoading ? (
-          <LoadingSpinner /> 
-        ) : (
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={() => alert("En proceso...")}
+        />
+
+      </ContenedorBotonesReportes>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
         <>
           <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile
-                    ? <Typography
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
                         sx={{
                           mt: 2,
                           mb: 1,
@@ -185,116 +185,116 @@ const TablaCuotasPuesto: React.FC = () => {
                       >
                         Lista de Deudas
                       </Typography>
-                    : columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth }}
-                        sx={{
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {cuotas.length > 0
-                ? cuotas
-                  .map((cuota) => (
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
-                                p: 2,
-                                // Al seleccionar la cuota se cambia el color de fondo
-                                bgcolor: mostrarDetalles === cuota.servicio_descripcion ? "#f0f0f0" : "inherit",
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  bgcolor: "#f0f0f0",
-                                }
-                              }}
-                              onClick={() => setMostrarDetalles(
-                                mostrarDetalles === cuota.servicio_descripcion ? null : cuota.servicio_descripcion
-                              )}
-                            >
-                              {cuota.servicio_descripcion}
-                            </Typography>
-                            {mostrarDetalles === cuota.servicio_descripcion && (
-                              <Box 
-                                sx={{
-                                  p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
-                                }}
-                              >
-                                {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (cuota as any)[column.id];
-                                  return (
-                                    <Box>
-                                      {/* Mostrar titulo del campo */}
-                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                                        {column.label}
-                                      </Typography>
-                                      {/* Mostrar los detalles de la cuota */}
-                                      <Typography>
-                                      {
-                                        column.id === "mes"
-                                        ? getMonth(cuota.fecha)
-                                        : column.id === "dia" 
-                                        ? getDay(cuota.fecha) 
-                                        : value
-                                      }
-                                      </Typography>
-                                    </Box>
-                                  )
-                                })}
-                              </Box>
-                            )}
-                          </Box>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
                         </TableCell>
-                      : columns.map((column) => {
-                          const value = column.id === "accion" ? "" : (cuota as any)[column.id];
-                          return (
-                            <TableCell
-                              key={column.id}
-                              align={column.align}
-                            >
-                              { 
-                                column.id === "mes"
-                                ? getMonth(cuota.fecha)
-                                : column.id === "dia" 
-                                ? getDay(cuota.fecha) 
-                                : value
-                              }
-                            </TableCell>
-                          );
-                        })}
-                    </TableRow>
-                  ))
-                : <TableRow>
-                    <TableCell colSpan={columns.length} align="center">
-                      No hay datos para mostrar. <br />
-                      Para generar el reporte, seleccione un puesto y de clic en el botón "GENERAR".
-                    </TableCell>
+                      ))}
                   </TableRow>
-                }
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination 
-              count={totalPaginas}
-              page={paginaActual}
-              onChange={cambiarPagina} 
-              color="primary" 
-            />
-          </Box>
-        </Paper>
+                </TableHead>
+                <TableBody>
+                  {cuotas.length > 0
+                    ? cuotas
+                      .map((cuota) => (
+                        <TableRow hover role="checkbox" tabIndex={-1}>
+                          {isTablet || isMobile
+                            ? <TableCell padding="checkbox" colSpan={columns.length}>
+                              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                <Typography
+                                  sx={{
+                                    p: 2,
+                                    // Al seleccionar la cuota se cambia el color de fondo
+                                    bgcolor: mostrarDetalles === cuota.servicio_descripcion ? "#f0f0f0" : "inherit",
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      bgcolor: "#f0f0f0",
+                                    }
+                                  }}
+                                  onClick={() => setMostrarDetalles(
+                                    mostrarDetalles === cuota.servicio_descripcion ? null : cuota.servicio_descripcion
+                                  )}
+                                >
+                                  {cuota.servicio_descripcion}
+                                </Typography>
+                                {mostrarDetalles === cuota.servicio_descripcion && (
+                                  <Box
+                                    sx={{
+                                      p: 2,
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 1
+                                    }}
+                                  >
+                                    {columns.map((column) => {
+                                      const value = column.id === "accion" ? "" : (cuota as any)[column.id];
+                                      return (
+                                        <Box>
+                                          {/* Mostrar titulo del campo */}
+                                          <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                            {column.label}
+                                          </Typography>
+                                          {/* Mostrar los detalles de la cuota */}
+                                          <Typography>
+                                            {
+                                              column.id === "mes"
+                                                ? getMonth(cuota.fecha)
+                                                : column.id === "dia"
+                                                  ? getDay(cuota.fecha)
+                                                  : value
+                                            }
+                                          </Typography>
+                                        </Box>
+                                      )
+                                    })}
+                                  </Box>
+                                )}
+                              </Box>
+                            </TableCell>
+                            : columns.map((column) => {
+                              const value = column.id === "accion" ? "" : (cuota as any)[column.id];
+                              return (
+                                <TableCell
+                                  key={column.id}
+                                  align={column.align}
+                                >
+                                  {
+                                    column.id === "mes"
+                                      ? getMonth(cuota.fecha)
+                                      : column.id === "dia"
+                                        ? getDay(cuota.fecha)
+                                        : value
+                                  }
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                    : <TableRow>
+                      <TableCell colSpan={columns.length} align="center">
+                        No hay datos para mostrar. <br />
+                        Para generar el reporte, seleccione un puesto y de clic en el botón "GENERAR".
+                      </TableCell>
+                    </TableRow>
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+              <Pagination
+                count={totalPaginas}
+                page={paginaActual}
+                onChange={cambiarPagina}
+                color="primary"
+              />
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

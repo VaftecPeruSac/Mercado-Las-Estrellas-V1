@@ -30,7 +30,7 @@ import {
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import axios from "axios";
-import useResponsive from "../Responsive";
+import useResponsive from "../../hooks/Responsive/useResponsive";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 interface AgregarProps {

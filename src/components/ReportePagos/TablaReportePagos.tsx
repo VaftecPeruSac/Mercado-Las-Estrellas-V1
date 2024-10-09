@@ -1,7 +1,7 @@
 import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../PogressBar/ProgressBarV1';
 import Contenedor from '../Shared/Contenedor';
@@ -28,7 +28,7 @@ interface Data {
   total: string;
   fecha: string;
   detalle_pagos: {
-    descripcion: string; 
+    descripcion: string;
     importe: string;
   }
 }
@@ -44,14 +44,14 @@ const columns: readonly Column[] = [
 
 const TablaReportePagos: React.FC = () => {
   const { isTablet, isMobile } = useResponsive();
-  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null); 
+  const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
   const [socios, setSocios] = useState<Socio[]>([]);
   const [socioSeleccionado, setSocioSeleccionado] = useState<number>(0);
   const [pagos, setPagos] = useState<Data[]>([]);
   const [exportFormat, setExportFormat] = useState<string>("");
   const [searchParams] = useSearchParams();
   const idSocio = searchParams.get("socio");
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1);
@@ -94,7 +94,7 @@ const TablaReportePagos: React.FC = () => {
     } catch (error) {
       console.log("Error:", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   }
 
@@ -127,7 +127,7 @@ const TablaReportePagos: React.FC = () => {
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
-      
+
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -137,198 +137,198 @@ const TablaReportePagos: React.FC = () => {
 
   return (
     <Contenedor>
-        <ContenedorBotonesReportes>
-          <Box
+      <ContenedorBotonesReportes>
+        <Box
+          sx={{
+            width: isTablet || isMobile ? "100%" : "auto",
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            alignItems: "center",
+            ml: isTablet || isMobile ? "0px" : "10px",
+            mr: isMobile ? "0px" : "auto",
+          }}
+        >
+          {/* Seleccionar socio */}
+          <FormControl fullWidth required
             sx={{
-              width: isTablet || isMobile ? "100%" : "auto",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 2,
-              alignItems: "center",
-              ml: isTablet || isMobile ? "0px" : "10px",
-              mr: isMobile ? "0px" : "auto",
+              width: isTablet ? "70%" : isMobile ? "100%" : "300px"
             }}
           >
-            {/* Seleccionar socio */}
-            <FormControl fullWidth required 
-              sx={{ 
-                width: isTablet ? "70%" : isMobile ? "100%" : "300px"
-              }}
-            >
-              <Autocomplete
-                options={socios}
-                getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
-                onChange={(event, value) => { // Obtener el id del socio seleccionado
-                  if (value) { // Si se selecciona un socio
-                    setSocioSeleccionado(Number(value.id_socio)); // Guardar el id del socio
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Seleccionar socio" // Etiqueta del input
-                    InputProps={{...params.InputProps }} // Propiedades del input
-                  />
-                )}
-                ListboxProps={{
-                  style: {
-                    maxHeight: 270, // Altura máxima de la lista de opciones
-                    overflow: 'auto', // Hacer scroll si hay muchos elementos
-                  },
-                }}
-                isOptionEqualToValue={(option, value) => option.id_socio === value.id_socio}
-              />
-            </FormControl>
-            {/* Botón "Generar Reporte" */}
-            <BotonAgregar
-              handleAction={() => fetchPagos(undefined, socioSeleccionado)}
-              texto="Generar"
-            />
-          </Box>
-          
-          <BotonExportar
-            exportFormat={exportFormat}
-            setExportFormat={setExportFormat}
-            handleExport={handleExportReporteDeudas}
-          />
-
-        </ContenedorBotonesReportes>
-        {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
-        <>
-        {/* Tabla reporte pagos */}
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile
-                  ? <Typography
-                      sx={{
-                        mt: 2,
-                        mb: 1,
-                        fontSize: "1.5rem",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                        textAlign: "center",
-                      }}
-                    >
-                      Lista de Pagos
-                    </Typography>
-                  : columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                      sx={{
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {pagos.length > 0
-                ? pagos
-                  .map((pago) => (
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
-                                p: 2,
-                                // Seleccionar el pago y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === pago.numero ? "#f0f0f0" : "inherit",
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  bgcolor: "#f0f0f0",
-                                }
-                              }}
-                              onClick={() => setMostrarDetalles(
-                                mostrarDetalles === pago.numero ? null : pago.numero
-                              )}
-                            >
-                              N°{pago.numero} - {pago.fecha} - S/{pago.total}
-                            </Typography>
-                            {mostrarDetalles === pago.numero && (
-                              <Box 
-                                sx={{
-                                  p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
-                                }}
-                              >
-                                {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (pago as any)[column.id];
-                                  return (
-                                    <Box>
-                                      {/* Mostrar titulo del campo */}
-                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                                        {column.label}
-                                      </Typography>
-                                      {/* Mostrar los detalles del pago */}
-                                      {Array.isArray(value) // Si es un array de servicios
-                                      ? (value.map((detalle, index) => ( // Mostrar los servicios
-                                          <Typography key={index}>
-                                            {detalle.descripcion}: S/ {detalle.importe}
-                                          </Typography>
-                                        ))
-                                      ) : <Typography>
-                                        {value}
-                                      </Typography>
-                                    }
-                                    </Box>
-                                  )
-                                })}
-                              </Box>
-                            )}
-                          </Box>
-                        </TableCell>
-                      : columns.map((column) => {
-                        const value = column.id === "accion" ? "" : (pago as any)[column.id];
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                          >
-                            {Array.isArray(value) ? (value.map((detalle, index) => ( // Mostrar los servicios
-                                          <Typography textAlign="left" key={index}>
-                                            {detalle.descripcion}: S/ {detalle.importe}
-                                          </Typography>
-                                        ))
-                                      )  : (value)
-                            }
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))
-                : <TableRow>
-                    <TableCell colSpan={columns.length} align="center">
-                      No hay datos para mostrar. <br />
-                      Para generar el reporte, seleccione un socio y de clic en el botón "GENERAR".
-                    </TableCell>
-                  </TableRow>
+            <Autocomplete
+              options={socios}
+              getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
+              onChange={(event, value) => { // Obtener el id del socio seleccionado
+                if (value) { // Si se selecciona un socio
+                  setSocioSeleccionado(Number(value.id_socio)); // Guardar el id del socio
                 }
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination 
-              count={totalPaginas} 
-              page={paginaActual}
-              onChange={cambiarPagina}
-              color="primary"
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Seleccionar socio" // Etiqueta del input
+                  InputProps={{ ...params.InputProps }} // Propiedades del input
+                />
+              )}
+              ListboxProps={{
+                style: {
+                  maxHeight: 270, // Altura máxima de la lista de opciones
+                  overflow: 'auto', // Hacer scroll si hay muchos elementos
+                },
+              }}
+              isOptionEqualToValue={(option, value) => option.id_socio === value.id_socio}
             />
-          </Box>
-        </Paper>
+          </FormControl>
+          {/* Botón "Generar Reporte" */}
+          <BotonAgregar
+            handleAction={() => fetchPagos(undefined, socioSeleccionado)}
+            texto="Generar"
+          />
+        </Box>
+
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={handleExportReporteDeudas}
+        />
+
+      </ContenedorBotonesReportes>
+      {isLoading ? (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
+        <>
+          {/* Tabla reporte pagos */}
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
+                        sx={{
+                          mt: 2,
+                          mb: 1,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          textAlign: "center",
+                        }}
+                      >
+                        Lista de Pagos
+                      </Typography>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {pagos.length > 0
+                    ? pagos
+                      .map((pago) => (
+                        <TableRow hover role="checkbox" tabIndex={-1}>
+                          {isTablet || isMobile
+                            ? <TableCell padding="checkbox" colSpan={columns.length}>
+                              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                <Typography
+                                  sx={{
+                                    p: 2,
+                                    // Seleccionar el pago y cambiar el color de fondo
+                                    bgcolor: mostrarDetalles === pago.numero ? "#f0f0f0" : "inherit",
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      bgcolor: "#f0f0f0",
+                                    }
+                                  }}
+                                  onClick={() => setMostrarDetalles(
+                                    mostrarDetalles === pago.numero ? null : pago.numero
+                                  )}
+                                >
+                                  N°{pago.numero} - {pago.fecha} - S/{pago.total}
+                                </Typography>
+                                {mostrarDetalles === pago.numero && (
+                                  <Box
+                                    sx={{
+                                      p: 2,
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 1
+                                    }}
+                                  >
+                                    {columns.map((column) => {
+                                      const value = column.id === "accion" ? "" : (pago as any)[column.id];
+                                      return (
+                                        <Box>
+                                          {/* Mostrar titulo del campo */}
+                                          <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                            {column.label}
+                                          </Typography>
+                                          {/* Mostrar los detalles del pago */}
+                                          {Array.isArray(value) // Si es un array de servicios
+                                            ? (value.map((detalle, index) => ( // Mostrar los servicios
+                                              <Typography key={index}>
+                                                {detalle.descripcion}: S/ {detalle.importe}
+                                              </Typography>
+                                            ))
+                                            ) : <Typography>
+                                              {value}
+                                            </Typography>
+                                          }
+                                        </Box>
+                                      )
+                                    })}
+                                  </Box>
+                                )}
+                              </Box>
+                            </TableCell>
+                            : columns.map((column) => {
+                              const value = column.id === "accion" ? "" : (pago as any)[column.id];
+                              return (
+                                <TableCell
+                                  key={column.id}
+                                  align={column.align}
+                                >
+                                  {Array.isArray(value) ? (value.map((detalle, index) => ( // Mostrar los servicios
+                                    <Typography textAlign="left" key={index}>
+                                      {detalle.descripcion}: S/ {detalle.importe}
+                                    </Typography>
+                                  ))
+                                  ) : (value)
+                                  }
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                    : <TableRow>
+                      <TableCell colSpan={columns.length} align="center">
+                        No hay datos para mostrar. <br />
+                        Para generar el reporte, seleccione un socio y de clic en el botón "GENERAR".
+                      </TableCell>
+                    </TableRow>
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+              <Pagination
+                count={totalPaginas}
+                page={paginaActual}
+                onChange={cambiarPagina}
+                color="primary"
+              />
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

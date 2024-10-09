@@ -1,7 +1,7 @@
 import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../PogressBar/ProgressBarV1';
 import Contenedor from '../Shared/Contenedor';
@@ -49,7 +49,7 @@ const TablaReporteDeudas: React.FC = () => {
   const [deudas, setDeudas] = useState<Data[]>([]);
   const [searchParams] = useSearchParams();
   const idPuesto = searchParams.get("puesto");
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   // Paginación
@@ -96,7 +96,7 @@ const TablaReporteDeudas: React.FC = () => {
     } catch (error) {
       console.log("Error:", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   }
 
@@ -107,13 +107,13 @@ const TablaReporteDeudas: React.FC = () => {
 
     try {
       const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-deudas/exportar",
-        {responseType: 'blob'}
+        { responseType: 'blob' }
       );
 
       // Si no hay problemas
       if (response.status === 200) {
         if (exportFormat === "1") { // PDF
-          alert("En proceso de actualizacion. Intentelo más tarde.");	
+          alert("En proceso de actualizacion. Intentelo más tarde.");
         } else if (exportFormat === "2") { // Excel
           alert("El reporte de deudas se descargará en breve.");
           const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -128,11 +128,11 @@ const TablaReporteDeudas: React.FC = () => {
           setExportFormat("");
         } else {
           alert("Formato de exportación no válido.");
-        }       
+        }
       } else {
         alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
       }
-      
+
     } catch (error) {
       console.log("Error:", error);
       alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
@@ -142,76 +142,76 @@ const TablaReporteDeudas: React.FC = () => {
 
   return (
     <Contenedor>
-        <ContenedorBotonesReportes>
-          <Box
+      <ContenedorBotonesReportes>
+        <Box
+          sx={{
+            width: isTablet || isMobile ? "100%" : "auto",
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            alignItems: "center",
+            ml: isTablet || isMobile ? "0px" : "10px",
+            mr: isMobile ? "0px" : "auto",
+          }}
+        >
+          {/* Seleccionar puesto */}
+          <FormControl fullWidth required
             sx={{
-              width: isTablet || isMobile ? "100%" : "auto",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 2,
-              alignItems: "center",
-              ml: isTablet || isMobile ? "0px" : "10px",
-              mr: isMobile ? "0px" : "auto",
+              width: isTablet ? "70%" : isMobile ? "100%" : "300px"
             }}
           >
-            {/* Seleccionar puesto */}
-            <FormControl fullWidth required 
-              sx={{ 
-                width: isTablet ? "70%" : isMobile ? "100%" : "300px" 
+            <Autocomplete
+              options={puestos}
+              getOptionLabel={(puesto) => puesto.numero_puesto} // Mostrar el numero del puesto
+              onChange={(event, value) => { // Obtener el id del puesto seleccionado
+                if (value) { // Si se selecciona un puesto
+                  setPuestoSeleccionado(Number(value.id_puesto)); // Guardar el id del puesto
+                }
               }}
-            >
-              <Autocomplete
-                options={puestos}
-                getOptionLabel={(puesto) => puesto.numero_puesto} // Mostrar el numero del puesto
-                onChange={(event, value) => { // Obtener el id del puesto seleccionado
-                  if (value) { // Si se selecciona un puesto
-                    setPuestoSeleccionado(Number(value.id_puesto)); // Guardar el id del puesto
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Seleccionar puesto" // Etiqueta del input
-                    InputProps={{...params.InputProps }} // Propiedades del input
-                  />
-                )}
-                ListboxProps={{
-                  style: {
-                    maxHeight: 270, // Altura máxima de la lista de opciones
-                    overflow: 'auto', // Hacer scroll si hay muchos elementos
-                  },
-                }}
-                isOptionEqualToValue={(option, value) => option.id_puesto === value.id_puesto}
-              />
-            </FormControl>
-            {/* Botón "Generar Reporte" */}
-            <BotonAgregar
-              handleAction={() => fetchDeudas(undefined, puestoSeleccionado)}
-              texto="Generar"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Seleccionar puesto" // Etiqueta del input
+                  InputProps={{ ...params.InputProps }} // Propiedades del input
+                />
+              )}
+              ListboxProps={{
+                style: {
+                  maxHeight: 270, // Altura máxima de la lista de opciones
+                  overflow: 'auto', // Hacer scroll si hay muchos elementos
+                },
+              }}
+              isOptionEqualToValue={(option, value) => option.id_puesto === value.id_puesto}
             />
-          </Box>
-          
-          <BotonExportar 
-            exportFormat={exportFormat} 
-            setExportFormat={setExportFormat} 
-            handleExport={handleExportReporteDeudas}
+          </FormControl>
+          {/* Botón "Generar Reporte" */}
+          <BotonAgregar
+            handleAction={() => fetchDeudas(undefined, puestoSeleccionado)}
+            texto="Generar"
           />
+        </Box>
 
-        </ContenedorBotonesReportes>
-        {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={handleExportReporteDeudas}
+        />
+
+      </ContenedorBotonesReportes>
+      {isLoading ? (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
         <>
-        {/* Tabla reporte deudas */}
-        <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile
-                    ? <Typography
+          {/* Tabla reporte deudas */}
+          <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
                         sx={{
                           mt: 2,
                           mb: 1,
@@ -223,110 +223,110 @@ const TablaReporteDeudas: React.FC = () => {
                       >
                         Lista de Deudas
                       </Typography>
-                    : columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth }}
-                        sx={{
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {deudas.length > 0
-                ? deudas
-                  .map((deuda) => (
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
-                                p: 2,
-                                // Seleccionar la deuda y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === deuda.id_cuota ? "#f0f0f0" : "inherit",
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  bgcolor: "#f0f0f0",
-                                }
-                              }}
-                              onClick={() => setMostrarDetalles(
-                                mostrarDetalles === deuda.id_cuota ? null : deuda.id_cuota
-                              )}
-                            >
-                              {deuda.mes} - {deuda.anio} - S/{deuda.total}
-                            </Typography>
-                            {mostrarDetalles === deuda.id_cuota && (
-                              <Box 
-                                sx={{
-                                  p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
-                                }}
-                              >
-                                {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (deuda as any)[column.id];
-                                  return (
-                                    <Box>
-                                      {/* Mostrar titulo del campo */}
-                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                                        {column.label}
-                                      </Typography>
-                                      {/* Mostrar los detalles de la deuda */}
-                                      {Array.isArray(value) // Si es un array de servicios
-                                      ? (value.map((servicio, index) => ( // Mostrar los servicios
-                                          <Typography key={index}>
-                                            {servicio.nombre}: S/ {servicio.costo}
-                                          </Typography>
-                                        ))
-                                      ) : <Typography>
-                                        {value}
-                                      </Typography>
-                                    }
-                                    </Box>
-                                  )
-                                })}
-                              </Box>
-                            )}
-                          </Box>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
                         </TableCell>
-                      : columns.map((column) => {
-                          const value = column.id === "accion" ? "" : (deuda as any)[column.id];
-                          return (
-                            <TableCell
-                              key={column.id}
-                              align={column.align}
-                            >
-                              {value}
-                            </TableCell>
-                          );
-                        })}
-                    </TableRow>
-                  ))
-                : <TableRow>
-                    <TableCell colSpan={columns.length} align="center">
-                      No hay datos para mostrar. <br />
-                      Para generar el reporte, seleccione un puesto y de clic en el botón "GENERAR".
-                    </TableCell>
+                      ))}
                   </TableRow>
-                }
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination 
-              count={totalPaginas}
-              page={paginaActual}
-              onChange={cambiarPagina} 
-              color="primary" />
-          </Box>
-        </Paper>
+                </TableHead>
+                <TableBody>
+                  {deudas.length > 0
+                    ? deudas
+                      .map((deuda) => (
+                        <TableRow hover role="checkbox" tabIndex={-1}>
+                          {isTablet || isMobile
+                            ? <TableCell padding="checkbox" colSpan={columns.length}>
+                              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                <Typography
+                                  sx={{
+                                    p: 2,
+                                    // Seleccionar la deuda y cambiar el color de fondo
+                                    bgcolor: mostrarDetalles === deuda.id_cuota ? "#f0f0f0" : "inherit",
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      bgcolor: "#f0f0f0",
+                                    }
+                                  }}
+                                  onClick={() => setMostrarDetalles(
+                                    mostrarDetalles === deuda.id_cuota ? null : deuda.id_cuota
+                                  )}
+                                >
+                                  {deuda.mes} - {deuda.anio} - S/{deuda.total}
+                                </Typography>
+                                {mostrarDetalles === deuda.id_cuota && (
+                                  <Box
+                                    sx={{
+                                      p: 2,
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 1
+                                    }}
+                                  >
+                                    {columns.map((column) => {
+                                      const value = column.id === "accion" ? "" : (deuda as any)[column.id];
+                                      return (
+                                        <Box>
+                                          {/* Mostrar titulo del campo */}
+                                          <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                            {column.label}
+                                          </Typography>
+                                          {/* Mostrar los detalles de la deuda */}
+                                          {Array.isArray(value) // Si es un array de servicios
+                                            ? (value.map((servicio, index) => ( // Mostrar los servicios
+                                              <Typography key={index}>
+                                                {servicio.nombre}: S/ {servicio.costo}
+                                              </Typography>
+                                            ))
+                                            ) : <Typography>
+                                              {value}
+                                            </Typography>
+                                          }
+                                        </Box>
+                                      )
+                                    })}
+                                  </Box>
+                                )}
+                              </Box>
+                            </TableCell>
+                            : columns.map((column) => {
+                              const value = column.id === "accion" ? "" : (deuda as any)[column.id];
+                              return (
+                                <TableCell
+                                  key={column.id}
+                                  align={column.align}
+                                >
+                                  {value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                    : <TableRow>
+                      <TableCell colSpan={columns.length} align="center">
+                        No hay datos para mostrar. <br />
+                        Para generar el reporte, seleccione un puesto y de clic en el botón "GENERAR".
+                      </TableCell>
+                    </TableRow>
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+              <Pagination
+                count={totalPaginas}
+                page={paginaActual}
+                onChange={cambiarPagina}
+                color="primary" />
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

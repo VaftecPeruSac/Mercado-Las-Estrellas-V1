@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import LoadingSpinner from '../PogressBar/ProgressBarV1';
@@ -7,6 +7,7 @@ import Contenedor from '../Shared/Contenedor';
 import ContenedorBotonesReportes from '../Shared/ContenedorBotonesReportes';
 import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
+import { formatDate } from "../../Utils/dateUtils";
 
 interface Cuota {
   id_cuota: string;
@@ -44,7 +45,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
   const [cuotaSeleccionada, setCuotaSeleccionada] = useState<number>(0);
   const [cuotas, setCuotas] = useState<Data[]>([]);
   const [exportFormat, setExportFormat] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState<number>(1);
@@ -55,13 +56,6 @@ const TablaReporteCuotasMetrado: React.FC = () => {
     listarCuotas(value, cuotaSeleccionada);
   };
 
-  // Para el formato de fecha
-  const formatDate = (date: string) => {
-    const fecha = new Date(date);
-    const mes = fecha.getMonth() + 1 < 10 ? `0${fecha.getMonth() + 1}` : fecha.getMonth() + 1;
-    const dia = fecha.getDate() < 10 ? `0${fecha.getDate()}` : fecha.getDate();
-    return `${dia}/${mes}/${fecha.getFullYear()}`;
-  }
 
   // Obtener las cuotas
   useEffect(() => {
@@ -86,81 +80,81 @@ const TablaReporteCuotasMetrado: React.FC = () => {
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   }
 
   return (
     <Contenedor>
-        <ContenedorBotonesReportes>
-          <Box
+      <ContenedorBotonesReportes>
+        <Box
+          sx={{
+            width: isTablet || isMobile ? "100%" : "auto",
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            alignItems: "center",
+            ml: isTablet || isMobile ? "0px" : "10px",
+            mr: isMobile ? "0px" : "auto",
+          }}
+        >
+          {/* Seleccionar cuota */}
+          <FormControl fullWidth required
             sx={{
-              width: isTablet || isMobile ? "100%" : "auto",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 2,
-              alignItems: "center",
-              ml: isTablet || isMobile ? "0px" : "10px",
-              mr: isMobile ? "0px" : "auto",
+              width: isTablet ? "70%" : isMobile ? "100%" : "300px"
             }}
           >
-            {/* Seleccionar cuota */}
-            <FormControl fullWidth required 
-              sx={{ 
-                width: isTablet ? "70%" : isMobile ? "100%" : "300px" 
+            <Autocomplete
+              options={cuotasSelect}
+              getOptionLabel={(cuota) => `${cuota.id_cuota} - ${formatDate(cuota.fecha_registro)}`}
+              onChange={(event, value) => {
+                if (value) {
+                  setCuotaSeleccionada(Number(value.id_cuota));
+                }
               }}
-            >
-              <Autocomplete
-                options={cuotasSelect}
-                getOptionLabel={(cuota) => `${cuota.id_cuota} - ${formatDate(cuota.fecha_registro)}`} 
-                onChange={(event, value) => {
-                  if (value) { 
-                    setCuotaSeleccionada(Number(value.id_cuota));
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Seleccionar cuota"
-                    InputProps={{...params.InputProps }}
-                  />
-                )}
-                ListboxProps={{
-                  style: {
-                    maxHeight: 270,
-                    overflow: 'auto',
-                  },
-                }}
-                isOptionEqualToValue={(option, value) => option.id_cuota === value.id_cuota}
-              />
-            </FormControl>
-            {/* Botón "Generar Reporte" */}
-            <BotonAgregar 
-              handleAction={() => listarCuotas(undefined, cuotaSeleccionada)}
-              texto="Generar"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Seleccionar cuota"
+                  InputProps={{ ...params.InputProps }}
+                />
+              )}
+              ListboxProps={{
+                style: {
+                  maxHeight: 270,
+                  overflow: 'auto',
+                },
+              }}
+              isOptionEqualToValue={(option, value) => option.id_cuota === value.id_cuota}
             />
-          </Box>
-
-          <BotonExportar
-            exportFormat={exportFormat}
-            setExportFormat={setExportFormat}
-            handleExport={() => alert("En proceso...")}
+          </FormControl>
+          {/* Botón "Generar Reporte" */}
+          <BotonAgregar
+            handleAction={() => listarCuotas(undefined, cuotaSeleccionada)}
+            texto="Generar"
           />
+        </Box>
 
-        </ContenedorBotonesReportes>
-        {isLoading ? (
-          <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
-        ) : (
+        <BotonExportar
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          handleExport={() => alert("En proceso...")}
+        />
+
+      </ContenedorBotonesReportes>
+      {isLoading ? (
+        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+      ) : (
         <>
           <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-          <TableContainer
-            sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
-          >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {isTablet || isMobile
-                    ? <Typography
+            <TableContainer
+              sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}
+            >
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {isTablet || isMobile
+                      ? <Typography
                         sx={{
                           mt: 2,
                           mb: 1,
@@ -172,104 +166,104 @@ const TablaReporteCuotasMetrado: React.FC = () => {
                       >
                         Lista de cuotas
                       </Typography>
-                    : columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth }}
-                        sx={{
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {cuotas.length > 0
-                ? cuotas
-                  .map((cuota) => (
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {isTablet || isMobile
-                      ? <TableCell padding="checkbox" colSpan={columns.length}>
-                          <Box sx={{ display: "flex", flexDirection: "column"}}>
-                            <Typography 
-                              sx={{ 
-                                p: 2,
-                                // Al seleccionar la cuota se cambia el color de fondo
-                                bgcolor: mostrarDetalles === cuota.numero_puesto ? "#f0f0f0" : "inherit",
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  bgcolor: "#f0f0f0",
-                                }
-                              }}
-                              onClick={() => setMostrarDetalles(
-                                mostrarDetalles === cuota.numero_puesto ? null : cuota.numero_puesto
-                              )}
-                            >
-                              {cuota.nombre_completo} - {cuota.numero_puesto}
-                            </Typography>
-                            {mostrarDetalles === cuota.numero_puesto && (
-                              <Box 
-                                sx={{
-                                  p: 2,
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: 1 
-                                }}
-                              >
-                                {columns.map((column) => {
-                                  const value = column.id === "accion" ? "" : (cuota as any)[column.id];
-                                  return (
-                                    <Box>
-                                      {/* Mostrar titulo del campo */}
-                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                                        {column.label}
-                                      </Typography>
-                                      {/* Mostrar los detalles de la deuda */}
-                                      <Typography>
-                                        {value}
-                                      </Typography>
-                                    </Box>
-                                  )
-                                })}
-                              </Box>
-                            )}
-                          </Box>
+                      : columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {column.label}
                         </TableCell>
-                      : columns.map((column) => {
-                          const value = column.id === "accion" ? "" : (cuota as any)[column.id];
-                          return (
-                            <TableCell
-                              key={column.id}
-                              align={column.align}
-                            >
-                              {value}
-                            </TableCell>
-                          );
-                        })}
-                    </TableRow>
-                  ))
-                : <TableRow>
-                    <TableCell colSpan={columns.length} align="center">
-                      No hay datos para mostrar. <br />
-                      Para generar el reporte, seleccione una cuota y de clic en el botón "GENERAR".
-                    </TableCell>
+                      ))}
                   </TableRow>
-                }
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-            <Pagination 
-              count={totalPaginas}
-              page={paginaActual}
-              onChange={cambiarPagina}
-              color="primary" 
-            />
-          </Box>
-        </Paper>
+                </TableHead>
+                <TableBody>
+                  {cuotas.length > 0
+                    ? cuotas
+                      .map((cuota) => (
+                        <TableRow hover role="checkbox" tabIndex={-1}>
+                          {isTablet || isMobile
+                            ? <TableCell padding="checkbox" colSpan={columns.length}>
+                              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                <Typography
+                                  sx={{
+                                    p: 2,
+                                    // Al seleccionar la cuota se cambia el color de fondo
+                                    bgcolor: mostrarDetalles === cuota.numero_puesto ? "#f0f0f0" : "inherit",
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      bgcolor: "#f0f0f0",
+                                    }
+                                  }}
+                                  onClick={() => setMostrarDetalles(
+                                    mostrarDetalles === cuota.numero_puesto ? null : cuota.numero_puesto
+                                  )}
+                                >
+                                  {cuota.nombre_completo} - {cuota.numero_puesto}
+                                </Typography>
+                                {mostrarDetalles === cuota.numero_puesto && (
+                                  <Box
+                                    sx={{
+                                      p: 2,
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 1
+                                    }}
+                                  >
+                                    {columns.map((column) => {
+                                      const value = column.id === "accion" ? "" : (cuota as any)[column.id];
+                                      return (
+                                        <Box>
+                                          {/* Mostrar titulo del campo */}
+                                          <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                            {column.label}
+                                          </Typography>
+                                          {/* Mostrar los detalles de la deuda */}
+                                          <Typography>
+                                            {value}
+                                          </Typography>
+                                        </Box>
+                                      )
+                                    })}
+                                  </Box>
+                                )}
+                              </Box>
+                            </TableCell>
+                            : columns.map((column) => {
+                              const value = column.id === "accion" ? "" : (cuota as any)[column.id];
+                              return (
+                                <TableCell
+                                  key={column.id}
+                                  align={column.align}
+                                >
+                                  {value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                    : <TableRow>
+                      <TableCell colSpan={columns.length} align="center">
+                        No hay datos para mostrar. <br />
+                        Para generar el reporte, seleccione una cuota y de clic en el botón "GENERAR".
+                      </TableCell>
+                    </TableRow>
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+              <Pagination
+                count={totalPaginas}
+                page={paginaActual}
+                onChange={cambiarPagina}
+                color="primary"
+              />
+            </Box>
+          </Paper>
         </>
       )}
     </Contenedor>

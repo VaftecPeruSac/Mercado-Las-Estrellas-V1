@@ -1,5 +1,5 @@
 import React from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 import { Box, Button, FormControl, MenuItem, Select } from '@mui/material';
 import { Download } from '@mui/icons-material';
 
@@ -10,7 +10,7 @@ interface BotonExportarProps {
 }
 
 const BotonExportar: React.FC<BotonExportarProps> = ({ exportFormat, setExportFormat, handleExport }) => {
-  
+
   const { isTablet, isMobile } = useResponsive();
 
   return (
@@ -43,7 +43,7 @@ const BotonExportar: React.FC<BotonExportarProps> = ({ exportFormat, setExportFo
         }}
       >
         <Select
-          value={ exportFormat }
+          value={exportFormat}
           onChange={(e) => setExportFormat(e.target.value)}
           displayEmpty
           sx={{
@@ -80,8 +80,8 @@ const BotonExportar: React.FC<BotonExportarProps> = ({ exportFormat, setExportFo
           borderRadius: "30px",
           fontSize: isMobile ? "0.8rem" : "auto"
         }}
-        disabled={ exportFormat === "" }
-        onClick={ handleExport }
+        disabled={exportFormat === ""}
+        onClick={handleExport}
       >
         Descargar
       </Button>
