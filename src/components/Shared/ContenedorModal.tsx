@@ -1,6 +1,6 @@
 import { Box, Card, LinearProgress, Modal, Tab, Tabs, Typography } from '@mui/material'
 import React from 'react'
-import useResponsive from '../Responsive';
+import useResponsive from '../../hooks/Responsive/useResponsive';
 
 interface ContenedorModalProps {
   ancho: string;
