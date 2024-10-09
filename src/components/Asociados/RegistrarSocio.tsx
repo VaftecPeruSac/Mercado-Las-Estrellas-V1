@@ -495,7 +495,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
 
   return (
     <ContenedorModal
-      ancho="720px"
+      ancho="740px"
       alto="auto"
       abrir={open}
       cerrar={handleCloseModal}
