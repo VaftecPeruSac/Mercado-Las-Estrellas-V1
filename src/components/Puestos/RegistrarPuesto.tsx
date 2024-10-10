@@ -480,7 +480,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data || "El giro de negocio se registró correctamente";
+        const mensaje = response.data.message || "El giro de negocio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();
