@@ -23,7 +23,6 @@ const useSocios = () => {
         try {
             const response = await axios.get(Api_Global_Socios.socios.fetch(page, nombreIngresado));
             const data = response.data.data;
-
             setSocios(data);
             setTotalPages(response.data.meta.last_page);
             setPaginaActual(response.data.meta.current_page);

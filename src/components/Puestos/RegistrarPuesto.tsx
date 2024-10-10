@@ -457,7 +457,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data || "El bloque se registró correctamente";
+        const mensaje = response.data.message || "El bloque se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();
@@ -1320,67 +1320,67 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       titulo={obtenerTituloModal()}
       activeTab={activeTab}
       handleTabChange={handleTabChange}
-      tabs={["Registrar Puesto","Asignar Puesto", "Asignar Inquilino", 
-            "Registrar Bloque", "Registrar Giro de Negocio"]}
+      tabs={["Registrar Puesto", "Asignar Puesto", "Asignar Inquilino",
+        "Registrar Bloque", "Registrar Giro de Negocio"]}
     >
 
-        {renderTabContent()}
-        
-        <BotonesModal
-          loading={loading}
-          action={async (e) => {
-            let result; // Variable para almacenar el resultado de la alerta de confirmación
-            // Cambiar a función asíncrona
-            if (activeTab === 0) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
-                "¿Está seguro de registrar un nuevo Puesto?",
-              );
-              if (result.isConfirmed) {
-                if (puesto) {
-                  editarPuesto(e);
-                } else {
-                  registrarPuesto(e);
-                }
-              }
+      {renderTabContent()}
 
-            }
-            if (activeTab === 1) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
-                "¿Está seguro de asignar un puesto a un socio?",
-              );
-              if (result.isConfirmed) {
-                asignarPuestoSocio(e); // Asignar puesto
-              }
-            }
-            if (activeTab === 2) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar inquilino
-                "¿Está seguro de asignar un inquilino?",
-              );
-              if (result.isConfirmed) {
-                asignarInquilino(e); // Asignar inquilino
+      <BotonesModal
+        loading={loading}
+        action={async (e) => {
+          let result; // Variable para almacenar el resultado de la alerta de confirmación
+          // Cambiar a función asíncrona
+          if (activeTab === 0) {
+            result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
+              "¿Está seguro de registrar un nuevo Puesto?",
+            );
+            if (result.isConfirmed) {
+              if (puesto) {
+                editarPuesto(e);
+              } else {
+                registrarPuesto(e);
               }
             }
 
-            if (activeTab === 3) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar bloque
-                "¿Está seguro de registrar un bloque?",
-              );
-              if (result.isConfirmed) {
-                registrarBloque(e); // Registrar bloque
-              }
+          }
+          if (activeTab === 1) {
+            result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
+              "¿Está seguro de asignar un puesto a un socio?",
+            );
+            if (result.isConfirmed) {
+              asignarPuestoSocio(e); // Asignar puesto
             }
+          }
+          if (activeTab === 2) {
+            result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar inquilino
+              "¿Está seguro de asignar un inquilino?",
+            );
+            if (result.isConfirmed) {
+              asignarInquilino(e); // Asignar inquilino
+            }
+          }
 
-            if (activeTab === 4) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
-                "¿Está seguro de registrar un giro de negocio?",
-              );
-              if (result.isConfirmed) {
-                registrarGiroNegocio(e); // Registrar giro de negocio
-              }
+          if (activeTab === 3) {
+            result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar bloque
+              "¿Está seguro de registrar un bloque?",
+            );
+            if (result.isConfirmed) {
+              registrarBloque(e); // Registrar bloque
             }
-          }}
-          close={handleCloseModal}
-        />
+          }
+
+          if (activeTab === 4) {
+            result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
+              "¿Está seguro de registrar un giro de negocio?",
+            );
+            if (result.isConfirmed) {
+              registrarGiroNegocio(e); // Registrar giro de negocio
+            }
+          }
+        }}
+        close={handleCloseModal}
+      />
 
     </ContenedorModal>
   )
