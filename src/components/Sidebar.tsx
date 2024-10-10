@@ -36,7 +36,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from "../context/AuthContext";
 import useResponsive from "../hooks/Responsive/useResponsive";
-import Swal from "sweetalert2";
 import { CustomButton, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 
 interface SidebarProps {
@@ -49,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   // Variables para el responsive
   const { isMobile, isTablet } = useResponsive();
 
-  const [collapseDashboard, setCollapseDashboard] = useState(isMobile ? true : false);
+  const [collapseDashboard, setCollapseDashboard] = useState(true);
   const [collapseReportes, setCollapseReportes] = useState(isMobile ? true : false);
 
   const [openDialog, setOpenDialog] = useState(false);

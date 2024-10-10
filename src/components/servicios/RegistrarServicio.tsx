@@ -29,6 +29,7 @@ import {
   SeparadorBloque,
   TxtFormulario,
 } from "../Shared/ElementosFormulario";
+import { reFormatDate } from "../../Utils/dateUtils";
 
 interface AgregarProps {
   open: boolean;
@@ -70,11 +71,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     fecha_registro: "",
   });
 
-  const formatDate = (fecha: string) => {
-    const [dia, mes, anio] = fecha.split("/");
-    return `${anio}-${mes}-${dia}`;
-  };
-
   // Llenar campos con los datos del servicio seleccionado
   useEffect(() => {
     if (servicio) {
@@ -85,7 +81,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
         costo_unitario: servicio.costo_unitario || "",
         tipo_servicio: servicio.tipo_servicio || "",
         estado: "Activo",
-        fecha_registro: formatDate(servicio.fecha_registro) || "",
+        fecha_registro: reFormatDate(servicio.fecha_registro) || "",
       });
     }
   }, [servicio]);
@@ -367,8 +363,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       cerrar={handleCloseModal}
       loading={loading}
       titulo={servicio ? "Editar servicio" : "Registrar servicio"}
-      activeTab={activeTab}
-      handleTabChange={handleTabChange}
+      activeTab={servicio ? 0 : activeTab}
+      handleTabChange={servicio ? (e) => handleTabChange(e, 0) : handleTabChange}
       tabs={["Registrar servicio", "Registrar servicio compartido"]}
       botones={
         <BotonesModal

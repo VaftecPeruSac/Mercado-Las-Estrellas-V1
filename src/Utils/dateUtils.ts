@@ -9,3 +9,8 @@ export const formatDate = (fecha: string): string => {
 
   return `${diaFormateado}/${mesFormateado}/${año}`;
 };
+
+export const reFormatDate = (fecha: string) => {
+  const [dia, mes, anio] = fecha.split("/");
+  return `${anio}-${mes}-${dia}`;
+};

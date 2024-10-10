@@ -24,13 +24,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import React, { useState } from "react";
+import React from "react";
 import { columns } from "../../Columns/Puesto";
 import useBloques from "../../hooks/Puestos/useBloques";
 import useGirosNegocio from "../../hooks/Puestos/useGiroNegocio";
 import usePuestos from "../../hooks/Puestos/usePuesto";
-import useResponsive from "../../hooks/Responsive/useResponsive";
 import { Bloque, GiroNegocio, Puesto } from "../../interface/Puestos";
 import { Api_Global_Puestos } from "../../service/PuestoApi";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";

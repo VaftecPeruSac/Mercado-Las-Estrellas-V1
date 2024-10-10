@@ -27,6 +27,7 @@ import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alert
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, SeparadorBloque, TxtFormulario } from "../Shared/ElementosFormulario";
+import { reFormatDate } from "../../Utils/dateUtils";
 
 interface AgregarProps {
   open: boolean;
@@ -97,12 +98,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     id_puesto: "",
   });
 
-  // Darle el formato esperado a la fecha para ser recibida en el input
-  const formatDate = (fecha: string) => {
-    const [dia, mes, anio] = fecha.split("/");
-    return `${anio}-${mes}-${dia}`;
-  };
-
   // Llenar campos con los datos del socio seleccionado
   useEffect(() => {
     if (socio) {
@@ -119,7 +114,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
         id_puesto: socio.id_puesto || '',
         id_block: socio.id_block || '',
         estado: socio.estado || '',
-        fecha_registro: formatDate(socio.fecha_registro) || '',
+        fecha_registro: reFormatDate(socio.fecha_registro) || '',
       });
       setBloqueSeleccionado(Number(socio.id_block));
       setPuestoSeleccionado(Number(socio.id_puesto));

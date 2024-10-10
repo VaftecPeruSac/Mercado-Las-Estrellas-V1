@@ -151,6 +151,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       fecha_registro: "",
       fecha_vencimiento: ""
     });
+    setServiciosAgregados([]);
+    setServiciosIds([]);
   }
   // Generar cuota
   const registrarCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
