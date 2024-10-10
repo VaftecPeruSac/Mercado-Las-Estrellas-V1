@@ -239,7 +239,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     const { id_puesto, id_block, ...dataToSend } = formData;
 
     try {
-      const response = await axios.put("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+      const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/socios/${dataToSend.id_socio}`, dataToSend);
 
       if (response.status === 200) {
         const mensaje = response.data || "El socio se actualizó correctamente";

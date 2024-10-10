@@ -216,7 +216,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   type="date"
                   label="Fecha de emisión"
                   name="fecha_registro"
-                  value={fechaEmision}
+                  value={formData.fecha_registro =  fechaEmision}
                   onChange={manejarFechaEmisionCambio}
                   noMargin={true}
                   icono={<CalendarIcon sx={{ mr: 1, color: "gray" }} />}
