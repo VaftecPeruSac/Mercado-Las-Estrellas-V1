@@ -13,9 +13,10 @@ interface ContenedorModalProps {
   handleTabChange?: (event: React.SyntheticEvent, newValue: number) => void;
   tabs?: string[];
   children: React.ReactNode;
+  botones: React.ReactNode;
 }
 
-const ContenedorModal: React.FC<ContenedorModalProps> = ({ ancho, alto, abrir, cerrar, loading, titulo, activeTab, handleTabChange, tabs, children }) => {
+const ContenedorModal: React.FC<ContenedorModalProps> = ({ ancho, alto, abrir, cerrar, loading, titulo, activeTab, handleTabChange, tabs, children, botones }) => {
 
   const { isLaptop, isTablet, isMobile } = useResponsive();
 
@@ -64,42 +65,52 @@ const ContenedorModal: React.FC<ContenedorModalProps> = ({ ancho, alto, abrir, c
           </div>
         )}
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 0 }}>
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              "& .MuiTabs-flexContainer": {
-                minHeight: "36px",
-              },
-              "& .MuiTab-root": {
-                fontSize: "0.8rem",
-                fontWeight: "normal",
-                color: "gray",
-                textTransform: "uppercase",
-                minWidth: "auto",
-                px: 2,
-              },
-              "& .MuiTab-root.Mui-selected": {
-                fontWeight: "bold",
-                color: "black !important",
-              },
-              "& .MuiTabs-indicator": {
-                display: "none",
-              },
-              mb: -1,
-              overflowX: "auto",
-            }}
-          >
-            {tabs && tabs.length > 0 && (
-              tabs.map((tab, index) => (
-                <Tab key={index} label={tab} />
-              )
-            ))}
-          </Tabs>
+          {tabs && tabs.length > 0 && (
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                "& .MuiTabs-flexContainer": {
+                  minHeight: "36px",
+                },
+                "& .MuiTab-root": {
+                  fontSize: "0.8rem",
+                  fontWeight: "normal",
+                  color: "gray",
+                  textTransform: "uppercase",
+                  minWidth: "auto",
+                  px: 2,
+                },
+                "& .MuiTab-root.Mui-selected": {
+                  fontWeight: "bold",
+                  color: "black !important",
+                },
+                "& .MuiTabs-indicator": {
+                  display: "none",
+                },
+                mb: -1,
+                overflowX: "auto",
+              }}
+            >
+              {tabs && tabs.length > 0 && (
+                tabs.map((tab, index) => (
+                  <Tab key={index} label={tab} />
+                )
+              ))}
+            </Tabs>
+          )}
         </Box>
-        {children}
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          sx={{ padding: isTablet || isMobile ? "0px" : "0px 58px" }}
+        >
+          {children}
+        </Box>
+        {botones}
       </Card>
     </Modal>
   );

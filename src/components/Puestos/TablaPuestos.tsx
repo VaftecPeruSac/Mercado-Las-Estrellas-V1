@@ -353,7 +353,7 @@ const TablaPuestos: React.FC = () => {
                                 )
                               }
                             >
-                              {puesto.block.nombre} - {puesto.numero_puesto} -{" "}
+                              {puesto.block.nombre} - {puesto.numero_puesto} - {" "}
                               {puesto.giro_negocio.nombre}
                             </Typography>
                             {mostrarDetalles === puesto.id_puesto && (

@@ -22,10 +22,15 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../../hooks/Responsive/useResponsive";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import {
+  manejarError,
+  mostrarAlerta,
+  mostrarAlertaConfirmacion,
+} from "../Alerts/Registrar";
 import jsPDF from "jspdf";
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
+import { AvisoFormulario } from "../Shared/ElementosFormulario";
 
 interface AgregarProps {
   open: boolean;
@@ -42,7 +47,7 @@ interface Puesto {
   numero_puesto: string;
   block: {
     nombre: string;
-  }
+  };
 }
 
 interface Deuda {
@@ -82,9 +87,8 @@ const columns: readonly Column[] = [
 ];
 
 const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
-
   // Variables para el diseño responsivo
-  const { isTablet, isMobile } = useResponsive();
+  const { isMobile } = useResponsive();
 
   // Para los select
   const [socios, setSocios] = useState<Socio[]>([]);
@@ -144,8 +148,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
         id_puesto: item.id_puesto,
         numero_puesto: item.numero_puesto,
         block: {
-          nombre: item.block.nombre
-        }
+          nombre: item.block.nombre,
+        },
       }));
       setPuestos(data);
     } catch (error) {
@@ -156,7 +160,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   // Obtener deuda cuota por puesto
   const fetchDeudaPuesto = async (idSocio: string, idPuesto: string) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/cuotas/pendientes?per_page=50&id_socio=${idSocio}&id_puesto=${idPuesto}`);
+      const response = await axios.get(
+        `https://mercadolasestrellas.online/intranet/public/v1/cuotas/pendientes?per_page=50&id_socio=${idSocio}&id_puesto=${idPuesto}`
+      );
       const data = response.data.data.map((item: Deuda) => ({
         id_deuda: item.id_deuda,
         total: item.total,
@@ -176,7 +182,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     let total = 0;
     Object.keys(filasSeleccionadas).forEach((id_deuda) => {
       if (filasSeleccionadas[id_deuda]) {
-        const fila = deudas.find((deuda) => deuda.id_deuda === parseInt(id_deuda));
+        const fila = deudas.find(
+          (deuda) => deuda.id_deuda === parseInt(id_deuda)
+        );
         if (fila) {
           total += parseFloat(fila.deuda);
         }
@@ -191,7 +199,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     Object.keys(filasSeleccionadas).forEach((id_deuda) => {
       if (filasSeleccionadas[id_deuda]) {
         // Obtener el elemento del TextField que corresponde a esta deuda
-        const inputElement = document.getElementById(`pago-${id_deuda}`) as HTMLInputElement;
+        const inputElement = document.getElementById(
+          `pago-${id_deuda}`
+        ) as HTMLInputElement;
         // Si el elemento existe, tomar su valor actual
         if (inputElement) {
           const montoActual = parseFloat(inputElement.value) || 0;
@@ -208,33 +218,36 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   }, [filasSeleccionadas]);
 
   // Manejar las filas seleccionadas
-  const handleCheckBoxChange = (seleccionado: boolean, idDeuda: number, montoPagar: number, montoInicial: number) => {
-
+  const handleCheckBoxChange = (
+    seleccionado: boolean,
+    idDeuda: number,
+    montoPagar: number,
+    montoInicial: number
+  ) => {
     // Manejamos las filas seleccionadas
     setFilasSeleccionadas((estadoPrevio) => ({
       ...estadoPrevio,
-      [idDeuda]: seleccionado
+      [idDeuda]: seleccionado,
     }));
 
     if (seleccionado) {
-
       // Para almacenar el arreglo de deudas en el formulario
       setFormData((prevFormData) => ({
         ...prevFormData,
         deudas: [
           // Evitamos que las deudas se repitan
-          ...prevFormData.deudas.filter(deuda => deuda.id_deuda !== idDeuda),
+          ...prevFormData.deudas.filter((deuda) => deuda.id_deuda !== idDeuda),
           // Agregamos la nuevas deudas y su monto a pagar
-          { id_deuda: idDeuda, importe: montoPagar }
-        ]
+          { id_deuda: idDeuda, importe: montoPagar },
+        ],
       }));
-
     } else {
-
       // Al deseleccionar, eliminamos la deuda correspondiente
       setFormData((prevFormData) => ({
         ...prevFormData,
-        deudas: prevFormData.deudas.filter(deuda => deuda.id_deuda !== idDeuda)
+        deudas: prevFormData.deudas.filter(
+          (deuda) => deuda.id_deuda !== idDeuda
+        ),
       }));
 
       setMontoPagar((prevMonto) => {
@@ -242,48 +255,50 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
         delete nuevoMonto[idDeuda];
         return nuevoMonto;
       });
-
     }
 
     // Eliminamos el valor por defecto
     setFormData((prevFormData) => ({
       ...prevFormData,
-      deudas: prevFormData.deudas.filter(deuda => deuda.id_deuda !== 0 && deuda.importe !== 0)
+      deudas: prevFormData.deudas.filter(
+        (deuda) => deuda.id_deuda !== 0 && deuda.importe !== 0
+      ),
     }));
 
     calcularTotalSeleccionado();
-
   };
 
   // Actualizar el monto a pagar de cada cuota
-  const actualizarMontoPagar = (idDeuda: number, nuevoMonto: number, montoInicial: number) => {
-
+  const actualizarMontoPagar = (
+    idDeuda: number,
+    nuevoMonto: number,
+    montoInicial: number
+  ) => {
     // Validamos que el monto no sea mayor al inicial
     const validarMonto = Math.min(nuevoMonto, montoInicial);
 
     setMontoPagar((prevMonto) => ({
       ...prevMonto,
       // Actualizamos el monto para la deuda seleccionada
-      [idDeuda]: validarMonto
+      [idDeuda]: validarMonto,
     }));
 
     // Actualizamos los valores
     setFormData((prevFormData) => ({
       ...prevFormData,
       deudas: prevFormData.deudas.map(
-        deuda => deuda.id_deuda === idDeuda
-          ? { ...deuda, importe: validarMonto } // Actualizar el importe
-          : deuda // Mantener la deuda sin cambios
-      )
+        (deuda) =>
+          deuda.id_deuda === idDeuda
+            ? { ...deuda, importe: validarMonto } // Actualizar el importe
+            : deuda // Mantener la deuda sin cambios
+      ),
     }));
 
     calcularTotalSeleccionado();
-
   };
 
   // Limpiar modal
   const limpiarCampos = () => {
-
     // Reiniciamos los select
     setIdSocioSeleccionado("");
     setIdPuestoSeleccionado("");
@@ -297,15 +312,16 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       nombre_socio: "",
       nombre_block: "",
       numero_puesto: "",
-      deudas: [{
-        id_deuda: 0,
-        importe: 0
-      }]
+      deudas: [
+        {
+          id_deuda: 0,
+          importe: 0,
+        },
+      ],
     });
 
     // Limpiar la tabla
     setDeudas([]);
-
   };
 
   // Cerrar modal
@@ -323,10 +339,14 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } = formData;
+    const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } =
+      formData;
 
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/pagos", dataToSend);
+      const response = await axios.post(
+        "https://mercadolasestrellas.online/intranet/public/v1/pagos",
+        dataToSend
+      );
 
       if (response.status === 200) {
         const mensaje = response.data || "El pago fue registrado correctamente";
@@ -346,11 +366,10 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
   const generarTicketPDF = async (data: typeof formData) => {
-
     const ticket = new jsPDF();
     const pageWidth = ticket.internal.pageSize.getWidth(); // Ancho de la página
 
-    const response = await fetch('/logoBase64.txt');
+    const response = await fetch("/logoBase64.txt");
     const imagenLogo = await response.text();
 
     const centerText = (text: string, y: number) => {
@@ -361,7 +380,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
     const rightText = (text: string, y: number) => {
       const textWidth = ticket.getTextWidth(text);
-      const x = (pageWidth - textWidth) - 20;
+      const x = pageWidth - textWidth - 20;
       ticket.text(text, x, y);
     };
 
@@ -376,25 +395,29 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     ticket.setFontSize(12);
     ticket.setFont("helvetica", "bold");
 
-    ticket.addImage(imagenLogo, 'JPEG', 20, 10, 30, 30);
-    centerText('Asociación comercial de Propietarios del Mercado', 18);
-    centerText('"Nstra. Sra.de Las Estrellas"', 25)
+    ticket.addImage(imagenLogo, "JPEG", 20, 10, 30, 30);
+    centerText("Asociación comercial de Propietarios del Mercado", 18);
+    centerText('"Nstra. Sra.de Las Estrellas"', 25);
 
     ticket.setFontSize(10);
     centerText('Fundado el 07 de Abril de 1977 Inscrito en la Sunarp Partida N°11012575.', 32);
     centerText('Calle 9 Asociación de Viv. "Hijos de Apurimac Primera Etapa - Santa Clara - Ate', 36);
 
-    textoMezclado('N° Recibo: ', '00000000', 20, 50, ticket);
-    textoMezclado('Socio:  ', data.nombre_socio, 20, 60, ticket);
+    textoMezclado("N° Recibo: ", "00000000", 20, 50, ticket);
+    textoMezclado("Socio:  ", data.nombre_socio, 20, 60, ticket);
 
-    const posTextoCompleto = pageWidth - ticket.getTextWidth(`Block:  ${data.nombre_block} - Puesto:  ${data.numero_puesto}`) - 20;
+    const posTextoCompleto =
+      pageWidth -
+      ticket.getTextWidth(
+        `Block:  ${data.nombre_block} - Puesto:  ${data.numero_puesto}`
+      ) -
+      20;
     const anchoPuesto = ticket.getTextWidth(`Puesto:  ${data.numero_puesto}`);
     textoMezclado('Block:  ', `${data.nombre_block} - `, posTextoCompleto, 60, ticket);
     textoMezclado('Puesto:  ', data.numero_puesto, pageWidth - anchoPuesto - 20, 60, ticket);
 
     let y = 80;
     data.deudas.forEach((deuda, index) => {
-
       ticket.setFont("helvetica", "normal");
       ticket.text(`#${index + 1}`, 20, y);
 
@@ -412,7 +435,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
     ticket.save(`Recibo-Pago-${data.nombre_socio}-${fecha}.pdf`);
-
   };
 
   // Contenido del modal
@@ -421,272 +443,261 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       case 0:
         return (
           <>
-            <Box
-              component="form"
-              noValidate
-              autoComplete="off"
-              sx={{ p: isTablet || isMobile ? "0px" : "0px 58px" }}
-            >
-              {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+            <AvisoFormulario />
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={12} marginTop={1}>
-                  {/* Seleccionar socio */}
-                  <FormControl
-                    sx={{
-                      width: isMobile ? "100%" : "48%",
-                      mb: isMobile ? "15px" : "0px"
-                    }}
-                  >
-                    <Autocomplete
-                      options={socios}
-                      getOptionLabel={(socio: Socio) => socio.nombre_completo}
-                      onChange={(event, newValue) => {
-                        if (newValue) {
-                          const socioId = String(newValue.id_socio); // Convertimos id_socio a string
-                          setIdSocioSeleccionado(socioId); // Asignamos el string
-                          setFormData({ ...formData, id_socio: socioId, nombre_socio: newValue.nombre_completo }); // Mantenemos el string en formData
-                          fetchPuestos(socioId); // Pasamos el id_socio como string
-                        }
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Seleccionar Socio"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <>
-                                <Business sx={{ mr: 1, color: "gray" }} />
-                                {params.InputProps.startAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                      ListboxProps={{
-                        style: {
-                          maxHeight: 270,
-                          overflow: "auto",
-                        },
-                      }}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id_socio === Number(value)
-                      } // Convertimos value a número para la comparación
-                    />
-                  </FormControl>
+            {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
-                  {/* Seleccionar puesto */}
-                  <FormControl
-                    sx={{
-                      ml: isTablet ? "1rem" : isMobile ? "0px" : "23px",
-                      width: isMobile ? "100%" : "48%"
-                    }}
-                  >
-                    <InputLabel id="seleccionar-puesto-label">
-                      Seleccionar Puesto
-                    </InputLabel>
-                    <Select
-                      labelId="seleccionar-puesto-label"
-                      label="Seleccionar Puesto"
-                      id="select-puesto"
-                      value={idPuestoSeleccionado}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setIdPuestoSeleccionado(value);
-                        setFormData({
-                          ...formData,
-                          numero_puesto: puestos.find(p => p.id_puesto === Number(value))?.numero_puesto || "",
-                          nombre_block: puestos.find(p => p.id_puesto === Number(value))?.block.nombre || "",
-                        });
-                        fetchDeudaPuesto(idSocioSeleccionado, value);
-                      }}
-                      startAdornment={
-                        <Business sx={{ mr: 1, color: "gray" }} />
-                      }
-                    >
-                      {puestos.map((puesto: Puesto) => (
-                        <MenuItem
-                          key={puesto.id_puesto}
-                          value={puesto.id_puesto}
-                        >
-                          {puesto.numero_puesto}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                {/* Tabla deudas */}
-                <Grid item xs={12} sm={12}>
-                  <Paper
-                    sx={{
-                      width: "100%",
-                      overflow: "hidden",
-                      boxShadow: "none",
-                    }}
-                  >
-                    <TableContainer
-                      sx={{
-                        height: "250px",
-                        borderRadius: "10px",
-                        border: "1px solid #202123",
-                      }}
-                    >
-                      <Table>
-                        <TableHead sx={{ backgroundColor: "#202123" }}>
-                          <TableRow>
-                            {columns.map((column) => (
-                              <TableCell
-                                key={column.id}
-                                align={column.align}
-                                style={{ minWidth: column.minWidth }}
-                                sx={{ color: "white" }}
-                              >
-                                {column.label}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {deudas.map((deuda) => {
-                            // Calculamos el monto a pagar
-                            const montoInicial = parseFloat(deuda.deuda)
-                            const seleccionado = filasSeleccionadas[deuda.id_deuda] || false;
-
-                            // Si el monto a pagar se a cambiado, usamos el nuevo monto; si no, usamos el monto inicial
-                            const nuevoMonto =
-                              montoPagar[deuda.id_deuda] !== undefined
-                                ? montoPagar[deuda.id_deuda]
-                                : montoInicial;
-
-                            return (
-                              <TableRow
-                                hover
-                                tabIndex={-1}
-                                key={deuda.id_deuda}
-                              >
-                                {columns.map((column) => {
-                                  let value =
-                                    column.id === "accion"
-                                      ? ""
-                                      : (deuda as any)[column.id];
-
-                                  if (column.id === "pago") {
-                                    value = nuevoMonto;
-                                  }
-
-                                  return (
-                                    <TableCell
-                                      key={column.id}
-                                      align="center"
-                                      padding="checkbox"
-                                    >
-                                      {column.id === "accion" ? (
-                                        <Box
-                                          sx={{
-                                            display: "flex",
-                                            gap: 1,
-                                            justifyContent: "center",
-                                          }}
-                                        >
-                                          <IconButton
-                                            aria-label="select_row"
-                                            sx={{ color: "#840202" }}
-                                          >
-                                            <Checkbox
-                                              checked={seleccionado}
-                                              onChange={(e) =>
-                                                handleCheckBoxChange(
-                                                  e.target.checked,
-                                                  deuda.id_deuda,
-                                                  montoInicial,
-                                                  montoInicial
-                                                )
-                                              }
-                                            />
-                                          </IconButton>
-                                        </Box>
-                                      ) : column.id === "pago" ? (
-                                        <TextField
-                                          id={`pago-${deuda.id_deuda}`}
-                                          type="number"
-                                          name="pago"
-                                          value={nuevoMonto}
-                                          onChange={(e) => {
-                                            const value =
-                                              parseFloat(e.target.value) || 0;
-                                            actualizarMontoPagar(
-                                              deuda.id_deuda,
-                                              value,
-                                              montoInicial
-                                            );
-                                            calcularTotalSeleccionado();
-                                          }}
-                                          InputProps={{
-                                            // Si no esta seleccionado no se puede editar el monto a pagar
-                                            readOnly: !seleccionado,
-                                          }}
-                                          sx={{
-                                            width: "100px",
-                                          }}
-                                        />
-                                      ) : (
-                                        value
-                                      )}
-                                    </TableCell>
-                                  );
-                                })}
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Paper>
-                </Grid>
-
-                {/* Monto a pagar */}
-                <Box
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} marginTop={1} 
+                display="flex" flexDirection={isMobile ? "column" : "row"} gap={1}>
+                {/* Seleccionar socio */}
+                <FormControl
                   sx={{
-                    m: "25px 0 0 auto",
-                    pl: isMobile ? "16px" : "0px",
+                    width: isMobile ? "100%" : "50%",
+                    mb: isMobile ? "15px" : "0px",
                   }}
                 >
-                  <TextField
-                    label="Total deuda"
-                    value={totalDeuda}
-                    focused
-                    InputProps={{
-                      readOnly: true,
-                      startAdornment: (
-                        <Typography sx={{ mr: 1 }}>S/</Typography>
-                      ),
+                  <Autocomplete
+                    options={socios}
+                    getOptionLabel={(socio: Socio) => socio.nombre_completo}
+                    onChange={(event, newValue) => {
+                      if (newValue) {
+                        const socioId = String(newValue.id_socio); // Convertimos id_socio a string
+                        setIdSocioSeleccionado(socioId); // Asignamos el string
+                        setFormData({
+                          ...formData,
+                          id_socio: socioId,
+                          nombre_socio: newValue.nombre_completo,
+                        }); // Mantenemos el string en formData
+                        fetchPuestos(socioId); // Pasamos el id_socio como string
+                      }
                     }}
-                    sx={{
-                      mr: 2,
-                      mb: isMobile ? "15px" : "0px",
-                      width: isMobile ? "100%" : "200px",
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Seleccionar Socio"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <Business sx={{ mr: 1, color: "gray" }} />
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    ListboxProps={{
+                      style: {
+                        maxHeight: 270,
+                        overflow: "auto",
+                      },
                     }}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id_socio === Number(value)
+                    } // Convertimos value a número para la comparación
                   />
-                  <TextField
-                    color="success"
-                    label="Monto a pagar"
-                    value={totalPagar}
-                    focused
-                    InputProps={{
-                      readOnly: true,
-                      startAdornment: (
-                        <Typography sx={{ mr: 1 }}>S/</Typography>
-                      ),
+                </FormControl>
+
+                {/* Seleccionar puesto */}
+                <FormControl
+                  sx={{ width: isMobile ? "100%" : "50%" }}
+                >
+                  <InputLabel id="seleccionar-puesto-label">
+                    Seleccionar Puesto
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-puesto-label"
+                    label="Seleccionar Puesto"
+                    id="select-puesto"
+                    value={idPuestoSeleccionado}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setIdPuestoSeleccionado(value);
+                      setFormData({
+                        ...formData,
+                        numero_puesto:
+                          puestos.find((p) => p.id_puesto === Number(value))
+                            ?.numero_puesto || "",
+                        nombre_block:
+                          puestos.find((p) => p.id_puesto === Number(value))
+                            ?.block.nombre || "",
+                      });
+                      fetchDeudaPuesto(idSocioSeleccionado, value);
                     }}
-                    sx={{
-                      width: isMobile ? "100%" : "200px",
-                    }}
-                  />
-                </Box>
+                    startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {puestos.map((puesto: Puesto) => (
+                      <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                        {puesto.numero_puesto}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-            </Box>
+
+              {/* Tabla deudas */}
+              <Grid item xs={12} sm={12}>
+                <Paper
+                  sx={{
+                    width: "100%",
+                    overflow: "hidden",
+                    boxShadow: "none",
+                  }}
+                >
+                  <TableContainer
+                    sx={{
+                      height: "250px",
+                      borderRadius: "10px",
+                      border: "1px solid #202123",
+                    }}
+                  >
+                    <Table>
+                      <TableHead sx={{ backgroundColor: "#202123" }}>
+                        <TableRow>
+                          {columns.map((column) => (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                              style={{ minWidth: column.minWidth }}
+                              sx={{ color: "white" }}
+                            >
+                              {column.label}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {deudas.map((deuda) => {
+                          // Calculamos el monto a pagar
+                          const montoInicial = parseFloat(deuda.deuda);
+                          const seleccionado =
+                            filasSeleccionadas[deuda.id_deuda] || false;
+
+                          // Si el monto a pagar se a cambiado, usamos el nuevo monto; si no, usamos el monto inicial
+                          const nuevoMonto =
+                            montoPagar[deuda.id_deuda] !== undefined
+                              ? montoPagar[deuda.id_deuda]
+                              : montoInicial;
+
+                          return (
+                            <TableRow hover tabIndex={-1} key={deuda.id_deuda}>
+                              {columns.map((column) => {
+                                let value =
+                                  column.id === "accion"
+                                    ? ""
+                                    : (deuda as any)[column.id];
+
+                                if (column.id === "pago") {
+                                  value = nuevoMonto;
+                                }
+
+                                return (
+                                  <TableCell
+                                    key={column.id}
+                                    align="center"
+                                    padding="checkbox"
+                                  >
+                                    {column.id === "accion" ? (
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          gap: 1,
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <IconButton
+                                          aria-label="select_row"
+                                          sx={{ color: "#840202" }}
+                                        >
+                                          <Checkbox
+                                            checked={seleccionado}
+                                            onChange={(e) =>
+                                              handleCheckBoxChange(
+                                                e.target.checked,
+                                                deuda.id_deuda,
+                                                montoInicial,
+                                                montoInicial
+                                              )
+                                            }
+                                          />
+                                        </IconButton>
+                                      </Box>
+                                    ) : column.id === "pago" ? (
+                                      <TextField
+                                        id={`pago-${deuda.id_deuda}`}
+                                        type="number"
+                                        name="pago"
+                                        value={nuevoMonto}
+                                        onChange={(e) => {
+                                          const value =
+                                            parseFloat(e.target.value) || 0;
+                                          actualizarMontoPagar(
+                                            deuda.id_deuda,
+                                            value,
+                                            montoInicial
+                                          );
+                                          calcularTotalSeleccionado();
+                                        }}
+                                        InputProps={{
+                                          // Si no esta seleccionado no se puede editar el monto a pagar
+                                          readOnly: !seleccionado,
+                                        }}
+                                        sx={{
+                                          width: "100px",
+                                        }}
+                                      />
+                                    ) : (
+                                      value
+                                    )}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              </Grid>
+
+              {/* Monto a pagar */}
+              <Box
+                sx={{
+                  m: "25px 0 0 auto",
+                  pl: isMobile ? "16px" : "0px",
+                }}
+              >
+                <TextField
+                  label="Total deuda"
+                  value={totalDeuda}
+                  focused
+                  InputProps={{
+                    readOnly: true,
+                    startAdornment: <Typography sx={{ mr: 1 }}>S/</Typography>,
+                  }}
+                  sx={{
+                    mr: 2,
+                    mb: isMobile ? "15px" : "0px",
+                    width: isMobile ? "100%" : "200px",
+                  }}
+                />
+                <TextField
+                  color="success"
+                  label="Monto a pagar"
+                  value={totalPagar}
+                  focused
+                  InputProps={{
+                    readOnly: true,
+                    startAdornment: <Typography sx={{ mr: 1 }}>S/</Typography>,
+                  }}
+                  sx={{
+                    width: isMobile ? "100%" : "200px",
+                  }}
+                />
+              </Box>
+            </Grid>
           </>
         );
       default:
@@ -697,20 +708,17 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   return (
     <ContenedorModal
       ancho="1000px"
-      alto="710px"
+      alto="auto"
       abrir={open}
       cerrar={handleCloseModal}
       loading={loading}
       titulo="Registrar Pago"
-    >
-
-        {renderTabContent()}
-
+      botones={
         <BotonesModal
           loading={loading}
           action={async (e) => {
             const result = await mostrarAlertaConfirmacion(
-              "¿Está seguro de registrar este pago?",
+              "¿Está seguro de registrar este pago?"
             );
             if (result.isConfirmed) {
               registrarPago(e);
@@ -718,7 +726,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
           }}
           close={handleCloseModal}
         />
-
+      }
+    >
+      {renderTabContent()}
     </ContenedorModal>
   );
 };

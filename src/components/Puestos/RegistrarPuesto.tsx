@@ -1320,8 +1320,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       titulo={obtenerTituloModal()}
       activeTab={activeTab}
       handleTabChange={handleTabChange}
-      tabs={["Registrar Puesto", "Asignar Puesto", "Asignar Inquilino",
-        "Registrar Bloque", "Registrar Giro de Negocio"]}
+      tabs={["Registrar Puesto", "Asignar Puesto", "Asignar Inquilino", "Registrar Bloque", "Registrar Giro de Negocio"]}
+      botones
     >
 
       {renderTabContent()}
