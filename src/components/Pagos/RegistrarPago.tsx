@@ -339,9 +339,15 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } =
-      formData;
 
+    const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } = formData;
+
+    // Validación: Verificar que 'id_socio' esté presente
+    if (!dataToSend.id_socio || !formData.numero_puesto) {
+      mostrarAlerta("Error", "Por favor, selecciona un socio y un puesto.", "error");
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.post(
         "https://mercadolasestrellas.online/intranet/public/v1/pagos",
@@ -356,7 +362,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
           handleCloseModal();
         });
       } else {
-        mostrarAlerta("Error");
+        mostrarAlerta("Error", "Ocurrió un error inesperado.", "error");
       }
     } catch (error) {
       manejarError(error);
@@ -364,6 +370,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       setLoading(false);
     }
   };
+
 
   const generarTicketPDF = async (data: typeof formData) => {
     const ticket = new jsPDF();
@@ -448,7 +455,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} marginTop={1} 
+              <Grid item xs={12} sm={12} marginTop={1}
                 display="flex" flexDirection={isMobile ? "column" : "row"} gap={1}>
                 {/* Seleccionar socio */}
                 <FormControl
