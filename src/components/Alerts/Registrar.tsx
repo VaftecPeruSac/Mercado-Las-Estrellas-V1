@@ -67,6 +67,7 @@ export const manejarError = (error: any) => {
         mensajeError = "Por favor, completa todos los campos requeridos.";
     }
 
+
     mostrarAlerta("Error", mensajeError, "error");
 };
 

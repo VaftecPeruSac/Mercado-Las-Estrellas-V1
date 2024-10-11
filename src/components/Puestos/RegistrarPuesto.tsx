@@ -354,6 +354,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const { id_puesto, ...dataToSend } = formDataPuesto;
 
+
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
       if (response.status === 200) {
@@ -401,11 +402,26 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   };
 
+  // const sss = () => {
+  //   if (!dataToSend.id_puesto || !dataToSend.id_socio) {
+  //     mostrarAlerta("Error", "Por favor, completa todos los campos requeridos.", "error");
+  //     setLoading(false);
+  //     return;
+  //   }
+  // }
+
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     const dataToSend = formDataAsginarPuesto;
+
+    //De momento se usara estas validaciones hasta que implementen las validaciones a nivel de backend
+    if (!dataToSend.id_puesto || !dataToSend.id_socio) {
+      mostrarAlerta("Error", "Por favor, completa todos los campos requeridos.", "error");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
@@ -416,9 +432,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           handleCloseModal();
         });
       } else {
+
         mostrarAlerta("Error");
       }
     } catch (error) {
+      console.log(error); // Para ver el contenido del error
       manejarError(error);
     } finally {
       setLoading(false);
