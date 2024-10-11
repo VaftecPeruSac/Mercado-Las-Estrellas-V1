@@ -14,3 +14,11 @@ export const reFormatDate = (fecha: string) => {
   const [dia, mes, anio] = fecha.split("/");
   return `${anio}-${mes}-${dia}`;
 };
+
+export const nombreMes = (mes: number) => {
+  const meses = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", 
+    "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  return meses[mes];
+}

@@ -183,7 +183,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               }
             }}
           >
-            <MenuItem onClick={handleMenuClose}>Mi Perfil</MenuItem>
+            {/* <MenuItem onClick={handleMenuClose}>Mi Perfil</MenuItem> */}
             <MenuItem onClick={handleCerrarSesion}>Cerrar sesión</MenuItem>
           </Menu>
         </Toolbar>

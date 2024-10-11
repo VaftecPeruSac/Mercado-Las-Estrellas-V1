@@ -31,6 +31,7 @@ import jsPDF from "jspdf";
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario } from "../Shared/ElementosFormulario";
+import { formatDate, nombreMes } from "../../Utils/dateUtils";
 
 interface AgregarProps {
   open: boolean;
@@ -53,6 +54,7 @@ interface Puesto {
 interface Deuda {
   id_deuda: number;
   total: string;
+  servicio_descripcion: string,
   anio: string;
   mes: string;
   a_cuenta: string;
@@ -69,6 +71,7 @@ interface Column {
 interface Data {
   id_deuda: number;
   total: string;
+  servicio_descripcion: string,
   anio: string;
   mes: string;
   a_cuenta: string;
@@ -119,7 +122,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     numero_puesto: "",
     deudas: [{
       id_deuda: 0,
-      importe: 0
+      importe: 0,
+      servicio: "",
     }]
   });
 
@@ -166,6 +170,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       const data = response.data.data.map((item: Deuda) => ({
         id_deuda: item.id_deuda,
         total: item.total,
+        servicio_descripcion: item.servicio_descripcion,
         anio: item.anio,
         mes: item.mes,
         a_cuenta: item.a_cuenta,
@@ -221,6 +226,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleCheckBoxChange = (
     seleccionado: boolean,
     idDeuda: number,
+    servicioDescripcion: string,
     montoPagar: number,
     montoInicial: number
   ) => {
@@ -238,7 +244,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
           // Evitamos que las deudas se repitan
           ...prevFormData.deudas.filter((deuda) => deuda.id_deuda !== idDeuda),
           // Agregamos la nuevas deudas y su monto a pagar
-          { id_deuda: idDeuda, importe: montoPagar },
+          { id_deuda: idDeuda, importe: montoPagar, servicio: servicioDescripcion },
         ],
       }));
     } else {
@@ -316,6 +322,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
         {
           id_deuda: 0,
           importe: 0,
+          servicio: "",
         },
       ],
     });
@@ -340,7 +347,13 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     e.preventDefault();
     setLoading(true);
 
-    const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } = formData;
+    // Extraemos los datos necesarios para enviar
+    const { nombre_socio, nombre_block, numero_puesto, deudas, ...rest } = formData;
+    const filteredDeudas = deudas.map(({ servicio, ...deudaRest }) => deudaRest); // Filtramos el servicio de las deudas
+    const dataToSend: { 
+      id_socio: string;
+      deudas: { id_deuda: number; importe: number; }[] // Solo enviamos el id_deuda y el importe
+    } = { ...rest, deudas: filteredDeudas }; // Retornamos el id_socio y las deudas sin el servicio
 
     // Validación momentanea mientras validan desde el backend 
     if (!dataToSend.id_socio || !formData.numero_puesto) {
@@ -423,23 +436,39 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     textoMezclado('Block:  ', `${data.nombre_block} - `, posTextoCompleto, 60, ticket);
     textoMezclado('Puesto:  ', data.numero_puesto, pageWidth - anchoPuesto - 20, 60, ticket);
 
-    let y = 80;
-    data.deudas.forEach((deuda, index) => {
-      ticket.setFont("helvetica", "normal");
-      ticket.text(`#${index + 1}`, 20, y);
+    ticket.setFont("helvetica", "bold");
 
-      ticket.setFont("helvetica", "bold");
-      ticket.text(`ID Deuda: ${deuda.id_deuda}`, 30, y);
+    ticket.text("DESCRIPCIÓN", 30, 80);
+    ticket.text("IMPORTE", pageWidth - 40, 80);
+
+    let y = 90;
+
+    data.deudas.forEach((deuda, index) => {
+
+      ticket.text(`#${index + 1}`, 20, y);
+      ticket.text(`${deuda.servicio}`, 30, y);
       rightText(`Importe: S/${deuda.importe.toFixed(2)}`, y);
 
-      y += 10; // Espaciado entre las deudas
+      y += 5; // Espaciado entre las deudas
+
+      // Dibujar una línea semi visible de separación
+      ticket.setDrawColor(200, 200, 200); // Color gris claro
+      ticket.line(20, y, pageWidth - 20, y);
+
+      y += 8; // Espaciado adicional después de la línea
+
     });
 
-    ticket.setFont("helvetica", "bold");
-    rightText(`Total a pagar: S/${totalPagar.toFixed(2)}`, y + 20);
+    rightText(`Total a pagar: S/${totalPagar.toFixed(2)}`, y + 10);
 
     const date = new Date();
-    const fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const mes = date.getMonth();
+    const dia = date.getDate();
+    const año = date.getFullYear();
+
+    rightText(`Lima, ${dia} de ${nombreMes(mes)} del ${año}`, y + 30);
+
+    const fecha = formatDate(date.toString())
 
     ticket.save(`Recibo-Pago-${data.nombre_socio}-${fecha}.pdf`);
   };
@@ -623,6 +652,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                                               handleCheckBoxChange(
                                                 e.target.checked,
                                                 deuda.id_deuda,
+                                                deuda.servicio_descripcion,
                                                 montoInicial,
                                                 montoInicial
                                               )
