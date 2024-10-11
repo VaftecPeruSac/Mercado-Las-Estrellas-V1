@@ -439,7 +439,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     ticket.setFont("helvetica", "bold");
 
     ticket.text("DESCRIPCIÓN", 30, 80);
-    ticket.text("IMPORTE", pageWidth - 40, 80);
+    // ticket.text("IMPORTE", pageWidth - 40, 80);
+    rightText("IMPORTE", 80);
 
     let y = 90;
 
@@ -447,7 +448,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
       ticket.text(`#${index + 1}`, 20, y);
       ticket.text(`${deuda.servicio}`, 30, y);
-      rightText(`Importe: S/${deuda.importe.toFixed(2)}`, y);
+      rightText(`S/${deuda.importe.toFixed(2)}`, y);
 
       y += 5; // Espaciado entre las deudas
 
