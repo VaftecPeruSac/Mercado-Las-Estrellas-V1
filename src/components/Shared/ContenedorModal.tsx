@@ -18,7 +18,7 @@ interface ContenedorModalProps {
 
 const ContenedorModal: React.FC<ContenedorModalProps> = ({ ancho, alto, abrir, cerrar, loading, titulo, activeTab, handleTabChange, tabs, children, botones }) => {
 
-  const { isLaptop, isTablet, isMobile } = useResponsive();
+  const { isLaptop, isSmallLaptop, isTablet, isMobile } = useResponsive();
 
   return (
     <Modal
@@ -31,7 +31,7 @@ const ContenedorModal: React.FC<ContenedorModalProps> = ({ ancho, alto, abrir, c
       <Card
         sx={{
           width: isTablet ? "90%" : isMobile ? "95%" : `${ancho}`,
-          height: isLaptop || isTablet || isMobile ? "90%" : `${alto}`,
+          height: isSmallLaptop || isTablet || isMobile ? "90%" : `${alto}`,
           p: isMobile ? 3 : "40px",
           bgcolor: "white",
           boxShadow: 24,

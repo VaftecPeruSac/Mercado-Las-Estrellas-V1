@@ -19,20 +19,6 @@ const Login: React.FC = () => {
   // Variables para el responsive
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
-  // Iniciar sesion
-  // const IniciarSesion = (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   if(usuario === "Admin" && password === "12345" && rol === "3"){
-  //     alert(`Bienvenido ${usuario} \nSesión iniciada con exito`);
-  //     // Iniciamos sesión
-  //     login();
-  //     // Redirigimos a la pagina de inicio
-  //     navigate("/home");
-  //   } else {
-  //     alert("Credenciales no validas. Por favor intentelo nuevamente.");
-  //   }
-  // }
-
   const IniciarSesion = (event: React.FormEvent) => {
     event.preventDefault();
     if (usuario === "Admin" && password === "12345" && rol === "3") {
@@ -45,6 +31,10 @@ const Login: React.FC = () => {
       mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
     }
   };
+
+  const busquedaRapida = () => {
+    navigate("/busqueda-rapida");
+  }
 
   return (
     <Container
@@ -219,7 +209,7 @@ const Login: React.FC = () => {
                 border: "1px solid #0AB544",
                 "&:hover": { bgcolor: "#0AB544", color: "#FFF" }
               }}
-            // onClick={}
+            onClick={busquedaRapida}
             >
               Buscar puesto
             </Button>

@@ -2,12 +2,12 @@ import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, Ta
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../../hooks/Responsive/useResponsive';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../PogressBar/ProgressBarV1';
 import Contenedor from '../Shared/Contenedor';
-import ContenedorBotonesReportes from '../Shared/ContenedorBotonesReportes';
 import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
+import ContenedorBotones from '../Shared/ContenedorBotones';
 
 interface Puesto {
   id_puesto: string;
@@ -50,7 +50,6 @@ const TablaReporteDeudas: React.FC = () => {
   const [searchParams] = useSearchParams();
   const idPuesto = searchParams.get("puesto");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1);
@@ -142,7 +141,7 @@ const TablaReporteDeudas: React.FC = () => {
 
   return (
     <Contenedor>
-      <ContenedorBotonesReportes>
+      <ContenedorBotones reporte>
         <Box
           sx={{
             width: isTablet || isMobile ? "100%" : "auto",
@@ -186,6 +185,7 @@ const TablaReporteDeudas: React.FC = () => {
           </FormControl>
           {/* Botón "Generar Reporte" */}
           <BotonAgregar
+            exportar
             handleAction={() => fetchDeudas(undefined, puestoSeleccionado)}
             texto="Generar"
           />
@@ -197,7 +197,7 @@ const TablaReporteDeudas: React.FC = () => {
           handleExport={handleExportReporteDeudas}
         />
 
-      </ContenedorBotonesReportes>
+      </ContenedorBotones>
       {isLoading ? (
         <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
       ) : (

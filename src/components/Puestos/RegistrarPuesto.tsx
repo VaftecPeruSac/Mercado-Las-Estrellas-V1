@@ -436,8 +436,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         mostrarAlerta("Error");
       }
     } catch (error) {
-      console.log(error); // Para ver el contenido del error
-      manejarError(error);
+      manejarError(error, dataToSend);
     } finally {
       setLoading(false);
     }

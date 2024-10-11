@@ -1,21 +1,22 @@
 import { Button } from '@mui/material';
-import { GridAddIcon } from '@mui/x-data-grid';
 import React from 'react'
 import useResponsive from '../../hooks/Responsive/useResponsive';
+import { AddCircle, Assignment } from '@mui/icons-material';
 
 interface BotonAgregarProps {
+  exportar?: boolean;
   handleAction: (e: React.MouseEvent<HTMLButtonElement>) => void;
   texto: string;
 }
 
-const BotonAgregar: React.FC<BotonAgregarProps> = ({ handleAction, texto }) => {
+const BotonAgregar: React.FC<BotonAgregarProps> = ({ exportar, handleAction, texto }) => {
 
   const { isTablet, isMobile } = useResponsive();
 
   return (
     <Button
       variant="contained"
-      startIcon={<GridAddIcon />}
+      startIcon={ exportar ? <Assignment /> : <AddCircle /> }
       sx={{
         backgroundColor: "#008001",
         "&:hover": {

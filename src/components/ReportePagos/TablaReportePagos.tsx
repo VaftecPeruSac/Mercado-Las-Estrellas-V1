@@ -2,12 +2,12 @@ import { Autocomplete, Box, FormControl, Pagination, Paper, Table, TableBody, Ta
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import useResponsive from '../../hooks/Responsive/useResponsive';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../PogressBar/ProgressBarV1';
 import Contenedor from '../Shared/Contenedor';
-import ContenedorBotonesReportes from '../Shared/ContenedorBotonesReportes';
 import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
+import ContenedorBotones from '../Shared/ContenedorBotones';
 
 interface Socio {
   id_socio: string;
@@ -137,7 +137,7 @@ const TablaReportePagos: React.FC = () => {
 
   return (
     <Contenedor>
-      <ContenedorBotonesReportes>
+      <ContenedorBotones reporte>
         <Box
           sx={{
             width: isTablet || isMobile ? "100%" : "auto",
@@ -181,6 +181,7 @@ const TablaReportePagos: React.FC = () => {
           </FormControl>
           {/* Botón "Generar Reporte" */}
           <BotonAgregar
+            exportar
             handleAction={() => fetchPagos(undefined, socioSeleccionado)}
             texto="Generar"
           />
@@ -192,7 +193,7 @@ const TablaReportePagos: React.FC = () => {
           handleExport={handleExportReporteDeudas}
         />
 
-      </ContenedorBotonesReportes>
+      </ContenedorBotones>
       {isLoading ? (
         <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
       ) : (

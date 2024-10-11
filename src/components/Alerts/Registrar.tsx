@@ -52,7 +52,7 @@ export const mostrarAlertaConfirmacion = (
     });
 };
 
-export const manejarError = (error: any) => {
+export const manejarError = (error: any, dataToSend?: any) => {
     let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
 
     if (axios.isAxiosError(error)) {
@@ -63,7 +63,9 @@ export const manejarError = (error: any) => {
         }
     }
 
-    if (typeof mensajeError === "string" && mensajeError.includes("Integrity constraint violation")) {
+    const camposVacios = Object.values(dataToSend).some(value => value === "" || value === null);
+
+    if (typeof mensajeError === "string" && (mensajeError.includes("Integrity constraint violation") || camposVacios)) {
         mensajeError = "Por favor, completa todos los campos requeridos.";
     }
 
