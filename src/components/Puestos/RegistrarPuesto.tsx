@@ -266,8 +266,14 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   };
 
   // Cambiar entre pestañas
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+    limpiarRegistrarPuesto();
+    limpiarAsignarPuesto();
+    limpiarAsignarInquilino();
+    limpiarNuevoBloque();
+    limpiarGiroNegocio();
+  }
 
   // Metodo para obtener el titulo del modal
   const obtenerTituloModal = (): string => {
@@ -428,8 +434,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message || "Puesto registrado con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
+          onRegistrar();
         });
       } else {
 
@@ -718,7 +724,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                       if (newValue) {
                         setFormDataAsignarPuesto({
                           ...formDataAsginarPuesto,
-                          id_socio: String(newValue.id_socio),
+                          id_socio: newValue.id_socio.toString(),
                         });
                       }
                     }}
