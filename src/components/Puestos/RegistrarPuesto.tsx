@@ -408,14 +408,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   };
 
-  // const sss = () => {
-  //   if (!dataToSend.id_puesto || !dataToSend.id_socio) {
-  //     mostrarAlerta("Error", "Por favor, completa todos los campos requeridos.", "error");
-  //     setLoading(false);
-  //     return;
-  //   }
-  // }
-
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -442,7 +434,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         mostrarAlerta("Error");
       }
     } catch (error) {
-      manejarError(error, dataToSend);
+      manejarError(error);
     } finally {
       setLoading(false);
     }
@@ -454,7 +446,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
 
     const { bloque, ...dataToSend } = formDataInquilino;
-
+    if (!formDataInquilino.id_puesto) {
+      mostrarAlerta("Error", "Por favor, ingrese el numero de puesto.", "error");
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); // Publico
 

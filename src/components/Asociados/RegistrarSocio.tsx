@@ -206,6 +206,12 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     e.preventDefault();
     setLoading(true);
     const { id_socio, id_block, ...dataToSend } = formData;
+
+    if (!dataToSend.id_puesto) {
+      mostrarAlerta("Error", "Por favor, ingrese el numero de puesto.", "error");
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
       if (response.status === 200) {
@@ -407,9 +413,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
                       value={
                         puestoSeleccionado
                           ? puestosFiltrados.find(
-                              (puesto) =>
-                                puesto.id_puesto === puestoSeleccionado
-                            ) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
+                            (puesto) =>
+                              puesto.id_puesto === puestoSeleccionado
+                          ) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
                           : null // Si no hay puesto seleccionado, mostrar null
                       }
                       onChange={(event, newValue) => {
@@ -498,23 +504,23 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       loading={loading}
       botones={
         <BotonesModal
-        loading={loading}
-        action={async (e) => {
-          if (activeTab === 0) {
-            const result = await mostrarAlertaConfirmacion(
-              "¿Está seguro de registrar un nuevo socio?"
-            );
-            if (result.isConfirmed) {
-              if (socio) {
-                editarSocio(e);
-              } else {
-                registrarSocio(e);
+          loading={loading}
+          action={async (e) => {
+            if (activeTab === 0) {
+              const result = await mostrarAlertaConfirmacion(
+                "¿Está seguro de registrar un nuevo socio?"
+              );
+              if (result.isConfirmed) {
+                if (socio) {
+                  editarSocio(e);
+                } else {
+                  registrarSocio(e);
+                }
               }
             }
-          }
-        }}
-        close={handleCloseModal}
-      />
+          }}
+          close={handleCloseModal}
+        />
       }
     >
       {renderTabContent()}
