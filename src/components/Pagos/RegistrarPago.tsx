@@ -342,7 +342,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
     const { nombre_socio, nombre_block, numero_puesto, ...dataToSend } = formData;
 
-    // Validación momentanea mientras validan desde el backend
+    // Validación momentanea mientras validan desde el backend 
     if (!dataToSend.id_socio || !formData.numero_puesto) {
       mostrarAlerta("Error", "Por favor, selecciona un socio y un puesto.", "error");
       setLoading(false);
