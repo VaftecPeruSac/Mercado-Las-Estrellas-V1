@@ -226,7 +226,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                   name="costo_unitario"
                   value={formData.costo_unitario}
                   onChange={manejarCambio}
-                  icono={<AttachMoney sx={{ mr: 1, color: "gray" }} />}
+                  icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
                 />
               </Grid>
 
@@ -286,7 +286,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                   value={costoTotal}
                   onChange={(e) => setCostoTotal(e.target.value)}
                   noMargin={true}
-                  icono={<AttachMoney sx={{ mr: 1, color: "gray" }} />}
+                  icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
                 />
               </Grid>
 
@@ -328,7 +328,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                       name="costo_metro_cuadrado"
                       value={costoMetroCuadrado.toString()}
                       onChange={(e) => setCostoMetroCuadrado(parseFloat(e.target.value))}
-                      icono={<AttachMoney sx={{ mr: 1, color: "gray" }} />}
+                      icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
                     />
 
                   </Grid>

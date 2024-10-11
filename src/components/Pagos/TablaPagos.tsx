@@ -31,7 +31,7 @@ import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
 import { Pagos, Data } from "../../interface/Pagos";
-import { columns } from "../../Columns/Puesto";
+import { columns } from "../../Columns/Pagos";
 
 const TablaPago: React.FC = () => {
 

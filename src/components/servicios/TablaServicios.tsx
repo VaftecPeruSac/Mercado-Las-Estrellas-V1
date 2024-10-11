@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -16,11 +15,9 @@ import {
   Typography,
 } from "@mui/material";
 import { SaveAs, DeleteForever, Search } from "@mui/icons-material";
-import axios from "axios";
 import RegistrarServicio from "./RegistrarServicio";
-import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
-import { Servicio, Data } from "../../interface/Servicios"; // se esta importando la interface servicios
+import { Servicio } from "../../interface/Servicios"; // se esta importando la interface servicios
 import { columns } from "../../Columns/Servicios";
 import useServicioState from "../../hooks/Servicios/useServicio";
 import { API_ROUTES } from "../../service/ServiceApi"; // Asegúrate de que la ruta sea correcta
@@ -29,7 +26,6 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { handleExport } from "../../Utils/exportUtils";
-import { formatDate } from "../../Utils/dateUtils";
 
 const TablaServicios: React.FC = () => {
   const {

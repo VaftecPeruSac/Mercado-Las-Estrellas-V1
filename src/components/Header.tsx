@@ -20,6 +20,7 @@ import { ExpandLess, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/Responsive/useResponsive";
+import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 
 interface HeaderProps {
   open: boolean;
@@ -44,8 +45,14 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   };
 
   const handleCerrarSesion = () => {
-    logout();
-    navigate("/");
+    mostrarAlertaConfirmacion(
+      "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
+    ).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate("/");
+      }
+    });
   };
 
   return (

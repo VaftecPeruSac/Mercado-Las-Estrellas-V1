@@ -419,7 +419,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         mostrarAlerta("Error");
       }
     } catch (error) {
-      manejarError(error);
+      manejarError(error, dataToSend);
     } finally {
       setLoading(false);
     }

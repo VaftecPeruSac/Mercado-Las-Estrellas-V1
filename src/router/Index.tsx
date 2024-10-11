@@ -13,11 +13,16 @@ import { AuthProvider } from "../context/AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 import TablaReporteCuotasMetrado from "../components/ReporteCuotasMetrado/TablaCuotasMetrado";
 import TablaCuotasPuesto from "../components/ReporteCuotasPuesto/TablaCuotasPuesto";
+import BusquedaRapida from "../components/BusquedaRapida";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />
+  },
+  {
+    path: "/busqueda-rapida",
+    element: <BusquedaRapida />
   },
   {
     path: "/home",
