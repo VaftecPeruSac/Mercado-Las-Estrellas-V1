@@ -20,7 +20,9 @@ import { ExpandLess, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/Responsive/useResponsive";
-import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
+// import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
+import axios from "axios";
 
 interface HeaderProps {
   open: boolean;
@@ -44,15 +46,36 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
     setAnchorEl(null);
   };
 
-  const handleCerrarSesion = () => {
-    mostrarAlertaConfirmacion(
-      "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
-    ).then((result) => {
-      if (result.isConfirmed) {
+  // const handleCerrarSesion = () => {
+  const handleCerrarSesion = async () => {
+    // mostrarAlertaConfirmacion(
+    //   "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
+    // ).then((result) => {
+    //   if (result.isConfirmed) {
+    //     // logout();
+    //     // navigate("/");
+    //   }
+    // });
+
+    const dataToSend: {
+      usuario: string,
+      token: string,
+    } = {usuario: "controldecalidad", token: "123"};
+
+    try {
+      const response = await axios.post(`https://mercadolasestrellas.online/intranet/public/v1/logout`, dataToSend);
+
+      if (response.status === 200) {
         logout();
         navigate("/");
+      } else {
+        mostrarAlerta("Error");
       }
-    });
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
+    }
   };
 
   return (

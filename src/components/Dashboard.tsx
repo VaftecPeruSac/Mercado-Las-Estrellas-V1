@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { Box, Typography, Card, CardContent, Stack } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -12,6 +12,9 @@ import {
 } from 'recharts';
 
 import useResponsive from "../hooks/Responsive/useResponsive";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from './Alerts/Registrar';
 
 const data = [
   { name: 'Enero', uv: 40, pv: 24, amt: 24 },
@@ -39,6 +42,16 @@ interface PieData {
   name: string;
   value: number;
 }
+
+// const [puestos, setPuestos] = useState<Puesto[]>([]);
+interface Resultado {
+  // id_socio: number;
+  // nombre_completo: string;
+  acumulacion_deuda: string;
+  acumulacion_pago: string;
+  cantidad_socios_activos: string;
+}
+
 const Dashboard: React.FC = () => {
 
   // Variables para el responsive
@@ -46,6 +59,65 @@ const Dashboard: React.FC = () => {
 
   const [itemData, setItemData] = React.useState<PieData | null>(null);
   const formatTooltipValue = (value: number) => `${value}%`;
+  const [resultado, setResultado] = useState<Resultado>();
+  const [resultado2, setResultado2] = useState({
+    // id_puesto: "",
+    // id_gironegocio: "",
+    // id_block: "",
+    // numero_puesto: "",
+    // area: "",
+    // fecha_registro: "",
+    acumulacion_deuda: "",
+    acumulacion_pago: "",
+    cantidad_socios_activos: "",
+  });
+
+  // reporte dashboard
+  const reporteDashboard = async () => {
+    
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/dashboard`, {});
+
+      if (response.status === 200) {
+        // const mensaje = response.data.message || "El puesto se elimino.";
+        // mostrarAlerta("Eliminación exitosa", mensaje, "success");
+        // fetchPuestos();
+        // setResultado2(response);
+        setResultado2({
+          // id_puesto: puesto.id_puesto || "",
+          // id_gironegocio: puesto.giro_negocio.id_gironegocio || "",
+          // id_block: puesto.block.id_block || "",
+          // numero_puesto: puesto.numero_puesto || "",
+          // area: puesto.area || "",
+          // fecha_registro: reFormatDate(puesto.fecha_registro) || "",
+          acumulacion_deuda: response.data.acumulacion_deuda,
+          acumulacion_pago: response.data.acumulacion_pago,
+          cantidad_socios_activos: response.data.cantidad_socios_activos,
+        });
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
+    }
+  };
+
+  // Obtener datos
+  useEffect(() => {
+    // const fetchBloques = async () => {
+    //   try {
+    //     const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
+    //     console.log("Bloques obtenidos:", response.data.data);
+    //     setBloques(response.data.data);
+    //   } catch (error) {
+    //     console.error("Error al obtener los bloques", error);
+    //   }
+    // };
+    // fetchBloques();
+    reporteDashboard();
+  }, []);
 
   return (
     <Box
@@ -111,7 +183,7 @@ const Dashboard: React.FC = () => {
           </Box>
 
           <Typography variant="h4" sx={{ marginTop: '20px', fontWeight: 'bold' }}>
-            S/500
+            S/{resultado2.acumulacion_pago}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
             <TrendingUpIcon sx={{
@@ -180,7 +252,7 @@ const Dashboard: React.FC = () => {
             <ExpandMoreIcon sx={{ fontSize: "24px" }} />
           </Box>
           <Typography variant="h4" sx={{ marginTop: '20px', fontWeight: 'bold' }}>
-            S/12,302
+            S/{resultado2.acumulacion_deuda}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
             <TrendingUpIcon sx={{
@@ -241,14 +313,15 @@ const Dashboard: React.FC = () => {
               <Box>
                 <Typography variant="h6">Lista de Socios</Typography>
                 <Typography variant="subtitle2" sx={{ fontSize: '12px', color: 'gray' }}>
-                  110 Activos
+                  {resultado2.cantidad_socios_activos} Activos
                 </Typography>
               </Box>
             </Box>
             <ExpandMoreIcon sx={{ fontSize: "24px" }} />
           </Box>
           <Typography variant="h4" sx={{ marginTop: '20px', fontWeight: 'bold' }}>
-            S/110
+            {/* S/110 */}
+            +{resultado2.cantidad_socios_activos}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
             <TrendingUpIcon sx={{

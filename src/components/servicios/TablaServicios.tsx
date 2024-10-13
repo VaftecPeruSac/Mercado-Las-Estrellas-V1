@@ -26,6 +26,8 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { handleExport } from "../../Utils/exportUtils";
+import axios from "axios";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 const TablaServicios: React.FC = () => {
   const {
@@ -82,6 +84,26 @@ const TablaServicios: React.FC = () => {
 
   const buscarServicios = () => {
     fetchServicios(1);
+  };
+
+  // Eliminar servicio
+  const eliminarServicio = async (item: any) => {
+    
+    try {
+      const response = await axios.delete(`https://mercadolasestrellas.online/intranet/public/v1/servicios/${item.id_servicio}`, {});
+
+      if (response.status === 200) {
+        const mensaje = response.data.message || "El servicio se elimino.";
+        mostrarAlerta("Eliminación exitosa", mensaje, "success");
+        fetchServicios();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
+    }
   };
 
   return (
@@ -372,6 +394,7 @@ const TablaServicios: React.FC = () => {
                                   <IconButton
                                     aria-label="delete"
                                     sx={{ color: "red" }}
+                                    onClick={() => eliminarServicio(servicio)}
                                   >
                                     <DeleteForever />
                                   </IconButton>

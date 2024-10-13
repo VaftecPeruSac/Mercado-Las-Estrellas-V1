@@ -3,7 +3,9 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useResponsive from '../../hooks/Responsive/useResponsive';
-import { mostrarAlerta } from '../Alerts/Registrar';
+// import { mostrarAlerta } from '../Alerts/Registrar';
+import axios from "axios";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 const Login: React.FC = () => {
 
@@ -19,16 +21,41 @@ const Login: React.FC = () => {
   // Variables para el responsive
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
-  const IniciarSesion = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (usuario === "Admin" && password === "12345" && rol === "3") {
-      mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
-      // Iniciamos sesión
-      login();
-      // Redirigimos a la página de inicio
-      navigate("/home");
-    } else {
-      mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
+  // const IniciarSesion = (event: React.FormEvent) => {
+  //   event.preventDefault();
+  //   if (usuario === "Admin" && password === "12345" && rol === "3") {
+  //     mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
+  //     // Iniciamos sesión
+  //     login();
+  //     // Redirigimos a la página de inicio
+  //     navigate("/home");
+  //   } else {
+  //     mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
+  //   }
+  // };
+  // Iniciar Sesion
+  const IniciarSesion = async () => {
+    const dataToSend: {
+      usuario: string,
+      password: string,
+    } = {usuario, password};
+
+    try {
+      const response = await axios.post(`https://mercadolasestrellas.online/intranet/public/v1/login`, dataToSend);
+
+      if (response.status === 200) {
+        mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
+        // Iniciamos sesión
+        login();
+        // Redirigimos a la página de inicio
+        navigate("/home");
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
     }
   };
 
@@ -157,7 +184,8 @@ const Login: React.FC = () => {
             {/* Boton iniciar sesión */}
             <Button
               variant="contained"
-              type="submit"
+              // type="submit"
+              type="button"
               sx={{
                 width: isLaptop || isSmallMobile ? "100%" : "215px",
                 mt: isLaptop || isSmallMobile ? 3 : 4,

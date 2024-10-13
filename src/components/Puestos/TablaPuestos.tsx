@@ -38,6 +38,8 @@ import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import RegistrarPuesto from "./RegistrarPuesto";
 import { handleExport } from "../../Utils/exportUtils";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import axios from "axios";
 
 const TablaPuestos: React.FC = () => {
   const bloques = useBloques();
@@ -88,6 +90,26 @@ const TablaPuestos: React.FC = () => {
     const exportUrl = Api_Global_Puestos.puestos.exportar(); // URL específica para puestos
     const fileNamePrefix = "lista-puestos"; // Nombre del archivo
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+  };
+
+  // Eliminar puesto
+  const eliminarPuesto = async (item: any) => {
+    
+    try {
+      const response = await axios.delete(`https://mercadolasestrellas.online/intranet/public/v1/puestos/${item.id_puesto}`, {});
+
+      if (response.status === 200) {
+        const mensaje = response.data.message || "El puesto se elimino.";
+        mostrarAlerta("Eliminación exitosa", mensaje, "success");
+        fetchPuestos();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
+    }
   };
 
   return (
@@ -464,11 +486,7 @@ const TablaPuestos: React.FC = () => {
                                   <IconButton
                                     aria-label="delete"
                                     sx={{ color: "red" }}
-                                    onClick={() =>
-                                      alert(
-                                        "En proceso de actualización. Intentelo más tarde."
-                                      )
-                                    }
+                                    onClick={() => eliminarPuesto(puesto)}
                                   >
                                     <DeleteForever />
                                   </IconButton>

@@ -368,8 +368,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       );
 
       if (response.status === 200) {
-        const mensaje = response.data || "El pago fue registrado correctamente";
-        generarTicketPDF(formData);
+        const mensaje = response.data.message || "El pago fue registrado correctamente";
+        generarTicketPDF(formData, response.data.data);
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();
@@ -385,7 +385,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
 
-  const generarTicketPDF = async (data: typeof formData) => {
+  const generarTicketPDF = async (data: typeof formData, pago: any) => {
     const ticket = new jsPDF();
     const pageWidth = ticket.internal.pageSize.getWidth(); // Ancho de la página
 
@@ -423,7 +423,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     centerText('Fundado el 07 de Abril de 1977 Inscrito en la Sunarp Partida N°11012575.', 32);
     centerText('Calle 9 Asociación de Viv. "Hijos de Apurimac Primera Etapa - Santa Clara - Ate', 36);
 
-    textoMezclado("N° Recibo: ", "00000000", 20, 50, ticket);
+    // textoMezclado("N° Recibo: ", "00000000", 20, 50, ticket);
+    textoMezclado("N° Recibo: ", pago.numero_pago, 20, 50, ticket);
     textoMezclado("Socio:  ", data.nombre_socio, 20, 60, ticket);
 
     const posTextoCompleto =

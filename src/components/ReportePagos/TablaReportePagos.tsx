@@ -22,8 +22,10 @@ interface Column {
 }
 
 interface Data {
+  id_pago: string;
   numero: string;
   serie: string;
+  serie_numero: string;
   aporte: string;
   total: string;
   fecha: string;
@@ -34,8 +36,10 @@ interface Data {
 }
 
 const columns: readonly Column[] = [
-  { id: "numero", label: "N° Pago", minWidth: 50, align: "center" },
-  { id: "serie", label: "N° Serie", minWidth: 50, align: "center" },
+  // { id: "numero", label: "N° Pago", minWidth: 50, align: "center" },
+  { id: "id_pago", label: "N° Pago", minWidth: 50, align: "center" },
+  // { id: "serie", label: "N° Serie", minWidth: 50, align: "center" },
+  { id: "serie_numero", label: "N° Serie", minWidth: 50, align: "center" },
   { id: "fecha", label: "Fec. Pago", minWidth: 50, align: "center" },
   { id: "aporte", label: "Aporte (S/)", minWidth: 50, align: "center" },
   { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },

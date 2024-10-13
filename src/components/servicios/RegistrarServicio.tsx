@@ -61,13 +61,23 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const [puestosActivos, setPuestosActivos] = useState(0);
   const [areaTotal, setAreaTotal] = useState(0);
 
+  // Datos para registrar el servicio Por Metro Cuadrado
+  const [formDataPMC, setFormDataPMC] = useState({
+    id_servicio: "",
+    descripcion: "",
+    costo_unitario: "",
+    tipo_servicio: "",
+    estado: "1", // "Activo",
+    fecha_registro: "",
+  });
+
   // Datos para registrar el servicio
   const [formData, setFormData] = useState({
     id_servicio: "",
     descripcion: "",
     costo_unitario: "",
     tipo_servicio: "",
-    estado: "Activo",
+    estado: "1", // "Activo",
     fecha_registro: "",
   });
 
@@ -80,7 +90,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
         descripcion: servicio.descripcion || "",
         costo_unitario: servicio.costo_unitario || "",
         tipo_servicio: servicio.tipo_servicio || "",
-        estado: "Activo",
+        estado: "1", // "Activo",
         fecha_registro: reFormatDate(servicio.fecha_registro) || "",
       });
     }
@@ -103,13 +113,26 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     });
   };
 
+  // Manejar los cambios del formulario
+  const manejarCambioPMC = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
+  ) => {
+    const { name, value } = e.target;
+    setFormDataPMC({
+      ...formDataPMC,
+      [name]: value,
+    });
+  };
+
   const limpiarRegistarServicio = () => {
     setFormData({
       id_servicio: "",
       descripcion: "",
       costo_unitario: "",
       tipo_servicio: "",
-      estado: "Activo",
+      estado: "1", // "Activo",
       fecha_registro: "",
     });
   };
@@ -166,6 +189,63 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       setLoading(false);
     }
   };
+
+  // Registrar servicio Por Metro Cuadrado
+  const registrarServicioPorMetroCua = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    formDataPMC.tipo_servicio = '3';
+    const { id_servicio, ...dataToSend } = formDataPMC;
+    // formData.tipo_servicio = '3';
+
+    try {
+      const response = await axios.post(
+        "https://mercadolasestrellas.online/intranet/public/v1/servicios",
+        dataToSend
+      );
+      if (response.status === 200) {
+        const mensaje =
+          response.data.messsage || "El servicio se registró";
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          onServicioRegistrado();
+          handleCloseModal();
+        });
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Actualizar servicio Por Metro Cuadrado
+  const editarServicioPorMetroCua = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // setLoading(true);
+    // formData.tipo_servicio = '3';
+    // const { ...dataToSend } = formDataPMC;
+    // try {
+    //   const response = await axios.put(
+    //     `https://mercadolasestrellas.online/intranet/public/v1/servicios/${servicio?.id_servicio}`,
+    //     dataToSend
+    //   );
+    //   if (response.status === 200) {
+    //     const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
+    //     mostrarAlerta("Actualización exitosa", mensaje, "success");
+    //     limpiarRegistarServicio();
+    //     handleCloseModal();
+    //   } else {
+    //     mostrarAlerta("Error");
+    //   }
+    // } catch (error) {
+    //   manejarError(error);
+    // } finally {
+    //   setLoading(false);
+    // }
+  };
+
   // Cerrar modal
   const handleCloseModal = () => {
     limpiarRegistarServicio();
@@ -273,8 +353,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                   type="text"
                   label="Nombre del servicio"
                   name="descripcion"
-                  value={formData.descripcion}
-                  onChange={manejarCambio}
+                  value={formDataPMC.descripcion}
+                  onChange={manejarCambioPMC}
                   icono={<Bolt sx={{ mr: 1, color: "gray" }} />}
                 />
 
@@ -282,9 +362,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                 <TxtFormulario
                   type="text"
                   label="Costo total"
-                  name="costo_total"
-                  value={costoTotal}
-                  onChange={(e) => setCostoTotal(e.target.value)}
+                  // name="costo_total"
+                  name="costo_unitario"
+                  // value={costoTotal}
+                  value={formDataPMC.costo_unitario}
+                  // onChange={(e) => setCostoTotal(e.target.value)}
+                  onChange={manejarCambioPMC}
                   noMargin={true}
                   icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
                 />
@@ -298,8 +381,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                   type="date"
                   label="Fecha de registro"
                   name="fecha_registro"
-                  value={formData.fecha_registro}
-                  onChange={manejarCambio}
+                  value={formDataPMC.fecha_registro}
+                  onChange={manejarCambioPMC}
                   icono={<Event sx={{ mr: 1, color: "gray" }} />}
                 />
               </Grid>
@@ -393,6 +476,11 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
               );
               if (result.isConfirmed) {
                 // registrarServicioCompartido(e); }
+                if (servicio) {
+                  editarServicioPorMetroCua(e);
+                } else {
+                  registrarServicioPorMetroCua(e);
+                }
               }
             }
           }}

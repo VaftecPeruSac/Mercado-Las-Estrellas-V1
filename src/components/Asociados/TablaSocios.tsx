@@ -21,6 +21,7 @@ import {
   Payments,
   SaveAs,
   Search,
+  DeleteForever,
 } from "@mui/icons-material";
 import axios from "axios";
 import Agregar from "./RegistrarSocio";
@@ -36,6 +37,7 @@ import { handleExport } from "../../Utils/exportUtils";
 import { Api_Global_Socios } from "../../service/SocioApi";
 import useSocios from "../../hooks/Socios/useSocios";
 import { handleAccionesSocio } from "../../Utils/downloadDataSocio";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 
 const TablaAsociados: React.FC = () => {
   const {
@@ -101,6 +103,26 @@ const TablaAsociados: React.FC = () => {
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
     fetchSocios(value);
+  };
+
+  // Eliminar socio
+  const eliminarSocio = async (item: any) => {
+    
+    try {
+      const response = await axios.delete(`https://mercadolasestrellas.online/intranet/public/v1/socios/${item.id_socio}`, {});
+
+      if (response.status === 200) {
+        const mensaje = response.data.message || "El socio se elimino.";
+        mostrarAlerta("Eliminación exitosa", mensaje, "success");
+        fetchSocios();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
+    }
   };
 
   return (
@@ -424,6 +446,13 @@ const TablaAsociados: React.FC = () => {
                                       onClick={() => downloadDataSocios(2, socio.telefono, socio)}
                                     >
                                       <WhatsApp />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="delete"
+                                      sx={{ color: "red" }}
+                                      onClick={() => eliminarSocio(socio)}
+                                    >
+                                      <DeleteForever />
                                     </IconButton>
                                   </Box>
                                 ) : (
