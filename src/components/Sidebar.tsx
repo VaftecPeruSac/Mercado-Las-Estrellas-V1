@@ -408,6 +408,22 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
               />
             )}
           </ListItemButton>
+          <ListItemButton
+            component={Link}
+            to="reporte-resumen"
+            sx={getEstilos("/home/reporte-resumen", { ml: 2 })}
+            onClick={isTablet || isMobile ? onClose : undefined}
+          >
+            <ListItemIcon sx={{ color: "inherit" }}>
+              <Description />
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary="Reporte de resumen"
+                sx={{ ml: -3 }}
+              />
+            )}
+          </ListItemButton>
 
         </Collapse>
 

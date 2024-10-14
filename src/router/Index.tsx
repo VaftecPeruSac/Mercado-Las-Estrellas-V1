@@ -14,6 +14,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import TablaReporteCuotasMetrado from "../components/ReporteCuotasMetrado/TablaCuotasMetrado";
 import TablaCuotasPuesto from "../components/ReporteCuotasPuesto/TablaCuotasPuesto";
 import BusquedaRapida from "../components/BusquedaRapida";
+import TablaReporteResumen from "../components/ReporteResumen/TablaReporteResumen";
 
 export const router = createBrowserRouter([
   {
@@ -72,6 +73,10 @@ export const router = createBrowserRouter([
       {
         path: "reporte-cuotas-puesto",
         element: <TablaCuotasPuesto />,
+      },
+      {
+        path: "reporte-resumen",
+        element: <TablaReporteResumen />,
       }
     ],
   },

@@ -21,43 +21,43 @@ const Login: React.FC = () => {
   // Variables para el responsive
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
-  // const IniciarSesion = (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   if (usuario === "Admin" && password === "12345" && rol === "3") {
-  //     mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
-  //     // Iniciamos sesión
-  //     login();
-  //     // Redirigimos a la página de inicio
-  //     navigate("/home");
-  //   } else {
-  //     mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
-  //   }
-  // };
-  // Iniciar Sesion
-  const IniciarSesion = async () => {
-    const dataToSend: {
-      usuario: string,
-      password: string,
-    } = {usuario, password};
-
-    try {
-      const response = await axios.post(`https://mercadolasestrellas.online/intranet/public/v1/login`, dataToSend);
-
-      if (response.status === 200) {
-        mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
-        // Iniciamos sesión
-        login();
-        // Redirigimos a la página de inicio
-        navigate("/home");
-      } else {
-        mostrarAlerta("Error");
-      }
-    } catch (error) {
-      manejarError(error);
-    } finally {
-      // ---
+  const IniciarSesion = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (usuario === "Admin" && password === "12345" && rol === "3") {
+      mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
+      // Iniciamos sesión
+      login();
+      // Redirigimos a la página de inicio
+      navigate("/home");
+    } else {
+      mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
     }
   };
+  // Iniciar Sesion
+  // const IniciarSesion = async () => {
+  //   const dataToSend: {
+  //     usuario: string,
+  //     password: string,
+  //   } = {usuario, password};
+
+  //   try {
+  //     const response = await axios.post(`https://mercadolasestrellas.online/intranet/public/v1/login`, dataToSend);
+
+  //     if (response.status === 200) {
+  //       mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
+  //       // Iniciamos sesión
+  //       login();
+  //       // Redirigimos a la página de inicio
+  //       navigate("/home");
+  //     } else {
+  //       mostrarAlerta("Error");
+  //     }
+  //   } catch (error) {
+  //     manejarError(error);
+  //   } finally {
+  //     // ---
+  //   }
+  // };
 
   const busquedaRapida = () => {
     navigate("/busqueda-rapida");
