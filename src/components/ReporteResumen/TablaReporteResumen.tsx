@@ -24,28 +24,8 @@ import BotonAgregar from "../Shared/BotonAgregar";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import { Api_Global_Reportes } from "../../service/ReporteApi";
 import { handleExport } from "../../Utils/exportUtils";
+import { Column, Data, Puesto } from "../../interface/ReporteResunen/resumen";
 
-interface Puesto {
-  id_puesto: number;
-  numero_puesto: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "center";
-}
-
-interface Data {
-  id_recibo: string;
-  ingreso: string;
-  gastos: string;
-  multa_inasistencia: string;
-  pagos_transferencia: string;
-  cuotas_extra: string;
-  total: string;
-}
 
 const columns: readonly Column[] = [
   { id: "id_recibo", label: "N° Recibo", minWidth: 50, align: "center" },
@@ -126,7 +106,6 @@ const TablaReporteResumen = () => {
         );
         setPuestos(response.data.data);
       } catch (error) {
-        console.log(error);
       }
     };
     fetchPuestos();
@@ -135,14 +114,11 @@ const TablaReporteResumen = () => {
   const fetchResumen = async (pagina: number = 1, idPuesto: number) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `https://mercadolasestrellas.online/intranet/public/v1/reportes/resumen-por-puestos?page=${pagina}&id_puesto=${idPuesto}`
-      );
-      setResumen(response.data.data);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/resumen-por-puestos?page=${pagina}&id_puesto=${idPuesto}`);
+       setResumen(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
-      console.log(error);
     } finally {
       setIsLoading(false);
     }

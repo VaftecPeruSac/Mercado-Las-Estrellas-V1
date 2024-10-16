@@ -292,6 +292,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         return "REGISTRAR BLOQUE";
       case 4:
         return "REGISTRAR GIRO DE NEGOCIO";
+      case 5:
+        return "PAGOS TRANSFERENCIA PUESTO";
       default:
         return "";
     }
@@ -948,6 +950,124 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             </Grid>
           </>
         );
+        case 5:
+          return(
+            <>
+            <AvisoFormulario/>
+            {/* <pre>{JSON.stringify(formDataGiroNegocio, null, 2)}</pre> */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <SeparadorBloque nombre="Seleccionar puesto" />
+
+                {/* Seleccionar Bloque */}
+                <FormControl fullWidth required>
+                  <InputLabel id="bloque-label">Bloque</InputLabel>
+                  <Select
+                    labelId="bloque-label"
+                    label="Bloque"
+                    id="select-bloque"
+                    value={bloqueSeleccionado}
+                    onChange={(e) => {
+                      const value = e.target.value as number;
+                      setBloqueSeleccionado(value);
+                      fetchPuestosLibres(value);
+                    }}
+                    startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {bloques.map((bloque: Bloque) => (
+                      <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                        {bloque.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {/* Seleccionar Puesto */}
+                <FormControl fullWidth required sx={{ mt: 2 }}>
+                  <Autocomplete
+                    options={puestos}
+                    getOptionLabel={(puesto) => puesto.numero_puesto}
+                    onChange={(event, newValue) => {
+                      if (newValue) {
+                        setFormDataAsignarPuesto({
+                          ...formDataAsginarPuesto,
+                          id_puesto: newValue.id_puesto.toString(),
+                        });
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Nro. Puesto"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <Abc sx={{ mr: 1, color: "gray" }} />
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    ListboxProps={{
+                      style: {
+                        maxHeight: 200,
+                        overflow: "auto",
+                      },
+                    }}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id_puesto === Number(value)
+                    }
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <SeparadorBloque nombre="Seleccionar socio" />
+
+                <FormControl fullWidth required>
+                  <Autocomplete
+                    options={socios}
+                    getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
+                    onChange={(event, newValue) => {
+                      if (newValue) {
+                        setFormDataAsignarPuesto({
+                          ...formDataAsginarPuesto,
+                          id_socio: newValue.id_socio.toString(),
+                        });
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Socio"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <Abc sx={{ mr: 1, color: "gray" }} />
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    ListboxProps={{
+                      style: {
+                        maxHeight: 270,
+                        overflow: "auto",
+                      },
+                    }}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id_socio === Number(value)
+                    } // Compara convirtiendo el value a número
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            </>
+          );
       default:
         return <Typography>Seleccione una pestaña</Typography>;
     }
@@ -963,7 +1083,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       titulo={obtenerTituloModal()}
       activeTab={puesto ? 0 : activeTab}
       handleTabChange={puesto ? (e) => handleTabChange(e, 0) : handleTabChange}
-      tabs={["Registrar Puesto", "Asignar Puesto", "Asignar Inquilino", "Registrar Bloque", "Registrar Giro de Negocio"]}
+      tabs={["Registrar Puesto", "Asignar Puesto", "Asignar Inquilino", "Registrar Bloque", "Registrar Giro de Negocio", "PAGOS TRANSFERENCIA DE PUESTOS"]}
       botones={(
         <BotonesModal
           loading={loading}
