@@ -6,6 +6,7 @@ import useResponsive from '../../hooks/Responsive/useResponsive';
 // import { mostrarAlerta } from '../Alerts/Registrar';
 import axios from "axios";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
 
@@ -35,27 +36,24 @@ const Login: React.FC = () => {
   // };
   // Iniciar Sesion
   const IniciarSesion = async () => {
-    const dataToSend: {
-      usuario: string,
-      password: string,
-    } = {usuario, password};
-
+    const dataToSend = { usuario, password };  
     try {
-      const response = await axios.post(`https://mercadolasestrellas.online/intranet/public/v1/login`, dataToSend);
-
+      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login',dataToSend);
       if (response.status === 200) {
-        mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
-        // Iniciamos sesión
-        login();
-        // Redirigimos a la página de inicio
-        navigate("/home");
+        const { token } = response.data;
+          Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
+          login(usuario); 
+          mostrarAlerta(
+          'Inicio   de sesión',
+          `Bienvenido ${usuario}.`,
+          'success'
+        );
+        navigate('/home');
       } else {
-        mostrarAlerta("Error");
+        mostrarAlerta('Error');
       }
     } catch (error) {
       manejarError(error);
-    } finally {
-      // ---
     }
   };
 

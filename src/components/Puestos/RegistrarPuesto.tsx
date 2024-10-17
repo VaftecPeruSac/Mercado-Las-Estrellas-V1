@@ -756,13 +756,11 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             </Grid>
           </>
         );
-      case 2: // ASIGNAR INQUILINO
+      case 2:
         return (
           <>
             <AvisoFormulario />
-
             {/* <pre>{JSON.stringify(formDataInquilino, null, 2)}</pre> */}
-
             {/* DATOS PERSONALES */}
             <Grid container spacing={3} sx={{ mt: -4 }}>
               <Grid item xs={12} sm={6}>
