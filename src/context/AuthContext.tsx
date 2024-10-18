@@ -28,30 +28,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Funciones para iniciar sesión
   const login = (nombreUsuario: string) => {
     setAutenticado(true);
-    setUsuario(nombreUsuario); // Guarda el nombre de usuario
+    setUsuario(nombreUsuario); 
     localStorage.setItem("autenticado", JSON.stringify(true));
-    localStorage.setItem("usuario", nombreUsuario); // Guarda el usuario en localStorage
+    localStorage.setItem("usuario", nombreUsuario); 
   };
 
-  // Función para cerrar sesión
   const logout = async () => {
     try {
-      const token = Cookies.get("token"); // Recuperamos el token
+      const token = Cookies.get("token"); 
 
       if (token && usuario) {
-        await axios.post(
-          "https://mercadolasestrellas.online/intranet/public/v1/logout",
-          { usuario }, // Enviamos el usuario en el cuerpo de la solicitud
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Token como Bearer
-              "Content-Type": "application/json", // Tipo de contenido
-            },
-          }
-        );
+        await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",{usuario },
+          {headers: {Authorization: `Bearer ${token}`, "Content-Type": "application/json",},});
       }
-
-      // Limpieza de cookies y estado
       Cookies.remove("token", { path: "/" });
       setAutenticado(false);
       setUsuario(null);
@@ -67,13 +56,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const manejarAutenticacion = () => {
       const guardarAutenticado = localStorage.getItem("autenticado");
-      const guardarUsuario = localStorage.getItem("usuario"); // Obtiene el usuario del localStorage
+      const guardarUsuario = localStorage.getItem("usuario"); 
       if (guardarAutenticado) {
         setAutenticado(JSON.parse(guardarAutenticado));
-        setUsuario(guardarUsuario); // Actualiza el usuario en el estado
+        setUsuario(guardarUsuario); 
       }
     };
-
     window.addEventListener("storage", manejarAutenticacion);
     return () => {
       window.removeEventListener("storage", manejarAutenticacion);
