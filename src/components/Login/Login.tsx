@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useResponsive from '../../hooks/Responsive/useResponsive';
-// import { mostrarAlerta } from '../Alerts/Registrar';
 import axios from "axios";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import Cookies from 'js-cookie';
@@ -15,48 +14,33 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("1");
   const { login } = useAuth();
-
-  // Para redirigir
   const navigate = useNavigate();
-
-  // Variables para el responsive
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
-  // const IniciarSesion = (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   if (usuario === "Admin" && password === "12345" && rol === "3") {
-  //     mostrarAlerta("Inicio de sesión", `Bienvenido ${usuario}.\nSesión iniciada con éxito.`, "success");
-  //     // Iniciamos sesión
-  //     login();
-  //     // Redirigimos a la página de inicio
-  //     navigate("/home");
-  //   } else {
-  //     mostrarAlerta("Error de credenciales", "Credenciales no válidas. Por favor, inténtelo nuevamente.", "error");
-  //   }
-  // };
-  // Iniciar Sesion
   const IniciarSesion = async () => {
     const dataToSend = { usuario, password };  
     try {
-      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login',dataToSend);
+      const response = await axios.post(
+        'https://mercadolasestrellas.online/intranet/public/v1/login',
+        dataToSend
+      );
+  
       if (response.status === 200) {
         const { token } = response.data;
-          Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
-          login(usuario); 
-          mostrarAlerta(
-          'Inicio   de sesión',
-          `Bienvenido ${usuario}.`,
-          'success'
-        );
-        navigate('/home');
+        // cont mensaje = response.data.message
+        Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
+  
+        login(usuario); // Actualiza el contexto de autenticación
+        mostrarAlerta('Inicio de sesión', `Bienvenido ${usuario}.`, 'success');
+        navigate('/home'); // Redirige a la página principal
       } else {
-        mostrarAlerta('Error');
+        mostrarAlerta('Error', 'Credenciales incorrectas.', 'error');
       }
     } catch (error) {
       manejarError(error);
     }
   };
-
+  
 
   const busquedaRapida = () => {
     navigate("/busqueda-rapida");
