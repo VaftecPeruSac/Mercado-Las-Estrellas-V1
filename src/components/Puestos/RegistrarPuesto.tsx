@@ -372,9 +372,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           handleCloseModal();
         });
       } else {
-        mostrarAlerta(
-          "Error",
-        );
+        mostrarAlerta("Error",);
       }
     } catch (error) {
       manejarError(error);

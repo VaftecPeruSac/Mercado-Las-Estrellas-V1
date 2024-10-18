@@ -57,6 +57,7 @@ const Login: React.FC = () => {
     }
   };
 
+
   const busquedaRapida = () => {
     navigate("/busqueda-rapida");
   }
