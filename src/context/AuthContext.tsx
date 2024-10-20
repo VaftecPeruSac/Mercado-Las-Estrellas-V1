@@ -8,14 +8,8 @@ import {
   useState,
 } from "react";
 import { manejarError, mostrarAlerta } from "../components/Alerts/Registrar";
+import { AuthContextType } from "../interface/AuthContext/AuthContext";
 
-// Definimos la estructura del contexto de autenticación
-interface AuthContextType {
-  autenticado: boolean;
-  usuario: string | null; // Añadido para guardar el nombre de usuario
-  login: (nombreUsuario: string) => void; // Ahora acepta un nombre de usuario
-  logout: () => void; // No se pasa como parámetro, se obtiene del estado
-}
 
 // Creamos el contexto de autenticación
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

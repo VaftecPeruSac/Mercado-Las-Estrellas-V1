@@ -8,32 +8,11 @@ import Contenedor from '../Shared/Contenedor';
 import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
 import ContenedorBotones from '../Shared/ContenedorBotones';
+import { Api_Global_Reportes } from '../../service/ReporteApi';
+import { handleExport } from '../../Utils/exportUtils';
+import { Column, Data, Socio } from '../../interface/ReportePagos/pagos';
 
-interface Socio {
-  id_socio: string;
-  nombre_completo: string;
-}
 
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "center";
-}
-
-interface Data {
-  id_pago: string;
-  numero: string;
-  serie: string;
-  serie_numero: string;
-  aporte: string;
-  total: string;
-  fecha: string;
-  detalle_pagos: {
-    descripcion: string;
-    importe: string;
-  }
-}
 
 const columns: readonly Column[] = [
   // { id: "numero", label: "N° Pago", minWidth: 50, align: "center" },
@@ -103,40 +82,11 @@ const TablaReportePagos: React.FC = () => {
   }
 
   // Metodo para exportar el reporte de pagos
-  const handleExportReporteDeudas = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
+  const handleExportReportePagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-pagos/exportar");
-      // Si no hay problemas
-      if (response.status === 200) {
-        if (exportFormat === "1") { // PDF
-          alert("En proceso de actualizacion. Intentelo más tarde.");
-        } else if (exportFormat === "2") { // Excel
-          alert("El reporte de pagos se descargará en breve.");
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          const hoy = new Date();
-          const formatDate = hoy.toISOString().split('T')[0];
-          link.setAttribute('download', `reporte-pagos-${formatDate}.xlsx`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode?.removeChild(link);
-          setExportFormat("");
-        } else {
-          alert("Formato de exportación no válido.");
-        }
-      } else {
-        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-      }
-
-    } catch (error) {
-      console.log("Error:", error);
-      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-    }
-
+    const exportUrl = Api_Global_Reportes.reportes.exportarReportePagos(); // URL específica para servicios
+    const fileNamePrefix = "lista-reporte-pagos"; // Nombre del archivo
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
   return (
@@ -194,7 +144,7 @@ const TablaReportePagos: React.FC = () => {
         <BotonExportar
           exportFormat={exportFormat}
           setExportFormat={setExportFormat}
-          handleExport={handleExportReporteDeudas}
+          handleExport={handleExportReportePagos}
         />
 
       </ContenedorBotones>

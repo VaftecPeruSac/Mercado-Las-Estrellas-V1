@@ -8,8 +8,6 @@ import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alert
 import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
-
-  // Para el login
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("1");
@@ -20,27 +18,20 @@ const Login: React.FC = () => {
   const IniciarSesion = async () => {
     const dataToSend = { usuario, password };  
     try {
-      const response = await axios.post(
-        'https://mercadolasestrellas.online/intranet/public/v1/login',
-        dataToSend
-      );
-  
+      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login',dataToSend);
       if (response.status === 200) {
         const { token } = response.data;
-        // cont mensaje = response.data.message
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
-  
-        login(usuario); // Actualiza el contexto de autenticación
+        login(usuario); 
         mostrarAlerta('Inicio de sesión', `Bienvenido ${usuario}.`, 'success');
-        navigate('/home'); // Redirige a la página principal
+        navigate('/home'); 
       } else {
-        mostrarAlerta('Error', 'Credenciales incorrectas.', 'error');
+        mostrarAlerta("Error");
       }
     } catch (error) {
       manejarError(error);
     }
   };
-  
 
   const busquedaRapida = () => {
     navigate("/busqueda-rapida");

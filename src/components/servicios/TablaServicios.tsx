@@ -20,7 +20,7 @@ import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import { Servicio } from "../../interface/Servicios"; // se esta importando la interface servicios
 import { columns } from "../../Columns/Servicios";
 import useServicioState from "../../hooks/Servicios/useServicio";
-import { API_ROUTES } from "../../service/ServiceApi"; // Asegúrate de que la ruta sea correcta
+import { API_ROUTES } from "../../service/ServicioApi"; // Asegúrate de que la ruta sea correcta
 import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
@@ -73,14 +73,10 @@ const TablaServicios: React.FC = () => {
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
-
-
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
-    fetchServicios(value); // Obtén los datos para la página seleccionada
+    fetchServicios(value); 
   };
-
-
 
   const buscarServicios = () => {
     fetchServicios(1);
@@ -88,10 +84,8 @@ const TablaServicios: React.FC = () => {
 
   // Eliminar servicio
   const eliminarServicio = async (item: any) => {
-    
     try {
-      const response = await axios.delete(`https://mercadolasestrellas.online/intranet/public/v1/servicios/${item.id_servicio}`, {});
-
+      const response = await axios.delete(API_ROUTES.servicios.eliminar(item.id_servicio));
       if (response.status === 200) {
         const mensaje = response.data.message || "El servicio se elimino.";
         mostrarAlerta("Eliminación exitosa", mensaje, "success");
