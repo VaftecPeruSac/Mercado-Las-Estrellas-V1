@@ -5,6 +5,7 @@ import useResponsive from "../Responsive/useResponsive";
 import { useNavigate } from "react-router-dom";
 import { Data, Socio } from "../../interface/Socios";
 import { formatDate } from "../../Utils/dateUtils";
+import apiClient from "../../Utils/apliClient";
 
 const useSocios = () => {
     const { isTablet, isMobile, isSmallMobile } = useResponsive();
@@ -22,7 +23,7 @@ const useSocios = () => {
     const fetchSocios = useCallback(async (page: number = 1) => {
         setIsLoading(true);
         try {
-            const response = await axios.get(Api_Global_Socios.socios.fetch(page, nombreIngresado));
+            const response = await apiClient.get(Api_Global_Socios.socios.fetch(page, nombreIngresado));
             const data = response.data.data.map((item: Socio) => ({
                 id_socio: item.id_socio,
                 nombre_completo: item.nombre_completo,

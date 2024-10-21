@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiClient from "./apliClient";
 
 export const handleExport = async (
   exportUrl: string, // URL para exportar
@@ -6,11 +7,7 @@ export const handleExport = async (
   fileNamePrefix: string, // Prefijo para el nombre del archivo exportado
   setExportFormat: React.Dispatch<React.SetStateAction<string>> // Función para resetear el formato
 ) => {
-  try {
-    const response = await axios.get(exportUrl, {
-      responseType: "blob",
-    });
-
+  try {const response = await apiClient.get(exportUrl, {responseType: "blob",});
     if (response.status === 200) {
       if (exportFormat === "1") {
         // Exportar a PDF

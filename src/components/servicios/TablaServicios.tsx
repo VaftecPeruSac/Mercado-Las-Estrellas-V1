@@ -28,6 +28,7 @@ import BotonAgregar from "../Shared/BotonAgregar";
 import { handleExport } from "../../Utils/exportUtils";
 import axios from "axios";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import apiClient from "../../Utils/apliClient";
 
 const TablaServicios: React.FC = () => {
   const {
@@ -81,11 +82,9 @@ const TablaServicios: React.FC = () => {
   const buscarServicios = () => {
     fetchServicios(1);
   };
-
-  // Eliminar servicio
   const eliminarServicio = async (item: any) => {
     try {
-      const response = await axios.delete(API_ROUTES.servicios.eliminar(item.id_servicio));
+      const response = await apiClient.delete(API_ROUTES.servicios.eliminar(item.id_servicio));
       if (response.status === 200) {
         const mensaje = response.data.message || "El servicio se elimino.";
         mostrarAlerta("Eliminación exitosa", mensaje, "success");

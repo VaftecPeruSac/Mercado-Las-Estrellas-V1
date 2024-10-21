@@ -38,6 +38,7 @@ import { Api_Global_Socios } from "../../service/SocioApi";
 import useSocios from "../../hooks/Socios/useSocios";
 import { handleAccionesSocio } from "../../Utils/downloadDataSocio";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import apiClient from "../../Utils/apliClient";
 
 const TablaAsociados: React.FC = () => {
   const {
@@ -109,8 +110,7 @@ const TablaAsociados: React.FC = () => {
   const eliminarSocio = async (item: any) => {
     
     try {
-      const response = await axios.delete(`https://mercadolasestrellas.online/intranet/public/v1/socios/${item.id_socio}`, {});
-
+      const response = await apiClient.delete(Api_Global_Socios.socios.eliminar(item.id_socio));
       if (response.status === 200) {
         const mensaje = response.data.message || "El socio se elimino.";
         mostrarAlerta("Eliminación exitosa", mensaje, "success");
