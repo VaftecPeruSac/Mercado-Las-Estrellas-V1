@@ -21,7 +21,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/Responsive/useResponsive";
 // import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
+import { manejarError, mostrarAlerta } from "./Alerts/Registrar";
 import axios from "axios";
 
 interface HeaderProps {
@@ -37,6 +37,8 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  const usuario = localStorage.getItem("usuario");
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -170,7 +172,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                   display: isMobile ? "none" : "block"
                 }}
               >
-                Ottoniel Yauri
+                {usuario}
               </Typography>
               {Boolean(anchorEl)
                 ? <ExpandLess

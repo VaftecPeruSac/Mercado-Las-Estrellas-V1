@@ -41,16 +41,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           {headers: {Authorization: `Bearer ${token}`,"Content-Type": "application/json",},}
         );
         if (response.status === 200) {
-        const mensaje = response.data.message;
-        limpiarSesion();
-        mostrarAlerta("Cierre de sesión", mensaje, "info");
+          const mensaje = response.data.message;
+          limpiarSesion();
+          mostrarAlerta("Cierre de sesión", mensaje, "info");
         }
       } else {
         mostrarAlerta("error");
       }
     } catch (error) {
       manejarError(error);
-    } finally {
     }
   };
 
