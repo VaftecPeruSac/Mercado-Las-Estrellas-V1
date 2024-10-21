@@ -84,6 +84,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const [giroSeleccionado, setGiroSeleccionado] = useState<number | "">("");
   const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
   const [socios, setSocios] = useState<Socio[]>([]);
+  const [puestosSocio, setPuestosSocios] = useState<Puesto[]>([]);
+
   const [loading, setLoading] = useState(false);
 
   // Datos para registrar el puesto
@@ -137,6 +139,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Datos para registrar el giro de negocio
   const [formDataGiroNegocio, setFormDataGiroNegocio] = useState({
     nombre: "",
+  });
+
+  // Datos para la transferencia de puesto
+  const [formDataTransferencia, setFormDataTransferencia] = useState({
+    id_duenio_actual: "",
+    id_puesto: "",
+    id_nuevo_duenio: "",
   });
 
   const manejarCambioInquilino = (
@@ -225,6 +234,20 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     };
     fetchSocios();
   }, []);
+
+  // Obtener puestos por socio
+  const fetchPuestosSocio = async (idSocio: string) => {
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      const data = response.data.data.map((item: Puesto) => ({
+        id_puesto: item.id_puesto,
+        numero_puesto: item.numero_puesto,
+      }));
+      setPuestosSocios(data);
+    } catch (error) {
+      console.error("Error al obtener los puestos", error);
+    }
+  };
 
   // Manejar los cambios del formulario Registrar Puesto
   const manejarCambioPuesto = (
@@ -470,7 +493,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   };
 
-
   // Registrar Bloque
   const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -517,6 +539,29 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       setLoading(false);
     }
   };
+
+  const transferirPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const dataToSend = formDataTransferencia;
+    try {
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/transferir", dataToSend);
+      if (response.status === 200) {
+        const mensaje = response.data.message || "El puesto se transfirió correctamente";
+        mostrarAlerta("Transferencia exitosa", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   // Contenido del modal
   const renderTabContent = () => {
     switch (activeTab) {
@@ -754,7 +799,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             </Grid>
           </>
         );
-      case 2:
+      case 2: // ASIGNAR INQUILINO
         return (
           <>
             <AvisoFormulario />
@@ -946,55 +991,33 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             </Grid>
           </>
         );
-        case 5:
-          return(
-            <>
+      case 5: // 
+        return(
+          <>
             <AvisoFormulario/>
-            {/* <pre>{JSON.stringify(formDataGiroNegocio, null, 2)}</pre> */}
+            {/* <pre>{JSON.stringify(formDataTransferencia, null, 2)}</pre> */}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <SeparadorBloque nombre="Seleccionar puesto" />
+                {/* Seleccionar dueño actual */}
+                <SeparadorBloque nombre="Dueño actual" />
 
-                {/* Seleccionar Bloque */}
-                <FormControl fullWidth required>
-                  <InputLabel id="bloque-label">Bloque</InputLabel>
-                  <Select
-                    labelId="bloque-label"
-                    label="Bloque"
-                    id="select-bloque"
-                    value={bloqueSeleccionado}
-                    onChange={(e) => {
-                      const value = e.target.value as number;
-                      setBloqueSeleccionado(value);
-                      fetchPuestosLibres(value);
-                    }}
-                    startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
-                  >
-                    {bloques.map((bloque: Bloque) => (
-                      <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                        {bloque.nombre}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {/* Seleccionar Puesto */}
-                <FormControl fullWidth required sx={{ mt: 2 }}>
+                <FormControl fullWidth required sx={{ mb: 2 }}>
                   <Autocomplete
-                    options={puestos}
-                    getOptionLabel={(puesto) => puesto.numero_puesto}
+                    options={socios}
+                    getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
                     onChange={(event, newValue) => {
                       if (newValue) {
-                        setFormDataAsignarPuesto({
-                          ...formDataAsginarPuesto,
-                          id_puesto: newValue.id_puesto.toString(),
+                        setFormDataTransferencia({
+                          ...formDataTransferencia,
+                          id_duenio_actual: newValue.id_socio.toString(),
                         });
+                        fetchPuestosSocio(newValue.id_socio.toString());
                       }
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Nro. Puesto"
+                        label="Seleccionar socio"
                         InputProps={{
                           ...params.InputProps,
                           startAdornment: (
@@ -1008,19 +1031,47 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     )}
                     ListboxProps={{
                       style: {
-                        maxHeight: 200,
+                        maxHeight: 270,
                         overflow: "auto",
                       },
                     }}
                     isOptionEqualToValue={(option, value) =>
-                      option.id_puesto === Number(value)
-                    }
+                      option.id_socio === Number(value)
+                    } // Compara convirtiendo el value a número
                   />
+                </FormControl>
+
+                <SeparadorBloque nombre="Seleccionar puesto" />
+
+                {/* Seleccionar Puesto */}
+                <FormControl sx={{ width: "100%" }}>
+                  <InputLabel id="seleccionar-puesto-label">
+                    Seleccionar Puesto
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-puesto-label"
+                    label="Seleccionar Puesto"
+                    id="select-puesto"
+                    onChange={(e) => {
+                      const value = String(e.target.value);
+                      setFormDataTransferencia({
+                        ...formDataTransferencia,
+                        id_puesto: value,
+                      });
+                    }}
+                    startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {puestosSocio.map((puesto: Puesto) => (
+                      <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                        {puesto.numero_puesto}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <SeparadorBloque nombre="Seleccionar socio" />
+                <SeparadorBloque nombre="Nuevo dueño" />
 
                 <FormControl fullWidth required>
                   <Autocomplete
@@ -1028,16 +1079,16 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
                     onChange={(event, newValue) => {
                       if (newValue) {
-                        setFormDataAsignarPuesto({
-                          ...formDataAsginarPuesto,
-                          id_socio: newValue.id_socio.toString(),
+                        setFormDataTransferencia({
+                          ...formDataTransferencia,
+                          id_nuevo_duenio: newValue.id_socio.toString(),
                         });
                       }
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Socio"
+                        label="Seleccionar socio"
                         InputProps={{
                           ...params.InputProps,
                           startAdornment: (
@@ -1062,8 +1113,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 </FormControl>
               </Grid>
             </Grid>
-            </>
-          );
+          </>
+        );
       default:
         return <Typography>Seleccione una pestaña</Typography>;
     }
@@ -1131,6 +1182,15 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               );
               if (result.isConfirmed) {
                 registrarGiroNegocio(e); // Registrar giro de negocio
+              }
+            }
+
+            if (activeTab === 5) {
+              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para registrar giro de negocio
+                "¿Está seguro de realizar la transferencia de dueño?",
+              );
+              if (result.isConfirmed) {
+                transferirPuesto(e); // Transferir puesto
               }
             }
           }}
