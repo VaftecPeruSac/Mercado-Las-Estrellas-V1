@@ -28,31 +28,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Funciones para iniciar sesión
   const login = (nombreUsuario: string) => {
     setAutenticado(true);
-    setUsuario(nombreUsuario); 
+    setUsuario(nombreUsuario);
     localStorage.setItem("autenticado", JSON.stringify(true));
-    localStorage.setItem("usuario", nombreUsuario); 
+    localStorage.setItem("usuario", nombreUsuario);
   };
 
   const logout = async () => {
     try {
-      const token = Cookies.get("token"); 
-
+      const token = Cookies.get("token");
       if (token && usuario) {
-        await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",{usuario },
-          {headers: {Authorization: `Bearer ${token}`, "Content-Type": "application/json",},});
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",{ usuario },
+          {headers: {Authorization: `Bearer ${token}`,"Content-Type": "application/json",},}
+        );
+        if (response.status === 200) {
+        const mensaje = response.data.message;
+        limpiarSesion();
+        mostrarAlerta("Cierre de sesión", mensaje, "info");
+        }
+      } else {
+        mostrarAlerta("error");
       }
-      Cookies.remove("token", { path: "/" });
-      setAutenticado(false);
-      setUsuario(null);
-      localStorage.removeItem("autenticado");
-      localStorage.removeItem("usuario");
-
-      mostrarAlerta("Cierre de sesión", "Sesión cerrada correctamente.", "info");
     } catch (error) {
       manejarError(error);
+    } finally {
     }
   };
 
+  const limpiarSesion = () => {
+    Cookies.remove("token", { path: "/" });
+    setAutenticado(false);
+    setUsuario(null);
+    localStorage.removeItem("autenticado");
+    localStorage.removeItem("usuario");
+  };
   useEffect(() => {
     const manejarAutenticacion = () => {
       const guardarAutenticado = localStorage.getItem("autenticado");
