@@ -1,17 +1,19 @@
 import {
-  AttachMoney,
   Bolt,
+  Business,
   Event,
   Storefront,
   Straighten,
 } from "@mui/icons-material";
 import {
+  Autocomplete,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
+  TextField,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -45,6 +47,19 @@ interface Editarservicio {
   fecha_registro: string;
 }
 
+interface Socio {
+  id_socio: number;
+  nombre_completo: string;
+}
+
+interface Puesto {
+  id_puesto: number;
+  numero_puesto: string;
+  block: {
+    nombre: string;
+  };
+}
+
 const RegistrarServicio: React.FC<AgregarProps> = ({
   open,
   handleClose,
@@ -56,17 +71,54 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const [costoTotal, setCostoTotal] = useState("");
+  // const [costoTotal, setCostoTotal] = useState("");
   const [costoMetroCuadrado, setCostoMetroCuadrado] = useState(0);
   const [puestosActivos, setPuestosActivos] = useState(0);
   const [areaTotal, setAreaTotal] = useState(0);
+
+  const [socios, setSocios] = useState([]);
+  const [puestos, setPuestos] = useState([]);
+
+  // Obtener Lista Socios
+  useEffect(() => {
+    const fetchSocios = async () => {
+      try {
+        const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=50`);
+        const data = response.data.data.map((item: Socio) => ({
+          id_socio: item.id_socio,
+          nombre_completo: item.nombre_completo,
+        }));
+        setSocios(data);
+      } catch (error) {
+        console.error("Error al obtener los socios", error);
+      }
+    };
+    fetchSocios();
+  }, []);
+
+  // Obtener Lista Puestos
+  const fetchPuestos = async (idSocio: string) => {
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      const data = response.data.data.map((item: Puesto) => ({
+        id_puesto: item.id_puesto,
+        numero_puesto: item.numero_puesto,
+        block: {
+          nombre: item.block.nombre,
+        },
+      }));
+      setPuestos(data);
+    } catch (error) {
+      console.error("Error al obtener los puestos", error);
+    }
+  };
 
   // Datos para registrar el servicio Por Metro Cuadrado
   const [formDataPMC, setFormDataPMC] = useState({
     id_servicio: "",
     descripcion: "",
     costo_unitario: "",
-    tipo_servicio: "",
+    tipo_servicio: "3",
     estado: "1", // "Activo",
     fecha_registro: "",
   });
@@ -79,6 +131,12 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     tipo_servicio: "",
     estado: "1", // "Activo",
     fecha_registro: "",
+  });
+
+  // Datos para registrar el servicio multa por inasistencia a Asamblea General
+  const [formDataMIA, setFormDataMIA] = useState({
+    id_socio: "",
+    id_puesto: "",
   });
 
   // Llenar campos con los datos del servicio seleccionado
@@ -137,6 +195,24 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     });
   };
 
+  const limpiarRegistrarServicioPMC = () => {
+    setFormDataPMC({
+      id_servicio: "",
+      descripcion: "",
+      costo_unitario: "",
+      tipo_servicio: "3",
+      estado: "1", // "Activo",
+      fecha_registro: "",
+    });
+  };
+
+  const limpiarRegistrarMIA = () => {
+    setFormDataMIA({
+      id_socio: "",
+      id_puesto: "",
+    });
+  } 
+
   // Registrar servicio
   const registrarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -178,7 +254,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       if (response.status === 200) {
         const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success");
-        limpiarRegistarServicio();
         handleCloseModal();
       } else {
         mostrarAlerta("Error");
@@ -194,9 +269,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const registrarServicioPorMetroCua = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    formDataPMC.tipo_servicio = '3';
+
     const { id_servicio, ...dataToSend } = formDataPMC;
-    // formData.tipo_servicio = '3';
 
     try {
       const response = await axios.post(
@@ -246,9 +320,35 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     // }
   };
 
+  // Registrar servicio multa por inasistencia a Asamblea General
+  const registrarServicioMIA = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const { ...dataToSend } = formDataMIA;
+
+    try {
+      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios/multa-por-inasistencia", dataToSend);
+      if (response.status === 200) {
+        const mensaje = response.data.message || "La multa se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          handleCloseModal();
+        });
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Cerrar modal
   const handleCloseModal = () => {
+    limpiarRegistrarMIA();
     limpiarRegistarServicio();
+    limpiarRegistrarServicioPMC();
     handleClose();
   };
 
@@ -433,6 +533,87 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
             </Grid>
           </>
         );
+      case 2:
+        return (
+          <>
+            <AvisoFormulario />
+            {/* <pre>{JSON.stringify(formDataMIA, null, 2)}</pre> */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <SeparadorBloque nombre="Seleccionar socio"/>
+                <FormControl sx={{ width: "100%" }}>
+                  <Autocomplete
+                    options={socios}
+                    getOptionLabel={(socio: Socio) => socio.nombre_completo}
+                    onChange={(event, newValue) => {
+                      if (newValue) {
+                        const socioId = String(newValue.id_socio); // Convertimos id_socio a string
+                        // setIdSocioSeleccionado(socioId); // Asignamos el string
+                        setFormDataMIA({
+                          ...formDataMIA,
+                          id_socio: socioId
+                        }); // Mantenemos el string en formData
+                        fetchPuestos(socioId); // Pasamos el id_socio como string
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Seleccionar Socio"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <Business sx={{ mr: 1, color: "gray" }} />
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    ListboxProps={{
+                      style: {
+                        maxHeight: 270,
+                        overflow: "auto",
+                      },
+                    }}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id_socio === Number(value)
+                    } // Convertimos value a número para la comparación
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <SeparadorBloque nombre="Seleccionar puesto"/>
+                <FormControl sx={{ width: "100%" }}>
+                  <InputLabel id="seleccionar-puesto-label">
+                    Seleccionar Puesto
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-puesto-label"
+                    label="Seleccionar Puesto"
+                    id="select-puesto"
+                    onChange={(e) => {
+                      const value = String(e.target.value);
+                      // setIdPuestoSeleccionado(value);
+                      setFormDataMIA({
+                        ...formDataMIA,
+                        id_puesto: value
+                      });
+                    }}
+                    startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {puestos.map((puesto: Puesto) => (
+                      <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                        {puesto.numero_puesto}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </>
+        );
       default:
         return <Typography>Seleccione una pestaña</Typography>;
     }
@@ -448,7 +629,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       titulo={servicio ? "Editar servicio" : "Registrar servicio"}
       activeTab={servicio ? 0 : activeTab}
       handleTabChange={servicio ? (e) => handleTabChange(e, 0) : handleTabChange}
-      tabs={["Registrar servicio", "Registrar servicio compartido"]}
+      tabs={["Registrar servicio", "Registrar servicio compartido", "Multa por inasistencia a Asamblea General"]}
       botones={
         <BotonesModal
           loading={loading}
@@ -483,6 +664,16 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                 }
               }
             }
+
+            if (activeTab === 2) {
+              result = await mostrarAlertaConfirmacion(
+                "¿Está seguro de registrar una multa por inasistencia a Asamblea General?"
+              );
+              if (result.isConfirmed) {
+                registrarServicioMIA(e);
+              }
+            }
+
           }}
           close={handleCloseModal}
         />

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useResponsive from '../../hooks/Responsive/useResponsive';
 import axios from "axios";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
 import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
@@ -23,8 +23,8 @@ const Login: React.FC = () => {
         const { token } = response.data;
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
         login(usuario); 
+        window.location.replace('/home');
         mostrarAlerta('Inicio de sesión', `Bienvenido ${usuario}.`, 'success');
-        navigate('/home'); 
       } else {
         mostrarAlerta("Error");
       }
