@@ -5,5 +5,6 @@ export const API_ROUTES = {
     fetch: (page: number, buscarTexto: string) =>
       `${BASE_URL}/servicios?page=${page}&buscar_texto=${buscarTexto}`,
     exportar: () => `${BASE_URL}/servicios/exportar`,
+    eliminar: (id: number) => `${BASE_URL}/servicios/${id}`,  
   },
 };

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Servicio, Data } from "../../interface/Servicios";
 import useResponsive from "../Responsive/useResponsive";
 import axios from "axios";
-import { API_ROUTES } from "../../service/ServiceApi";
+import { API_ROUTES } from "../../service/ServicioApi";
 import { formatDate } from "../../Utils/dateUtils";
 
 const useServicioState = () => {
@@ -25,7 +25,6 @@ const useServicioState = () => {
         const response = await axios.get(
           API_ROUTES.servicios.fetch(page, buscarTexto)
         );
-
         const data = response.data.data.map((item: Servicio) => ({
           id_servicio: item.id_servicio,
           descripcion: item.descripcion,
@@ -34,8 +33,8 @@ const useServicioState = () => {
           fecha_registro: formatDate(item.fecha_registro),
         }));
         setServicios(data);
-        setTotalPages(response.data.meta.last_page); // Total de páginas
-        setPaginaActual(response.data.meta.current_page); // Página actual
+        setTotalPages(response.data.meta.last_page); 
+        setPaginaActual(response.data.meta.current_page); 
         console.log("la data es", response.data);
       } catch (error) {
         console.error("Error al traer datos", error);
@@ -43,8 +42,9 @@ const useServicioState = () => {
         setIsLoading(false);
       }
     },
-    [buscarTexto] // Dependencia para cuando cambie buscarTexto
+    [buscarTexto] 
   );
+  
 
   useEffect(() => {
     fetchServicios(paginaActual);

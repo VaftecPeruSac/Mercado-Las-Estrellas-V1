@@ -215,7 +215,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     try {
       const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data.message || "El socio se registró correctamente";
+        const mensaje = response.data.message;
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onSocioRegistrado();
           handleCloseModal();

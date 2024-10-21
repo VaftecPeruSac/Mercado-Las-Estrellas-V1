@@ -8,28 +8,9 @@ import Contenedor from '../Shared/Contenedor';
 import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
 import ContenedorBotones from '../Shared/ContenedorBotones';
-
-interface Puesto {
-  id_puesto: string;
-  numero_puesto: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "center";
-}
-
-interface Data {
-  id_cuota: string;
-  anio: string;
-  mes: string;
-  servicio_descripcion: string;
-  total: string;
-  importe_pagado: string;
-  importe_por_pagar: string;
-}
+import { Column, Data, Puesto } from '../../interface/ReporteDeudas/deudas';
+import { Api_Global_Reportes } from '../../service/ReporteApi';
+import { handleExport } from '../../Utils/exportUtils';
 
 const columns: readonly Column[] = [
   { id: "id_cuota", label: "#ID", minWidth: 50, align: "center" },
@@ -99,44 +80,11 @@ const TablaReporteDeudas: React.FC = () => {
     }
   }
 
-  // Metodo para exportar el reporte de deudas
   const handleExportReporteDeudas = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
-
-    try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-deudas/exportar",
-        { responseType: 'blob' }
-      );
-
-      // Si no hay problemas
-      if (response.status === 200) {
-        if (exportFormat === "1") { // PDF
-          alert("En proceso de actualizacion. Intentelo más tarde.");
-        } else if (exportFormat === "2") { // Excel
-          alert("El reporte de deudas se descargará en breve.");
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          const hoy = new Date();
-          const formatDate = hoy.toISOString().split('T')[0];
-          link.setAttribute('download', `reporte-deudas-${formatDate}.xlsx`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode?.removeChild(link);
-          setExportFormat("");
-        } else {
-          alert("Formato de exportación no válido.");
-        }
-      } else {
-        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-      }
-
-    } catch (error) {
-      console.log("Error:", error);
-      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-    }
-
+    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(); // URL específica para servicios
+    const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
   return (

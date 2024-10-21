@@ -28,33 +28,15 @@ import { Column, Data, Puesto } from "../../interface/ReporteResunen/resumen";
 
 
 const columns: readonly Column[] = [
-  { id: "id_recibo", label: "N° Recibo", minWidth: 50, align: "center" },
-  { id: "ingreso", label: "Ingreso", minWidth: 50, align: "center" },
-  {
-    id: "gastos",
-    label: "Gastos Administrativos",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "multa_inasistencia",
-    label: "Multas inasistencia",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "pagos_transferencia",
-    label: "Pagos transferencia",
-    minWidth: 50,
-    align: "center",
-  },
-  {
-    id: "cuotas_extra",
-    label: "Cuotas Extraordinarias",
-    minWidth: 50,
-    align: "center",
-  },
+  { id: "serie_numero", label: "N° Recibo", minWidth: 50, align: "center" },
+  { id: "importe_ingreso", label: "Ingreso", minWidth: 50, align: "center" },
+  { id: "importe_gastos_administrativo", label: "Gastos Administrativos", minWidth: 50, align: "center" },
+  { id: "importe_multas_inasistencia", label: "Multas Inasistencia", minWidth: 50, align: "center" },
+  { id: "importe_pagos_transferencia", label: "Pagos Transferencia", minWidth: 50, align: "center" },
+  { id: "importe_cuotas_extraordinarias", label: "Cuotas Extraordinarias", minWidth: 50, align: "center" },
+  { id: "importe_total", label: "Total", minWidth: 50, align: "center" },
 ];
+
 const TablaReporteResumen = () => {
   const { isTablet, isMobile } = useResponsive();
   const [puestos, setPuestos] = useState<Puesto[]>([]);
@@ -248,19 +230,19 @@ const TablaReporteResumen = () => {
                                   sx={{
                                     p: 2,
                                     // Al seleccionar la cuota se cambia el color de fondo
-                                    bgcolor: mostrarDetalles === resum.multa_inasistencia? "#f0f0f0" : "inherit",
+                                    bgcolor: mostrarDetalles === resum.importe_multas_inasistencia? "#f0f0f0" : "inherit",
                                     "&:hover": {
                                       cursor: "pointer",
                                       bgcolor: "#f0f0f0",
                                     }
                                   }}
                                   onClick={() => setMostrarDetalles(
-                                    mostrarDetalles === resum.multa_inasistencia ? null : resum.multa_inasistencia
+                                    mostrarDetalles === resum.importe_multas_inasistencia ? null : resum.importe_multas_inasistencia
                                   )}
                                 >
-                                  {resum.multa_inasistencia}
+                                  {resum.importe_multas_inasistencia}
                                 </Typography>
-                              {mostrarDetalles === resum.multa_inasistencia && (
+                              {mostrarDetalles === resum.importe_multas_inasistencia && (
                                 <Box
                                   sx={{
                                     p: 2,

@@ -1,15 +1,15 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { manejarError, mostrarAlerta } from "../components/Alerts/Registrar";
+import { AuthContextType } from "../interface/AuthContext/AuthContext";
 
-// Definimos la estructura del contexto de autenticación
-interface AuthContextType {
-  autenticado: boolean;
-  usuario: string | null; // Añadido para guardar el nombre de usuario
-  login: (nombreUsuario: string) => void; // Ahora acepta un nombre de usuario
-  logout: () => void; // No se pasa como parámetro, se obtiene del estado
-}
 
 // Creamos el contexto de autenticación
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,7 +29,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (nombreUsuario: string) => {
     setAutenticado(true);
     setUsuario(nombreUsuario);
+    setUsuario(nombreUsuario);
     localStorage.setItem("autenticado", JSON.stringify(true));
+    localStorage.setItem("usuario", nombreUsuario);
     localStorage.setItem("usuario", nombreUsuario);
   };
 
@@ -64,10 +66,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const manejarAutenticacion = () => {
       const guardarAutenticado = localStorage.getItem("autenticado");
-      const guardarUsuario = localStorage.getItem("usuario"); 
+      const guardarUsuario = localStorage.getItem("usuario");
       if (guardarAutenticado) {
         setAutenticado(JSON.parse(guardarAutenticado));
-        setUsuario(guardarUsuario); 
+        setUsuario(guardarUsuario);
       }
     };
     window.addEventListener("storage", manejarAutenticacion);
@@ -87,7 +89,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("Error: Debe iniciar sesión para navegar en la aplicación.");
+    throw new Error(
+      "Error: Debe iniciar sesión para navegar en la aplicación."
+    );
   }
   return context;
 };
