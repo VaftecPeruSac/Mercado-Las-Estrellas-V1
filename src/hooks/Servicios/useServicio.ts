@@ -4,6 +4,7 @@ import useResponsive from "../Responsive/useResponsive";
 import axios from "axios";
 import { API_ROUTES } from "../../service/ServicioApi";
 import { formatDate } from "../../Utils/dateUtils";
+import apiClient from "../../Utils/apliClient";
 
 const useServicioState = () => {
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
@@ -22,9 +23,8 @@ const useServicioState = () => {
     async (page: number = 1) => {
       try {
         setIsLoading(true);
-        const response = await axios.get(
-          API_ROUTES.servicios.fetch(page, buscarTexto)
-        );
+        const response = await apiClient.get(API_ROUTES.servicios.fetch(page, buscarTexto));
+
         const data = response.data.data.map((item: Servicio) => ({
           id_servicio: item.id_servicio,
           descripcion: item.descripcion,
