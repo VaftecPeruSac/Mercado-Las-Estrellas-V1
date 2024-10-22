@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -11,7 +11,7 @@ const Login: React.FC = () => {
 
   const [usuario, setUsuario] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [rol, setRol] = useState<string>("1");
+  // const [rol, setRol] = useState<string>("1");
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -133,7 +133,7 @@ const Login: React.FC = () => {
             </Box>
 
             {/* Seleccionar rol */}
-            <Box>
+            {/* <Box>
               <Typography
                 sx={{
                   mb: "2px",
@@ -156,7 +156,7 @@ const Login: React.FC = () => {
                   <MenuItem value="3">Administrador</MenuItem>
                 </Select>
               </FormControl>
-            </Box>
+            </Box> */}
 
             {/* Boton iniciar sesión */}
             <Button
