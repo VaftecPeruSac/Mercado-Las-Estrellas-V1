@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -23,6 +23,7 @@ import useResponsive from "../hooks/Responsive/useResponsive";
 // import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 import { manejarError, mostrarAlerta } from "./Alerts/Registrar";
 import axios from "axios";
+import { Usuario } from "../interface/Pagos";
 
 interface HeaderProps {
   open: boolean;
@@ -39,6 +40,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
   const navigate = useNavigate();
 
   const usuario = localStorage.getItem("usuario");
+  const [usu, setUsuarios] = useState<Usuario>();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -79,6 +81,35 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
       // ---
     }
   };
+
+  // const handleCerrarSesion = () => {
+  const getDataSesion = async () => {
+    // const dataToSend: {
+    //   usuario: string,
+    //   token: string,
+    // } = {usuario: "controldecalidad", token: "123"};
+
+    try {
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones`, {}); // dataToSend);
+
+      if (response.status === 200) {
+        // logout();
+        // navigate("/");
+        // console.log(response.data);
+        setUsuarios(response.data);
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      // ---
+    }
+  };
+
+  useEffect(() => {
+    getDataSesion();
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -172,7 +203,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                   display: isMobile ? "none" : "block"
                 }}
               >
-                {usuario}
+                {/* {usuario} */}{usu?.nombre_usuario}
               </Typography>
               {Boolean(anchorEl)
                 ? <ExpandLess
