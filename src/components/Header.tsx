@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -20,9 +20,9 @@ import { ExpandLess, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/Responsive/useResponsive";
-// import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
-import { manejarError, mostrarAlerta } from "./Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 import axios from "axios";
+import { Usuario } from "../interface/AuthContext/Usuario";
 
 interface HeaderProps {
   open: boolean;
@@ -31,14 +31,13 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
 
-  // Variables para el responsive
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const { usuario, logout } = useAuth();
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
-  const usuario = localStorage.getItem("usuario");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -48,37 +47,33 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
     setAnchorEl(null);
   };
 
-  // const handleCerrarSesion = () => {
-  const handleCerrarSesion = async () => {
-    // mostrarAlertaConfirmacion(
-    //   "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
-    // ).then((result) => {
-    //   if (result.isConfirmed) {
-    //     // logout();
-    //     // navigate("/");
-    //   }
-    // });
-
-    const dataToSend: {
-      usuario: string,
-      token: string,
-    } = {usuario: "controldecalidad", token: "123"};
-
-    try {
-      const response = await axios.post(`https://mercadolasestrellas.online/intranet/public/v1/logout`, dataToSend);
-
-      if (response.status === 200) {
+  const handleCerrarSesion = () => {
+    mostrarAlertaConfirmacion(
+      "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
+    ).then((result) => {
+      if (result.isConfirmed) {
         logout();
         navigate("/");
-      } else {
-        mostrarAlerta("Error");
       }
-    } catch (error) {
-      manejarError(error);
-    } finally {
-      // ---
-    }
+    });
   };
+
+  // const getDataSesion = async () => {
+  //   try {
+  //     const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones`, {});
+  //     if (response.status === 200) {
+  //       setUsuarios(response.data);
+  //     } else {
+  //       mostrarAlerta("Error");
+  //     }
+  //   } catch (error) {
+  //     manejarError(error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getDataSesion();
+  // }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -121,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     mb: isMobile ? -4 : -5
                   }}
                 >
-                  <h2>Bienvenido al Sistema, Administrador</h2>
+                  <h2>Bienvenido al Sistema, {usuario}</h2>
                 </Typography>
               </Grid>
               <Grid item xs={12}>

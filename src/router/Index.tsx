@@ -36,27 +36,51 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "socios",
-        element: <Tabla />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <Tabla />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "puestos",
-        element: <TablaPuestos />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaPuestos />,
+          </ProtectedRoute>
+        ),
       },
       {
         path: "servicios",
-        element: <TablaServicios />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaServicios />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "cuotas",
-        element: <TablaCuota />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaCuota />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "pagos",
-        element: <TablaPagos />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaPagos />
+          </ProtectedRoute>  
+        ),
       },
       {
         path: "reporte-pagos",
@@ -68,15 +92,27 @@ export const router = createBrowserRouter([
       },
       {
         path: "reporte-cuotas-metrado",
-        element: <TablaReporteCuotasMetrado />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaReporteCuotasMetrado />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "reporte-cuotas-puesto",
-        element: <TablaCuotasPuesto />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaCuotasPuesto />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "reporte-resumen",
-        element: <TablaReporteResumen />,
+        element: (
+          <ProtectedRoute requiredRol="3">
+            <TablaReporteResumen />
+          </ProtectedRoute>
+        ),
       }
     ],
   },
