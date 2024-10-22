@@ -8,11 +8,14 @@ import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
 import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
-  const [usuario, setUsuario] = useState("");
-  const [password, setPassword] = useState("");
-  const [rol, setRol] = useState("1");
+
+  const [usuario, setUsuario] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [rol, setRol] = useState<string>("1");
+
   const { login } = useAuth();
   const navigate = useNavigate();
+
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
   const IniciarSesion = async () => {
@@ -22,7 +25,7 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         const { token } = response.data;
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
-        login(usuario); 
+        login(usuario, rol);
         window.location.replace('/home');
         mostrarAlerta('Inicio de sesión', `Bienvenido ${usuario}.`, 'success');
       } else {

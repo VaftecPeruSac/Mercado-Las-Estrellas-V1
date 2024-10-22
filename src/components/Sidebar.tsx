@@ -46,9 +46,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   // Variables para el responsive
   const { isMobile, isTablet } = useResponsive();
-
+  const { rol, logout } = useAuth();
+  
   const [collapseDashboard, setCollapseDashboard] = useState(true);
-  const [collapseReportes, setCollapseReportes] = useState(isMobile ? true : false);
+  const [collapseReportes, setCollapseReportes] = useState(isMobile || (rol === "1") ? true : false);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -56,7 +57,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [emailUsuario, setEmailUsuario] = useState("");
 
   const location = useLocation();
-  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleOpenPanel = () => {
@@ -149,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       display: "flex",
       flexDirection: "column",
       bgcolor: "#1f2022",
-      pl: 2, pr: 2,
+      px: 2,
       overflowY: "auto", // Hace que el sidebar tenga scroll
       "&::-webkit-scrollbar": {
         display: "none", // Oculta el scrollbar en navegadores basados en WebKit
@@ -181,137 +181,140 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
       <Box>
 
-        <List>
+        {rol !== "1" && (
 
-          <ListItemButton
-            component={Link}
-            to="/home"
-            sx={getEstilos("/home", { mt: 2 })}
-            onClick={() => {
-              if (!isMobile && !isTablet) {
-                if (location.pathname === "/home") {
-                  handleOpenPanel();
-                }
-              } else {
-                if (location.pathname === "/home") {
-                  handleOpenPanel();
+          <List>
+
+            {/* Panel de Control */}
+            <ListItemButton
+              component={Link}
+              to="/home"
+              sx={getEstilos("/home", { mt: 2 })}
+              onClick={() => {
+                if (!isMobile && !isTablet) {
+                  if (location.pathname === "/home") {
+                    handleOpenPanel();
+                  }
                 } else {
-                  onClose();
+                  if (location.pathname === "/home") {
+                    handleOpenPanel();
+                  } else {
+                    onClose();
+                  }
                 }
-              }
-            }}
-          >
-            <ListItemIcon sx={{ color: "inherit" }}>
-              <DashboardIcon />
-            </ListItemIcon>
-            {open && (
-              <ListItemText
-                primary="Panel de Control"
-                sx={{ ml: -3, }}
-              />
-            )}
-            {collapseDashboard ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
+              }}
+            >
+              <ListItemIcon sx={{ color: "inherit" }}>
+                <DashboardIcon />
+              </ListItemIcon>
+              {open && (
+                <ListItemText
+                  primary="Panel de Control"
+                  sx={{ ml: -3, }}
+                />
+              )}
+              {collapseDashboard ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
 
-          <Collapse in={collapseDashboard} timeout="auto" unmountOnExit>
+            <Collapse in={collapseDashboard} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
 
-            <List component="div" disablePadding>
+                {/* Socios */}
+                <ListItemButton
+                  component={Link}
+                  to="socios"
+                  sx={getEstilos("/home/socios", { ml: 2 })}
+                  onClick={isTablet || isMobile ? onClose : undefined}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>
+                    <Groups />
+                  </ListItemIcon>
+                  {open && (
+                    <ListItemText
+                      primary="Socios"
+                      sx={{ ml: -3 }}
+                    />
+                  )}
+                </ListItemButton>
 
-              {/* Socios */}
-              <ListItemButton
-                component={Link}
-                to="socios"
-                sx={getEstilos("/home/socios", { ml: 2 })}
-                onClick={isTablet || isMobile ? onClose : undefined}
-              >
-                <ListItemIcon sx={{ color: "inherit" }}>
-                  <Groups />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText
-                    primary="Socios"
-                    sx={{ ml: -3 }}
-                  />
-                )}
-              </ListItemButton>
+                {/* Puestos */}
+                <ListItemButton
+                  component={Link}
+                  to="puestos"
+                  sx={getEstilos("/home/puestos", { ml: 2 })}
+                  onClick={isTablet || isMobile ? onClose : undefined}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>
+                    <Storefront />
+                  </ListItemIcon>
+                  {open && (
+                    <ListItemText
+                      primary="Puestos"
+                      sx={{ ml: -3 }}
+                    />
+                  )}
+                </ListItemButton>
 
-              {/* Puestos */}
-              <ListItemButton
-                component={Link}
-                to="puestos"
-                sx={getEstilos("/home/puestos", { ml: 2 })}
-                onClick={isTablet || isMobile ? onClose : undefined}
-              >
-                <ListItemIcon sx={{ color: "inherit" }}>
-                  <Storefront />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText
-                    primary="Puestos"
-                    sx={{ ml: -3 }}
-                  />
-                )}
-              </ListItemButton>
+                {/* Servicios */}
+                <ListItemButton
+                  component={Link}
+                  to="servicios"
+                  sx={getEstilos("/home/servicios", { ml: 2 })}
+                  onClick={isTablet || isMobile ? onClose : undefined}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>
+                    <ShoppingBasket />
+                  </ListItemIcon>
+                  {open && (
+                    <ListItemText
+                      primary="Servicios"
+                      sx={{ ml: -3 }}
+                    />
+                  )}
+                </ListItemButton>
 
-              {/* Servicios */}
-              <ListItemButton
-                component={Link}
-                to="servicios"
-                sx={getEstilos("/home/servicios", { ml: 2 })}
-                onClick={isTablet || isMobile ? onClose : undefined}
-              >
-                <ListItemIcon sx={{ color: "inherit" }}>
-                  <ShoppingBasket />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText
-                    primary="Servicios"
-                    sx={{ ml: -3 }}
-                  />
-                )}
-              </ListItemButton>
+                {/* Cuotas */}
+                <ListItemButton
+                  component={Link}
+                  to="cuotas"
+                  sx={getEstilos("/home/cuotas", { ml: 2 })}
+                  onClick={isTablet || isMobile ? onClose : undefined}
+                >
+                  <Assignment sx={{ color: "inherit" }}>
+                    <Article />
+                  </Assignment>
+                  {open && (
+                    <ListItemText
+                      primary="Generar Cuota"
+                      sx={{ ml: 1 }}
+                    />
+                  )}
+                </ListItemButton>
 
-              {/* Cuotas */}
-              <ListItemButton
-                component={Link}
-                to="cuotas"
-                sx={getEstilos("/home/cuotas", { ml: 2 })}
-                onClick={isTablet || isMobile ? onClose : undefined}
-              >
-                <Assignment sx={{ color: "inherit" }}>
-                  <Article />
-                </Assignment>
-                {open && (
-                  <ListItemText
-                    primary="Generar Cuota"
-                    sx={{ ml: 1 }}
-                  />
-                )}
-              </ListItemButton>
+                {/* Pagos */}
+                <ListItemButton
+                  component={Link}
+                  to="pagos"
+                  sx={getEstilos("/home/pagos", { ml: 2 })}
+                  onClick={isTablet || isMobile ? onClose : undefined}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>
+                    <MonetizationOn />
+                  </ListItemIcon>
+                  {open && (
+                    <ListItemText
+                      primary="Pagos"
+                      sx={{ ml: -3 }}
+                    />
+                  )}
+                </ListItemButton>
 
-              {/* Pagos */}
-              <ListItemButton
-                component={Link}
-                to="pagos"
-                sx={getEstilos("/home/pagos", { ml: 2 })}
-                onClick={isTablet || isMobile ? onClose : undefined}
-              >
-                <ListItemIcon sx={{ color: "inherit" }}>
-                  <MonetizationOn />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText
-                    primary="Pagos"
-                    sx={{ ml: -3 }}
-                  />
-                )}
-              </ListItemButton>
+              </List>
+            </Collapse>
 
-            </List>
+          </List>
 
-          </Collapse>
-
-        </List>
+        )}
 
       </Box>
 
@@ -319,6 +322,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
         <Divider sx={{ bgcolor: "#505155", m: 3 }} />
 
+        {/* Reportes */}
         <ListItemButton
           sx={getEstilos("", { mt: 3 })}
           onClick={() => handleOpenReportes()}
@@ -373,57 +377,63 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             )}
           </ListItemButton>
 
-          {/* Reporte de cuotas por metrado */}
-          <ListItemButton
-            component={Link}
-            to="reporte-cuotas-metrado"
-            sx={getEstilos("/home/reporte-cuotas-metrado", { ml: 2 })}
-            onClick={isTablet || isMobile ? onClose : undefined}
-          >
-            <ListItemIcon sx={{ color: "inherit" }}>
-              <Description />
-            </ListItemIcon>
-            {open && (
-              <ListItemText
-                primary="Reporte de cuotas por metrado"
-                sx={{ ml: -3 }}
-              />
-            )}
-          </ListItemButton>
+          {rol !== "1" && (
+            <>
+              {/* Reporte de cuotas por metrado */}
+              <ListItemButton
+                component={Link}
+                to="reporte-cuotas-metrado"
+                sx={getEstilos("/home/reporte-cuotas-metrado", { ml: 2 })}
+                onClick={isTablet || isMobile ? onClose : undefined}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <Description />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Reporte de cuotas por metrado"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
 
-          {/* Reporte de cuotas por puestos */}
-          <ListItemButton
-            component={Link}
-            to="reporte-cuotas-puesto"
-            sx={getEstilos("/home/reporte-cuotas-puesto", { ml: 2 })}
-            onClick={isTablet || isMobile ? onClose : undefined}
-          >
-            <ListItemIcon sx={{ color: "inherit" }}>
-              <Description />
-            </ListItemIcon>
-            {open && (
-              <ListItemText
-                primary="Reporte de cuotas por puestos"
-                sx={{ ml: -3 }}
-              />
-            )}
-          </ListItemButton>
-          <ListItemButton
-            component={Link}
-            to="reporte-resumen"
-            sx={getEstilos("/home/reporte-resumen", { ml: 2 })}
-            onClick={isTablet || isMobile ? onClose : undefined}
-          >
-            <ListItemIcon sx={{ color: "inherit" }}>
-              <Description />
-            </ListItemIcon>
-            {open && (
-              <ListItemText
-                primary="Reporte de resumen"
-                sx={{ ml: -3 }}
-              />
-            )}
-          </ListItemButton>
+              {/* Reporte de cuotas por puestos */}
+              <ListItemButton
+                component={Link}
+                to="reporte-cuotas-puesto"
+                sx={getEstilos("/home/reporte-cuotas-puesto", { ml: 2 })}
+                onClick={isTablet || isMobile ? onClose : undefined}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <Description />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Reporte de cuotas por puestos"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
+
+              {/* Reporte de resumen */}
+              <ListItemButton
+                component={Link}
+                to="reporte-resumen"
+                sx={getEstilos("/home/reporte-resumen", { ml: 2 })}
+                onClick={isTablet || isMobile ? onClose : undefined}
+              >
+                <ListItemIcon sx={{ color: "inherit" }}>
+                  <Description />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Reporte de resumen"
+                    sx={{ ml: -3 }}
+                  />
+                )}
+              </ListItemButton>
+            </>
+          )}
 
         </Collapse>
 
