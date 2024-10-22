@@ -17,7 +17,7 @@ import {
 import { SaveAs, DeleteForever, Search } from "@mui/icons-material";
 import RegistrarServicio from "./RegistrarServicio";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
-import { Servicio } from "../../interface/Servicios"; // se esta importando la interface servicios
+import { Servicio } from "../../interface/Servicios/Servicios"; // se esta importando la interface servicios
 import { columns } from "../../Columns/Servicios";
 import useServicioState from "../../hooks/Servicios/useServicio";
 import { API_ROUTES } from "../../service/ServicioApi"; // Asegúrate de que la ruta sea correcta

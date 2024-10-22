@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-// Crear instancia de Axios con configuración global
+//instancia de Axios + config global
 const apiClient = axios.create({
   baseURL: "https://mercadolasestrellas.online/intranet/public/v1",
   headers: {

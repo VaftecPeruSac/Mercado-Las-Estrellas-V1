@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Servicio, Data } from "../../interface/Servicios";
+import { Servicio, Data } from "../../interface/Servicios/Servicios";
 import useResponsive from "../Responsive/useResponsive";
 import axios from "axios";
 import { API_ROUTES } from "../../service/ServicioApi";

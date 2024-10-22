@@ -32,50 +32,22 @@ import {
   TxtFormulario,
 } from "../Shared/ElementosFormulario";
 import { reFormatDate } from "../../Utils/dateUtils";
+import { AgregarProps, Puesto, Socio } from "../../interface/Servicios/RegistrarServicio";
+import apiClient from "../../Utils/apliClient";
+import { API_ROUTES } from "../../service/ServicioApi";
 
-interface AgregarProps {
-  open: boolean;
-  handleClose: () => void;
-  servicio: Editarservicio | null;
-}
-
-interface Editarservicio {
-  id_servicio: string;
-  descripcion: string;
-  costo_unitario: string;
-  tipo_servicio: string;
-  fecha_registro: string;
-}
-
-interface Socio {
-  id_socio: number;
-  nombre_completo: string;
-}
-
-interface Puesto {
-  id_puesto: number;
-  numero_puesto: string;
-  block: {
-    nombre: string;
-  };
-}
 
 const RegistrarServicio: React.FC<AgregarProps> = ({
   open,
   handleClose,
   servicio,
 }) => {
-  // Variables para el diseño responsivo
   const { isMobile } = useResponsive();
-  const [loading, setLoading] = useState(false); // Estado de loading
-
+  const [loading, setLoading] = useState(false); 
   const [activeTab, setActiveTab] = useState(0);
-
-  // const [costoTotal, setCostoTotal] = useState("");
   const [costoMetroCuadrado, setCostoMetroCuadrado] = useState(0);
   const [puestosActivos, setPuestosActivos] = useState(0);
   const [areaTotal, setAreaTotal] = useState(0);
-
   const [socios, setSocios] = useState([]);
   const [puestos, setPuestos] = useState([]);
 
@@ -83,7 +55,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   useEffect(() => {
     const fetchSocios = async () => {
       try {
-        const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=50`);
+        const response = await apiClient.get(API_ROUTES.socios.listar());
         const data = response.data.data.map((item: Socio) => ({
           id_socio: item.id_socio,
           nombre_completo: item.nombre_completo,
@@ -99,7 +71,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   // Obtener Lista Puestos
   const fetchPuestos = async (idSocio: string) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      const response = await apiClient.get(API_ROUTES.puestos.listarPorSocio(idSocio));
       const data = response.data.data.map((item: Puesto) => ({
         id_puesto: item.id_puesto,
         numero_puesto: item.numero_puesto,
@@ -220,10 +192,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     const { id_servicio, ...dataToSend } = formData;
 
     try {
-      const response = await axios.post(
-        "https://mercadolasestrellas.online/intranet/public/v1/servicios",
-        dataToSend
-      );
+      const response = await apiClient.post(API_ROUTES.servicios.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje =
           response.data.messsage || "El servicio se registró correctamente";
@@ -242,13 +211,14 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   };
 
   // Actualizar servicio
-  const editarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const editarServicio = async (item: any) => {
     setLoading(true);
     const { ...dataToSend } = formData;
+    // const idServicio = servicio?.id_servicio as string;
     try {
-      const response = await axios.put(
-        `https://mercadolasestrellas.online/intranet/public/v1/servicios/${servicio?.id_servicio}`,
+
+      const response = await apiClient.put(
+        API_ROUTES.servicios.editar(item.id_servicio?.id_servicio), 
         dataToSend
       );
       if (response.status === 200) {

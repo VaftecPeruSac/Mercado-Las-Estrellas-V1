@@ -1,5 +1,5 @@
 
-import { Column } from "../interface/Servicios"; // se esta importando la interface servicios
+import { Column } from "../interface/Servicios/Servicios"; // se esta importando la interface servicios
 
 export const columns: readonly Column[] = [
     { id: "descripcion", label: "Descripción", minWidth: 50 },
