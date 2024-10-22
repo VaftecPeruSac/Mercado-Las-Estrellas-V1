@@ -9,23 +9,21 @@ import {
 } from "react";
 import { manejarError, mostrarAlerta } from "../components/Alerts/Registrar";
 import { AuthContextType } from "../interface/AuthContext/AuthContext";
+import { Usuario } from "../interface/AuthContext/Usuario";
 
 // Creamos el contexto de autenticación
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Creamos el proveedor de autenticación para envolver la aplicación
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [autenticado, setAutenticado] = useState<boolean>(() => JSON.parse(localStorage.getItem("autenticado") || "false"));
-  const [usuario, setUsuario] = useState<string | null>(() => localStorage.getItem("usuario"));
-  const [rol, setRol] = useState<string | null>(() => localStorage.getItem("rol"));
 
-  const login = (nombreUsuario: string, rolUsuario: string) => {
+  const [autenticado, setAutenticado] = useState<boolean>(() => JSON.parse(localStorage.getItem("autenticado") || "false"));
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+
+  const login = () => {
     setAutenticado(true);
-    setUsuario(nombreUsuario);
-    setRol(rolUsuario);
     localStorage.setItem("autenticado", JSON.stringify(true));
-    localStorage.setItem("usuario", nombreUsuario);
-    localStorage.setItem("rol", rolUsuario);
+    localStorage.setItem("usuario", JSON.stringify(usuario));
   };
 
   const logout = async () => {
@@ -48,26 +46,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const getDataSesion = async () => {
+    try {
+      const token = Cookies.get("token");
+      if (token) {
+        const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones?token=${token}`);
+        if (response.status === 200) {
+          setUsuario(response.data);
+          console.log(response.data);
+        } else {
+          mostrarAlerta("Error");
+        }
+      }
+    } catch (error) {
+      manejarError(error);
+    }
+  };
+
+  useEffect(() => {
+    getDataSesion();
+  }, []);
+
   const limpiarSesion = () => {
     Cookies.remove("token", { path: "/" });
     setAutenticado(false);
     setUsuario(null);
-    setRol(null);
     localStorage.removeItem("autenticado");
     localStorage.removeItem("usuario");
-    localStorage.removeItem("rol");
   };
 
   useEffect(() => {
     const manejarAutenticacion = () => {
       const guardarAutenticado = JSON.parse(localStorage.getItem("autenticado") || "false");
-      const guardarUsuario = localStorage.getItem("usuario");
-      const guardarRol = localStorage.getItem("rol");
+      const guardarUsuario = JSON.parse(localStorage.getItem("usuario") || "null");
 
       if (guardarAutenticado === null) {
         setAutenticado(guardarAutenticado);
         setUsuario(guardarUsuario);
-        setRol(guardarRol);
       }
     };
 
@@ -78,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ autenticado, usuario, rol, login, logout }}>
+    <AuthContext.Provider value={{ autenticado, usuario, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -25,7 +25,7 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         const { token } = response.data;
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
-        login(usuario, rol);
+        login();
         window.location.replace('/home');
         mostrarAlerta('Inicio de sesión', `Bienvenido ${usuario}.`, 'success');
       } else {

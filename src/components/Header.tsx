@@ -20,9 +20,7 @@ import { ExpandLess, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/Responsive/useResponsive";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
-import axios from "axios";
-import { Usuario } from "../interface/AuthContext/Usuario";
+import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
 
 interface HeaderProps {
   open: boolean;
@@ -32,9 +30,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
 
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
-
   const { usuario, logout } = useAuth();
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
@@ -57,23 +53,6 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
       }
     });
   };
-
-  // const getDataSesion = async () => {
-  //   try {
-  //     const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones`, {});
-  //     if (response.status === 200) {
-  //       setUsuarios(response.data);
-  //     } else {
-  //       mostrarAlerta("Error");
-  //     }
-  //   } catch (error) {
-  //     manejarError(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getDataSesion();
-  // }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -116,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                     mb: isMobile ? -4 : -5
                   }}
                 >
-                  <h2>Bienvenido al Sistema, {usuario}</h2>
+                  <h2>Bienvenido al Sistema, {usuario?.nombre_usuario}</h2>
                 </Typography>
               </Grid>
               <Grid item xs={12}>
@@ -167,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                   display: isMobile ? "none" : "block"
                 }}
               >
-                {usuario}
+                {usuario?.nombre_usuario}
               </Typography>
               {Boolean(anchorEl)
                 ? <ExpandLess

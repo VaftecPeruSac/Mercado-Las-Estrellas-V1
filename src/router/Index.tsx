@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Cajero", "Administrador"]}>
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
       {
         path: "socios",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Cajero", "Administrador"]}>
             <Tabla />
           </ProtectedRoute>
         ),
@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
       {
         path: "puestos",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Administrador"]}>
             <TablaPuestos />,
           </ProtectedRoute>
         ),
@@ -61,7 +61,7 @@ export const router = createBrowserRouter([
       {
         path: "servicios",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Administrador"]}>
             <TablaServicios />
           </ProtectedRoute>
         ),
@@ -69,7 +69,7 @@ export const router = createBrowserRouter([
       {
         path: "cuotas",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Administrador"]}>
             <TablaCuota />
           </ProtectedRoute>
         ),
@@ -77,7 +77,7 @@ export const router = createBrowserRouter([
       {
         path: "pagos",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Cajero", "Administrador"]}>
             <TablaPagos />
           </ProtectedRoute>  
         ),
@@ -93,7 +93,7 @@ export const router = createBrowserRouter([
       {
         path: "reporte-cuotas-metrado",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Cajero", "Administrador"]}>
             <TablaReporteCuotasMetrado />
           </ProtectedRoute>
         ),
@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
       {
         path: "reporte-cuotas-puesto",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Cajero", "Administrador"]}>
             <TablaCuotasPuesto />
           </ProtectedRoute>
         ),
@@ -109,7 +109,7 @@ export const router = createBrowserRouter([
       {
         path: "reporte-resumen",
         element: (
-          <ProtectedRoute requiredRol="3">
+          <ProtectedRoute requiredRoles={["Cajero", "Administrador"]}>
             <TablaReporteResumen />
           </ProtectedRoute>
         ),

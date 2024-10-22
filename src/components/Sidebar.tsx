@@ -46,10 +46,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   // Variables para el responsive
   const { isMobile, isTablet } = useResponsive();
-  const { rol, logout } = useAuth();
+  const { usuario, logout } = useAuth();
   
   const [collapseDashboard, setCollapseDashboard] = useState(true);
-  const [collapseReportes, setCollapseReportes] = useState(isMobile || (rol === "1") ? true : false);
+  const [collapseReportes, setCollapseReportes] = useState(isMobile || (usuario?.rol === "Socio") ? true : false);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -181,7 +181,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
       <Box>
 
-        {rol !== "1" && (
+        {usuario?.rol !== "Socio" && (
 
           <List>
 
@@ -237,59 +237,63 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                   )}
                 </ListItemButton>
 
-                {/* Puestos */}
-                <ListItemButton
-                  component={Link}
-                  to="puestos"
-                  sx={getEstilos("/home/puestos", { ml: 2 })}
-                  onClick={isTablet || isMobile ? onClose : undefined}
-                >
-                  <ListItemIcon sx={{ color: "inherit" }}>
-                    <Storefront />
-                  </ListItemIcon>
-                  {open && (
-                    <ListItemText
-                      primary="Puestos"
-                      sx={{ ml: -3 }}
-                    />
-                  )}
-                </ListItemButton>
+                {usuario?.rol === "Administrador" && (
+                  <>                
+                    {/* Puestos */}
+                    <ListItemButton
+                      component={Link}
+                      to="puestos"
+                      sx={getEstilos("/home/puestos", { ml: 2 })}
+                      onClick={isTablet || isMobile ? onClose : undefined}
+                    >
+                      <ListItemIcon sx={{ color: "inherit" }}>
+                        <Storefront />
+                      </ListItemIcon>
+                      {open && (
+                        <ListItemText
+                          primary="Puestos"
+                          sx={{ ml: -3 }}
+                        />
+                      )}
+                    </ListItemButton>
 
-                {/* Servicios */}
-                <ListItemButton
-                  component={Link}
-                  to="servicios"
-                  sx={getEstilos("/home/servicios", { ml: 2 })}
-                  onClick={isTablet || isMobile ? onClose : undefined}
-                >
-                  <ListItemIcon sx={{ color: "inherit" }}>
-                    <ShoppingBasket />
-                  </ListItemIcon>
-                  {open && (
-                    <ListItemText
-                      primary="Servicios"
-                      sx={{ ml: -3 }}
-                    />
-                  )}
-                </ListItemButton>
+                    {/* Servicios */}
+                    <ListItemButton
+                      component={Link}
+                      to="servicios"
+                      sx={getEstilos("/home/servicios", { ml: 2 })}
+                      onClick={isTablet || isMobile ? onClose : undefined}
+                    >
+                      <ListItemIcon sx={{ color: "inherit" }}>
+                        <ShoppingBasket />
+                      </ListItemIcon>
+                      {open && (
+                        <ListItemText
+                          primary="Servicios"
+                          sx={{ ml: -3 }}
+                        />
+                      )}
+                    </ListItemButton>
 
-                {/* Cuotas */}
-                <ListItemButton
-                  component={Link}
-                  to="cuotas"
-                  sx={getEstilos("/home/cuotas", { ml: 2 })}
-                  onClick={isTablet || isMobile ? onClose : undefined}
-                >
-                  <Assignment sx={{ color: "inherit" }}>
-                    <Article />
-                  </Assignment>
-                  {open && (
-                    <ListItemText
-                      primary="Generar Cuota"
-                      sx={{ ml: 1 }}
-                    />
-                  )}
-                </ListItemButton>
+                    {/* Cuotas */}
+                    <ListItemButton
+                      component={Link}
+                      to="cuotas"
+                      sx={getEstilos("/home/cuotas", { ml: 2 })}
+                      onClick={isTablet || isMobile ? onClose : undefined}
+                    >
+                      <Assignment sx={{ color: "inherit" }}>
+                        <Article />
+                      </Assignment>
+                      {open && (
+                        <ListItemText
+                          primary="Generar Cuota"
+                          sx={{ ml: 1 }}
+                        />
+                      )}
+                    </ListItemButton>
+                  </>
+                )}
 
                 {/* Pagos */}
                 <ListItemButton
@@ -377,7 +381,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             )}
           </ListItemButton>
 
-          {rol !== "1" && (
+          {usuario?.rol !== "Socio" && (
             <>
               {/* Reporte de cuotas por metrado */}
               <ListItemButton
