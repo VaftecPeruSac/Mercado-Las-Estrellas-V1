@@ -4,8 +4,8 @@ export const API_ROUTES = {
     fetch: (page: number, buscarTexto: string) =>
       `/servicios?page=${page}&buscar_texto=${buscarTexto}`,
     exportar: () => `/servicios/exportar`,
-    registrar:()=> `/servicios/`,
-    editar: (id: string) => `/servicios/${id}`, // Cambiamos a string
+    registrar:()=> `/servicios`,
+    editar: (id: string | undefined) => `/servicios/${id}`, // Cambiamos a string
     eliminar: (id: number) => `/servicios/${id}`,
   },
   //Constulas useEffect para listar socios en formularios

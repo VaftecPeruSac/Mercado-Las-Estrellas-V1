@@ -211,19 +211,18 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   };
 
   // Actualizar servicio
-  const editarServicio = async (item: any) => {
+  const editarServicio = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     setLoading(true);
     const { ...dataToSend } = formData;
     // const idServicio = servicio?.id_servicio as string;
     try {
 
-      const response = await apiClient.put(
-        API_ROUTES.servicios.editar(item.id_servicio?.id_servicio), 
-        dataToSend
-      );
+      const response = await apiClient.put(API_ROUTES.servicios.editar(servicio?.id_servicio),dataToSend);
       if (response.status === 200) {
         const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success");
+        onServicioRegistrado();
         handleCloseModal();
       } else {
         mostrarAlerta("Error");
