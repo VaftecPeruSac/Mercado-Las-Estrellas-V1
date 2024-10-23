@@ -29,8 +29,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       const token = Cookies.get("token");
+      const nombreUsu = usuario?.nombre_usuario;
       if (token && usuario) {
-        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",{ usuario },
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",
+          { usuario: nombreUsu },
           {headers: {Authorization: `Bearer ${token}`,"Content-Type": "application/json",},}
         );
         if (response.status === 200) {
