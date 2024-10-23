@@ -3,7 +3,7 @@ import axios from "axios";
 import { Api_Global_Socios } from "../../service/SocioApi";
 import useResponsive from "../Responsive/useResponsive";
 import { useNavigate } from "react-router-dom";
-import { Data, Socio } from "../../interface/Socios";
+import { Data, Socio } from "../../interface/Socios/Socios";
 import { formatDate } from "../../Utils/dateUtils";
 import apiClient from "../../Utils/apliClient";
 

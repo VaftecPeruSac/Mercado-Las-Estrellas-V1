@@ -1,4 +1,4 @@
-import { Column } from "../interface/Socios";
+import { Column } from "../interface/Socios/Socios";
 
 export const columns: readonly Column[] = [
     { id: "nombre_completo", label: "Nombre", minWidth: 50 }, // Nombre del socio

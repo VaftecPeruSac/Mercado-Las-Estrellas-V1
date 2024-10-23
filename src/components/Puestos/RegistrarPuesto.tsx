@@ -537,7 +537,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const dataToSend = formDataTransferencia;
     try {
-      const response = await axios.post(Api_Global_Puestos.puestos.transferir(), dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.puestos.transferir(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El puesto se transfirió correctamente";
         mostrarAlerta("Transferencia exitosa", mensaje, "success").then(() => {

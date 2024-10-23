@@ -6,7 +6,6 @@ import apiClient from '../../Utils/apliClient';
 
 const useGirosNegocio = () => {
     const [girosNegocio, setGirosNegocio] = useState<GiroNegocio[]>([]);
-
     useEffect(() => {
         const fechGiroNegocio = async () => {
             try {
@@ -16,8 +15,6 @@ const useGirosNegocio = () => {
             }
         };
         fechGiroNegocio();
-
-
     }, []);
 
 
