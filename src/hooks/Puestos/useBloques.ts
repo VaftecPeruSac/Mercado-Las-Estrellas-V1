@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Api_Global_Puestos } from '../../service/PuestoApi';
 import { Bloque } from '../../interface/Puestos';
+import apiClient from '../../Utils/apliClient';
 
 const useBloques = () => {
     const [bloques, setBloques] = useState<Bloque[]>([]);
@@ -9,7 +10,7 @@ const useBloques = () => {
     useEffect(() => {
         const fetchBloques = async () => {
             try {
-                const response = await axios.get(Api_Global_Puestos.bloques.fetch());
+                const response = await apiClient.get(Api_Global_Puestos.bloques.listar());
                 setBloques(response.data.data);
             } catch (error) {
                 console.error("Error al obtener los bloques", error);

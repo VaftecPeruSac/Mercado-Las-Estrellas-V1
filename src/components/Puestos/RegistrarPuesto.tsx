@@ -469,10 +469,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       return;
     }
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); // Publico
-
+      const response = await apiClient.post(Api_Global_Puestos.puestos.asignarInquilino(), dataToSend); 
       if (response.status === 200) {
-        const mensaje = response.data.message || "E l inquilino se registró correctamente";
+        const mensaje = response.data.message || "El inquilino se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();
@@ -487,14 +486,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   };
 
-  // Registrar Bloque
   const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     const dataToSend = { ...formDataBloque };
 
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.bloques.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El bloque se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -517,7 +515,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const dataToSend = { ...formDataGiroNegocio };
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.girosNegocio.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El giro de negocio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -539,7 +537,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const dataToSend = formDataTransferencia;
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/transferir", dataToSend);
+      const response = await axios.post(Api_Global_Puestos.puestos.transferir(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El puesto se transfirió correctamente";
         mostrarAlerta("Transferencia exitosa", mensaje, "success").then(() => {
