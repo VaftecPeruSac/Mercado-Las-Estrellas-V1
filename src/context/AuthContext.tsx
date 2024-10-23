@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -20,13 +21,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [autenticado, setAutenticado] = useState<boolean>(() => JSON.parse(localStorage.getItem("autenticado") || "false"));
   const [usuario, setUsuario] = useState<Usuario | null>(null);
 
-  const login = () => {
+  const login = (user: Usuario) => {
+    setUsuario(user);
     setAutenticado(true);
-    localStorage.setItem("autenticado", JSON.stringify(true));
     localStorage.setItem("usuario", JSON.stringify(usuario));
+    localStorage.setItem("autenticado", JSON.stringify(true));
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       const token = Cookies.get("token");
       const nombreUsu = usuario?.nombre_usuario;
@@ -36,9 +38,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           {headers: {Authorization: `Bearer ${token}`,"Content-Type": "application/json",},}
         );
         if (response.status === 200) {
-          const mensaje = response.data.message;
           limpiarSesion();
-          mostrarAlerta("Cierre de sesión", mensaje, "info");
+          mostrarAlerta("Cierre de sesión", response.data.message, "info");
         }
       } else {
         mostrarAlerta("error");
@@ -46,16 +47,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       manejarError(error);
     }
-  };
+  }, [usuario]);
 
-  const getDataSesion = async () => {
+  const getDataSesion = useCallback(async () => {
     try {
       const token = Cookies.get("token");
       if (token) {
         const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones?token=${token}`);
         if (response.status === 200) {
-          setUsuario(response.data);
-          console.log(response.data);
+          const user = response.data;
+          setUsuario(user);
+          setAutenticado(true);
+          localStorage.setItem("usuario", JSON.stringify(user));
+          localStorage.setItem("autenticado", JSON.stringify(true));
         } else {
           mostrarAlerta("Error");
         }
@@ -63,39 +67,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       manejarError(error);
     }
-  };
-
-  useEffect(() => {
-    getDataSesion();
   }, []);
 
   const limpiarSesion = () => {
     Cookies.remove("token", { path: "/" });
-    setAutenticado(false);
     setUsuario(null);
-    localStorage.removeItem("autenticado");
+    setAutenticado(false);
     localStorage.removeItem("usuario");
+    localStorage.removeItem("autenticado");
   };
 
   useEffect(() => {
-    const manejarAutenticacion = () => {
-      const guardarAutenticado = JSON.parse(localStorage.getItem("autenticado") || "false");
-      const guardarUsuario = JSON.parse(localStorage.getItem("usuario") || "null");
+    const cargarSesion = async () => {
+      const usuarioGuardado = localStorage.getItem("usuario");
+      const autenticacion = JSON.parse(localStorage.getItem("autenticado") || "false");
 
-      if (guardarAutenticado === null) {
-        setAutenticado(guardarAutenticado);
-        setUsuario(guardarUsuario);
+      if (usuarioGuardado && autenticacion) {
+        setUsuario(JSON.parse(usuarioGuardado));
+        setAutenticado(true);
+      } else {
+        await getDataSesion(); // Intentamos cargar la sesión
       }
     };
 
-    window.addEventListener("storage", manejarAutenticacion);
-    return () => {
-      window.removeEventListener("storage", manejarAutenticacion);
-    };
-  }, []);
+    cargarSesion();
+  }, [getDataSesion]);
 
   return (
-    <AuthContext.Provider value={{ autenticado, usuario, login, logout }}>
+    <AuthContext.Provider value={{ autenticado, usuario, login, logout, getDataSesion }}>
       {children}
     </AuthContext.Provider>
   );

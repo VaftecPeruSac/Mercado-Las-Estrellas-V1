@@ -9,25 +9,30 @@ import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
 
-  const [usuario, setUsuario] = useState<string>("");
+  const [nomUsuario, setNomUsuario] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   // const [rol, setRol] = useState<string>("1");
 
-  const { login } = useAuth();
+  const { login, usuario } = useAuth();
   const navigate = useNavigate();
 
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
   const IniciarSesion = async () => {
-    const dataToSend = { usuario, password };  
+    const dataToSend = { usuario: nomUsuario, password };  
     try {
-      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login',dataToSend);
+      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login', dataToSend);
       if (response.status === 200) {
         const { token } = response.data;
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
-        login();
-        window.location.replace('/home');
-        mostrarAlerta('Inicio de sesión', `Bienvenido ${usuario}.`, 'success');
+        if (!usuario) {
+          window.location.replace('/home');
+          mostrarAlerta('Error', 'Usuario no encontrado.', 'error');
+        } else {
+          login(usuario);
+          window.location.replace('/home');
+          mostrarAlerta('Inicio de sesión', `Bienvenido ${nomUsuario}.`, 'success');
+        }
       } else {
         mostrarAlerta("Error");
       }
@@ -101,8 +106,8 @@ const Login: React.FC = () => {
                 placeholder="Ingrese su nombre completo"
                 InputProps={{ style: { height: "3rem" } }}
                 InputLabelProps={{ style: { color: "#0AB544" } }}
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
+                value={nomUsuario}
+                onChange={(e) => setNomUsuario(e.target.value)}
               />
             </Box>
 

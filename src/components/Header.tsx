@@ -92,7 +92,6 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
     }, 15 * 60 * 1000); // 15 minutos
 
     return () => clearInterval(interval);
-
   }, []);
 
   return (
