@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (response.status === 200) {
           setUsuario(response.data);
         } else {
-          mostrarAlerta("Error"");
+          mostrarAlerta("Error");
         }
       }
     } catch (error) {
