@@ -95,7 +95,6 @@ const TablaServicios: React.FC = () => {
     } catch (error) {
       manejarError(error);
     } finally {
-      // ---
     }
   };
 

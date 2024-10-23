@@ -4,6 +4,7 @@ import { Api_Global_Puestos } from "../../service/PuestoApi";
 import { Data, Puesto } from "../../interface/Puestos";
 import { formatDate } from "../../Utils/dateUtils";
 import useResponsive from "../Responsive/useResponsive";
+import apiClient from "../../Utils/apliClient";
 
 const usePuestos = () => {
   const [giroSeleccionado, setGiroSeleccionado] = useState<string>("");
@@ -26,7 +27,7 @@ const usePuestos = () => {
     async (page: number = 1) => {
       setIsLoading(true);
       try {
-        const response = await axios.get(Api_Global_Puestos.puestos.fetch(page, giroSeleccionado, bloqueSeleccionado, nroPuestoIngresado));
+        const response = await apiClient.get(Api_Global_Puestos.puestos.fetch(page, giroSeleccionado, bloqueSeleccionado, nroPuestoIngresado));
         const data = response.data.data.map((item: Puesto) => ({
           id_puesto: item.id_puesto,
           numero_puesto: item.numero_puesto,

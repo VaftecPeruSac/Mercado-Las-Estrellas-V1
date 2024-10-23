@@ -1,15 +1,25 @@
-const BASE_URL = "https://mercadolasestrellas.online/intranet/public/v1";
 
 export const Api_Global_Puestos = {
     puestos: {
+        //el fetch es listar
         fetch: (page: number, idGiroNegocio: string, idBlock: string, numeroPuesto: string) =>
-            `${BASE_URL}/puestos?page=${page}&id_gironegocio=${idGiroNegocio}&id_block=${idBlock}&numero_puesto=${numeroPuesto}`,
-        exportar: () => `${BASE_URL}/puestos/exportar`,
+            `/puestos?page=${page}&id_gironegocio=${idGiroNegocio}&id_block=${idBlock}&numero_puesto=${numeroPuesto}`,
+        exportar: () => `puestos/exportar`,
+        eliminar: (id: number) => `/puestos/${id}`,
+        registrar:() => `/puestos`,
+        editar: (id: string | undefined) => `/puestos/${id}`, 
+        asignarPuesto:() =>`/puestos/asignar`,
+        asignarInquilino:()=>`/inquilinos`,
+        transferir:()=>`/puestos/transferir`,
     },
+
     bloques: {
-        fetch: () => `${BASE_URL}/blocks`,
+        listar: () => `/blocks`,
+        registrar:()=>`/blocks`,
     },
     girosNegocio: {
-        fetch: () => `${BASE_URL}/giro-negocios`,
+        listar: () => `/giro-negocios`,
+        registrar:()=>`/giro-negocios`,
+
     },
 };

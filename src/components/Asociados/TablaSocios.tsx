@@ -31,7 +31,7 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
-import { Data, Socio } from "../../interface/Socios";
+import { Data, Socio } from "../../interface/Socios/Socios";
 import { columns } from "../../Columns/Socios";
 import { handleExport } from "../../Utils/exportUtils";
 import { Api_Global_Socios } from "../../service/SocioApi";

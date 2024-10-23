@@ -1,4 +1,4 @@
-import { Socio } from "../interface/Socios";
+import { Socio } from "../interface/Socios/Socios";
 import * as XLSX from 'xlsx';
 
 export const handleAccionesSocio = async (accion: number, telefono: string, socio: Socio) => {

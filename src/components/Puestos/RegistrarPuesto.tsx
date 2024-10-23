@@ -26,6 +26,8 @@ import BotonesModal from '../Shared/BotonesModal';
 import ContenedorModal from '../Shared/ContenedorModal';
 import { AvisoFormulario, SeparadorBloque, TxtFormulario } from '../Shared/ElementosFormulario';
 import { reFormatDate } from '../../Utils/dateUtils';
+import apiClient from '../../Utils/apliClient';
+import { Api_Global_Puestos } from '../../service/PuestoApi';
 
 interface AgregarProps {
   open: boolean;
@@ -384,10 +386,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     e.preventDefault();
     setLoading(true);
     const { id_puesto, ...dataToSend } = formDataPuesto;
-
-
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.puestos.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "Puestoss registrado con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -406,26 +406,22 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Editar Puesto
   const editarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Evita el comportamiento por defecto del clic
     e.preventDefault();
     setLoading(true);
-
-    // Data a enviar
     const { ...dataToSend } = formDataPuesto;
-
     try {
-      // Conexión al servicio
-      const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/puestos/${puesto?.id_puesto}`, dataToSend);
+      const response = await apiClient.put(Api_Global_Puestos.puestos.editar((puesto?.id_puesto)),dataToSend);
       if (response.status === 200) {
-        const mensaje = `Los datos del puesto: "${dataToSend.numero_puesto}" fueron actualizados con éxito`;
-        mostrarAlerta("Actualización exitosa", mensaje, "success");
-        onRegistrar();
-        handleCloseModal();
+        const mensaje = response.data.message ||`Los datos del puesto:¿ fueron actualizados con éxito`;
+        mostrarAlerta("Actualización exitosa", mensaje, "success").then(() => {
+          onRegistrar();
+          handleCloseModal();
+        });
       } else {
         mostrarAlerta("Errror");
       }
     } catch (error) {
-      manejarError(error);
+      manejarError(error);  
     } finally {
       setLoading(false);
     }
@@ -443,9 +439,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       setLoading(false);
       return;
     }
-
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/asignar", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.puestos.asignarPuesto(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "Puesto registrado con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -453,7 +448,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           onRegistrar();
         });
       } else {
-
         mostrarAlerta("Error");
       }
     } catch (error) {
@@ -475,10 +469,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       return;
     }
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/inquilinos", dataToSend); // Publico
-
+      const response = await apiClient.post(Api_Global_Puestos.puestos.asignarInquilino(), dataToSend); 
       if (response.status === 200) {
-        const mensaje = response.data.message || "E l inquilino se registró correctamente";
+        const mensaje = response.data.message || "El inquilino se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onRegistrar();
           handleCloseModal();
@@ -493,14 +486,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   };
 
-  // Registrar Bloque
   const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     const dataToSend = { ...formDataBloque };
 
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/blocks", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.bloques.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El bloque se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -523,7 +515,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const dataToSend = { ...formDataGiroNegocio };
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.girosNegocio.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El giro de negocio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -545,7 +537,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const dataToSend = formDataTransferencia;
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/puestos/transferir", dataToSend);
+      const response = await apiClient.post(Api_Global_Puestos.puestos.transferir(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El puesto se transfirió correctamente";
         mostrarAlerta("Transferencia exitosa", mensaje, "success").then(() => {
