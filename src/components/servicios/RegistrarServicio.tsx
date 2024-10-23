@@ -194,8 +194,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     try {
       const response = await apiClient.post(API_ROUTES.servicios.registrar(), dataToSend);
       if (response.status === 200) {
-        const mensaje =
-          response.data.messsage || "El servicio se registró correctamente";
+        const mensaje =response.data.messsage || "El servicio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           onServicioRegistrado();
           handleCloseModal();

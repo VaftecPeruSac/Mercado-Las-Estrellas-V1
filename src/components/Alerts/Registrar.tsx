@@ -53,7 +53,7 @@ export const mostrarAlertaConfirmacion = (
 };
 
 export const manejarError = (error: any) => {
-    let mensajeError = "Ocurrió un error al registrar. Inténtalo nuevamente.";
+    let mensajeError = "Ocurrió un error, inténtalo nuevamente.";
 
     if (axios.isAxiosError(error)) {
         if (error.response?.data?.message) {

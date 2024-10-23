@@ -30,7 +30,6 @@ import useBloques from "../../hooks/Puestos/useBloques";
 import useGirosNegocio from "../../hooks/Puestos/useGiroNegocio";
 import usePuestos from "../../hooks/Puestos/usePuesto";
 import { Bloque, GiroNegocio, Puesto } from "../../interface/Puestos";
-import { Api_Global_Puestos } from "../../service/PuestoApi";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import BotonAgregar from "../Shared/BotonAgregar";
 import BotonExportar from "../Shared/BotonExportar";
@@ -40,6 +39,8 @@ import RegistrarPuesto from "./RegistrarPuesto";
 import { handleExport } from "../../Utils/exportUtils";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import axios from "axios";
+import apiClient from "../../Utils/apliClient";
+import { Api_Global_Puestos } from "../../service/PuestoApi";
 
 const TablaPuestos: React.FC = () => {
   const bloques = useBloques();
@@ -96,8 +97,7 @@ const TablaPuestos: React.FC = () => {
   const eliminarPuesto = async (item: any) => {
     
     try {
-      const response = await axios.delete(`https://mercadolasestrellas.online/intranet/public/v1/puestos/${item.id_puesto}`, {});
-
+      const response = await apiClient.delete(Api_Global_Puestos.puestos.eliminar(item.id_puesto));
       if (response.status === 200) {
         const mensaje = response.data.message || "El puesto se elimino.";
         mostrarAlerta("Eliminación exitosa", mensaje, "success");
