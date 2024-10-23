@@ -57,8 +57,8 @@ const Login: React.FC = () => {
 
         <Box sx={{
           boxSizing: isSmallMobile || isLaptop ? "border-box" : "content-box",
-          width: isSmallMobile ? "100%" : isMobile ? "280px" : isTablet ? "50%" : isLaptop ? "35%" : "440px",
-          height: isLaptop || isSmallMobile ? "90%" : "80%",
+          width: isSmallMobile ? "100%" : isMobile ? "280px" : isTablet ? "50%" : isLaptop ? "35%" : "400px",
+          height: "auto",
           maxHeight: "680px",
           border: "1px solid",
           borderRadius: "15px",
@@ -161,12 +161,11 @@ const Login: React.FC = () => {
             {/* Boton iniciar sesión */}
             <Button
               variant="contained"
-              // type="submit"
               type="button"
               sx={{
                 width: isLaptop || isSmallMobile ? "100%" : "215px",
-                mt: isLaptop || isSmallMobile ? 3 : 4,
-                mb: isLaptop ? 2 : 0,
+                mt:1,
+                mb: 3,
                 p: "10px 50px",
                 textTransform: "inherit",
                 fontSize: "16px",
@@ -186,6 +185,7 @@ const Login: React.FC = () => {
 
             <Typography
               sx={{
+                mt: 3,
                 mb: "2px",
                 fontSize: isLaptop || isSmallMobile ? "16px" : "18px",
                 fontWeight: "bold",

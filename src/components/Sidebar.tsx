@@ -162,14 +162,14 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         alignContent: "center",
         justifyContent: "space-between"
       }}>
-        <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", pt: 4, pl: 0.5 }}>
           <BackupTableIcon />
           <Typography
-            variant="subtitle1"
+            variant="h6"
             color="#FFFFFF"
-            sx={{ ml: 1, }}
+            sx={{ ml: 1, py: 2 }}
           >
-            <h3><b>SISTEM MERCADO</b></h3>
+            <b>SISTEM MERCADO</b>
           </Typography>
         </Box>
         {(isTablet || isMobile) && (

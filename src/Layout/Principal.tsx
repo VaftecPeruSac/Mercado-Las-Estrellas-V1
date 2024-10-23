@@ -4,6 +4,8 @@ import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 import TemporizadorInactividad from "../context/TemporizadorInactividad";
 import useResponsive from "../hooks/Responsive/useResponsive";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Principal = () => {
 
@@ -41,8 +43,23 @@ const Principal = () => {
             marginLeft: open ? "260px" : "0px",
           }}
         >
-          {/* <Dashboard /> */}
+
           <Outlet />
+
+          <ToastContainer
+            style={{ marginTop: "100px" }}
+            position="top-right"
+            autoClose={1 * 60 * 1000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+
         </Box>
       </Box>
     </>
