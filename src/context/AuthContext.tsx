@@ -42,10 +42,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           mostrarAlerta("Cierre de sesión", response.data.message, "info");
         }
       } else {
-        mostrarAlerta("error");
+        mostrarAlerta("error","Ocurrio un error inesperado, Ingrese nuevamente al sistema","info");
       }
     } catch (error) {
-      manejarError(error);
+      mostrarAlerta("error");
     }
   }, [usuario]);
 
