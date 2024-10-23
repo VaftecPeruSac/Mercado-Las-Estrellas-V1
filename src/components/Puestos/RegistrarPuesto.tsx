@@ -426,6 +426,27 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       setLoading(false);
     }
   };
+  // const eliminarPuesto = async (item: any) => {
+    
+  //   try {
+  //     const response = await apiClient.delete(Api_Global_Puestos.puestos.eliminar(item.id_puesto));
+
+  //     if (response.status === 200) {
+  //       const mensaje = response.data.message || "El puesto se elimino.";
+  //       mostrarAlerta("Eliminación exitosa", mensaje, "success").then(() => {
+  //         onRegistrar();
+  //         handleCloseModal();
+  //       });
+  //     } else {
+  //       mostrarAlerta("Error");
+  //     }
+  //   } catch (error) {
+  //     manejarError(error);
+  //   } finally {
+  //     // ---
+  //   }
+  // };
+  
 
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -1127,21 +1148,27 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         <BotonesModal
           loading={loading}
           action={async (e) => {
-            let result; // Variable para almacenar el resultado de la alerta de confirmación
-            // Cambiar a función asíncrona
+            let result; 
             if (activeTab === 0) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación
-                "¿Está seguro de registrar un nuevo Puesto?",
-              );
+              const mensaje = puesto? "¿Está seguro de editar este Puesto?" : "¿Está seguro de registrar un nuevo Puesto?";
+              const result = await mostrarAlertaConfirmacion(mensaje); 
               if (result.isConfirmed) {
                 if (puesto) {
                   editarPuesto(e);
                 } else {
-                  registrarPuesto(e);
+                  registrarPuesto(e); 
                 }
               }
-
             }
+            // else if (activeTab === 0) { // Lógica para eliminar
+            //   const mensaje = `¿Está seguro de eliminar el Puesto ${puesto?.id_puesto}?`;
+      
+            //   const result = await mostrarAlertaConfirmacion(mensaje);
+            
+            //   if (result.isConfirmed) {
+            //     eliminarPuesto(puesto); // Llamar a la función de eliminar
+            //   }
+            // }
             if (activeTab === 1) {
               result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
                 "¿Está seguro de asignar un puesto a un socio?",

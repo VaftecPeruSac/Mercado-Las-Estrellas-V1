@@ -38,13 +38,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (response.status === 200) {
           const mensaje = response.data.message;
           limpiarSesion();
-          mostrarAlerta("Cierre de sesión", mensaje, "info");
+          mostrarAlerta("Cierre de sesión", mensaje, "success");
         }
       } else {
-        mostrarAlerta("error");
+        mostrarAlerta("error","Ocurrio un error inesperado, Ingrese nuevamente al sistema","info");
       }
     } catch (error) {
-      manejarError(error);
+      mostrarAlerta("error");
     }
   };
 
@@ -55,9 +55,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones?token=${token}`);
         if (response.status === 200) {
           setUsuario(response.data);
-          console.log(response.data);
         } else {
-          mostrarAlerta("Error");
+          mostrarAlerta("Error"");
         }
       }
     } catch (error) {
