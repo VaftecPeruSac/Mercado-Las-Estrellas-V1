@@ -17,17 +17,22 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Sidebar from "./Sidebar";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { ExpandLess, NotificationsActive, NotificationsNone } from "@mui/icons-material";
+import { Close, ExpandLess, NotificationsActive, NotificationsNone } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/Responsive/useResponsive";
 import { mostrarAlertaConfirmacion } from "./Alerts/Registrar";
-import { getDiaNotificacion, getNotificacionRandom, notificacionesPredefinidas } from "../Utils/notificaciones";
+import { getNotificacionRandom } from "../Utils/notificaciones";
 import { toast } from "react-toastify";
 
 interface HeaderProps {
   open: boolean;
   toggleDrawer: () => void;
+}
+
+interface Notificacion {
+  id: number;
+  mensaje: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
@@ -37,8 +42,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
 
   const [menuUsuario, setMenuUsuario] = useState<null | HTMLElement>(null);
   const [menuNotificaciones, setMenuNotificaciones] = useState<null | HTMLElement>(null);
-
-  const [notificaciones, setNotificaciones] = useState<string[]>([]);
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
 
   const navigate = useNavigate();
 
@@ -66,26 +70,18 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
     });
   };
 
+  const eliminarNotificacion = (id: number) => {
+    setNotificaciones((prev) => prev.filter((notificacion) => notificacion.id !== id));
+  }
+
   useEffect(() => {
-
-    const diaHoy = new Date().getDate();
-    const fechaNotificacion = getDiaNotificacion();
-
-    if (diaHoy >= fechaNotificacion) {
-      setNotificaciones((prev) => {
-        const nuevasNotificaciones = notificacionesPredefinidas.filter(
-          (notificacion) => !prev.includes(notificacion)
-        );
-        return [...prev, ...nuevasNotificaciones];
-      });
-    }
-
     const interval = setInterval(() => {
       const nuevaNotificacion = getNotificacionRandom();
       setNotificaciones((prev) => {
+        const id = Date.now();
         toast.info(nuevaNotificacion);
-        if (!prev.includes(nuevaNotificacion)) {
-          return [...prev, nuevaNotificacion];
+        if (!prev.some((n) => n.mensaje === nuevaNotificacion)) {
+          return [...prev, { id, mensaje: nuevaNotificacion }];
         }
         return prev;
       });
@@ -193,9 +189,14 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                   <Divider />
                   {notificaciones.map((notificacion, index) => (
                     <Fragment key={index}>
-                      <Typography variant="body2" sx={{ py: 1 }}>
-                        {notificacion}
-                      </Typography>
+                      <Box sx={{ py: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Typography variant="body2">
+                          {notificacion.mensaje}
+                        </Typography>
+                        <IconButton size="small" onClick={() => eliminarNotificacion(notificacion.id)}>
+                          <Close />
+                        </IconButton>
+                      </Box>
                       <Divider />
                     </Fragment>
                   ))}
@@ -203,9 +204,11 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
               ) : (
                 <Box onClick={handleMenuClose}>
                   <Divider />
-                  <Typography variant="body2" sx={{ py: 1 }}>
-                    No hay notificaciones
-                  </Typography>
+                  <Box sx={{ py: 2 }}>
+                    <Typography variant="body2">
+                      No hay notificaciones
+                    </Typography>
+                  </Box>
                   <Divider />
                 </Box>
               )}

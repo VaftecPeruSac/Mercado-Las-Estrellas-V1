@@ -11,6 +11,7 @@ import ContenedorBotones from '../Shared/ContenedorBotones';
 import { Api_Global_Reportes } from '../../service/ReporteApi';
 import { handleExport } from '../../Utils/exportUtils';
 import { Column, Data, Socio } from '../../interface/ReportePagos/pagos';
+import { useAuth } from '../../context/AuthContext';
 
 
 
@@ -36,6 +37,8 @@ const TablaReportePagos: React.FC = () => {
   const idSocio = searchParams.get("socio");
   const [isLoading, setIsLoading] = useState(false);
 
+  const { usuario } = useAuth(); 
+
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
@@ -55,16 +58,18 @@ const TablaReportePagos: React.FC = () => {
 
   // Metodo para obtener los socios
   useEffect(() => {
-    const fetchSocios = async () => {
-      try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=100");
-        setSocios(response.data.data);
-      } catch (error) {
-        console.log("Error:", error);
+    if (usuario && usuario?.rol !== "Socio") {
+      const fetchSocios = async () => {
+        try {
+          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=100");
+          setSocios(response.data.data);
+        } catch (error) {
+          console.log("Error:", error);
+        }
       }
+      fetchSocios();
     }
-    fetchSocios();
-  }, []);
+  }, [usuario]);
 
   // Metodo para obtener los pagos realizados por un socio
   const fetchPagos = async (pagina: number = 1, idSocio: number) => {
@@ -89,57 +94,65 @@ const TablaReportePagos: React.FC = () => {
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
+  useEffect(() => {
+    if (usuario && usuario?.rol === "Socio") {
+      fetchPagos(undefined, usuario.id_usuario);
+    }
+  }, [usuario]);
+
   return (
     <Contenedor>
       <ContenedorBotones reporte>
-        <Box
-          sx={{
-            width: isTablet || isMobile ? "100%" : "auto",
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-            alignItems: "center",
-            ml: isTablet || isMobile ? "0px" : "10px",
-            mr: isMobile ? "0px" : "auto",
-          }}
-        >
-          {/* Seleccionar socio */}
-          <FormControl fullWidth required
+        {usuario && usuario?.rol !== "Socio" && (
+          <Box
             sx={{
-              width: isTablet ? "70%" : isMobile ? "100%" : "300px"
+              width: isTablet || isMobile ? "100%" : "auto",
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+              alignItems: "center",
+              ml: isTablet || isMobile ? "0px" : "10px",
+              mr: isMobile ? "0px" : "auto",
             }}
           >
-            <Autocomplete
-              options={socios}
-              getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
-              onChange={(event, value) => { // Obtener el id del socio seleccionado
-                if (value) { // Si se selecciona un socio
-                  setSocioSeleccionado(Number(value.id_socio)); // Guardar el id del socio
-                }
+            {/* Seleccionar socio */}
+            <FormControl fullWidth required
+              sx={{
+                width: isTablet ? "70%" : isMobile ? "100%" : "300px"
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Seleccionar socio" // Etiqueta del input
-                  InputProps={{ ...params.InputProps }} // Propiedades del input
-                />
-              )}
-              ListboxProps={{
-                style: {
-                  maxHeight: 270, // Altura máxima de la lista de opciones
-                  overflow: 'auto', // Hacer scroll si hay muchos elementos
-                },
-              }}
-              isOptionEqualToValue={(option, value) => option.id_socio === value.id_socio}
+            >
+              <Autocomplete
+                options={socios}
+                getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
+                onChange={(event, value) => { // Obtener el id del socio seleccionado
+                  if (value) { // Si se selecciona un socio
+                    setSocioSeleccionado(Number(value.id_socio)); // Guardar el id del socio
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Seleccionar socio" // Etiqueta del input
+                    InputProps={{ ...params.InputProps }} // Propiedades del input
+                  />
+                )}
+                ListboxProps={{
+                  style: {
+                    maxHeight: 270, // Altura máxima de la lista de opciones
+                    overflow: 'auto', // Hacer scroll si hay muchos elementos
+                  },
+                }}
+                isOptionEqualToValue={(option, value) => option.id_socio === value.id_socio}
+              />
+            </FormControl>
+            {/* Botón "Generar Reporte" */}
+            <BotonAgregar
+              exportar
+              handleAction={() => fetchPagos(undefined, socioSeleccionado)}
+              texto="Generar"
             />
-          </FormControl>
-          {/* Botón "Generar Reporte" */}
-          <BotonAgregar
-            exportar
-            handleAction={() => fetchPagos(undefined, socioSeleccionado)}
-            texto="Generar"
-          />
-        </Box>
+          </Box>
+        )}
 
         <BotonExportar
           exportFormat={exportFormat}
