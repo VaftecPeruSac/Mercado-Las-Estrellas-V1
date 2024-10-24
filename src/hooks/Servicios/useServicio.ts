@@ -35,9 +35,7 @@ const useServicioState = () => {
         setServicios(data);
         setTotalPages(response.data.meta.last_page); 
         setPaginaActual(response.data.meta.current_page); 
-        console.log("la data es", response.data);
       } catch (error) {
-        console.error("Error al traer datos", error);
       } finally {
         setIsLoading(false);
       }

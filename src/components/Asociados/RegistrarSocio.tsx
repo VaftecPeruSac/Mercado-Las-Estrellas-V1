@@ -29,6 +29,8 @@ import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, SeparadorBloque, TxtFormulario } from "../Shared/ElementosFormulario";
 import { reFormatDate } from "../../Utils/dateUtils";
 import { AgregarProps, Bloque, Puesto } from "../../interface/Socios/registrarSocio";
+import apiClient from "../../Utils/apliClient";
+import { Api_Global_Socios } from "../../service/SocioApi";
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
 
@@ -106,11 +108,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   useEffect(() => {
     const fetchBloques = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
-        console.log("Bloques obtenidos:", response.data.data);
+        const response = await apiClient.get(Api_Global_Socios.bloques.obtenerBloques());
         setBloques(response.data.data);
       } catch (error) {
-        console.error("Error al obtener los bloques", error);
       }
     };
     fetchBloques();
@@ -120,11 +120,9 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/select"); // publico
-        console.log("Puestos cargados:", response.data);
+        const response = await apiClient.get(Api_Global_Socios.puestos.obtenerPuestos()); // publico
         setPuestos(response.data);
       } catch (error) {
-        console.error("Error al obtener los puestos", error);
       }
     };
     fetchPuestos();
@@ -165,7 +163,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       return;
     }
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/socios", dataToSend);
+      const response = await apiClient.post(Api_Global_Socios.socios.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message;
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -187,14 +185,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   const editarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-
     const { id_puesto, id_block, ...dataToSend } = formData;
-
     try {
-      const response = await axios.put(`https://mercadolasestrellas.online/intranet/public/v1/socios/${dataToSend.id_socio}`, dataToSend);
-
+      const response = await apiClient.put(Api_Global_Socios.socios.editar(dataToSend.id_socio), dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data || "El socio se actualizó correctamente";
+        const mensaje = response.data.message || "El socio se actualizó correctamente";
         mostrarAlerta("Actualización exitosa", mensaje, "success");
         handleCloseModal();
       } else {
