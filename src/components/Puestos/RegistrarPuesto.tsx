@@ -647,6 +647,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                           ...formDataPuesto,
                           id_gironegocio: newValue.id_gironegocio.toString(), // Convertir id_gironegocio a string
                         });
+                        setGiroSeleccionado(newValue.id_gironegocio);
                       }
                     }}
                     renderInput={(params) => (

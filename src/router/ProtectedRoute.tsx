@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -12,14 +12,27 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
 
   // Obtenemos el estado de autenticación
-  const { autenticado, usuario } = useAuth();
+  const { autenticado, usuario, getDataSesion } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cargarDatosSesion = async () => {
+      await getDataSesion();
+      setLoading(false);
+    };
+    cargarDatosSesion();
+  }, [getDataSesion]);
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
 
   // Si el usuario está autenticado, mostramos el contenido
   if (!autenticado) {
     return <Navigate to="/" />;
   }
 
-  if (requiredRoles && !requiredRoles.includes(usuario?.rol ? usuario?.rol : "")) {
+  if (requiredRoles && !requiredRoles.includes(usuario ? usuario?.rol : "")) {
     if (usuario?.rol === "Socio") {
       return <Navigate to="/home/reporte-pagos" />;
     }
