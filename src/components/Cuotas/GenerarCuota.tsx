@@ -26,32 +26,8 @@ import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion, validarCamposCu
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, TxtFormulario } from "../Shared/ElementosFormulario";
+import { AgregarProps, Column, Servicio } from "../../interface/Cuotas/GenerarCuota";
 
-interface AgregarProps {
-  open: boolean;
-  handleClose: () => void;
-}
-
-interface Servicio {
-  id_servicio: string,
-  descripcion: string,
-  costo_unitario: string,
-  tipo_servicio: string,
-  estado: string,
-  fecha_registro: string
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "center";
-}
-
-interface Data {
-  descripcion: string;
-  costo_unitario: string;
-}
 
 const columns: readonly Column[] = [
   { id: "descripcion", label: "Servicio", minWidth: 50, align: "center" },

@@ -70,7 +70,6 @@ const BusquedaRapida = () => {
         const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
         setPuestos(response.data.data);
       } catch (error) {
-        console.log("Error:", error);
       }
     }
     fetchPuestos();
@@ -85,7 +84,6 @@ const BusquedaRapida = () => {
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
-      console.log("Error:", error);
     } finally {
       setIsLoading(false);
     }

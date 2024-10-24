@@ -34,8 +34,10 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
-import { Cuotas, Data, IMeses } from "../../interface/Cuotas";
+import { Cuotas, Data, IMeses } from "../../interface/Cuotas/cuota";
 import { columns } from "../../Columns/Cuotas";
+import { Api_Global_Cuotas } from "../../service/CuotaApi";
+import { handleExport } from "../../Utils/exportUtils";
 
 
 const optMeses = [
@@ -75,45 +77,12 @@ const TablaCuota: React.FC = () => {
 
   // Metodo para exportar el listado de cuotas
   const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
-
-    try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas/exportar",
-        { responseType: 'blob' }
-      );
-
-      // Si no hay problemas
-      if (response.status === 200) {
-        if (exportFormat === "1") { // PDF
-          alert("En proceso de actualización. Intentelo más tarde.");
-        } else if (exportFormat === "2") { // Excel
-          alert("La lista de cuotas se descargará en breve.");
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          const hoy = new Date();
-          const formatDate = hoy.toISOString().split('T')[0];
-          link.setAttribute('download', `lista-cuotas-${formatDate}.xlsx`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode?.removeChild(link);
-          setExportFormat("");
-        } else {
-          alert("Formato de exportación no válido.");
-        }
-      } else {
-        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-      }
-
-    } catch (error) {
-      console.log("Error:", error);
-      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
-    }
-
+    const exportUrl = Api_Global_Cuotas.cuotas.exportar(); // URL específica para puestos
+    const fileNamePrefix = "lista-cuotas"; 
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
-  // Metodo para buscar cuotas por fecha
   const handleSearchCuota = () => {
     fetchCuotas();
   }
