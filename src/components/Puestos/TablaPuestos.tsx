@@ -38,8 +38,7 @@ import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import RegistrarPuesto from "./RegistrarPuesto";
 import { handleExport } from "../../Utils/exportUtils";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
-import axios from "axios";
+import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
 import apiClient from "../../Utils/apliClient";
 
 const TablaPuestos: React.FC = () => {
@@ -84,6 +83,7 @@ const TablaPuestos: React.FC = () => {
   const handleClose = () => {
     setPuestoSeleccionado(null);
     setOpen(false);
+    fetchPuestos();
   };
 
   const handleExportPuestos = async (e: React.MouseEvent<HTMLButtonElement>) => {
