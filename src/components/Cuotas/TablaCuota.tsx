@@ -72,7 +72,7 @@ const TablaCuota: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    fetchCuotas();
+    listarCuotas();
   } 
 
   const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {

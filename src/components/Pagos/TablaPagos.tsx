@@ -50,7 +50,7 @@ const TablaPago: React.FC = () => {
 
   const handleClose = () => {
     setOpen(false);
-    fetchPagos(paginaActual);
+    listarPagos(paginaActual);
   }
 
   const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
