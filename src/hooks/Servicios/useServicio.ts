@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Servicio, Data } from "../../interface/Servicios/Servicios";
 import useResponsive from "../Responsive/useResponsive";
-import axios from "axios";
 import { API_ROUTES } from "../../service/ServicioApi";
 import { formatDate } from "../../Utils/dateUtils";
 import apiClient from "../../Utils/apliClient";
@@ -24,7 +23,6 @@ const useServicioState = () => {
       try {
         setIsLoading(true);
         const response = await apiClient.get(API_ROUTES.servicios.fetch(page, buscarTexto));
-
         const data = response.data.data.map((item: Servicio) => ({
           id_servicio: item.id_servicio,
           descripcion: item.descripcion,

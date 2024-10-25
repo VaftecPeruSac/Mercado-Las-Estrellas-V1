@@ -1,4 +1,4 @@
-import { Column } from "../interface/Cuotas/cuota";
+import { Column } from "../interface/Cuotas/Cuota";
 
 export const columns: readonly Column[] = [
     { id: "id_deuda", label: "# ID", minWidth: 50 }, // Nombre del socio

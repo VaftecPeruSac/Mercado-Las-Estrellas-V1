@@ -28,9 +28,9 @@ import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, SeparadorBloque, TxtFormulario } from "../Shared/ElementosFormulario";
 import { reFormatDate } from "../../Utils/dateUtils";
-import { AgregarProps, Bloque, Puesto } from "../../interface/Socios/registrarSocio";
 import apiClient from "../../Utils/apliClient";
 import { Api_Global_Socios } from "../../service/SocioApi";
+import { AgregarProps, Bloque, Puesto } from "../../interface/Socios/RegistrarSocio";
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
 

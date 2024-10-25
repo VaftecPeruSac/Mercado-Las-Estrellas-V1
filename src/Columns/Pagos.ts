@@ -1,4 +1,4 @@
-import { Column } from "../interface/Pagos";
+import { Column } from "../interface/Pagos/Pagos";
 
 export const columns: readonly Column[] = [
     { id: "id_pago", label: "#ID", minWidth: 50, align: "center" },

@@ -1,20 +1,20 @@
 import axios from "axios";
 import apiClient from "./apliClient";
+import { mostrarAlerta } from "../components/Alerts/Registrar";
 
 export const handleExport = async (
   exportUrl: string, // URL para exportar
   exportFormat: string, // 1 = PDF, 2 = Excel
-  fileNamePrefix: string, // Prefijo para el nombre del archivo exportado
-  setExportFormat: React.Dispatch<React.SetStateAction<string>> // Función para resetear el formato
+  fileNamePrefix: string, // Prefijo para el archivo exportado
+  setExportFormat: React.Dispatch<React.SetStateAction<string>> // Resetear el formato
 ) => {
-  try {const response = await apiClient.get(exportUrl, {responseType: "blob",});
+  try {
+    const response = await apiClient.get(exportUrl, { responseType: "blob" });
     if (response.status === 200) {
       if (exportFormat === "1") {
-        // Exportar a PDF
-        alert("En proceso de actualización. Inténtelo más tarde.");
+        mostrarAlerta("En proceso", "Intentelo más tarde", "warning");
       } else if (exportFormat === "2") {
-        // Exportar a Excel
-        alert(`La lista de ${fileNamePrefix} se descargará en breve.`);
+        mostrarAlerta("Exportación Exitosa",`La ${fileNamePrefix} se descargará en breve.`,"success");
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
@@ -24,14 +24,18 @@ export const handleExport = async (
         document.body.appendChild(link);
         link.click();
         link.parentNode?.removeChild(link);
-        setExportFormat("");
+        setExportFormat(""); 
       } else {
-        alert("Formato de exportación no válido.");
+        mostrarAlerta("Formato inválido", "Formato de exportación no válido.", "error");
       }
     } else {
-      alert("Ocurrió un error al exportar. Inténtelo nuevamente más tarde.");
+      mostrarAlerta(
+        "Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
+      );
     }
   } catch (error) {
-    alert("Ocurrió un error al exportar. Inténtelo nuevamente más tarde.");
+    mostrarAlerta(
+      "Error inesperado","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
+    );
   }
 };

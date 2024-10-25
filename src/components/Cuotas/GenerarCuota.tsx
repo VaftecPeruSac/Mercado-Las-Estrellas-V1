@@ -27,6 +27,8 @@ import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, TxtFormulario } from "../Shared/ElementosFormulario";
 import { AgregarProps, Column, Servicio } from "../../interface/Cuotas/GenerarCuota";
+import apiClient from "../../Utils/apliClient";
+import { Api_Global_Cuotas } from "../../service/CuotaApi";
 
 
 const columns: readonly Column[] = [
@@ -80,11 +82,9 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/servicios");
-        console.log("Servicios obtenidos:", response.data.data);
+        const response = await apiClient.get(Api_Global_Cuotas.servicio.listar());
         setServicios(response.data.data);
       } catch (error) {
-        console.error("Error al obtener los servicios", error);
       }
     }
     fetchServicios();
@@ -94,13 +94,8 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleServicioChange = (event: SelectChangeEvent<{ value: unknown } | "">) => {
     const servicioId = event.target.value as string;
     setServicioSeleccionado({ value: servicioId });
-
-    // Encontramos el servicio seleccionado en la lista de servicios
     const servicio = servicios.find((s) => s.id_servicio === servicioId);
-
-    // Si el servicio existe
     if (servicio) {
-      // Verificamos si ya esta agregado y si no lo esta agregamos el servicio a la tabla
       if (!serviciosAgregados.some((s) => s.id_servicio === servicio.id_servicio)) {
         setServiciosAgregados([...serviciosAgregados, servicio]);
         setServiciosIds((prevIds) => [...prevIds, servicio.id_servicio]);
@@ -139,17 +134,13 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       setLoading(false);
       return;
     }
-
     const dataToSend = {
       ...formData,
       servicios: serviciosIds,
       importe: importeTotal,
     };
-
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/cuotas", dataToSend);
-      // const response = await axios.post("http://127.0.0.1:8000/v1/cuotas", dataToSend);
-
+      const response = await apiClient.post(Api_Global_Cuotas.cuotas.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "La cuota fue registrada con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -169,7 +160,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     }
   };
 
-  // Cerrar modal
   const handleCloseModal = () => {
     limpiarCuota();
     handleClose();
@@ -185,9 +175,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
         return (
           <>
             <AvisoFormulario />
-
             {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
-
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TxtFormulario
@@ -226,7 +214,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       PaperProps: {
                         style: {
                           maxHeight: 200,
-                          overflowY: "auto", // Habilita el desplazamiento
+                          overflowY: "auto", 
                         },
                       },
                     }}

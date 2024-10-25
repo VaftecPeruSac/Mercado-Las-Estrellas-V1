@@ -30,18 +30,18 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
-import { Pagos, Data } from "../../interface/Pagos";
+import { Pagos, Data } from "../../interface/Pagos/Pagos";
 import { columns } from "../../Columns/Pagos";
+import apiClient from "../../Utils/apliClient";
+import { Api_Global_Pagos } from "../../service/PagoApi";
+import { mostrarAlerta } from "../Alerts/Registrar";
 
 const TablaPago: React.FC = () => {
-
-  // Variables para el responsive
   const { isTablet, isMobile, isSmallMobile } = useResponsive();
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
   const [pagos, setPagos] = useState<Data[]>([]);
-  const [totalPages, setTotalPages] = useState(1); // Total de páginas
-  const [paginaActual, setPaginaActual] = useState(1); // Página actual
+  const [totalPages, setTotalPages] = useState(1); 
+  const [paginaActual, setPaginaActual] = useState(1); 
   const [exportFormat, setExportFormat] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,20 +50,16 @@ const TablaPago: React.FC = () => {
   const handleClose = () => setOpen(false);
 
   const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.preventDefault();
-
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/pagos/exportar",
-        { responseType: 'blob' }
+      const response = await apiClient.get(Api_Global_Pagos.pagos.exportar(),{ responseType: 'blob' }
       );
-
-      // Si no hay problemas
       if (response.status === 200) {
         if (exportFormat === "1") { // PDF
-          alert("En proceso de actualización. Intentelo más tarde.");
+          mostrarAlerta("En proceso", "Intentelo más tarde", "warning");
+
         } else if (exportFormat === "2") { // Excel
-          alert("La lista de pagos se descargará en breve.");
+          mostrarAlerta("Exportación Exitosa",`La lista de pagos se descargará en breve.`,"success");
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
@@ -75,15 +71,17 @@ const TablaPago: React.FC = () => {
           link.parentNode?.removeChild(link);
           setExportFormat("");
         } else {
-          alert("Formato de exportación no válido.");
+          mostrarAlerta("Formato inválido", "Formato de exportación no válido.", "error");
         }
       } else {
-        alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+        mostrarAlerta(
+          "Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
+        );
       }
-
     } catch (error) {
-      console.log("Error:", error);
-      alert("Ocurrio un error al exportar. Intentelo nuevamente más tarde.");
+      mostrarAlerta(
+        "Error inesperado","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
+      );
     }
 
   };
@@ -143,15 +141,14 @@ const TablaPago: React.FC = () => {
     // } catch {
     //   alert("Error al buscar los pagos del socio. Intentelo nuevamente más tarde.")
     // }
-    fetchPagos(1);
+    listarPagos(1);
 
   }
 
-  const fetchPagos = async (page: number = 1) => {
+  const listarPagos = async (page: number = 1) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/pagos?page=${page}`);
-      // const response = await axios.get("http://127.0.0.1:8000/v1/pagos?page=${page}");
+      const response = await apiClient.get(Api_Global_Pagos.pagos.listar(page));
       const data = response.data.data.map((item: Pagos) => ({
         id_pago: item.id_pago,
         puesto: item.puesto,
@@ -164,9 +161,8 @@ const TablaPago: React.FC = () => {
         fecha_registro: item.fecha_registro
       }));
       setPagos(data);
-      setTotalPages(response.data.meta.last_page); // Total de páginas
-      setPaginaActual(response.data.meta.current_page); // Página actual
-      // console.log("La data es:", response.data.data);
+      setTotalPages(response.data.meta.last_page); 
+      setPaginaActual(response.data.meta.current_page); 
     } catch (error) {
       console.error("Error al traer datos", error);
     } finally {
@@ -175,13 +171,12 @@ const TablaPago: React.FC = () => {
   };
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
-    // console.log("CambioDePagina !!!");
     setPaginaActual(value);
-    fetchPagos(value); // Obtén los datos para la página seleccionada
+    listarPagos(value); 
   };
 
   useEffect(() => {
-    fetchPagos(paginaActual);
+    listarPagos(paginaActual);
   }, []);
 
   return (

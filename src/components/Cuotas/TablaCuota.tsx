@@ -25,7 +25,6 @@ import {
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
-import axios from "axios";
 import GenerarCuota from "./GenerarCuota";
 import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
@@ -34,10 +33,11 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { formatDate } from "../../Utils/dateUtils";
-import { Cuotas, Data, IMeses } from "../../interface/Cuotas/cuota";
 import { columns } from "../../Columns/Cuotas";
 import { Api_Global_Cuotas } from "../../service/CuotaApi";
 import { handleExport } from "../../Utils/exportUtils";
+import apiClient from "../../Utils/apliClient";
+import { Cuotas, Data, IMeses } from "../../interface/Cuotas/Cuota";
 
 
 const optMeses = [
@@ -56,15 +56,12 @@ const optMeses = [
 ];
 
 const TablaCuota: React.FC = () => {
-
-  // Variables para el responsive
   const { isTablet, isMobile } = useResponsive();
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
-
   const [iMeses, setIMeses] = useState<IMeses[]>([]);
-  const [totalPages, setTotalPages] = useState(1); // Total de páginas
-  const [paginaActual, setPaginaActual] = useState(1); // Página actual
+  const [totalPages, setTotalPages] = useState(1); 
+  const [paginaActual, setPaginaActual] = useState(1); 
   const [exportFormat, setExportFormat] = useState<string>("");
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
@@ -75,41 +72,34 @@ const TablaCuota: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // Metodo para exportar el listado de cuotas
   const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const exportUrl = Api_Global_Cuotas.cuotas.exportar(); // URL específica para puestos
+    const exportUrl = Api_Global_Cuotas.cuotas.exportar(); 
     const fileNamePrefix = "lista-cuotas"; 
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
   const handleSearchCuota = () => {
-    fetchCuotas();
+    listarCuotas();
   }
 
-
-  const fetchCuotas = async (page: number = 1) => {
+  const listarCuotas = async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/cuotas?page=${page}&anio=${anio}&mes=${mes}`); //publico
-      // const response = await axios.get("http://127.0.0.1:8000/v1/cuotas?page=${page}"); //local
-
+      const response = await apiClient.get(Api_Global_Cuotas.cuotas.listar(page, anio, mes));
       const data = response.data.data.map((item: Cuotas) => ({
         id_deuda: item.id_deuda,
         fecha_registro: formatDate(item.fecha_registro),
         fecha_vencimiento: formatDate(item.fecha_vencimiento),
         importe: item.importe,
-        // --
         socio_nombre: item.socio_nombre,
         puesto_descripcion: item.puesto_descripcion,
         servicio_descripcion: item.servicio_descripcion,
       }));
       setCuotas(data);
-      setTotalPages(response.data.meta.last_page); // Total de páginas
-      setPaginaActual(response.data.meta.current_page); // Página actual
-      console.log("la data es", response.data);
+      setTotalPages(response.data.meta.last_page); 
+      setPaginaActual(response.data.meta.current_page); 
     } catch (error) {
-      console.error("Error al traer datos", error);
     } finally {
       setIsLoading(false);
     }
@@ -117,11 +107,11 @@ const TablaCuota: React.FC = () => {
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
-    fetchCuotas(value)
+    listarCuotas(value)
   };
 
   useEffect(() => {
-    fetchCuotas(paginaActual);
+    listarCuotas(paginaActual);
   }, []);
 
   useEffect(() => {
@@ -131,27 +121,21 @@ const TablaCuota: React.FC = () => {
   return (
     <Contenedor>
       <ContenedorBotones>
-
         <BotonAgregar
           handleAction={handleOpen}
           texto="Generar Cuota"
         />
-
         <GenerarCuota
           open={open}
           handleClose={handleClose}
         />
-
         <BotonExportar
           exportFormat={exportFormat}
           setExportFormat={setExportFormat}
           handleExport={handleExportCuotas}
         />
-
       </ContenedorBotones>
-
       {isMobile && (
-        // Botón "Filtros" para mostrar/ocultar los filtros
         <Box
           sx={{
             width: "100%",
@@ -179,8 +163,6 @@ const TablaCuota: React.FC = () => {
       )}
 
       {(!isMobile || mostrarFiltros) && (
-
-        // Filtros de búsqueda
         <Box
           sx={{
             padding: isTablet || isMobile ? "15px 0" : "15px 35px",
@@ -203,8 +185,6 @@ const TablaCuota: React.FC = () => {
           >
             Buscar por:
           </Typography>
-
-          {/* Seleccionar año */}
           <FormControl
             sx={{
               width: isMobile ? "100%" : "200px",
@@ -227,8 +207,6 @@ const TablaCuota: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-
-          {/* Seleccionar mes */}
           <FormControl
             sx={{
               width: isMobile ? "100%" : "200px",
@@ -246,8 +224,6 @@ const TablaCuota: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-
-          {/* Boton Buscar */}
           <Button
             variant="contained"
             startIcon={<Search />}
@@ -269,10 +245,9 @@ const TablaCuota: React.FC = () => {
 
       )}
       {isLoading ? (
-        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        <LoadingSpinner /> 
       ) : (
         <>
-          {/* Tabla */}
           <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
             <TableContainer
               sx={{ maxHeight: "100%", borderRadius: "5px", border: "none" }}

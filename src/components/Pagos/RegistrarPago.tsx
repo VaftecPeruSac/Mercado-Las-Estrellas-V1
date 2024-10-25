@@ -32,52 +32,10 @@ import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario } from "../Shared/ElementosFormulario";
 import { formatDate, nombreMes } from "../../Utils/dateUtils";
+import { AgregarProps, Column, Data, Deuda, Puesto, Socio } from "../../interface/Pagos/RegistrarPagos";
+import { Api_Global_Pagos } from "../../service/PagoApi";
+import apiClient from "../../Utils/apliClient";
 
-interface AgregarProps {
-  open: boolean;
-  handleClose: () => void;
-}
-
-interface Socio {
-  id_socio: number;
-  nombre_completo: string;
-}
-
-interface Puesto {
-  id_puesto: number;
-  numero_puesto: string;
-  block: {
-    nombre: string;
-  };
-}
-
-interface Deuda {
-  id_deuda: number;
-  total: string;
-  servicio_descripcion: string,
-  anio: string;
-  mes: string;
-  a_cuenta: string;
-  deuda: string;
-}
-
-interface Column {
-  id: keyof Data | "accion";
-  label: string;
-  minWidth?: number;
-  align?: "center";
-}
-
-interface Data {
-  id_deuda: number;
-  total: string;
-  servicio_descripcion: string,
-  anio: string;
-  mes: string;
-  a_cuenta: string;
-  deuda: string;
-  pago: string;
-}
 
 const columns: readonly Column[] = [
   { id: "id_deuda", label: "#ID Cuota", minWidth: 50, align: "center" },
@@ -90,29 +48,18 @@ const columns: readonly Column[] = [
 ];
 
 const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
-  // Variables para el diseño responsivo
   const { isMobile } = useResponsive();
-
-  // Para los select
   const [socios, setSocios] = useState<Socio[]>([]);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [idSocioSeleccionado, setIdSocioSeleccionado] = useState("");
   const [idPuestoSeleccionado, setIdPuestoSeleccionado] = useState("");
-
-  // Para la tabla
   const [deudas, setDeudas] = useState<Data[]>([]);
   const [filasSeleccionadas, setFilasSeleccionadas] = useState<({ [key: string]: boolean; })>({});
-
-  // Para guardar el monto por deuda
   const [montoPagar, setMontoPagar] = useState<{ [key: number]: number }>({});
-
-  // Para manejar los pagos
   const [totalPagar, setTotalPagar] = useState(0);
   const [totalDeuda, setTotalDeuda] = useState(0);
-
-  // Para el modal
   const [activeTab, setActiveTab] = useState(0);
-  const [loading, setLoading] = useState(false); // Estado de loading
+  const [loading, setLoading] = useState(false); 
 
   // Para registrar el pago
   const [formData, setFormData] = useState({
@@ -131,23 +78,23 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchSocios = async () => {
       try {
-        const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=50`);
+        const response = await apiClient.get(Api_Global_Pagos.socios.listar());
         const data = response.data.data.map((item: Socio) => ({
           id_socio: item.id_socio,
           nombre_completo: item.nombre_completo,
         }));
         setSocios(data);
       } catch (error) {
-        console.error("Error al obtener los socios", error);
       }
     };
+  
     fetchSocios();
   }, []);
 
   // Obtener Lista Puestos
   const fetchPuestos = async (idSocio: string) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      const response = await apiClient.get(Api_Global_Pagos.puestos.listarPorSocio(idSocio));
       const data = response.data.data.map((item: Puesto) => ({
         id_puesto: item.id_puesto,
         numero_puesto: item.numero_puesto,
@@ -157,15 +104,14 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       }));
       setPuestos(data);
     } catch (error) {
-      console.error("Error al obtener los puestos", error);
     }
   };
 
   // Obtener deuda cuota por puesto
   const fetchDeudaPuesto = async (idSocio: string, idPuesto: string) => {
     try {
-      const response = await axios.get(
-        `https://mercadolasestrellas.online/intranet/public/v1/cuotas/pendientes?per_page=50&id_socio=${idSocio}&id_puesto=${idPuesto}`
+      const response = await apiClient.get(
+        Api_Global_Pagos.cuotas.pendientesPorPuesto(idSocio, idPuesto)
       );
       const data = response.data.data.map((item: Deuda) => ({
         id_deuda: item.id_deuda,
@@ -181,6 +127,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       console.error("Error al obtener las deudas", error);
     }
   };
+
 
   // Calcular el total de la deuda de las filas seleccionadas
   const calcularTotalDeudaSeleccionado = () => {

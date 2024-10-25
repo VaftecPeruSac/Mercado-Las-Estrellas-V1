@@ -13,7 +13,7 @@ interface CustomButtonProps {
 
 export const mostrarAlerta = (
     titulo: string,
-    texto: string = "Ocurrio un error en el registro. Intentelo Nuevamente",
+    texto: string = "Ocurrio un error en el sistema. Intentelo Nuevamente",
     icono: "success" | "error" | "warning" | "info" | "question" = "info" // <- Valor predeterminado agregado
 ) => {
     return Swal.fire({
