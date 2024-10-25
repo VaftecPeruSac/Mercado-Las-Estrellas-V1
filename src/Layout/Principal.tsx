@@ -49,14 +49,13 @@ const Principal = () => {
           <ToastContainer
             style={{ marginTop: "100px" }}
             position="top-right"
-            autoClose={1 * 60 * 1000}
+            autoClose={10 * 1000}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick
             rtl={false}
             pauseOnFocusLoss
             draggable
-            pauseOnHover
             theme="light"
           />
 

@@ -70,7 +70,10 @@ const TablaCuota: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    fetchCuotas();
+  } 
 
   const handleExportCuotas = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

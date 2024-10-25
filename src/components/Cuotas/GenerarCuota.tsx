@@ -59,7 +59,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [fechaVencimiento, setFechaVencimiento] = useState("");
   const [loading, setLoading] = useState(false);
 
-
   const [formData, setFormData] = useState({
     id_servicio: "",
     importe: "",
@@ -82,7 +81,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await apiClient.get(Api_Global_Cuotas.servicio.listar());
+        const response = await apiClient.get(Api_Global_Cuotas.servicio.listar());  
         setServicios(response.data.data);
       } catch (error) {
       }
@@ -144,10 +143,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
       if (response.status === 200) {
         const mensaje = response.data.message || "La cuota fue registrada con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          setServiciosAgregados([]);
-          setServiciosIds([]);
-          setImporteTotal(0);
-          onRegistrar();
           handleCloseModal();
         });
       } else {
@@ -163,10 +158,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const handleCloseModal = () => {
     limpiarCuota();
     handleClose();
-  };
-
-  const onRegistrar = () => {
-    window.location.reload();
   };
 
   const renderTabContent = () => {

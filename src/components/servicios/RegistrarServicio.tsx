@@ -196,7 +196,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       if (response.status === 200) {
         const mensaje =response.data.messsage || "El servicio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onServicioRegistrado();
           handleCloseModal();
         });
       } else {
@@ -221,7 +220,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       if (response.status === 200) {
         const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success");
-        onServicioRegistrado();
         handleCloseModal();
       } else {
         mostrarAlerta("Error");
@@ -249,7 +247,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
         const mensaje =
           response.data.messsage || "El servicio se registró";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onServicioRegistrado();
           handleCloseModal();
         });
       } else {
@@ -318,10 +315,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     limpiarRegistarServicio();
     limpiarRegistrarServicioPMC();
     handleClose();
-  };
-
-  const onServicioRegistrado = () => {
-    window.location.reload();
   };
 
   // Contenido del modal

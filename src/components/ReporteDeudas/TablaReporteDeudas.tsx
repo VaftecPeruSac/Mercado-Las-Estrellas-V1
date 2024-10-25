@@ -11,6 +11,7 @@ import ContenedorBotones from '../Shared/ContenedorBotones';
 import { Column, Data, Puesto } from '../../interface/ReporteDeudas/deudas';
 import { Api_Global_Reportes } from '../../service/ReporteApi';
 import { handleExport } from '../../Utils/exportUtils';
+import { useAuth } from '../../context/AuthContext';
 
 const columns: readonly Column[] = [
   { id: "id_cuota", label: "#ID", minWidth: 50, align: "center" },
@@ -31,6 +32,8 @@ const TablaReporteDeudas: React.FC = () => {
   const [searchParams] = useSearchParams();
   const idPuesto = searchParams.get("puesto");
   const [isLoading, setIsLoading] = useState(false);
+
+  const { usuario } = useAuth();
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1);
@@ -56,14 +59,19 @@ const TablaReporteDeudas: React.FC = () => {
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
-        setPuestos(response.data.data);
+        if (usuario?.rol !== "Socio") {
+          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
+          setPuestos(response.data.data);
+        } else {
+          const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${usuario.id_usuario}`);
+          setPuestos(response.data.data);
+        }
       } catch (error) {
         console.log("Error:", error);
       }
     }
     fetchPuestos();
-  }, []);
+  }, [usuario]);
 
   // Metodo para obtener las deudas de un puesto
   const fetchDeudas = async (pagina: number = 1, idPuesto: number) => {

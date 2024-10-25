@@ -26,8 +26,7 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { handleExport } from "../../Utils/exportUtils";
-import axios from "axios";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
 import apiClient from "../../Utils/apliClient";
 
 const TablaServicios: React.FC = () => {
@@ -65,6 +64,7 @@ const TablaServicios: React.FC = () => {
   const handleClose = () => {
     setServicioSeleccionado(null);
     setOpen(false);
+    fetchServicios();
   };
 
   const handleExportServicios = async (e: React.MouseEvent<HTMLButtonElement>) => {

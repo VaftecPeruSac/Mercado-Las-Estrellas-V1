@@ -27,7 +27,6 @@ const Login: React.FC = () => {
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
         if (!usuario) {
           window.location.replace('/home');
-          mostrarAlerta('Error', 'Usuario no encontrado.', 'error');
         } else {
           login(usuario);
           window.location.replace('/home');

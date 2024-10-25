@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -23,21 +22,19 @@ import {
   Search,
   DeleteForever,
 } from "@mui/icons-material";
-import axios from "axios";
 import Agregar from "./RegistrarSocio";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
-import { formatDate } from "../../Utils/dateUtils";
-import { Data, Socio } from "../../interface/Socios/Socios";
+import { Socio } from "../../interface/Socios/Socios";
 import { columns } from "../../Columns/Socios";
 import { handleExport } from "../../Utils/exportUtils";
 import { Api_Global_Socios } from "../../service/SocioApi";
 import useSocios from "../../hooks/Socios/useSocios";
 import { handleAccionesSocio } from "../../Utils/downloadDataSocio";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
 import apiClient from "../../Utils/apliClient";
 
 const TablaAsociados: React.FC = () => {
@@ -80,6 +77,7 @@ const TablaAsociados: React.FC = () => {
   const handleClose = () => {
     setSocioSeleccionado(null);
     setOpen(false);
+    fetchSocios();
   }
 
   // Metodo para exportar el listado de socios
@@ -97,9 +95,6 @@ const TablaAsociados: React.FC = () => {
   const buscarSocios = () => {
     fetchSocios();
   }
-  // const handleSocioRegistrado = () => {
-  //   fetchSocios();
-  // };
 
   const CambioDePagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);

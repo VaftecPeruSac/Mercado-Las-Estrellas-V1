@@ -285,10 +285,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     limpiarCampos();
   };
 
-  const onRegistrar = () => {
-    window.location.reload();
-  };
-
   // REGISTRAR PAGO
   const registrarPago = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -318,7 +314,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
         const mensaje = response.data.message || "El pago fue registrado correctamente";
         generarTicketPDF(formData, response.data.data);
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {

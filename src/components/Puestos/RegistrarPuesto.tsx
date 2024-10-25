@@ -377,10 +377,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     limpiarAsignarInquilino();
   };
 
-  const onRegistrar = () => {
-    window.location.reload();
-  };
-
   // Registrar Puesto
   const registrarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -391,7 +387,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message || "Puestoss registrado con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {
@@ -414,7 +409,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message ||`Los datos del puesto:¿ fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {
@@ -466,7 +460,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         const mensaje = response.data.message || "Puesto registrado con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           handleCloseModal();
-          onRegistrar();
         });
       } else {
         mostrarAlerta("Error");
@@ -494,7 +487,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message || "El inquilino se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {
@@ -517,7 +509,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message || "El bloque se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {
@@ -540,7 +531,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message || "El giro de negocio se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {
@@ -562,7 +552,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       if (response.status === 200) {
         const mensaje = response.data.message || "El puesto se transfirió correctamente";
         mostrarAlerta("Transferencia exitosa", mensaje, "success").then(() => {
-          onRegistrar();
           handleCloseModal();
         });
       } else {

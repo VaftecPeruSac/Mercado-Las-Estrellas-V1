@@ -103,6 +103,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     setBloqueSeleccionado("");
     setPuestoSeleccionado("");
   };
+
   // Obtener bloques
   useEffect(() => {
     const fetchBloques = async () => {
@@ -150,16 +151,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     });
   };
 
-  // Metodo para obtener el titulo del modal
-  const obtenerTituloModal = (): string => {
-    if (socio !== null) {
-      return "EDITAR SOCIO";
-    }
-    else {
-      return "REGISTRAR NUEVO SOCIO";
-    }
-  }
-
   // Registrar socio
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -176,7 +167,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       if (response.status === 200) {
         const mensaje = response.data.message;
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
-          onSocioRegistrado();
           handleCloseModal();
         });
       } else {
@@ -201,8 +191,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       if (response.status === 200) {
         const mensaje = response.data.message || "El socio se actualizó correctamente";
         mostrarAlerta("Actualización exitosa", mensaje, "success");
-        limpiarCamposSocio();
-        onSocioRegistrado();
         handleCloseModal();
       } else {
         mostrarAlerta("Error");
@@ -217,10 +205,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   const handleCloseModal = () => {
     limpiarCamposSocio();
     handleClose();
-  };
-
-  const onSocioRegistrado = () => {
-    window.location.reload();
   };
 
   const renderTabContent = () => {
@@ -456,22 +440,20 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       alto="auto"
       abrir={open}
       cerrar={handleCloseModal}
-      titulo={obtenerTituloModal()}
+      titulo={socio ? "Editar socio" : "Registrar socio"}
       loading={loading}
       botones={
         <BotonesModal
           loading={loading}
           action={async (e) => {
-            if (activeTab === 0) {
-              const result = await mostrarAlertaConfirmacion(
-                "¿Está seguro de registrar un nuevo socio?"
-              );
-              if (result.isConfirmed) {
-                if (socio) {
-                  editarSocio(e);
-                } else {
-                  registrarSocio(e);
-                }
+            const result = await mostrarAlertaConfirmacion(
+              "¿Está seguro de registrar un nuevo socio?"
+            );
+            if (result.isConfirmed) {
+              if (socio) {
+                editarSocio(e);
+              } else {
+                registrarSocio(e);
               }
             }
           }}
