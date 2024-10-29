@@ -36,7 +36,6 @@ import { AgregarProps, Column, Data, Deuda, Puesto, Socio } from "../../interfac
 import { Api_Global_Pagos } from "../../service/PagoApi";
 import apiClient from "../../Utils/apliClient";
 
-
 const columns: readonly Column[] = [
   { id: "id_deuda", label: "#ID Cuota", minWidth: 50, align: "center" },
   { id: "anio", label: "Año", minWidth: 50, align: "center" },
@@ -298,12 +297,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       deudas: { id_deuda: number; importe: number; }[] // Solo enviamos el id_deuda y el importe
     } = { ...rest, deudas: filteredDeudas }; // Retornamos el id_socio y las deudas sin el servicio
 
-    // Validación momentanea mientras validan desde el backend 
-    if (!dataToSend.id_socio || !formData.numero_puesto) {
-      mostrarAlerta("Error", "Por favor, selecciona un socio y un puesto.", "error");
-      setLoading(false);
-      return;
-    }
     try {
       const response = await axios.post(
         "https://mercadolasestrellas.online/intranet/public/v1/pagos",

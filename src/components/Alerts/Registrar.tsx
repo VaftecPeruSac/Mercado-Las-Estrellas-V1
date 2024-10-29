@@ -56,8 +56,8 @@ export const manejarError = (error: any) => {
     let mensajeError = "Ocurrió un error, inténtalo nuevamente.";
 
     if (axios.isAxiosError(error)) {
-        if (error.response?.data?.message) {
-            mensajeError = error.response.data.message;
+        if (error.response?.data?.error) {
+            mensajeError = error.response.data.error;
         } else if (error.response?.data) {
             mensajeError = error.response.data;
         }

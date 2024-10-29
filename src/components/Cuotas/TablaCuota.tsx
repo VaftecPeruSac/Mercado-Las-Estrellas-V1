@@ -37,7 +37,7 @@ import { columns } from "../../Columns/Cuotas";
 import { Api_Global_Cuotas } from "../../service/CuotaApi";
 import { handleExport } from "../../Utils/exportUtils";
 import apiClient from "../../Utils/apliClient";
-import { Cuotas, Data, IMeses } from "../../interface/Cuotas/Cuota";
+import { Cuotas, Data, IMeses } from "../../interface/Cuotas/cuota";
 
 
 const optMeses = [

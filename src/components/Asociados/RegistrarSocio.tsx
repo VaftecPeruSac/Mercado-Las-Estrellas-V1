@@ -22,7 +22,6 @@ import {
   Abc,
 } from "@mui/icons-material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import axios from "axios";
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
@@ -30,7 +29,7 @@ import { AvisoFormulario, SeparadorBloque, TxtFormulario } from "../Shared/Eleme
 import { reFormatDate } from "../../Utils/dateUtils";
 import apiClient from "../../Utils/apliClient";
 import { Api_Global_Socios } from "../../service/SocioApi";
-import { AgregarProps, Bloque, Puesto } from "../../interface/Socios/RegistrarSocio";
+import { AgregarProps, Bloque, Puesto } from "../../interface/Socios/registrarSocio";
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
 
@@ -156,12 +155,6 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     e.preventDefault();
     setLoading(true);
     const { id_socio, id_block, ...dataToSend } = formData;
-
-    if (!dataToSend.id_puesto) {
-      mostrarAlerta("Error", "Por favor, ingrese el numero de puesto.", "error");
-      setLoading(false);
-      return;
-    }
     try {
       const response = await apiClient.post(Api_Global_Socios.socios.registrar(), dataToSend);
       if (response.status === 200) {
@@ -445,6 +438,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       botones={
         <BotonesModal
           loading={loading}
+          obj={socio}
           action={async (e) => {
             const result = await mostrarAlertaConfirmacion(
               "¿Está seguro de registrar un nuevo socio?"

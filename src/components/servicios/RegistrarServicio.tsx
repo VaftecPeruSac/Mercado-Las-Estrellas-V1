@@ -239,10 +239,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     const { id_servicio, ...dataToSend } = formDataPMC;
 
     try {
-      const response = await axios.post(
-        "https://mercadolasestrellas.online/intranet/public/v1/servicios",
-        dataToSend
-      );
+      const response = await apiClient.post(API_ROUTES.servicios.registrar(), dataToSend)
       if (response.status === 200) {
         const mensaje =
           response.data.messsage || "El servicio se registró";
@@ -594,6 +591,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       botones={
         <BotonesModal
           loading={loading}
+          obj={servicio}
           action={async (e) => {
             let result;
 

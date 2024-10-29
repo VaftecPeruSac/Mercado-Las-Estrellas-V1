@@ -20,9 +20,8 @@ import {
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { AttachMoney, Bolt, Delete } from "@mui/icons-material";
-import axios from "axios";
 import useResponsive from "../../hooks/Responsive/useResponsive";
-import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion, validarCamposCuotas } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, TxtFormulario } from "../Shared/ElementosFormulario";
@@ -128,11 +127,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const registrarCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const isValid = validarCamposCuotas(formData, ['fecha_registro', 'fecha_vencimiento']) && servicioSeleccionado;
-    if (!isValid) {
-      setLoading(false);
-      return;
-    }
     const dataToSend = {
       ...formData,
       servicios: serviciosIds,

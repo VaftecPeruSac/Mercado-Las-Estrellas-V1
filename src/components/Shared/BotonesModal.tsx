@@ -4,12 +4,14 @@ import useResponsive from "../../hooks/Responsive/useResponsive";
 
 interface BotonesModalProps {
   loading: boolean;
+  obj?: any;
   action: (e: React.MouseEvent<HTMLButtonElement>) => void;
   close: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const BotonesModal: React.FC<BotonesModalProps> = ({
   loading,
+  obj,
   action,
   close,
 }) => {
@@ -57,7 +59,7 @@ const BotonesModal: React.FC<BotonesModalProps> = ({
         onClick={action}
         disabled={loading}
       >
-        {loading ? "Cargando..." : "Registrar"}
+        {loading ? "Cargando..." : obj ? "Actualizar" : "Registrar"}
       </Button>
     </Box>
   );

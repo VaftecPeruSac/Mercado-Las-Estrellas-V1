@@ -87,6 +87,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
   const [socios, setSocios] = useState<Socio[]>([]);
   const [puestosSocio, setPuestosSocios] = useState<Puesto[]>([]);
+  const [puestosLibres, setPuestosLibres] = useState<Puesto[]>([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -217,7 +218,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const fetchPuestosLibres = async (id_block: number) => {
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos/libre?id_block=${id_block}`); // publico
-      setPuestos(response.data.data); // Almacenar los datos en el estado
+      setPuestosLibres(response.data.data); // Almacenar los datos en el estado
     } catch (error) {
       console.error("Error al obtener los puestos", error);
     }
@@ -420,40 +421,12 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       setLoading(false);
     }
   };
-  // const eliminarPuesto = async (item: any) => {
-    
-  //   try {
-  //     const response = await apiClient.delete(Api_Global_Puestos.puestos.eliminar(item.id_puesto));
-
-  //     if (response.status === 200) {
-  //       const mensaje = response.data.message || "El puesto se elimino.";
-  //       mostrarAlerta("Eliminación exitosa", mensaje, "success").then(() => {
-  //         onRegistrar();
-  //         handleCloseModal();
-  //       });
-  //     } else {
-  //       mostrarAlerta("Error");
-  //     }
-  //   } catch (error) {
-  //     manejarError(error);
-  //   } finally {
-  //     // ---
-  //   }
-  // };
-  
 
   // Asignar Puesto
   const asignarPuestoSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     const dataToSend = formDataAsginarPuesto;
-
-    //De momento se usara estas validaciones hasta que implementen las validaciones a nivel de backend
-    if (!dataToSend.id_puesto || !dataToSend.id_socio) {
-      mostrarAlerta("Error", "Por favor, completa todos los campos requeridos.", "error");
-      setLoading(false);
-      return;
-    }
     try {
       const response = await apiClient.post(Api_Global_Puestos.puestos.asignarPuesto(), dataToSend);
       if (response.status === 200) {
@@ -475,13 +448,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const asignarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-
     const { bloque, ...dataToSend } = formDataInquilino;
-    if (!formDataInquilino.id_puesto) {
-      mostrarAlerta("Error", "Por favor, ingrese el numero de puesto.", "error");
-      setLoading(false);
-      return;
-    }
     try {
       const response = await apiClient.post(Api_Global_Puestos.puestos.asignarInquilino(), dataToSend); 
       if (response.status === 200) {
@@ -503,7 +470,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     e.preventDefault();
     setLoading(true);
     const dataToSend = { ...formDataBloque };
-
     try {
       const response = await apiClient.post(Api_Global_Puestos.bloques.registrar(), dataToSend);
       if (response.status === 200) {
@@ -719,7 +685,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 {/* Seleccionar Puesto */}
                 <FormControl fullWidth required sx={{ mt: 2 }}>
                   <Autocomplete
-                    options={puestos}
+                    options={puestosLibres}
                     getOptionLabel={(puesto) => puesto.numero_puesto}
                     onChange={(event, newValue) => {
                       if (newValue) {
@@ -1137,6 +1103,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       botones={(
         <BotonesModal
           loading={loading}
+          obj={puesto}
           action={async (e) => {
             let result; 
             if (activeTab === 0) {
@@ -1150,15 +1117,6 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 }
               }
             }
-            // else if (activeTab === 0) { // Lógica para eliminar
-            //   const mensaje = `¿Está seguro de eliminar el Puesto ${puesto?.id_puesto}?`;
-      
-            //   const result = await mostrarAlertaConfirmacion(mensaje);
-            
-            //   if (result.isConfirmed) {
-            //     eliminarPuesto(puesto); // Llamar a la función de eliminar
-            //   }
-            // }
             if (activeTab === 1) {
               result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar puesto
                 "¿Está seguro de asignar un puesto a un socio?",
