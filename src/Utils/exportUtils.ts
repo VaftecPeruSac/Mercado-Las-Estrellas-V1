@@ -1,4 +1,3 @@
-import axios from "axios";
 import apiClient from "./apliClient";
 import { mostrarAlerta } from "../components/Alerts/Registrar";
 
@@ -9,11 +8,19 @@ export const handleExport = async (
   setExportFormat: React.Dispatch<React.SetStateAction<string>> // Resetear el formato
 ) => {
   try {
-    const response = await apiClient.get(exportUrl, { responseType: "blob" });
-    if (response.status === 200) {
-      if (exportFormat === "1") {
-        mostrarAlerta("En proceso", "Intentelo más tarde", "warning");
-      } else if (exportFormat === "2") {
+    if (exportFormat === "1") {
+      const response = await apiClient.get(`${exportUrl}-pdf`, { responseType: "blob" });
+      if (response.status === 200) {
+        mostrarAlerta("Exportación Exitosa",`Podra visualizar la ${fileNamePrefix} en breve.`,"success");
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+        window.open(url, "_blank");
+        setExportFormat("");
+      } else {
+        mostrarAlerta("Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error");
+      }
+    } else if (exportFormat === "2") {
+      const response = await apiClient.get(exportUrl, { responseType: "blob" });
+      if (response.status === 200) {
         mostrarAlerta("Exportación Exitosa",`La ${fileNamePrefix} se descargará en breve.`,"success");
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
@@ -26,12 +33,10 @@ export const handleExport = async (
         link.parentNode?.removeChild(link);
         setExportFormat(""); 
       } else {
-        mostrarAlerta("Formato inválido", "Formato de exportación no válido.", "error");
+        mostrarAlerta("Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error");
       }
     } else {
-      mostrarAlerta(
-        "Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
-      );
+      mostrarAlerta("Formato inválido", "Formato de exportación no válido.", "error");
     }
   } catch (error) {
     mostrarAlerta(

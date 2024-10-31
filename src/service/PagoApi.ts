@@ -1,7 +1,6 @@
 export const Api_Global_Pagos = {
   pagos: {
     listar: (page: number = 1) => `/pagos?page=${page}`,
-
     exportar: () => `/pagos/exportar`,
   },
   socios: {

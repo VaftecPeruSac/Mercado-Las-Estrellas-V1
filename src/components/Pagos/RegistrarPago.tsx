@@ -319,7 +319,6 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     }
   };
 
-
   const generarTicketPDF = async (data: typeof formData, pago: any) => {
     const ticket = new jsPDF();
     const pageWidth = ticket.internal.pageSize.getWidth(); // Ancho de la página
@@ -405,9 +404,22 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
     rightText(`Lima, ${dia} de ${nombreMes(mes)} del ${año}`, y + 30);
 
+    // Generar el PDF
+    const pdfBlob = ticket.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const ticketLink = document.createElement('a');
+
     const fecha = formatDate(date.toString())
 
-    ticket.save(`Recibo-Pago-${data.nombre_socio}-${fecha}.pdf`);
+    ticketLink.href = pdfUrl;
+    ticketLink.target = "_blank"; // Abrir en una nueva pestaña
+    ticketLink.click();
+
+    ticketLink.download = `Recibo-Pago-${data.nombre_socio}-${fecha}.pdf`; // Nombre personalizado
+    ticketLink.click();
+
+    // Limpiar la URL temporal después de abrirla
+    URL.revokeObjectURL(pdfUrl);
   };
 
   // Contenido del modal

@@ -21,7 +21,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import RegistrarPago from "./RegistrarPago";
-import axios from "axios";
 import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import * as XLSX from 'xlsx';
@@ -34,7 +33,7 @@ import { Pagos, Data } from "../../interface/Pagos/Pagos";
 import { columns } from "../../Columns/Pagos";
 import apiClient from "../../Utils/apliClient";
 import { Api_Global_Pagos } from "../../service/PagoApi";
-import { mostrarAlerta } from "../Alerts/Registrar";
+import { handleExport } from "../../Utils/exportUtils";
 
 const TablaPago: React.FC = () => {
   const { isTablet, isMobile, isSmallMobile } = useResponsive();
@@ -55,39 +54,9 @@ const TablaPago: React.FC = () => {
 
   const handleExportPagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    try {
-      const response = await apiClient.get(Api_Global_Pagos.pagos.exportar(),{ responseType: 'blob' }
-      );
-      if (response.status === 200) {
-        if (exportFormat === "1") { // PDF
-          mostrarAlerta("En proceso", "Intentelo más tarde", "warning");
-
-        } else if (exportFormat === "2") { // Excel
-          mostrarAlerta("Exportación Exitosa",`La lista de pagos se descargará en breve.`,"success");
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          const hoy = new Date();
-          const formatDate = hoy.toISOString().split('T')[0];
-          link.setAttribute('download', `lista-pagos-${formatDate}.xlsx`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode?.removeChild(link);
-          setExportFormat("");
-        } else {
-          mostrarAlerta("Formato inválido", "Formato de exportación no válido.", "error");
-        }
-      } else {
-        mostrarAlerta(
-          "Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
-        );
-      }
-    } catch (error) {
-      mostrarAlerta(
-        "Error inesperado","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error"
-      );
-    }
-
+    const exportUrl = Api_Global_Pagos.pagos.exportar();
+    const fileNamePrefix = "lista-pagos";
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
 
   const handleAccionesPago = async (accion: number, telefono: string, pago: Pagos) => {
