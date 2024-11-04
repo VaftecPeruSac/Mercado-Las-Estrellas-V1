@@ -46,7 +46,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const [loading, setLoading] = useState(false); 
   const [activeTab, setActiveTab] = useState(0);
   const [costoMetroCuadrado, setCostoMetroCuadrado] = useState(0);
-  const [puestosActivos, setPuestosActivos] = useState(0);
+  const [totalPuestos, setTotalPuestos] = useState(0);
   const [areaTotal, setAreaTotal] = useState(0);
   const [socios, setSocios] = useState([]);
   const [puestos, setPuestos] = useState([]);
@@ -85,6 +85,34 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     }
   };
 
+  // Obtener la cantidad total de puestos
+  useEffect(() => {
+    const fetchTotalPuestos = async () => {
+      try {
+        const response = await apiClient.get(API_ROUTES.puestos.totalPuestos());
+        const data = response.data.data;
+        setTotalPuestos(data);
+      } catch (error) {
+        console.error("Error al obtener el area total", error);
+      }
+    };
+    fetchTotalPuestos();
+  }, []);
+
+  // Obtener el area total de los puestos
+  useEffect(() => {
+    const fetchAreaTotal = async () => {
+      try {
+        const response = await apiClient.get(API_ROUTES.puestos.areaTotal());
+        const data = response.data.data;
+        setAreaTotal(data);
+      } catch (error) {
+        console.error("Error al obtener el area total", error);
+      }
+    };
+    fetchAreaTotal();
+  }, []);
+
   // Datos para registrar el servicio Por Metro Cuadrado
   const [formDataPMC, setFormDataPMC] = useState({
     id_servicio: "",
@@ -111,10 +139,22 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     id_puesto: "",
   });
 
+  useEffect(() => {
+    const obtenerCostoPorMetroCuadrado = () => {
+      if (!formDataPMC.costo_unitario) {
+        setCostoMetroCuadrado(0);
+        return;
+      } 
+      const costoTotal = parseFloat(formDataPMC.costo_unitario);
+      const costoMetroCuadrado = costoTotal / areaTotal;
+      setCostoMetroCuadrado(costoMetroCuadrado);
+    }
+    obtenerCostoPorMetroCuadrado();
+  }, [formDataPMC.costo_unitario, areaTotal]);
+
   // Llenar campos con los datos del servicio seleccionado
   useEffect(() => {
     if (servicio) {
-      console.log("Servicio obtenido:", servicio);
       setFormData({
         id_servicio: servicio.id_servicio || "",
         descripcion: servicio.descripcion || "",
@@ -420,9 +460,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                 <TxtFormulario
                   type="text"
                   label="Costo total"
-                  // name="costo_total"
                   name="costo_unitario"
-                  // value={costoTotal}
                   value={formDataPMC.costo_unitario}
                   // onChange={(e) => setCostoTotal(e.target.value)}
                   onChange={manejarCambioPMC}
@@ -455,10 +493,10 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                     {/* Nro. Puestos activos */}
                     <TxtFormulario
                       type="text"
-                      label="Puestos activos"
-                      name="puestos_activos"
-                      value={puestosActivos.toString()}
-                      onChange={(e) => setPuestosActivos(parseInt(e.target.value))}
+                      label="Total de Puestos"
+                      name="total_puestos"
+                      value={totalPuestos.toString()}
+                      onChange={(e) => setTotalPuestos(parseInt(e.target.value))}
                       icono={<Storefront sx={{ mr: 1, color: "gray" }} />}
                     />
 
@@ -467,7 +505,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                       type="text"
                       label="Costo por metro cuadrado"
                       name="costo_metro_cuadrado"
-                      value={costoMetroCuadrado.toString()}
+                      value={costoMetroCuadrado.toFixed(2).toString()}
                       onChange={(e) => setCostoMetroCuadrado(parseFloat(e.target.value))}
                       icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
                     />

@@ -382,10 +382,9 @@ const TablaCuota: React.FC = () => {
                                 column.id === "accion" ? "center" : column.align
                               }
                             >
-                              {column.format && typeof value === "number"
-                                ? column.format(value)
-                                : value}
-                              {column.id === "accion" && (
+                              {column.id === "importe" ?
+                                parseFloat(cuota.importe).toFixed(2)
+                              : column.id === "accion" ? (
                                 <Box
                                   sx={{
                                     display: "flex",
@@ -406,7 +405,7 @@ const TablaCuota: React.FC = () => {
                                     <WhatsApp />
                                   </IconButton>
                                 </Box>
-                              )}
+                              ) : value}
                             </TableCell>
                           );
                         })}

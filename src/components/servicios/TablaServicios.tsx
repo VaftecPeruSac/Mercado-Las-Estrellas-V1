@@ -366,7 +366,7 @@ const TablaServicios: React.FC = () => {
                                 ) : parseInt(servicio.tipo_servicio) === 2 ? (
                                   "Extraordinario (Pagos extras)"
                                 ) : (
-                                  "Por metrado (Pagos por metraje)"
+                                  "Por metro cuadrado (Pagos por metraje)"
                                 )
                               ) : column.id === "accion" ? (
                                 <Box

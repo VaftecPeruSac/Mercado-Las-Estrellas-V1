@@ -16,6 +16,8 @@ export const API_ROUTES = {
   puestos: {
     listarPorSocio: (idSocio: number | string, perPage: number = 50): string =>
       `/puestos?per_page=${perPage}&id_socio=${idSocio}`,
+    totalPuestos: () => `/puestos/totalPuestos`,
+    areaTotal: () => `/puestos/areaTotal`,
   },
   
   
