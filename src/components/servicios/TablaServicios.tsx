@@ -82,6 +82,7 @@ const TablaServicios: React.FC = () => {
   const buscarServicios = () => {
     fetchServicios(1);
   };
+
   const eliminarServicio = async (item: any) => {
     try {
       const response = await apiClient.delete(API_ROUTES.servicios.eliminar(item.id_servicio));

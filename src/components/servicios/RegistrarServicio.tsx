@@ -155,16 +155,29 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   // Llenar campos con los datos del servicio seleccionado
   useEffect(() => {
     if (servicio) {
-      setFormData({
-        id_servicio: servicio.id_servicio || "",
-        descripcion: servicio.descripcion || "",
-        costo_unitario: servicio.costo_unitario || "",
-        tipo_servicio: servicio.tipo_servicio || "",
-        estado: "1", // "Activo",
-        fecha_registro: reFormatDate(servicio.fecha_registro) || "",
-      });
+      if (parseInt(servicio.tipo_servicio) === 3) {
+        setActiveTab(1);
+        setFormDataPMC({
+          id_servicio: servicio.id_servicio || "",
+          descripcion: servicio.descripcion || "",
+          costo_unitario: (parseFloat(servicio.costo_unitario) * areaTotal).toString() || "",
+          tipo_servicio: servicio.tipo_servicio || "",
+          estado: "1", // "Activo",
+          fecha_registro: reFormatDate(servicio.fecha_registro) || "",
+        });
+      } else {
+        setActiveTab(0);
+        setFormData({
+          id_servicio: servicio.id_servicio || "",
+          descripcion: servicio.descripcion || "",
+          costo_unitario: servicio.costo_unitario || "",
+          tipo_servicio: servicio.tipo_servicio || "",
+          estado: "1", // "Activo",
+          fecha_registro: reFormatDate(servicio.fecha_registro) || "",
+        });
+      }
     }
-  }, [servicio]);
+  }, [servicio, areaTotal]);
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) =>
@@ -216,6 +229,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       estado: "1", // "Activo",
       fecha_registro: "",
     });
+    setCostoMetroCuadrado(0);
   };
 
   const limpiarRegistrarMIA = () => {
@@ -253,7 +267,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     e.preventDefault();
     setLoading(true);
     const { ...dataToSend } = formData;
-    // const idServicio = servicio?.id_servicio as string;
+  
     try {
 
       const response = await apiClient.put(API_ROUTES.servicios.editar(servicio?.id_servicio),dataToSend);
@@ -272,7 +286,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   };
 
   // Registrar servicio Por Metro Cuadrado
-  const registrarServicioPorMetroCua = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const registrarServicioPMC = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -297,29 +311,26 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   };
 
   // Actualizar servicio Por Metro Cuadrado
-  const editarServicioPorMetroCua = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const editarServicioPMC = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // setLoading(true);
-    // formData.tipo_servicio = '3';
-    // const { ...dataToSend } = formDataPMC;
-    // try {
-    //   const response = await axios.put(
-    //     `https://mercadolasestrellas.online/intranet/public/v1/servicios/${servicio?.id_servicio}`,
-    //     dataToSend
-    //   );
-    //   if (response.status === 200) {
-    //     const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
-    //     mostrarAlerta("Actualización exitosa", mensaje, "success");
-    //     limpiarRegistarServicio();
-    //     handleCloseModal();
-    //   } else {
-    //     mostrarAlerta("Error");
-    //   }
-    // } catch (error) {
-    //   manejarError(error);
-    // } finally {
-    //   setLoading(false);
-    // }
+    setLoading(true);
+    const { ...dataToSend } = formDataPMC;
+  
+    try {
+
+      const response = await apiClient.put(API_ROUTES.servicios.editar(servicio?.id_servicio),dataToSend);
+      if (response.status === 200) {
+        const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
+        mostrarAlerta("Actualización exitosa", mensaje, "success");
+        handleCloseModal();
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Registrar servicio multa por inasistencia a Asamblea General
@@ -441,6 +452,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
               área total de todos los puestos que se encuentren activos. (*)
             </Typography>
 
+            {/* <pre>{JSON.stringify(formDataPMC, null, 2)}</pre> */}
+
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 {/* Separador */}
@@ -461,8 +474,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                   type="text"
                   label="Costo total"
                   name="costo_unitario"
-                  value={formDataPMC.costo_unitario}
-                  // onChange={(e) => setCostoTotal(e.target.value)}
+                  value={parseFloat(formDataPMC.costo_unitario).toFixed(2).toString()}
                   onChange={manejarCambioPMC}
                   noMargin={true}
                   icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
@@ -623,8 +635,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
       cerrar={handleCloseModal}
       loading={loading}
       titulo={servicio ? "Editar servicio" : "Registrar servicio"}
-      activeTab={servicio ? 0 : activeTab}
-      handleTabChange={servicio ? (e) => handleTabChange(e, 0) : handleTabChange}
+      activeTab={activeTab}
+      handleTabChange={servicio ? (e) => handleTabChange(e, (parseInt(servicio.tipo_servicio) === 3) ? 1 : 0) : handleTabChange}
       tabs={["Registrar servicio", "Registrar servicio compartido", "Multa por inasistencia a Asamblea General"]}
       botones={
         <BotonesModal
@@ -633,11 +645,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
           action={async (e) => {
             let result;
 
-            // Caso cuando activeTab es 0
             if (activeTab === 0) {
-              result = await mostrarAlertaConfirmacion(
-                "¿Está seguro de registrar un nuevo servicio?"
-              );
+              result = await mostrarAlertaConfirmacion("¿Está seguro de registrar un nuevo servicio?");
               if (result.isConfirmed) {
                 if (servicio) {
                   editarServicio(e);
@@ -647,17 +656,13 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
               }
             }
 
-            // Caso cuando activeTab es 1
             if (activeTab === 1) {
-              result = await mostrarAlertaConfirmacion(
-                "¿Está seguro de realizar otra acción para el servicio?"
-              );
+              result = await mostrarAlertaConfirmacion("¿Está seguro de registrar un nuevo servicio compartido?");
               if (result.isConfirmed) {
-                // registrarServicioCompartido(e); }
                 if (servicio) {
-                  editarServicioPorMetroCua(e);
+                  editarServicioPMC(e);
                 } else {
-                  registrarServicioPorMetroCua(e);
+                  registrarServicioPMC(e);
                 }
               }
             }
