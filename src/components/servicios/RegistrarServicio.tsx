@@ -474,7 +474,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                   type="text"
                   label="Costo total"
                   name="costo_unitario"
-                  value={parseFloat(formDataPMC.costo_unitario).toFixed(2).toString()}
+                  value={formDataPMC.costo_unitario}
                   onChange={manejarCambioPMC}
                   noMargin={true}
                   icono={<Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>}
