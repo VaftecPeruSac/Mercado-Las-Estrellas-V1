@@ -59,7 +59,6 @@ const TablaPuestos: React.FC = () => {
     setMostrarDetalles,
     bloqueSeleccionado,
     setBloqueSeleccionado,
-    nroPuestoIngresado,
     setNroPuestoIngresado,
     giroSeleccionado,
     setGiroSeleccionado,
@@ -469,6 +468,8 @@ const TablaPuestos: React.FC = () => {
                                 puesto.giro_negocio.nombre
                               ) : column.id === "block" ? (
                                 puesto.block.nombre
+                              ) : column.id === "estado" ? (
+                                parseInt(value) === 2 ? "Ocupado" : "Libre"
                               ) : column.id === "accion" ? (
                                 <Box
                                   sx={{
