@@ -9,10 +9,12 @@ export const Api_Global_Puestos = {
         registrar:() => `/puestos`,
         editar: (id: string | undefined) => `/puestos/${id}`, 
         asignarPuesto:() =>`/puestos/asignar`,
-        asignarInquilino:()=>`/inquilinos`,
         transferir:()=>`/puestos/transferir`,
     },
-
+    inquilinos: {
+        registrar:()=>`/inquilinos`,
+        editar: (id: string | undefined) => `/inquilinos/${id}`,
+    },
     bloques: {
         listar: () => `/blocks`,
         registrar:()=>`/blocks`,

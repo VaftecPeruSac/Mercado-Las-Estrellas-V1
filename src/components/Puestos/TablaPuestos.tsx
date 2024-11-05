@@ -468,6 +468,8 @@ const TablaPuestos: React.FC = () => {
                                 puesto.giro_negocio.nombre
                               ) : column.id === "block" ? (
                                 puesto.block.nombre
+                              ) : column.id === "inquilino" ? (
+                                puesto.inquilino.nombre_completo ? puesto.inquilino.nombre_completo : "No asignado"
                               ) : column.id === "estado" ? (
                                 parseInt(value) === 2 ? "Ocupado" : "Libre"
                               ) : column.id === "accion" ? (

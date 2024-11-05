@@ -50,7 +50,14 @@ interface EditarPuesto {
     id_block: string;
     nombre: string;
   };
-  inquilino: string;
+  inquilino: {
+    id_inquilino: string,
+    nombre_completo: string,
+    apellido_materno: string,
+    apellido_paterno: string,
+    dni: string,
+    telefono: string,
+  };
 }
 
 interface GiroNegocio {
@@ -82,13 +89,17 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [girosNegocio, setGirosNegocio] = useState<GiroNegocio[]>([]);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
-  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
-  const [giroSeleccionado, setGiroSeleccionado] = useState<number | "">("");
   const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
-  const [socios, setSocios] = useState<Socio[]>([]);
   const [puestosSocio, setPuestosSocios] = useState<Puesto[]>([]);
   const [puestosLibres, setPuestosLibres] = useState<Puesto[]>([]);
 
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
+  const [giroSeleccionado, setGiroSeleccionado] = useState<number | "">("");
+  
+  const [bloqueInqSeleccionado, setBloqueInqSeleccionado] = useState<number | "">("");
+  const [puestoInqSeleccionado, setPuestoInqSeleccionado] = useState<number | "">("");
+
+  const [socios, setSocios] = useState<Socio[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Datos para registrar el puesto
@@ -104,7 +115,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Llenar campos con los datos del puesto seleccionado
   useEffect(() => {
     if (puesto) {
-      console.log("Puesto obtenido:", puesto);
+      setActiveTab(0);
       setFormDataPuesto({
         id_puesto: puesto.id_puesto || "",
         id_gironegocio: puesto.giro_negocio.id_gironegocio || "",
@@ -113,6 +124,18 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
         area: puesto.area || "",
         fecha_registro: reFormatDate(puesto.fecha_registro) || "",
       });
+      setformDataInquilino({
+        id_inquilino: puesto.inquilino.id_inquilino || "",
+        nombre: puesto.inquilino.nombre_completo || "",
+        apellido_paterno: puesto.inquilino.apellido_paterno || "",
+        apellido_materno: puesto.inquilino.apellido_materno || "",
+        dni: puesto.inquilino.dni || "",
+        telefono: puesto.inquilino.telefono || "",
+        bloque: puesto.block.id_block || "",
+        id_puesto: puesto.id_puesto || "",
+      });
+      setBloqueInqSeleccionado(Number(puesto.block.id_block));
+      setPuestoInqSeleccionado(Number(puesto.id_puesto));
       setGiroSeleccionado(Number(puesto.giro_negocio.id_gironegocio));
     }
   }, [puesto]);
@@ -125,6 +148,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Datos para asignar un inquilino a un puesto
   const [formDataInquilino, setformDataInquilino] = useState({
+    id_inquilino: "",
     nombre: "",
     apellido_paterno: "",
     apellido_materno: "",
@@ -205,13 +229,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Filtrar puestos por bloque
   useEffect(() => {
-    if (bloqueSeleccionado) {
-      const puestosFiltrados = puestos.filter((puesto) => puesto.id_block === bloqueSeleccionado);
+    if (bloqueInqSeleccionado) {
+      const puestosFiltrados = puestos.filter((puesto) => puesto.id_block === bloqueInqSeleccionado);
       setPuestosFiltrados(puestosFiltrados);
     } else {
       setPuestosFiltrados([]);
     }
-  }, [bloqueSeleccionado, puestos]);
+  }, [bloqueInqSeleccionado, puestos]);
 
 
   // Obtener puestos libres
@@ -293,27 +317,36 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   // Cambiar entre pestañas
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+
+    if (puesto && (newValue === 1 || newValue === 3 || newValue === 4 || newValue === 5)) {
+      return; // No permitir cambiar a las pestañas 1, 3, 4, 5 si el puesto existe
+    }
+
     setActiveTab(newValue);
-    limpiarRegistrarPuesto();
-    limpiarAsignarPuesto();
-    limpiarAsignarInquilino();
-    limpiarNuevoBloque();
-    limpiarGiroNegocio();
+
+    if (puesto) {
+      limpiarAsignarPuesto();
+      limpiarNuevoBloque();
+      limpiarGiroNegocio();
+    } else {
+      limpiarRegistrarPuesto();
+      limpiarAsignarPuesto();
+      limpiarAsignarInquilino();
+      limpiarNuevoBloque();
+      limpiarGiroNegocio();
+    }
+
   }
 
   // Metodo para obtener el titulo del modal
   const obtenerTituloModal = (): string => {
     switch (activeTab) {
       case 0:
-        if (puesto) {
-          return "EDITAR PUESTO";
-        } else {
-          return "REGISTRAR PUESTO";
-        }
+        return puesto ? "EDITAR PUESTO" : "REGISTRAR PUESTO";
       case 1:
         return "ASIGNAR SOCIO";
       case 2:
-        return "ASIGNAR INQUILINO";
+        return puesto ? "EDITAR INQUILINO" : "ASIGNAR INQUILINO";
       case 3:
         return "REGISTRAR BLOQUE";
       case 4:
@@ -338,15 +371,16 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   };
 
   const limpiarAsignarPuesto = () => {
-    setBloqueSeleccionado("");
     setFormDataAsignarPuesto({
       id_puesto: "",
       id_socio: "",
     });
+    setBloqueSeleccionado("");
   };
 
   const limpiarAsignarInquilino = () => {
     setformDataInquilino({
+      id_inquilino: "",
       nombre: "",
       apellido_paterno: "",
       apellido_materno: "",
@@ -355,6 +389,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       bloque: "",
       id_puesto: "",
     });
+    setBloqueInqSeleccionado("");
+    setPuestoInqSeleccionado("");
   }
 
   const limpiarNuevoBloque = () => {
@@ -391,7 +427,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           handleCloseModal();
         });
       } else {
-        mostrarAlerta("Error",);
+        mostrarAlerta("Error");
       }
     } catch (error) {
       manejarError(error);
@@ -413,7 +449,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
           handleCloseModal();
         });
       } else {
-        mostrarAlerta("Errror");
+        mostrarAlerta("Error");
       }
     } catch (error) {
       manejarError(error);  
@@ -448,11 +484,33 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const asignarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const { bloque, ...dataToSend } = formDataInquilino;
+    const { id_inquilino, bloque, ...dataToSend } = formDataInquilino;
     try {
-      const response = await apiClient.post(Api_Global_Puestos.puestos.asignarInquilino(), dataToSend); 
+      const response = await apiClient.post(Api_Global_Puestos.inquilinos.registrar(), dataToSend); 
       if (response.status === 200) {
         const mensaje = response.data.message || "El inquilino se registró correctamente";
+        mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          handleCloseModal();
+        });
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Actualizar inquilino
+  const editarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const { bloque, ...dataToSend } = formDataInquilino;
+    try {
+      const response = await apiClient.put(Api_Global_Puestos.inquilinos.editar((puesto?.inquilino?.id_inquilino)), dataToSend); 
+      if (response.status === 200) {
+        const mensaje = response.data.message || "Los datos del inqulino se fueron actualizados correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
           handleCloseModal();
         });
@@ -729,7 +787,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 <FormControl fullWidth required>
                   <Autocomplete
                     options={socios}
-                    getOptionLabel={(socio) => socio.nombre_completo} // Mostrar el nombre completo del socio
+                    getOptionLabel={(socio) => socio.nombre_completo.toString()} // Mostrar el nombre completo del socio
                     onChange={(event, newValue) => {
                       if (newValue) {
                         setFormDataAsignarPuesto({
@@ -838,14 +896,14 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   <FormControl fullWidth required>
                     <InputLabel id="bloque-label">Bloque</InputLabel>
                     <Select
+                      disabled={puesto !== null}
                       labelId="bloque-label"
                       id="select-bloque"
                       label="Bloque"
-                      value={bloqueSeleccionado}
+                      value={bloqueInqSeleccionado}
                       onChange={(e) => {
                         const value = e.target.value as number;
-                        setBloqueSeleccionado(value);
-                        // setFormData({ ...formData, bloque: value.toString() });
+                        setBloqueInqSeleccionado(value);
                       }}
                       startAdornment={
                         <Business sx={{ mr: 1, color: "gray" }} />
@@ -871,16 +929,26 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   {/* Nro. Puesto */}
                   <FormControl fullWidth required>
                     <Autocomplete
+                      disabled={puesto !== null}
                       options={puestosFiltrados}
-                      getOptionLabel={(puesto) =>
-                        puesto.numero_puesto.toString()
+                      getOptionLabel={(puestoSelect) =>
+                        puestoSelect.numero_puesto.toString()
                       } // Convertir numero_puesto a string para mostrarlo correctamente
+                      value={
+                        puestoInqSeleccionado 
+                          ? puestosFiltrados.find(
+                            (puestoSelect) => puestoSelect.id_puesto === puestoInqSeleccionado
+                          ) || null : null
+                      }
                       onChange={(event, newValue) => {
                         if (newValue) {
                           setformDataInquilino({
                             ...formDataInquilino,
                             id_puesto: newValue.id_puesto.toString(), // Convertir id_puesto a string
                           });
+                          setPuestoInqSeleccionado(Number(newValue.id_puesto));
+                        } else {
+                          setPuestoInqSeleccionado("");
                         }
                       }}
                       renderInput={(params) => (
@@ -1097,9 +1165,16 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       cerrar={handleCloseModal}
       loading={loading}
       titulo={obtenerTituloModal()}
-      activeTab={puesto ? 0 : activeTab}
-      handleTabChange={puesto ? (e) => handleTabChange(e, 0) : handleTabChange}
-      tabs={["Registrar Puesto", "Asignar Puesto", "Asignar Inquilino", "Registrar Bloque", "Registrar Giro de Negocio", "PAGOS TRANSFERENCIA DE PUESTOS"]}
+      activeTab={activeTab}
+      handleTabChange={handleTabChange}
+      tabs={[
+        puesto ? "Editar Puesto" : "Registrar Puesto", 
+        "Asignar Puesto", 
+        puesto ? "Editar Inquilino" : "Asignar Inquilino", 
+        "Registrar Bloque", 
+        "Registrar Giro de Negocio", 
+        "Pagos transferencia de puestos"
+      ]}
       botones={(
         <BotonesModal
           loading={loading}
@@ -1126,11 +1201,14 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
               }
             }
             if (activeTab === 2) {
-              result = await mostrarAlertaConfirmacion( // Mostrar alerta de confirmación para asignar inquilino
-                "¿Está seguro de asignar un inquilino?",
-              );
+              const mensaje = puesto ? "¿Está seguro de editar este inquilino?" : "¿Está seguro de asignar un inquilino?";
+              const result = await mostrarAlertaConfirmacion(mensaje);
               if (result.isConfirmed) {
-                asignarInquilino(e); // Asignar inquilino
+                if (puesto) {
+                  editarInquilino(e);
+                } else {
+                  asignarInquilino(e);
+                }
               }
             }
 

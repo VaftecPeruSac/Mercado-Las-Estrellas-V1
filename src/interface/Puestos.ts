@@ -13,7 +13,14 @@ export interface Puesto {
         id_block: string;
         nombre: string;
     };
-    inquilino: string;
+    inquilino: {
+        id_inquilino: string,
+        nombre_completo: string,
+        apellido_materno: string,
+        apellido_paterno: string,
+        dni: string,
+        telefono: string,
+    };
 }
 
 export interface Bloque {
@@ -49,5 +56,12 @@ export interface Data {
         id_block: string;
         nombre: string;
     };
-    inquilino: string;
+    inquilino: {
+        id_inquilino: string,
+        nombre_completo: string,
+        apellido_materno: string,
+        apellido_paterno: string,
+        dni: string,
+        telefono: string,
+    };
 }
