@@ -109,7 +109,7 @@ const TablaCuotasPuesto: React.FC = () => {
   const handleExportReporteCuotasPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!puestoSeleccionado) {
-      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      mostrarAlerta("Error", "Seleccione puesto para exportar el reporte.", "warning");
       return;
     }
     const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasPuesto(puestoSeleccionado); // URL específica para servicios

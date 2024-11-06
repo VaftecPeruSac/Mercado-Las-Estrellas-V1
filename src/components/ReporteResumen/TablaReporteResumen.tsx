@@ -82,7 +82,7 @@ const TablaReporteResumen = () => {
   const handleExportReporteResumen = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!puestoSeleccionado) {
-      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      mostrarAlerta("Error", "Seleccione un puesto para exportar el reporte.", "warning");
       return;
     }
     const exportUrl = Api_Global_Reportes.reportes.exportarResumen(puestoSeleccionado); // URL específica para servicios

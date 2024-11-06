@@ -91,7 +91,7 @@ const TablaReportePagos: React.FC = () => {
   const handleExportReportePagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!socioSeleccionado) {
-      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      mostrarAlerta("Error", "Seleccione un socio para exportar el reporte.", "warning");
       return;
     }
     const exportUrl = Api_Global_Reportes.reportes.exportarReportePagos(socioSeleccionado); // URL específica para servicios
