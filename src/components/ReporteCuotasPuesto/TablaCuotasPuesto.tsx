@@ -7,6 +7,9 @@ import Contenedor from "../Shared/Contenedor";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import ContenedorBotones from "../Shared/ContenedorBotones";
+import { Api_Global_Reportes } from "../../service/ReporteApi";
+import { handleExport } from "../../Utils/exportUtils";
+import { mostrarAlerta } from "../Alerts/Registrar";
 
 interface Puesto {
   id_puesto: number;
@@ -103,6 +106,17 @@ const TablaCuotasPuesto: React.FC = () => {
     }
   }
 
+  const handleExportReporteCuotasPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!puestoSeleccionado) {
+      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      return;
+    }
+    const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasPuesto(puestoSeleccionado); // URL específica para servicios
+    const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+  };
+
   return (
     <Contenedor>
       <ContenedorBotones reporte>
@@ -158,7 +172,7 @@ const TablaCuotasPuesto: React.FC = () => {
         <BotonExportar
           exportFormat={exportFormat}
           setExportFormat={setExportFormat}
-          handleExport={() => alert("En proceso...")}
+          handleExport={handleExportReporteCuotasPuesto}
         />
 
       </ContenedorBotones>

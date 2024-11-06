@@ -12,6 +12,7 @@ import { Column, Data, Puesto } from '../../interface/ReporteDeudas/deudas';
 import { Api_Global_Reportes } from '../../service/ReporteApi';
 import { handleExport } from '../../Utils/exportUtils';
 import { useAuth } from '../../context/AuthContext';
+import { mostrarAlerta } from '../Alerts/Registrar';
 
 const columns: readonly Column[] = [
   { id: "id_cuota", label: "#ID", minWidth: 50, align: "center" },
@@ -90,7 +91,11 @@ const TablaReporteDeudas: React.FC = () => {
 
   const handleExportReporteDeudas = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(); // URL específica para servicios
+    if (!puestoSeleccionado) {
+      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      return;
+    }
+    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(puestoSeleccionado); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };

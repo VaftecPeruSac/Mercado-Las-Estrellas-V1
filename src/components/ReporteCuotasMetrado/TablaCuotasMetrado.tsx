@@ -8,6 +8,9 @@ import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
 import { formatDate } from "../../Utils/dateUtils";
 import ContenedorBotones from '../Shared/ContenedorBotones';
+import { Api_Global_Reportes } from '../../service/ReporteApi';
+import { handleExport } from '../../Utils/exportUtils';
+import { mostrarAlerta } from '../Alerts/Registrar';
 
 interface Cuota {
   id_cuota: string;
@@ -84,6 +87,17 @@ const TablaReporteCuotasMetrado: React.FC = () => {
     }
   }
 
+  const handleExportReporteCuotasMetrado = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!cuotaSeleccionada) {
+      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      return;
+    }
+    const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasPuesto(cuotaSeleccionada); // URL específica para servicios
+    const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+  };
+
   return (
     <Contenedor>
       <ContenedorBotones reporte>
@@ -139,7 +153,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
         <BotonExportar
           exportFormat={exportFormat}
           setExportFormat={setExportFormat}
-          handleExport={() => alert("En proceso...")}
+          handleExport={handleExportReporteCuotasMetrado}
         />
 
       </ContenedorBotones>

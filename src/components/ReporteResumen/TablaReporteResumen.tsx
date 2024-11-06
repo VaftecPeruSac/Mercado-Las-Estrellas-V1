@@ -16,7 +16,6 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../../hooks/Responsive/useResponsive";
-import { useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import Contenedor from "../Shared/Contenedor";
 import BotonExportar from "../Shared/BotonExportar";
@@ -25,6 +24,7 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import { Api_Global_Reportes } from "../../service/ReporteApi";
 import { handleExport } from "../../Utils/exportUtils";
 import { Column, Data, Puesto } from "../../interface/ReporteResunen/resumen";
+import { mostrarAlerta } from "../Alerts/Registrar";
 
 
 const columns: readonly Column[] = [
@@ -48,36 +48,9 @@ const TablaReporteResumen = () => {
   const [resumen, setResumen] = useState<Data[]>([]);
   const [exportFormat, setExportFormat] = useState<string>("");
 
-
   const cambiarPagina = (event: React.ChangeEvent<unknown>, value: number) => {
     setPaginaActual(value);
     fetchResumen(value, puestoSeleccionado);
-  };
-
-  const meses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
-
-  const getMonth = (date: string) => {
-    const fecha = new Date(date);
-    return meses[fecha.getMonth()];
-  };
-
-  const getDay = (date: string) => {
-    const fecha = new Date(date);
-    const day = fecha.getDate() < 10 ? `0${fecha.getDate()}` : fecha.getDate();
-    return day;
   };
 
   useEffect(() => {
@@ -97,7 +70,7 @@ const TablaReporteResumen = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/resumen-por-puestos?page=${pagina}&id_puesto=${idPuesto}`);
-       setResumen(response.data.data);
+      setResumen(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);
     } catch (error) {
@@ -108,7 +81,11 @@ const TablaReporteResumen = () => {
 
   const handleExportReporteResumen = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(); // URL específica para servicios
+    if (!puestoSeleccionado) {
+      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      return;
+    }
+    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(puestoSeleccionado); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-resumen"; // Nombre del archivo
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };

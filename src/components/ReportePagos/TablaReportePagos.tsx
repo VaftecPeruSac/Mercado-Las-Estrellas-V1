@@ -12,6 +12,7 @@ import { Api_Global_Reportes } from '../../service/ReporteApi';
 import { handleExport } from '../../Utils/exportUtils';
 import { Column, Data, Socio } from '../../interface/ReportePagos/pagos';
 import { useAuth } from '../../context/AuthContext';
+import { mostrarAlerta } from '../Alerts/Registrar';
 
 
 
@@ -89,7 +90,11 @@ const TablaReportePagos: React.FC = () => {
   // Metodo para exportar el reporte de pagos
   const handleExportReportePagos = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const exportUrl = Api_Global_Reportes.reportes.exportarReportePagos(); // URL específica para servicios
+    if (!socioSeleccionado) {
+      mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
+      return;
+    }
+    const exportUrl = Api_Global_Reportes.reportes.exportarReportePagos(socioSeleccionado); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-pagos"; // Nombre del archivo
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
   };
