@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { Api_Global_Socios } from "../../service/SocioApi";
 import useResponsive from "../Responsive/useResponsive";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +10,7 @@ const useSocios = () => {
     const { isTablet, isMobile, isSmallMobile } = useResponsive();
     const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
     const [nombreIngresado, setNombreIngresado] = useState<string>("");
+    const [numeroPuesto, setNumeroPuesto] = useState<string>("");
     const [socioSeleccionado, setSocioSeleccionado] = useState<Socio | null>(null);
     const [open, setOpen] = useState(false);
     const [exportFormat, setExportFormat] = useState<string>("");
@@ -23,7 +23,7 @@ const useSocios = () => {
     const fetchSocios = useCallback(async (page: number = 1) => {
         setIsLoading(true);
         try {
-            const response = await apiClient.get(Api_Global_Socios.socios.fetch(page, nombreIngresado));
+            const response = await apiClient.get(Api_Global_Socios.socios.fetch(page, nombreIngresado, numeroPuesto));
             const data = response.data.data.map((item: Socio) => ({
                 id_socio: item.id_socio,
                 nombre_completo: item.nombre_completo,
@@ -52,11 +52,11 @@ const useSocios = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [nombreIngresado,]);
+    }, [nombreIngresado, numeroPuesto]);
 
     useEffect(() => {
-        fetchSocios(paginaActual);
-    }, []);
+        fetchSocios();
+    }, [fetchSocios]);
 
     return {
         isTablet,
@@ -66,6 +66,7 @@ const useSocios = () => {
         setMostrarDetalles,
         nombreIngresado,
         setNombreIngresado,
+        setNumeroPuesto,
         socioSeleccionado,
         setSocioSeleccionado,
         open,

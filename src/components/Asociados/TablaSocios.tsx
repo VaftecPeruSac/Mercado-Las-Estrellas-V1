@@ -44,8 +44,8 @@ const TablaAsociados: React.FC = () => {
     isSmallMobile,
     mostrarDetalles,
     setMostrarDetalles,
-    nombreIngresado,
     setNombreIngresado,
+    setNumeroPuesto,
     socioSeleccionado,
     setSocioSeleccionado,
     open,
@@ -151,7 +151,7 @@ const TablaAsociados: React.FC = () => {
           borderTop: "1px solid rgba(0, 0, 0, 0.25)",
           borderBottom: "1px solid rgba(0, 0, 0, 0.25)",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: isMobile ? "column" : "row",
           alignItems: "center",
         }}
       >
@@ -167,16 +167,22 @@ const TablaAsociados: React.FC = () => {
         {/* Input Nombre Socio */}
         <TextField
           sx={{
-            width: isTablet || isMobile ? "60%" : "30%",
-            "& .MuiInputLabel-root": {
-              fontSize: isSmallMobile ? "0.9rem" : "auto",
-            },
-            "& .MuiInputBase-input": {
-              fontSize: isSmallMobile ? "0.9rem" : "auto",
-            },
+            width: isTablet ? "40%" : isMobile ? "100%" : "30%"
           }}
           label="Nombre del socio"
           onChange={(e) => setNombreIngresado(e.target.value)}
+        />
+
+        {/* Input Numero de puesto */}
+        <TextField
+          sx={{
+            width: isTablet ? "40%" : isMobile ? "100%" : "200px",
+            my: isMobile ? 2 : 0,
+            ml: isMobile ? 0 : 2,
+          }}
+          type="text"
+          label="Numero de puesto"
+          onChange={(e) => setNumeroPuesto(e.target.value)}
         />
 
         {/* Boton Buscar */}
@@ -189,8 +195,8 @@ const TablaAsociados: React.FC = () => {
               backgroundColor: "#2c6d33",
             },
             height: "50px",
-            width: isTablet || isMobile ? "40%" : "170px",
-            marginLeft: isMobile ? "10px" : "1rem",
+            width: isTablet ? "20%" : isMobile ? "100%" : "170px",
+            marginLeft: isMobile ? "0" : "1rem",
             fontSize: isSmallMobile ? "0.8rem" : "auto",
             borderRadius: "30px",
           }}
