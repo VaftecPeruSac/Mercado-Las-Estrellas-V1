@@ -94,9 +94,9 @@ const TablaReportePagos: React.FC = () => {
       mostrarAlerta("Error", "Seleccione un socio para exportar el reporte.", "warning");
       return;
     }
-    const exportUrl = Api_Global_Reportes.reportes.exportarReportePagos(socioSeleccionado); // URL específica para servicios
+    const exportUrl = Api_Global_Reportes.reportes.exportarReportePagos(); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-pagos"; // Nombre del archivo
-    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat, `id_socio=${socioSeleccionado}`);
   };
 
   useEffect(() => {

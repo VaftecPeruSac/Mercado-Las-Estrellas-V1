@@ -5,11 +5,17 @@ export const handleExport = async (
   exportUrl: string, // URL para exportar
   exportFormat: string, // 1 = PDF, 2 = Excel
   fileNamePrefix: string, // Prefijo para el archivo exportado
-  setExportFormat: React.Dispatch<React.SetStateAction<string>> // Resetear el formato
+  setExportFormat: React.Dispatch<React.SetStateAction<string>>, // Resetear el formato
+  params?: string, // Parámetros adicionales
 ) => {
   try {
     if (exportFormat === "1") {
-      const response = await apiClient.get(`${exportUrl}-pdf`, { responseType: "blob" });
+      let response;
+      if (params) {
+        response = await apiClient.get(`${exportUrl}-pdf?${params}`, { responseType: "blob" });
+      } else {
+        response = await apiClient.get(`${exportUrl}-pdf`, { responseType: "blob" });
+      }      
       if (response.status === 200) {
         mostrarAlerta("Exportación Exitosa",`Podra visualizar la ${fileNamePrefix} en breve.`,"success");
         const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
@@ -19,7 +25,12 @@ export const handleExport = async (
         mostrarAlerta("Error","Ocurrió un error al exportar. Inténtelo nuevamente más tarde.","error");
       }
     } else if (exportFormat === "2") {
-      const response = await apiClient.get(exportUrl, { responseType: "blob" });
+      let response;
+      if (params) {
+        response = await apiClient.get(`${exportUrl}?${params}`, { responseType: "blob" });
+      } else {
+        response = await apiClient.get(`${exportUrl}`, { responseType: "blob" });
+      }
       if (response.status === 200) {
         mostrarAlerta("Exportación Exitosa",`La ${fileNamePrefix} se descargará en breve.`,"success");
         const url = window.URL.createObjectURL(new Blob([response.data]));

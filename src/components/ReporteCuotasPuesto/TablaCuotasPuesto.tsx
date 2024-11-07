@@ -112,9 +112,9 @@ const TablaCuotasPuesto: React.FC = () => {
       mostrarAlerta("Error", "Seleccione puesto para exportar el reporte.", "warning");
       return;
     }
-    const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasPuesto(puestoSeleccionado); // URL específica para servicios
+    const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasPuesto(); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
-    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat, `id_puesto=${puestoSeleccionado}`);
   };
 
   return (

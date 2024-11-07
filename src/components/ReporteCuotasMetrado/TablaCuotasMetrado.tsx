@@ -93,9 +93,9 @@ const TablaReporteCuotasMetrado: React.FC = () => {
       mostrarAlerta("Error", "Seleccione una cuota para exportar el reporte.", "warning");
       return;
     }
-    const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasPuesto(cuotaSeleccionada); // URL específica para servicios
+    const exportUrl = Api_Global_Reportes.reportes.exportarReporteCuotasMetrado(); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
-    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat, `id_cuota=${cuotaSeleccionada}`);
   };
 
   return (

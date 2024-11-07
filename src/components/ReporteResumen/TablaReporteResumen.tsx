@@ -85,9 +85,9 @@ const TablaReporteResumen = () => {
       mostrarAlerta("Error", "Seleccione un puesto para exportar el reporte.", "warning");
       return;
     }
-    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(puestoSeleccionado); // URL específica para servicios
+    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-resumen"; // Nombre del archivo
-    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat);
+    await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat, `id_puesto=${puestoSeleccionado}`);
   };
   return (
     <Contenedor>
