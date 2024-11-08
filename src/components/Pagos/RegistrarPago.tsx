@@ -37,9 +37,9 @@ import { Api_Global_Pagos } from "../../service/PagoApi";
 import apiClient from "../../Utils/apliClient";
 
 const columns: readonly Column[] = [
-  { id: "id_deuda", label: "#ID Cuota", minWidth: 50, align: "center" },
   { id: "anio", label: "Año", minWidth: 50, align: "center" },
   { id: "mes", label: "Mes", minWidth: 50, align: "center" },
+  { id: "servicio_descripcion", label: "Servicio", minWidth: 50, align: "center" },
   { id: "total", label: "Total (S/)", minWidth: 50, align: "center" },
   { id: "a_cuenta", label: "A cuenta (S/)", minWidth: 50, align: "center" },
   { id: "pago", label: "Pago (S/)", minWidth: 50, align: "center" },
@@ -455,6 +455,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                           nombre_socio: newValue.nombre_completo,
                         }); // Mantenemos el string en formData
                         fetchPuestos(socioId); // Pasamos el id_socio como string
+                        setIdPuestoSeleccionado(""); // Limpiamos el puesto seleccionado
+                        setDeudas([]); // Limpiamos las deudas
                       }
                     }}
                     renderInput={(params) => (
