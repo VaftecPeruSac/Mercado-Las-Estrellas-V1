@@ -7,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import {
   Autocomplete,
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -16,7 +17,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../../hooks/Responsive/useResponsive";
 import {
@@ -36,7 +36,6 @@ import { AgregarProps, Puesto, Socio } from "../../interface/Servicios/Registrar
 import apiClient from "../../Utils/apliClient";
 import { API_ROUTES } from "../../service/ServicioApi";
 
-
 const RegistrarServicio: React.FC<AgregarProps> = ({
   open,
   handleClose,
@@ -50,6 +49,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const [areaTotal, setAreaTotal] = useState(0);
   const [socios, setSocios] = useState([]);
   const [puestos, setPuestos] = useState([]);
+  const [editarMIA, setEditarMIA] = useState(true);
 
   // Obtener Lista Socios
   useEffect(() => {
@@ -137,7 +137,25 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const [formDataMIA, setFormDataMIA] = useState({
     id_socio: "",
     id_puesto: "",
+    importe: "",
   });
+
+  // Obtener el importe de la multa por inasistencia a Asamblea General
+  useEffect(() => {
+    const fetchImpMIA = async () => {
+      try {
+        const response = await apiClient.get(API_ROUTES.multaInasistencia.importe());
+        const data = response.data.data.importe;
+        setFormDataMIA({
+          ...formDataMIA,
+          importe: data.toString()
+        });
+      } catch (error) {
+        console.error("Error al obtener el importe de la multa", error);
+      }
+    }
+    fetchImpMIA();
+  }, [open]);
 
   useEffect(() => {
     const obtenerCostoPorMetroCuadrado = () => {
@@ -236,7 +254,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     setFormDataMIA({
       id_socio: "",
       id_puesto: "",
+      importe: "",
     });
+    setEditarMIA(true);
   } 
 
   // Registrar servicio
@@ -341,7 +361,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     const { ...dataToSend } = formDataMIA;
 
     try {
-      const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/servicios/multa-por-inasistencia", dataToSend);
+      const response = await apiClient.post(API_ROUTES.multaInasistencia.registrar(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "La multa se registró correctamente";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -556,7 +576,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                     onChange={(event, newValue) => {
                       if (newValue) {
                         const socioId = String(newValue.id_socio); // Convertimos id_socio a string
-                        // setIdSocioSeleccionado(socioId); // Asignamos el string
                         setFormDataMIA({
                           ...formDataMIA,
                           id_socio: socioId
@@ -603,7 +622,6 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                     id="select-puesto"
                     onChange={(e) => {
                       const value = String(e.target.value);
-                      // setIdPuestoSeleccionado(value);
                       setFormDataMIA({
                         ...formDataMIA,
                         id_puesto: value
@@ -618,6 +636,34 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                     ))}
                   </Select>
                 </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  disabled={editarMIA}
+                  name="importe"
+                  label="Importe"
+                  value={formDataMIA.importe}
+                  onChange={(e) => {
+                    setFormDataMIA({
+                      ...formDataMIA,
+                      importe: e.target.value
+                    });
+                  }}
+                  InputProps={{
+                    startAdornment: <Typography sx={{ ml: 0.5, mr: 1.5, fontWeight: "600", color: "gray" }}>S/</Typography>
+                  }}
+                  sx={{ width: "48.5%", mr: "3%" }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setEditarMIA(!editarMIA);
+                  }}
+                  sx={{ width: "48.5%", height: "55px" }}
+                >
+                  Editar importe
+                </Button>
               </Grid>
             </Grid>
           </>

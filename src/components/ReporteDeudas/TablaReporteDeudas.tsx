@@ -15,7 +15,6 @@ import { useAuth } from '../../context/AuthContext';
 import { mostrarAlerta } from '../Alerts/Registrar';
 
 const columns: readonly Column[] = [
-  { id: "id_cuota", label: "#ID", minWidth: 50, align: "center" },
   { id: "anio", label: "Año", minWidth: 50, align: "center" },
   { id: "mes", label: "Mes", minWidth: 50, align: "center" },
   { id: "servicio_descripcion", label: "Servicios", minWidth: 50, align: "center" },
@@ -95,7 +94,7 @@ const TablaReporteDeudas: React.FC = () => {
       mostrarAlerta("Error", "Seleccione un puesto para exportar el reporte.", "warning");
       return;
     }
-    const exportUrl = Api_Global_Reportes.reportes.exportarResumen(); // URL específica para servicios
+    const exportUrl = Api_Global_Reportes.reportes.exportarReporteDeudas(); // URL específica para servicios
     const fileNamePrefix = "lista-reporte-deudas"; // Nombre del archivo
     await handleExport(exportUrl, exportFormat, fileNamePrefix, setExportFormat, `id_puesto=${puestoSeleccionado}`);
   };

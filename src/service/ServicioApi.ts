@@ -19,6 +19,8 @@ export const API_ROUTES = {
     totalPuestos: () => `/puestos/totalPuestos`,
     areaTotal: () => `/puestos/areaTotal`,
   },
-  
-  
+  multaInasistencia: {
+    registrar: () => `/registrarMultaInasistencia`,
+    importe: () => `/consultarImporteMultaInasistencia`,
+  }
 };
