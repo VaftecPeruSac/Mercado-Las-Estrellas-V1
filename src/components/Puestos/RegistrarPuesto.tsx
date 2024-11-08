@@ -10,6 +10,7 @@ import {
 } from '@mui/icons-material';
 import {
   Autocomplete,
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -524,6 +525,26 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     }
   };
 
+  const eliminarInquilino = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await apiClient.delete(Api_Global_Puestos.inquilinos.eliminar((Number(puesto?.inquilino?.id_inquilino))));
+      if (response.status === 200) {
+        const mensaje = response.data.message || "El inquilino se eliminó correctamente";
+        mostrarAlerta("Eliminación exitosa", mensaje, "success").then(() => {
+          handleCloseModal();
+        });
+      } else {
+        mostrarAlerta("Error");
+      }
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const registrarBloque = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -927,7 +948,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                   </FormControl>
 
                   {/* Nro. Puesto */}
-                  <FormControl fullWidth required>
+                  <FormControl fullWidth required sx={{ mb: 2 }}>
                     <Autocomplete
                       disabled={puesto !== null}
                       options={puestosFiltrados}
@@ -977,6 +998,16 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                       } // Convierte value a número para la comparación
                     />
                   </FormControl>
+                  {puesto && puesto.inquilino.id_inquilino && (
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="error"
+                      onClick={eliminarInquilino}
+                    >
+                      Remover inquilino
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </Grid>

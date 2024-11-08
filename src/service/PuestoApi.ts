@@ -14,6 +14,7 @@ export const Api_Global_Puestos = {
     inquilinos: {
         registrar:()=>`/inquilinos`,
         editar: (id: string | undefined) => `/inquilinos/${id}`,
+        eliminar: (id: number) => `/inquilinos/${id}`,
     },
     bloques: {
         listar: () => `/blocks`,
