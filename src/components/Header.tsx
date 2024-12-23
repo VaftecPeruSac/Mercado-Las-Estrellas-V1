@@ -125,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ open, toggleDrawer }) => {
                   ml: isMobile ? 2 : open ? 30 : 3,
                 }}
               >
-                Bienvenido al Sistema, {usuario?.nombre_completo}
+                Bienvenido al Sistema, {usuario?.nombre_usuario}
               </Typography>
               <Typography
                 sx={{
