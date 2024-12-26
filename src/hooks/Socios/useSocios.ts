@@ -2,20 +2,20 @@ import { useState, useEffect, useCallback } from "react";
 import { Api_Global_Socios } from "../../service/SocioApi";
 import useResponsive from "../Responsive/useResponsive";
 import { useNavigate } from "react-router-dom";
-import { Data, Socio } from "../../interface/Socios/Socios";
+import { Socio } from "../../interface/Socios";
 import { formatDate } from "../../Utils/dateUtils";
 import apiClient from "../../Utils/apliClient";
 
 const useSocios = () => {
     const { isTablet, isMobile, isSmallMobile } = useResponsive();
-    const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
+    const [mostrarDetalles, setMostrarDetalles] = useState<number | null>(null);
     const [nombreIngresado, setNombreIngresado] = useState<string>("");
     const [numeroPuesto, setNumeroPuesto] = useState<string>("");
     const [socioSeleccionado, setSocioSeleccionado] = useState<Socio | null>(null);
     const [open, setOpen] = useState(false);
     const [exportFormat, setExportFormat] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
-    const [socios, setSocios] = useState<Data[]>([]);
+    const [socios, setSocios] = useState<Socio[]>([]);
     const [totalPages, setTotalPages] = useState(1);
     const [paginaActual, setPaginaActual] = useState(1);
     const navigate = useNavigate();
@@ -35,12 +35,13 @@ const useSocios = () => {
                 direccion: item.direccion,
                 telefono: item.telefono,
                 correo: item.correo,
-                id_puesto: item.id_puesto,
-                numero_puesto: item.numero_puesto,
-                id_block: item.id_block,
-                block_nombre: item.block_nombre,
-                gironegocio_nombre: item.gironegocio_nombre,
-                nombre_inquilino: item.nombre_inquilino,
+                puestos: item.puestos.map((puesto) => ({
+                    id_puesto: puesto.id_puesto,
+                    numero_puesto: puesto.numero_puesto,
+                    block: puesto.block,
+                    gironegocio: puesto.gironegocio,
+                    nombre_inquilino: puesto.nombre_inquilino,
+                })),
                 estado: item.estado,
                 fecha_registro: formatDate(item.fecha_registro),
                 deuda: item.deuda,

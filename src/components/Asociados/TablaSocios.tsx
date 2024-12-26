@@ -28,13 +28,13 @@ import Contenedor from "../Shared/Contenedor";
 import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
-import { Socio } from "../../interface/Socios/Socios";
+import { Socio } from "../../interface/Socios";
 import { columns } from "../../Columns/Socios";
 import { handleExport } from "../../Utils/exportUtils";
 import { Api_Global_Socios } from "../../service/SocioApi";
 import useSocios from "../../hooks/Socios/useSocios";
 import { handleAccionesSocio } from "../../Utils/downloadDataSocio";
-import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import apiClient from "../../Utils/apliClient";
 
 const TablaAsociados: React.FC = () => {
@@ -61,11 +61,11 @@ const TablaAsociados: React.FC = () => {
     fetchSocios,
   } = useSocios();
 
-  const handleVerReportePagos = (id_socio: string) => {
+  const handleVerReportePagos = (id_socio: number) => {
     navigate(`/home/reporte-pagos?socio=${id_socio}`);
   };
 
-  const handleVerReporteDeudas = (id_puesto: string) => {
+  const handleVerReporteDeudas = (id_puesto: number) => {
     navigate(`/home/reporte-deudas?puesto=${id_puesto}`);
   };
 
@@ -133,7 +133,6 @@ const TablaAsociados: React.FC = () => {
           open={open}
           handleClose={handleClose}
           socio={socioSeleccionado}
-        // onSocioRegistrado={handleSocioRegistrado}
         />
 
         <BotonExportar
@@ -284,106 +283,122 @@ const TablaAsociados: React.FC = () => {
                                   return (
                                     <Box>
                                       {/* Mostrar titulo del campo */}
-                                      <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                                        {column.label}
-                                      </Typography>
+                                        {
+                                          column.id === "bloque" ? "" : 
+                                          column.id === "inquilino" ? "" :
+                                          column.id === "giro_negocio" ? "" :
+                                          <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                            {column.id === "numero_puesto" ? "Puestos" : column.label}
+                                          </Typography>
+                                        }
                                       {/* Mostrar los detalles del socio */}
                                       <Typography>
-                                        {column.id === "deuda" ? (
-                                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            <Typography
+                                        {
+                                          column.id === "numero_puesto" ? (
+                                            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                              {socio.puestos.map((puesto, index) => (
+                                                <Box key={index} sx={{ display: "flex", gap: 1 }}>
+                                                  <Typography>
+                                                    {puesto.block.nombre} - {puesto.numero_puesto} - {puesto.gironegocio.nombre}
+                                                  </Typography>
+                                                </Box>
+                                              ))}
+                                            </Box>
+                                          ) : column.id === "deuda" ? (
+                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                              <Typography
+                                                sx={{
+                                                  color: value === "No" ? "green" : "crimson"
+                                                }}>
+                                                {value === "No" ? "No existen deudas" : value}
+                                              </Typography>
+                                            </Box>
+                                          ) : column.id === "ver_reporte" ? (
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: "50%",
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "crimson",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleVerReporteDeudas(socio.id_socio)}
+                                              >
+                                                <Payments sx={{ mr: 1 }} />
+                                                Deudas
+                                              </Button>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: "50%",
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "green",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleVerReportePagos(socio.id_socio)}
+                                              >
+                                                <Payments sx={{ mr: 1 }} />
+                                                Pagos
+                                              </Button>
+                                            </Box>
+                                          ) : column.id === "accion" ? (
+                                            <Box
                                               sx={{
-                                                color: value === "No" ? "green" : "crimson"
-                                              }}>
-                                              {value === "No" ? "No existen deudas" : value}
-                                            </Typography>
-                                          </Box>
-                                        ) : column.id === "ver_reporte" ? (
-                                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: "50%",
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "crimson",
-                                                color: "white"
+                                                width: "100%",
+                                                display: "flex",
+                                                flexDirection: isTablet ? "row" : "column",
+                                                justifyContent: "center",
+                                                gap: isTablet ? 1 : 0
                                               }}
-                                              onClick={() => handleVerReporteDeudas(socio.id_puesto)}
                                             >
-                                              <Payments sx={{ mr: 1 }} />
-                                              Deudas
-                                            </Button>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: "50%",
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green",
-                                                color: "white"
-                                              }}
-                                              onClick={() => handleVerReportePagos(socio.id_socio)}
-                                            >
-                                              <Payments sx={{ mr: 1 }} />
-                                              Pagos
-                                            </Button>
-                                          </Box>
-                                        ) : column.id === "accion" ? (
-                                          <Box
-                                            sx={{
-                                              width: "100%",
-                                              display: "flex",
-                                              flexDirection: isTablet ? "row" : "column",
-                                              justifyContent: "center",
-                                              gap: isTablet ? 1 : 0
-                                            }}
-                                          >
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: isTablet ? "33%" : "100%",
-                                                mb: isTablet ? 1 : 0,
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "#0478E3",
-                                                color: "white"
-                                              }}
-                                              onClick={() => handleOpen(socio)}
-                                            >
-                                              <SaveAs sx={{ mr: 1 }} />
-                                              Editar
-                                            </Button>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: isTablet ? "33%" : "100%",
-                                                mt: isTablet ? 0 : 1,
-                                                mb: 1,
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "black",
-                                                color: "white"
-                                              }}
-                                              onClick={() => downloadDataSocios(1, "", socio)}
-                                            >
-                                              <Download sx={{ mr: 1 }} />
-                                              Descargar
-                                            </Button>
-                                            <Button
-                                              variant="contained"
-                                              sx={{
-                                                width: isTablet ? "33%" : "100%",
-                                                mb: isTablet ? 1 : 0,
-                                                padding: "0.5rem 1.5rem",
-                                                backgroundColor: "green",
-                                                color: "white"
-                                              }}
-                                              onClick={() => downloadDataSocios(2, socio.telefono, socio)}
-                                            >
-                                              <WhatsApp sx={{ mr: 1 }} />
-                                              Enviar
-                                            </Button>
-                                          </Box>
-                                        ) : (
-                                          value
-                                        )}
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: isTablet ? "33%" : "100%",
+                                                  mb: isTablet ? 1 : 0,
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "#0478E3",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => handleOpen(socio)}
+                                              >
+                                                <SaveAs sx={{ mr: 1 }} />
+                                                Editar
+                                              </Button>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: isTablet ? "33%" : "100%",
+                                                  mt: isTablet ? 0 : 1,
+                                                  mb: 1,
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "black",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => downloadDataSocios(1, "", socio)}
+                                              >
+                                                <Download sx={{ mr: 1 }} />
+                                                Descargar
+                                              </Button>
+                                              <Button
+                                                variant="contained"
+                                                sx={{
+                                                  width: isTablet ? "33%" : "100%",
+                                                  mb: isTablet ? 1 : 0,
+                                                  padding: "0.5rem 1.5rem",
+                                                  backgroundColor: "green",
+                                                  color: "white"
+                                                }}
+                                                onClick={() => downloadDataSocios(2, socio.telefono, socio)}
+                                              >
+                                                <WhatsApp sx={{ mr: 1 }} />
+                                                Enviar
+                                              </Button>
+                                            </Box>
+                                          ) : (
+                                            value
+                                          )}
                                       </Typography>
                                     </Box>
                                   )
@@ -400,27 +415,69 @@ const TablaAsociados: React.FC = () => {
                               key={column.id}
                               align={column.id === "deuda" ? "center" : column.align}
                               sx={{
+                                height: "100%",
+                                verticalAlign: "middle",
                                 backgroundColor:
-                                  column.id === "deuda" && value === 0 ? "#B5F598" : column.id === "deuda" ? "#f8d7da" : undefined,
+                                  column.id === "deuda" && value === 0 
+                                  ? "#B5F598" : column.id === "deuda" 
+                                  ? "#f8d7da" : undefined,
                                 color:
-                                  column.id === "deuda" && value === 0 ? "green" : column.id === "deuda" ? "#721c24" : undefined,
+                                  column.id === "deuda" && value === 0 
+                                  ? "green" : column.id === "deuda" 
+                                  ? "#721c24" : undefined,
                               }}
                             >
-                              {column.id === "deuda"
+                              {column.id === "bloque" 
+                                ? (socio.puestos.length > 0 ? socio.puestos.map((puesto, index) => 
+                                  <Box
+                                    key={index}
+                                    sx={{ height: "45px", display: "block", alignContent: "center", justifyContent: "center" }}
+                                  >
+                                    {puesto.block.nombre}
+                                  </Box>
+                                  ) : "No asignado")
+                                : column.id === "numero_puesto" 
+                                ? (socio.puestos.length > 0 ? socio.puestos.map((puesto, index) =>
+                                  <Box
+                                    key={index}
+                                    sx={{ height: "45px", display: "block", alignContent: "center", justifyContent: "center" }}
+                                  >
+                                    {puesto.numero_puesto}
+                                  </Box>
+                                  ) : "No asignado")
+                                : column.id === "giro_negocio" 
+                                ? (socio.puestos.length > 0 ? socio.puestos.map((puesto, index) => 
+                                  <Box
+                                    key={index}
+                                    sx={{ height: "45px", display: "block", alignContent: "center", justifyContent: "center" }}
+                                  >
+                                    {puesto.gironegocio.nombre}
+                                  </Box>
+                                  ) : "No asignado")
+                                : column.id === "inquilino" 
+                                ? (socio.puestos.length > 0 ? socio.puestos.map((puesto, index) => 
+                                  <Box
+                                    key={index}
+                                    sx={{ height: "45px", display: "block", alignContent: "center", justifyContent: "center" }}
+                                  >
+                                    {puesto.nombre_inquilino}
+                                  </Box>
+                                  ) : "No asignado")
+                                : column.id === "deuda" 
                                 ? value === 0 ? "No existen deudas" : `S/ ${value}`
                                 : column.id === "ver_reporte" ? (
                                   <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                     <IconButton
                                       aria-label="payment"
                                       sx={{ color: "crimson" }}
-                                      onClick={() => handleVerReporteDeudas((socio as any).id_puesto)}
+                                      onClick={() => handleVerReporteDeudas(socio.id_socio)}
                                     >
                                       <Payments />
                                     </IconButton>
                                     <IconButton
                                       aria-label="payment"
                                       sx={{ color: "green" }}
-                                      onClick={() => handleVerReportePagos((socio as any).id_socio)}
+                                      onClick={() => handleVerReportePagos(socio.id_socio)}
                                     >
                                       <Payments />
                                     </IconButton>
@@ -451,7 +508,14 @@ const TablaAsociados: React.FC = () => {
                                     <IconButton
                                       aria-label="delete"
                                       sx={{ color: "red" }}
-                                      onClick={() => eliminarSocio(socio)}
+                                      onClick={() => mostrarAlertaConfirmacion(
+                                          "Eliminar socio", "¿Estás seguro de eliminar este socio?", "Eliminar", "Cancelar"
+                                        ).then((result) => {
+                                          if (result.isConfirmed) {
+                                            eliminarSocio(socio);
+                                          }
+                                        }
+                                      )}
                                     >
                                       <DeleteForever />
                                     </IconButton>

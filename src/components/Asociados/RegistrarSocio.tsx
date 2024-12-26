@@ -29,23 +29,21 @@ import { AvisoFormulario, SeparadorBloque, TxtFormulario } from "../Shared/Eleme
 import { reFormatDate } from "../../Utils/dateUtils";
 import apiClient from "../../Utils/apliClient";
 import { Api_Global_Socios } from "../../service/SocioApi";
-import { AgregarProps, Bloque, Puesto } from "../../interface/Socios/registrarSocio";
+import { Bloque, Puesto } from "../../interface/Puestos";
+import { AgregarProps } from "../../interface/Socios";
 
 const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
-  const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
   const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
-  const [puestoSeleccionado, setPuestoSeleccionado] = useState<number | "">("");
 
-  const [activeTab, setActiveTab] = useState(0)
+  const [activeTab] = useState(0)
 
   const [loading, setLoading] = useState(false); // Estado de loading
 
   const [formData, setFormData] = useState({
-    id_socio: "",
     nombre: "",
     apellido_paterno: "",
     apellido_materno: "",
@@ -54,17 +52,16 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     telefono: "",
     direccion: "",
     sexo: "",
-    estado: "",
+    estado: "1",
     fecha_registro: "",
-    id_block: "",
-    id_puesto: "",
+    id_block: 0,
+    id_puesto: 0,
   });
 
   // Llenar campos con los datos del socio seleccionado
   useEffect(() => {
     if (socio) {
       setFormData({
-        id_socio: socio.id_socio || '',
         nombre: socio.nombre_socio || '',
         apellido_paterno: socio.apellido_paterno || '',
         apellido_materno: socio.apellido_materno || '',
@@ -73,19 +70,19 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
         direccion: (socio.direccion === 'No' ? '' : socio.direccion) || '',
         telefono: (socio.telefono === 'No' ? '' : socio.telefono) || '',
         correo: (socio.correo === 'No' ? '' : socio.correo) || '',
-        id_puesto: socio.id_puesto || '',
-        id_block: socio.id_block || '',
-        estado: socio.estado || '',
+        id_puesto: 0,
+        id_block: 0,
+        estado: socio.estado || '1',
         fecha_registro: reFormatDate(socio.fecha_registro) || '',
       });
-      setBloqueSeleccionado(Number(socio.id_block));
-      setPuestoSeleccionado(Number(socio.id_puesto));
+      setBloqueSeleccionado(0);
     }
   }, [socio]);
 
   const limpiarCamposSocio = () => {
+    setBloqueSeleccionado(0);
+    setPuestos([]);
     setFormData({
-      id_socio: "",
       nombre: "",
       apellido_paterno: "",
       apellido_materno: "",
@@ -94,13 +91,11 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
       telefono: "",
       direccion: "",
       sexo: "",
-      estado: "",
+      estado: "1",
       fecha_registro: "",
-      id_block: "",
-      id_puesto: "",
+      id_block: 0,
+      id_puesto: 0,
     });
-    setBloqueSeleccionado("");
-    setPuestoSeleccionado("");
   };
 
   // Obtener bloques
@@ -116,26 +111,13 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   }, []);
 
   // Obtener puestos
-  useEffect(() => {
-    const fetchPuestos = async () => {
-      try {
-        const response = await apiClient.get(Api_Global_Socios.puestos.obtenerPuestos()); // publico
-        setPuestos(response.data);
-      } catch (error) {
-      }
-    };
-    fetchPuestos();
-  }, []);
-
-  // Filtrar puestos por bloque
-  useEffect(() => {
-    if (bloqueSeleccionado) {
-      const puestosFiltrados = puestos.filter((puesto) => puesto.id_block === bloqueSeleccionado);
-      setPuestosFiltrados(puestosFiltrados);
-    } else {
-      setPuestosFiltrados([]);
+  const fetchPuestos = async (id_block: number) => {
+    try {
+      const response = await apiClient.get(Api_Global_Socios.puestos.obtenerPuestos(id_block)); // publico
+      setPuestos(response.data);
+    } catch (error) {
     }
-  }, [bloqueSeleccionado, puestos]);
+  };
 
   // Para manejar los cambios
   const manejarCambio = (
@@ -154,7 +136,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
   const registrarSocio = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const { id_socio, id_block, ...dataToSend } = formData;
+    const { id_block, ...dataToSend } = formData;
     try {
       const response = await apiClient.post(Api_Global_Socios.socios.registrar(), dataToSend);
       if (response.status === 200) {
@@ -180,7 +162,7 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
     setLoading(true);
     const { id_puesto, id_block, ...dataToSend } = formData;
     try {
-      const response = await apiClient.put(Api_Global_Socios.socios.editar(dataToSend.id_socio), dataToSend);
+      const response = await apiClient.put(Api_Global_Socios.socios.editar(socio?.id_socio), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "El socio se actualizó correctamente";
         mostrarAlerta("Actualización exitosa", mensaje, "success");
@@ -294,101 +276,93 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
-                  <SeparadorBloque nombre="Asignar Puesto" />
+                {!socio && (
+                  <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
+                    <SeparadorBloque nombre="Asignar Puesto" />
 
-                  {/* Seleccionar bloque */}
-                  <FormControl fullWidth required>
-                    <InputLabel id="bloque-label">Bloque</InputLabel>
-                    <Select
-                      labelId="bloque-label"
-                      id="select-bloque"
-                      label="Bloque"
-                      value={bloqueSeleccionado}
-                      disabled={socio !== null}
-                      onChange={(e) => {
-                        const value = e.target.value as number;
-                        setBloqueSeleccionado(value);
-                        setFormData({
-                          ...formData,
-                          id_block: value.toString(),
-                        });
-                      }}
-                      startAdornment={
-                        <Business sx={{ mr: 1, color: "gray" }} />
-                      }
-                      sx={{ mb: 2 }}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            maxHeight: 200,
-                            overflowY: "auto",
-                          },
-                        },
-                      }}
-                    >
-                      {bloques.map((bloque: Bloque) => (
-                        <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                          {bloque.nombre}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  {/* Nro. Puesto */}
-                  <FormControl fullWidth required>
-                    <Autocomplete
-                      disabled={socio !== null}
-                      options={puestosFiltrados}
-                      getOptionLabel={(puesto) =>
-                        puesto.numero_puesto.toString()
-                      } // Convertir numero_puesto a string para mostrarlo correctamente
-                      value={
-                        puestoSeleccionado
-                          ? puestosFiltrados.find(
-                            (puesto) =>
-                              puesto.id_puesto === puestoSeleccionado
-                          ) || null // Buscar el puesto seleccionado en la lista de puestos filtrados
-                          : null // Si no hay puesto seleccionado, mostrar null
-                      }
-                      onChange={(event, newValue) => {
-                        if (newValue) {
+                    {/* Seleccionar bloque */}
+                    <FormControl fullWidth required>
+                      <InputLabel id="bloque-label">Bloque</InputLabel>
+                      <Select
+                        labelId="bloque-label"
+                        id="select-bloque"
+                        label="Bloque"
+                        value={bloqueSeleccionado}
+                        disabled={socio !== null}
+                        onChange={(e) => {
+                          const value = e.target.value as number;
+                          setBloqueSeleccionado(value);
                           setFormData({
                             ...formData,
-                            id_puesto: newValue.id_puesto.toString(),
+                            id_block: value,
                           });
-                          setPuestoSeleccionado(Number(newValue.id_puesto));
-                        } else {
-                          setPuestoSeleccionado("");
+                          fetchPuestos(value);
+                        }}
+                        startAdornment={
+                          <Business sx={{ mr: 1, color: "gray" }} />
                         }
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Nro. Puesto"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <>
-                                <Abc sx={{ mr: 1, color: "gray" }} />
-                                {params.InputProps.startAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                      ListboxProps={{
-                        style: {
-                          maxHeight: 200,
-                          overflow: "auto",
-                        },
-                      }}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id_puesto === Number(value)
-                      } // Comparación de valores
-                    />
-                  </FormControl>
-                </Grid>
+                        sx={{ mb: 2 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 200,
+                              overflowY: "auto",
+                            },
+                          },
+                        }}
+                      >
+                        {bloques.map((bloque: Bloque) => (
+                          <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                            {bloque.nombre}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+
+                    {/* Nro. Puesto */}
+                    <FormControl fullWidth required>
+                      <Autocomplete
+                        disabled={socio !== null}
+                        options={puestos}
+                        getOptionLabel={(puesto) =>
+                          puesto.numero_puesto
+                        }
+                        onChange={(event, newValue) => {
+                          if (newValue) {
+                            setFormData({
+                              ...formData,
+                              id_puesto: newValue.id_puesto,
+                            });
+                          }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Nro. Puesto"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  <Abc sx={{ mr: 1, color: "gray" }} />
+                                  {params.InputProps.startAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                        ListboxProps={{
+                          style: {
+                            maxHeight: 200,
+                            overflow: "auto",
+                          },
+                        }}
+                        isOptionEqualToValue={(option, value) =>
+                          option.id_puesto === Number(value)
+                        } // Comparación de valores
+                      />
+                    </FormControl>
+                  </Grid>
+                )}
 
                 <Grid item xs={12} sm={12}>
                   <SeparadorBloque nombre="Información de registro" />
@@ -404,8 +378,8 @@ const Agregar: React.FC<AgregarProps> = ({ open, handleClose, socio }) => {
                       onChange={manejarCambio}
                       startAdornment={<Person sx={{ mr: 1, color: "gray" }} />}
                     >
-                      <MenuItem value="Activo">Activo</MenuItem>
-                      <MenuItem value="Inactivo">Inactivo</MenuItem>
+                      <MenuItem value="1">Activo</MenuItem>
+                      <MenuItem value="0">Inactivo</MenuItem>
                     </Select>
                   </FormControl>
 

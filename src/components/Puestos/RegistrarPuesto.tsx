@@ -29,57 +29,13 @@ import { AvisoFormulario, SeparadorBloque, TxtFormulario } from '../Shared/Eleme
 import { reFormatDate } from '../../Utils/dateUtils';
 import apiClient from '../../Utils/apliClient';
 import { Api_Global_Puestos } from '../../service/PuestoApi';
+import { Bloque, GiroNegocio, Puesto, PuestoSelect } from '../../interface/Puestos';
+import { SocioSelect } from '../../interface/Socios';
 
 interface AgregarProps {
   open: boolean;
   handleClose: () => void;
-  puesto: EditarPuesto | null;
-}
-
-interface EditarPuesto {
-  id_puesto: string;
-  numero_puesto: string;
-  area: string;
-  estado: string;
-  fecha_registro: string;
-  socio: string;
-  giro_negocio: {
-    id_gironegocio: string;
-    nombre: string;
-  };
-  block: {
-    id_block: string;
-    nombre: string;
-  };
-  inquilino: {
-    id_inquilino: string,
-    nombre_completo: string,
-    apellido_materno: string,
-    apellido_paterno: string,
-    dni: string,
-    telefono: string,
-  };
-}
-
-interface GiroNegocio {
-  id_gironegocio: number;
-  nombre: string;
-}
-
-interface Bloque {
-  id_block: number;
-  nombre: string;
-}
-
-interface Puesto {
-  id_puesto: number;
-  id_block: number;
-  numero_puesto: string;
-}
-
-interface Socio {
-  id_socio: number;
-  nombre_completo: string;
+  puesto: Puesto | null;
 }
 
 const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) => {
@@ -89,57 +45,26 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Para los select
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [girosNegocio, setGirosNegocio] = useState<GiroNegocio[]>([]);
-  const [puestos, setPuestos] = useState<Puesto[]>([]);
-  const [puestosFiltrados, setPuestosFiltrados] = useState<Puesto[]>([]);
-  const [puestosSocio, setPuestosSocios] = useState<Puesto[]>([]);
-  const [puestosLibres, setPuestosLibres] = useState<Puesto[]>([]);
+  const [puestosSinSocio, setPuestosSinSocio] = useState<PuestoSelect[]>([]);
+  const [puestosSinInquilino, setPuestosSinInquilino] = useState<PuestoSelect[]>([]);
+  const [socios, setSocios] = useState<SocioSelect[]>([]);
+  const [puestosSocio, setPuestosSocios] = useState<PuestoSelect[]>([]);
 
-  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | "">("");
-  const [giroSeleccionado, setGiroSeleccionado] = useState<number | "">("");
-  
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number | 0>(0);
+  const [giroSeleccionado, setGiroSeleccionado] = useState<number | 0>(0);
   const [bloqueInqSeleccionado, setBloqueInqSeleccionado] = useState<number | "">("");
   const [puestoInqSeleccionado, setPuestoInqSeleccionado] = useState<number | "">("");
 
-  const [socios, setSocios] = useState<Socio[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Datos para registrar el puesto
   const [formDataPuesto, setFormDataPuesto] = useState({
-    id_puesto: "",
-    id_gironegocio: "",
-    id_block: "",
+    id_gironegocio: 0,
+    id_block: 0,
     numero_puesto: "",
     area: "",
     fecha_registro: "",
   });
-
-  // Llenar campos con los datos del puesto seleccionado
-  useEffect(() => {
-    if (puesto) {
-      setActiveTab(0);
-      setFormDataPuesto({
-        id_puesto: puesto.id_puesto || "",
-        id_gironegocio: puesto.giro_negocio.id_gironegocio || "",
-        id_block: puesto.block.id_block || "",
-        numero_puesto: puesto.numero_puesto || "",
-        area: puesto.area || "",
-        fecha_registro: reFormatDate(puesto.fecha_registro) || "",
-      });
-      setformDataInquilino({
-        id_inquilino: puesto.inquilino.id_inquilino || "",
-        nombre: puesto.inquilino.nombre_completo || "",
-        apellido_paterno: puesto.inquilino.apellido_paterno || "",
-        apellido_materno: puesto.inquilino.apellido_materno || "",
-        dni: puesto.inquilino.dni || "",
-        telefono: puesto.inquilino.telefono || "",
-        bloque: puesto.block.id_block || "",
-        id_puesto: puesto.id_puesto || "",
-      });
-      setBloqueInqSeleccionado(Number(puesto.block.id_block));
-      setPuestoInqSeleccionado(Number(puesto.id_puesto));
-      setGiroSeleccionado(Number(puesto.giro_negocio.id_gironegocio));
-    }
-  }, [puesto]);
 
   // Datos para asignar un puesto a un socio
   const [formDataAsginarPuesto, setFormDataAsignarPuesto] = useState({
@@ -155,8 +80,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     apellido_materno: "",
     dni: "",
     telefono: "",
-    bloque: "",
-    id_puesto: "",
+    bloque: 0,
+    id_puesto: 0,
   });
 
   // Datos para registrar el bloque
@@ -176,6 +101,33 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     id_nuevo_duenio: "",
   });
 
+  // Llenar campos con los datos del puesto seleccionado
+  useEffect(() => {
+    if (puesto) {
+      setActiveTab(0);
+      setFormDataPuesto({
+        id_gironegocio: puesto.giro_negocio.id_gironegocio || 0,
+        id_block: puesto.block.id_block || 0,
+        numero_puesto: puesto.numero_puesto || "",
+        area: puesto.area || "",
+        fecha_registro: reFormatDate(puesto.fecha_registro) || "",
+      });
+      setformDataInquilino({
+        id_inquilino: puesto.inquilino.id_inquilino || "",
+        nombre: puesto.inquilino.nombre || "",
+        apellido_paterno: puesto.inquilino.apellido_paterno || "",
+        apellido_materno: puesto.inquilino.apellido_materno || "",
+        dni: puesto.inquilino.dni || "",
+        telefono: puesto.inquilino.telefono || "",
+        bloque: puesto.block.id_block || 0,
+        id_puesto: puesto.id_puesto || 0,
+      });
+      setBloqueInqSeleccionado(puesto.block.id_block);
+      setPuestoInqSeleccionado(puesto.id_puesto);
+      setGiroSeleccionado(puesto.giro_negocio.id_gironegocio);
+    }
+  }, [puesto]);
+
   const manejarCambioInquilino = (
     e:
       | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -189,93 +141,75 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   };
 
   // Obtener bloques
-  useEffect(() => {
-    const fetchBloques = async () => {
-      try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
-        console.log("Bloques obtenidos:", response.data.data);
-        setBloques(response.data.data);
-      } catch (error) {
-        console.error("Error al obtener los bloques", error);
-      }
-    };
-    fetchBloques();
-  }, []);
+  const fetchBloques = async () => {
+    try {
+      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
+      const response = await axios.get("http://127.0.0.1:8000/v1/blocks");
+      setBloques(response.data.data);
+    } catch (error) {
+      console.error("Error al obtener los bloques", error);
+    }
+  };
 
   // Obtener giro de negocio
-  useEffect(() => {
-    const fechGiroNegocio = async () => {
-      try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios");
-        setGirosNegocio(response.data.data);
-      } catch (error) {
-        console.error("Error al obtener los giro de negocio", error);
-      }
-    };
-    fechGiroNegocio();
-  }, []);
-
-  useEffect(() => {
-    const fetchPuestos = async () => {
-      try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos/select"); // publico
-        console.log("Puestos cargados:", response.data);
-        setPuestos(response.data); // Almacenar los datos en el estado
-      } catch (error) {
-        console.error("Error al obtener los puestos", error);
-      }
-    };
-    fetchPuestos();
-  }, []);
-
-  // Filtrar puestos por bloque
-  useEffect(() => {
-    if (bloqueInqSeleccionado) {
-      const puestosFiltrados = puestos.filter((puesto) => puesto.id_block === bloqueInqSeleccionado);
-      setPuestosFiltrados(puestosFiltrados);
-    } else {
-      setPuestosFiltrados([]);
-    }
-  }, [bloqueInqSeleccionado, puestos]);
-
-
-  // Obtener puestos libres
-  const fetchPuestosLibres = async (id_block: number) => {
+  const fechGiroNegocio = async () => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos/libre?id_block=${id_block}`); // publico
-      setPuestosLibres(response.data.data); // Almacenar los datos en el estado
+      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios");
+      const response = await axios.get("http://127.0.0.1:8000/v1/giro-negocios");
+      setGirosNegocio(response.data.data);
+    } catch (error) {
+      console.error("Error al obtener los giro de negocio", error);
+    }
+  };
+
+  // Obtener puestos libres (Sin socio)
+  const fetchPuestosSinSocio = async (id_block: number) => {
+    try {
+      // const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos/sin-socio?id_block=${id_block}`);
+      const response = await axios.get(`http://127.0.0.1:8000/v1/puestos/sin-socio?id_block=${id_block}`);
+      setPuestosSinSocio(response.data);
+    } catch (error) {
+      console.error("Error al obtener los puestos", error);
+    }
+  };
+
+  // Obtener puestos libres (Sin inquilino)
+  const fetchPuestosSinInquilino = async (id_block: number) => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/v1/puestos/sin-inquilino?id_block=${id_block}`);
+      setPuestosSinInquilino(response.data);
     } catch (error) {
       console.error("Error al obtener los puestos", error);
     }
   };
 
   // Obtener socios
-  useEffect(() => {
-    const fetchSocios = async () => {
-      try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=150"); // publico
-        console.log("Socios cargados:", response.data.data);
-        setSocios(response.data.data);
-      } catch (error) {
-        console.error("Error al obtener el listado de socios", error);
-      }
-    };
-    fetchSocios();
-  }, []);
+  const fetchSocios = async () => {
+    try {
+      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=150");
+      const response = await axios.get("http://127.0.0.1:8000/v1/socios/seleccionar");
+      setSocios(response.data.data);
+    } catch (error) {
+      console.error("Error al obtener el listado de socios", error);
+    }
+  };
 
   // Obtener puestos por socio
   const fetchPuestosSocio = async (idSocio: string) => {
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
-      const data = response.data.data.map((item: Puesto) => ({
-        id_puesto: item.id_puesto,
-        numero_puesto: item.numero_puesto,
-      }));
-      setPuestosSocios(data);
+      // const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      const response = await axios.get(`http://127.0.0.1:8000/v1/socios/ver-puestos?id_socio=${idSocio}`);
+      setPuestosSocios(response.data.data);
     } catch (error) {
       console.error("Error al obtener los puestos", error);
     }
   };
+
+  useEffect(() => {
+    fetchBloques();
+    fechGiroNegocio();
+    fetchSocios();
+  }, []);
 
   // Manejar los cambios del formulario Registrar Puesto
   const manejarCambioPuesto = (
@@ -361,14 +295,13 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
   const limpiarRegistrarPuesto = () => {
     setFormDataPuesto({
-      id_puesto: "",
-      id_gironegocio: "",
-      id_block: "",
+      id_gironegocio: 0,
+      id_block: 0,
       numero_puesto: "",
       area: "",
       fecha_registro: "",
     });
-    setGiroSeleccionado("");
+    setGiroSeleccionado(0);
   };
 
   const limpiarAsignarPuesto = () => {
@@ -376,7 +309,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       id_puesto: "",
       id_socio: "",
     });
-    setBloqueSeleccionado("");
+    setBloqueSeleccionado(0);
   };
 
   const limpiarAsignarInquilino = () => {
@@ -387,8 +320,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
       apellido_materno: "",
       dni: "",
       telefono: "",
-      bloque: "",
-      id_puesto: "",
+      bloque: 0,
+      id_puesto: 0,
     });
     setBloqueInqSeleccionado("");
     setPuestoInqSeleccionado("");
@@ -419,7 +352,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   const registrarPuesto = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
-    const { id_puesto, ...dataToSend } = formDataPuesto;
+    const { ...dataToSend } = formDataPuesto;
     try {
       const response = await apiClient.post(Api_Global_Puestos.puestos.registrar(), dataToSend);
       if (response.status === 200) {
@@ -443,7 +376,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     setLoading(true);
     const { ...dataToSend } = formDataPuesto;
     try {
-      const response = await apiClient.put(Api_Global_Puestos.puestos.editar((puesto?.id_puesto)),dataToSend);
+      const response = await apiClient.put(Api_Global_Puestos.puestos.editar(puesto?.id_puesto), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message ||`Los datos del puesto:¿ fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success").then(() => {
@@ -552,8 +485,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
       const response = await apiClient.post(Api_Global_Puestos.bloques.registrar(), dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data.message || "El bloque se registró correctamente";
+        const mensaje = response.data.message;
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          fetchBloques();
           handleCloseModal();
         });
       } else {
@@ -574,8 +508,9 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
       const response = await apiClient.post(Api_Global_Puestos.girosNegocio.registrar(), dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data.message || "El giro de negocio se registró correctamente";
+        const mensaje = response.data.message;
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
+          fechGiroNegocio();
           handleCloseModal();
         });
       } else {
@@ -595,7 +530,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
     try {
       const response = await apiClient.post(Api_Global_Puestos.puestos.transferir(), dataToSend);
       if (response.status === 200) {
-        const mensaje = response.data.message || "El puesto se transfirió correctamente";
+        const mensaje = response.data.message;
         mostrarAlerta("Transferencia exitosa", mensaje, "success").then(() => {
           handleCloseModal();
         });
@@ -633,7 +568,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     value={formDataPuesto.id_block}
                     onChange={(e) => {
                       const value = e.target.value;
-                      setFormDataPuesto({ ...formDataPuesto, id_block: value });
+                      setFormDataPuesto({ ...formDataPuesto, id_block: Number(value) });
                     }}
                     startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                   >
@@ -679,7 +614,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                       if (newValue) {
                         setFormDataPuesto({
                           ...formDataPuesto,
-                          id_gironegocio: newValue.id_gironegocio.toString(), // Convertir id_gironegocio a string
+                          id_gironegocio: newValue.id_gironegocio
                         });
                         setGiroSeleccionado(newValue.id_gironegocio);
                       }
@@ -749,7 +684,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     onChange={(e) => {
                       const value = e.target.value as number;
                       setBloqueSeleccionado(value);
-                      fetchPuestosLibres(value);
+                      fetchPuestosSinSocio(value);
                     }}
                     startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                   >
@@ -764,7 +699,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                 {/* Seleccionar Puesto */}
                 <FormControl fullWidth required sx={{ mt: 2 }}>
                   <Autocomplete
-                    options={puestosLibres}
+                    options={puestosSinSocio}
                     getOptionLabel={(puesto) => puesto.numero_puesto}
                     onChange={(event, newValue) => {
                       if (newValue) {
@@ -911,93 +846,96 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
 
                 {/* ASIGNAR PUESTO */}
                 <Grid item xs={12} sm={12}>
-                  <SeparadorBloque nombre="Seleccionar puesto" />
 
-                  {/* Seleccionar bloque */}
-                  <FormControl fullWidth required>
-                    <InputLabel id="bloque-label">Bloque</InputLabel>
-                    <Select
-                      disabled={puesto !== null}
-                      labelId="bloque-label"
-                      id="select-bloque"
-                      label="Bloque"
-                      value={bloqueInqSeleccionado}
-                      onChange={(e) => {
-                        const value = e.target.value as number;
-                        setBloqueInqSeleccionado(value);
-                      }}
-                      startAdornment={
-                        <Business sx={{ mr: 1, color: "gray" }} />
-                      }
-                      sx={{ mb: 2 }}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            maxHeight: 150, // Limitar el alto del desplegable
-                            overflowY: "auto", // Habilitar scroll vertical
-                          },
-                        },
-                      }}
-                    >
-                      {bloques.map((bloque: Bloque) => (
-                        <MenuItem key={bloque.id_block} value={bloque.id_block}>
-                          {bloque.nombre}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  {/* Nro. Puesto */}
-                  <FormControl fullWidth required sx={{ mb: 2 }}>
-                    <Autocomplete
-                      disabled={puesto !== null}
-                      options={puestosFiltrados}
-                      getOptionLabel={(puestoSelect) =>
-                        puestoSelect.numero_puesto.toString()
-                      } // Convertir numero_puesto a string para mostrarlo correctamente
-                      value={
-                        puestoInqSeleccionado 
-                          ? puestosFiltrados.find(
-                            (puestoSelect) => puestoSelect.id_puesto === puestoInqSeleccionado
-                          ) || null : null
-                      }
-                      onChange={(event, newValue) => {
-                        if (newValue) {
-                          setformDataInquilino({
-                            ...formDataInquilino,
-                            id_puesto: newValue.id_puesto.toString(), // Convertir id_puesto a string
-                          });
-                          setPuestoInqSeleccionado(Number(newValue.id_puesto));
-                        } else {
-                          setPuestoInqSeleccionado("");
-                        }
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Nro. Puesto"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <>
-                                <Abc sx={{ mr: 1, color: "gray" }} />
-                                {params.InputProps.startAdornment}
-                              </>
-                            ),
+                  {!puesto && (
+                    <>
+                      <SeparadorBloque nombre="Seleccionar puesto" />
+                      <FormControl fullWidth required>
+                        <InputLabel id="bloque-label">Bloque</InputLabel>
+                        <Select
+                          disabled={puesto !== null}
+                          labelId="bloque-label"
+                          id="select-bloque"
+                          label="Bloque"
+                          value={bloqueInqSeleccionado}
+                          onChange={(e) => {
+                            const value = e.target.value as number;
+                            setBloqueInqSeleccionado(value);
+                            fetchPuestosSinInquilino(value);
                           }}
+                          startAdornment={
+                            <Business sx={{ mr: 1, color: "gray" }} />
+                          }
+                          sx={{ mb: 2 }}
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 150, // Limitar el alto del desplegable
+                                overflowY: "auto", // Habilitar scroll vertical
+                              },
+                            },
+                          }}
+                        >
+                          {bloques.map((bloque: Bloque) => (
+                            <MenuItem key={bloque.id_block} value={bloque.id_block}>
+                              {bloque.nombre}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      <FormControl fullWidth required sx={{ mb: 2 }}>
+                        <Autocomplete
+                          disabled={puesto !== null}
+                          options={puestosSinInquilino}
+                          getOptionLabel={(puestoSelect) =>
+                            puestoSelect.numero_puesto.toString()
+                          } // Convertir numero_puesto a string para mostrarlo correctamente
+                          value={
+                            puestoInqSeleccionado 
+                              ? puestosSinInquilino.find((puesto) => puesto.id_puesto === puestoInqSeleccionado
+                              ) || null : null
+                          }
+                          onChange={(event, newValue) => {
+                            if (newValue) {
+                              setformDataInquilino({
+                                ...formDataInquilino,
+                                id_puesto: newValue.id_puesto
+                              });
+                              setPuestoInqSeleccionado(Number(newValue.id_puesto));
+                            } else {
+                              setPuestoInqSeleccionado("");
+                            }
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Nro. Puesto"
+                              InputProps={{
+                                ...params.InputProps,
+                                startAdornment: (
+                                  <>
+                                    <Abc sx={{ mr: 1, color: "gray" }} />
+                                    {params.InputProps.startAdornment}
+                                  </>
+                                ),
+                              }}
+                            />
+                          )}
+                          ListboxProps={{
+                            style: {
+                              maxHeight: 180,
+                              overflow: "auto",
+                            },
+                          }}
+                          isOptionEqualToValue={(option, value) =>
+                            option.id_puesto === Number(value)
+                          } // Convierte value a número para la comparación
                         />
-                      )}
-                      ListboxProps={{
-                        style: {
-                          maxHeight: 180,
-                          overflow: "auto",
-                        },
-                      }}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id_puesto === Number(value)
-                      } // Convierte value a número para la comparación
-                    />
-                  </FormControl>
+                      </FormControl>
+                    </>
+                  )}
+
                   {puesto && puesto.inquilino.id_inquilino && (
                     <Button
                       fullWidth
@@ -1059,7 +997,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
             </Grid>
           </>
         );
-      case 5: // 
+      case 5: // PAGO TRANSFERENCIA PUESTO
         return(
           <>
             <AvisoFormulario/>
@@ -1129,7 +1067,7 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
                     }}
                     startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                   >
-                    {puestosSocio.map((puesto: Puesto) => (
+                    {puestosSocio.map((puesto: PuestoSelect) => (
                       <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
                         {puesto.numero_puesto}
                       </MenuItem>

@@ -1,4 +1,4 @@
-import { Socio } from "../interface/Socios/Socios";
+import { Socio } from "../interface/Socios";
 import * as XLSX from 'xlsx';
 
 export const handleAccionesSocio = async (accion: number, telefono: string, socio: Socio) => {
@@ -6,7 +6,7 @@ export const handleAccionesSocio = async (accion: number, telefono: string, soci
     // Transformar los datos del socio a formato vertical
     const data = [
       ["ID", socio.id_socio],
-      ["Nombre", socio.nombre_socio],
+      ["Nombre", socio.nombre_completo],
       ["Apellido Paterno", socio.apellido_paterno],
       ["Apellido Materno", socio.apellido_materno],
       ["DNI", socio.dni],
@@ -14,14 +14,17 @@ export const handleAccionesSocio = async (accion: number, telefono: string, soci
       ["Dirección", socio.direccion],
       ["Teléfono", socio.telefono],
       ["Correo", socio.correo],
-      ["Nombre Block", socio.block_nombre],
-      ["Número Puesto", socio.numero_puesto],
-      ["Giro Negocio", socio.gironegocio_nombre],
-      ["Nombre Inquilino", socio.nombre_inquilino],
       ["Estado", socio.estado],
       ["Fecha Registro", socio.fecha_registro],
       ["Deuda", socio.deuda],
+      ["", ""]
     ];
+
+    // Agregar información de todos los puestos
+    data.push(["Puestos", ""]);
+    socio.puestos.forEach((puesto, index) => {
+      data.push([`Puesto ${index + 1}`, `${puesto.block.nombre} - ${puesto.numero_puesto} - ${puesto.gironegocio.nombre}`]);
+    });
 
     // Generar el archivo Excel
     const ws = XLSX.utils.aoa_to_sheet(data); // Crea una hoja de trabajo
@@ -42,7 +45,7 @@ export const handleAccionesSocio = async (accion: number, telefono: string, soci
     // Crear el enlace de descarga
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `Socio-${socio.nombre_completo.replaceAll(' ', '-')}.xlsx`);
+    link.setAttribute('download', `${socio.nombre_completo.replaceAll(' ', '-')}.xlsx`);
     document.body.appendChild(link);
 
     if (accion === 1) {
@@ -50,7 +53,7 @@ export const handleAccionesSocio = async (accion: number, telefono: string, soci
       link.parentNode?.removeChild(link);
     } else {
       // Enviar mensaje de WhatsApp
-      const mensaje = `¡Hola ${socio.nombre_completo}! \n Copia el siguiente enlace en tu navegador para visualizar en formato Excel. \n ${url}`;
+      const mensaje = `¡Hola $${socio.nombre_completo}! \n Copia el siguiente enlace en tu navegador para visualizar en formato Excel. \n ${url}`;
       const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
       window.open(urlWhatsApp, '_blank');
     }

@@ -7,7 +7,7 @@ export const Api_Global_Puestos = {
         exportar: () => `puestos/exportar`,
         eliminar: (id: number) => `/puestos/${id}`,
         registrar:() => `/puestos`,
-        editar: (id: string | undefined) => `/puestos/${id}`, 
+        editar: (id_puesto: number | undefined) => `/puestos/${id_puesto}`, 
         asignarPuesto:() =>`/puestos/asignar`,
         transferir:()=>`/puestos/transferir`,
     },

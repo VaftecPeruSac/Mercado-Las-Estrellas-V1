@@ -4,14 +4,14 @@ export const Api_Global_Socios = {
     fetch: (page: number, nombreSocio: string, numeroPuesto: string) =>
       `/socios?page=${page}&nombre_socio=${nombreSocio}&numero_puesto=${numeroPuesto}`,
     exportar: () => `/socios/exportar`,
-    eliminar: (id_socio: string) => `/socios/${id_socio}`, 
+    eliminar: (id_socio: number) => `/socios/${id_socio}`, 
     registrar:()=> `/socios`,
-    editar: (id: string | undefined) => `/socios/${id}`, 
+    editar: (id_socio: number | undefined) => `/socios/${id_socio}`, 
   },
   bloques:{
     obtenerBloques:()=> `/blocks`,
   },
   puestos:{
-    obtenerPuestos:()=> `/puestos/select`,
+    obtenerPuestos:(id_block: number)=> `/puestos/sin-socio?id_block=${id_block}`,
   }
 };
