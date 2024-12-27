@@ -25,13 +25,14 @@ import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alert
 import BotonesModal from "../Shared/BotonesModal";
 import ContenedorModal from "../Shared/ContenedorModal";
 import { AvisoFormulario, TxtFormulario } from "../Shared/ElementosFormulario";
-import { AgregarProps, Column, Servicio } from "../../interface/Cuotas/GenerarCuota";
 import apiClient from "../../Utils/apliClient";
 import { Api_Global_Cuotas } from "../../service/CuotaApi";
+import { AgregarProps, ColumnServicios } from "../../interface/Cuota";
+import { Servicio } from "../../interface/Servicios";
 
 
-const columns: readonly Column[] = [
-  { id: "descripcion", label: "Servicio", minWidth: 50, align: "center" },
+const columns: readonly ColumnServicios[] = [
+  { id: "nombre", label: "Servicio", minWidth: 50, align: "center" },
   { id: "costo_unitario", label: "Monto", minWidth: 50, align: "center" },
   { id: "accion", label: "", minWidth: 50, align: "center" },
 ];
@@ -59,9 +60,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    id_servicio: "",
-    importe: "",
-    fecha_registro: "",
+    fecha_emision: "",
     fecha_vencimiento: ""
   });
 
@@ -115,14 +114,13 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
 
   const limpiarCuota = () => {
     setFormData({
-      id_servicio: "",
-      importe: "",
-      fecha_registro: "",
+      fecha_emision: "",
       fecha_vencimiento: ""
     });
     setServiciosAgregados([]);
     setServiciosIds([]);
   }
+
   // Generar cuota
   const registrarCuota = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -130,7 +128,6 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
     const dataToSend = {
       ...formData,
       servicios: serviciosIds,
-      importe: importeTotal,
     };
     try {
       const response = await apiClient.post(Api_Global_Cuotas.cuotas.registrar(), dataToSend);
@@ -167,7 +164,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                   type="date"
                   label="Fecha de emisión"
                   name="fecha_registro"
-                  value={formData.fecha_registro =  fechaEmision}
+                  value={formData.fecha_emision =  fechaEmision}
                   onChange={manejarFechaEmisionCambio}
                   noMargin={true}
                   icono={<CalendarIcon sx={{ mr: 1, color: "gray" }} />}
@@ -209,7 +206,7 @@ const GenerarCuota: React.FC<AgregarProps> = ({ open, handleClose }) => {
                         key={servicio.id_servicio}
                         value={servicio.id_servicio}
                       >
-                        {`${servicio.descripcion} - S/ ${servicio.costo_unitario}`}
+                        {`${servicio.nombre} - S/ ${servicio.costo_unitario}`}
                       </MenuItem>
                     ))}
                   </Select>

@@ -37,8 +37,7 @@ import { columns } from "../../Columns/Cuotas";
 import { Api_Global_Cuotas } from "../../service/CuotaApi";
 import { handleExport } from "../../Utils/exportUtils";
 import apiClient from "../../Utils/apliClient";
-import { Cuotas, Data, IMeses } from "../../interface/Cuotas/cuota";
-
+import { Cuotas, IMeses } from "../../interface/Cuota";
 
 const optMeses = [
   { value: "1", label: "Enero" },
@@ -66,7 +65,7 @@ const TablaCuota: React.FC = () => {
   const [anio, setAnio] = useState<string>("");
   const [mes, setMes] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [cuotas, setCuotas] = useState<Data[]>([]);
+  const [cuotas, setCuotas] = useState<Cuotas[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -91,13 +90,12 @@ const TablaCuota: React.FC = () => {
     try {
       const response = await apiClient.get(Api_Global_Cuotas.cuotas.listar(page, anio, mes));
       const data = response.data.data.map((item: Cuotas) => ({
-        id_deuda: item.id_deuda,
-        fecha_registro: formatDate(item.fecha_registro),
+        id_cuota: item.id_cuota,
+        fecha_emision: formatDate(item.fecha_emision),
         fecha_vencimiento: formatDate(item.fecha_vencimiento),
         importe: item.importe,
-        socio_nombre: item.socio_nombre,
-        puesto_descripcion: item.puesto_descripcion,
-        servicio_descripcion: item.servicio_descripcion,
+        puestos_asignados: item.puestos_asignados,
+        servicios: item.servicios,
       }));
       setCuotas(data);
       setTotalPages(response.data.meta.last_page); 
@@ -295,7 +293,7 @@ const TablaCuota: React.FC = () => {
                               sx={{
                                 p: 2,
                                 // Seleccionar la cuota y cambiar el color de fondo
-                                bgcolor: mostrarDetalles === cuota.id_deuda ? "#f0f0f0" : "inherit",
+                                bgcolor: mostrarDetalles === cuota.id_cuota ? "#f0f0f0" : "inherit",
                                 "&:hover": {
                                   cursor: "pointer",
                                   bgcolor: "#f0f0f0",
@@ -303,12 +301,12 @@ const TablaCuota: React.FC = () => {
                               }}
                               onClick={() => setMostrarDetalles(
                                 // Si la cuota seleccionada es igual a la cuota actual, ocultar detalles
-                                mostrarDetalles === cuota.id_deuda ? null : cuota.id_deuda
+                                mostrarDetalles === cuota.id_cuota ? null : cuota.id_cuota
                               )}
                             >
-                              {cuota.fecha_registro} - {cuota.socio_nombre}
+                              {cuota.id_cuota} - {cuota.id_cuota}
                             </Typography>
-                            {mostrarDetalles === cuota.id_deuda && (
+                            {mostrarDetalles === cuota.id_cuota && (
                               <Box
                                 sx={{
                                   p: 2,
@@ -382,7 +380,15 @@ const TablaCuota: React.FC = () => {
                                 column.id === "accion" ? "center" : column.align
                               }
                             >
-                              {column.id === "importe" ?
+                              {column.id === "servicios" ? (
+                                cuota.servicios.map((servicio) => (
+                                  <Typography>{ `${servicio.nombre } - S/ ${servicio.costo_unitario}` }</Typography>
+                                ))
+                              ) : column.id === "puestos_asignados" ? (
+                                cuota.puestos_asignados ? cuota.puestos_asignados.map((puesto) => (
+                                  <Typography>{ puesto.numero }</Typography>
+                                )) : <Typography>Todos los puestos</Typography>
+                              ) : column.id === "importe" ?
                                 parseFloat(cuota.importe).toFixed(2)
                               : column.id === "accion" ? (
                                 <Box
