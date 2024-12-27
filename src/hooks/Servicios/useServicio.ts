@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Servicio, Data } from "../../interface/Servicios/Servicios";
+import { Servicio } from "../../interface/Servicios";
 import useResponsive from "../Responsive/useResponsive";
 import { API_ROUTES } from "../../service/ServicioApi";
 import { formatDate } from "../../Utils/dateUtils";
@@ -8,7 +8,7 @@ import apiClient from "../../Utils/apliClient";
 const useServicioState = () => {
   const [mostrarDetalles, setMostrarDetalles] = useState<string | null>(null);
   const [buscarTexto, setBuscarTexto] = useState<string>("");
-  const [servicios, setServicios] = useState<Data[]>([]);
+  const [servicios, setServicios] = useState<Servicio[]>([]);
   const [servicioSeleccionado, setServicioSeleccionado] =
     useState<Servicio | null>(null);
   const [totalPages, setTotalPages] = useState(1);
@@ -25,7 +25,7 @@ const useServicioState = () => {
         const response = await apiClient.get(API_ROUTES.servicios.fetch(page, buscarTexto));
         const data = response.data.data.map((item: Servicio) => ({
           id_servicio: item.id_servicio,
-          descripcion: item.descripcion,
+          nombre: item.nombre,
           costo_unitario: item.costo_unitario,
           tipo_servicio: item.tipo_servicio,
           fecha_registro: formatDate(item.fecha_registro),
@@ -43,8 +43,8 @@ const useServicioState = () => {
   
 
   useEffect(() => {
-    fetchServicios(paginaActual);
-  }, []);
+    fetchServicios();
+  }, [fetchServicios]);
 
   return {
     mostrarDetalles,

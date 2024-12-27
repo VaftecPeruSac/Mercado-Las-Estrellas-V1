@@ -8,19 +8,16 @@ export const API_ROUTES = {
     editar: (id: string | undefined) => `/servicios/${id}`, 
     eliminar: (id: number) => `/servicios/${id}`,
   },
-  //Constulas useEffect para listar socios en formularios
-  socios: {
-    listar: (perPage = 50) => `/socios?per_page=${perPage}`,
+  socios: { 
+    listar: () => `/socios/seleccionar` 
   },
-  //Constulas useEffect para listar puestos por socio en formularios
   puestos: {
-    listarPorSocio: (idSocio: number | string, perPage: number = 50): string =>
-      `/puestos?per_page=${perPage}&id_socio=${idSocio}`,
-    totalPuestos: () => `/puestos/totalPuestos`,
-    areaTotal: () => `/puestos/areaTotal`,
+    listarPorSocio: (idSocio: number) => `/socios/ver-puestos?id_socio=${idSocio}`,
+    totalPuestos: () => `/puestos/total`,
+    areaTotal: () => `/puestos/area-total`,
   },
   multaInasistencia: {
-    registrar: () => `/registrarMultaInasistencia`,
-    importe: () => `/consultarImporteMultaInasistencia`,
+    registrar: () => `/deudas/registrar-multa-inasistencia`,
+    importe: () => `/servicios/consultar-importe-multa-inasistencia`,
   }
 };

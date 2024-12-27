@@ -32,9 +32,11 @@ import {
   TxtFormulario,
 } from "../Shared/ElementosFormulario";
 import { reFormatDate } from "../../Utils/dateUtils";
-import { AgregarProps, Puesto, Socio } from "../../interface/Servicios/RegistrarServicio";
 import apiClient from "../../Utils/apliClient";
 import { API_ROUTES } from "../../service/ServicioApi";
+import { SocioSelect } from "../../interface/Socios";
+import { AgregarProps } from "../../interface/Servicios";
+import { PuestoSelect } from "../../interface/Puestos";
 
 const RegistrarServicio: React.FC<AgregarProps> = ({
   open,
@@ -47,8 +49,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const [costoMetroCuadrado, setCostoMetroCuadrado] = useState(0);
   const [totalPuestos, setTotalPuestos] = useState(0);
   const [areaTotal, setAreaTotal] = useState(0);
-  const [socios, setSocios] = useState([]);
-  const [puestos, setPuestos] = useState([]);
+  const [socios, setSocios] = useState<SocioSelect[]>([]);
+  const [puestos, setPuestos] = useState<PuestoSelect[]>([]);
   const [editarMIA, setEditarMIA] = useState(true);
 
   // Obtener Lista Socios
@@ -56,11 +58,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     const fetchSocios = async () => {
       try {
         const response = await apiClient.get(API_ROUTES.socios.listar());
-        const data = response.data.data.map((item: Socio) => ({
-          id_socio: item.id_socio,
-          nombre_completo: item.nombre_completo,
-        }));
-        setSocios(data);
+        setSocios(response.data.data);
       } catch (error) {
         console.error("Error al obtener los socios", error);
       }
@@ -69,17 +67,10 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   }, []);
 
   // Obtener Lista Puestos
-  const fetchPuestos = async (idSocio: string) => {
+  const fetchPuestosSocio = async (idSocio: number) => {
     try {
       const response = await apiClient.get(API_ROUTES.puestos.listarPorSocio(idSocio));
-      const data = response.data.data.map((item: Puesto) => ({
-        id_puesto: item.id_puesto,
-        numero_puesto: item.numero_puesto,
-        block: {
-          nombre: item.block.nombre,
-        },
-      }));
-      setPuestos(data);
+      setPuestos(response.data.data);
     } catch (error) {
       console.error("Error al obtener los puestos", error);
     }
@@ -90,8 +81,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
     const fetchTotalPuestos = async () => {
       try {
         const response = await apiClient.get(API_ROUTES.puestos.totalPuestos());
-        const data = response.data.data;
-        setTotalPuestos(data);
+        setTotalPuestos(response.data.data);
       } catch (error) {
         console.error("Error al obtener el area total", error);
       }
@@ -116,26 +106,24 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   // Datos para registrar el servicio Por Metro Cuadrado
   const [formDataPMC, setFormDataPMC] = useState({
     id_servicio: "",
-    descripcion: "",
+    nombre: "",
     costo_unitario: "",
     tipo_servicio: "3",
-    estado: "1", // "Activo",
     fecha_registro: "",
   });
 
   // Datos para registrar el servicio
   const [formData, setFormData] = useState({
     id_servicio: "",
-    descripcion: "",
+    nombre: "",
     costo_unitario: "",
     tipo_servicio: "",
-    estado: "1", // "Activo",
     fecha_registro: "",
   });
 
   // Datos para registrar el servicio multa por inasistencia a Asamblea General
   const [formDataMIA, setFormDataMIA] = useState({
-    id_socio: "",
+    id_socio: 0,
     id_puesto: "",
     importe: "",
   });
@@ -177,20 +165,18 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
         setActiveTab(1);
         setFormDataPMC({
           id_servicio: servicio.id_servicio || "",
-          descripcion: servicio.descripcion || "",
+          nombre: servicio.nombre || "",
           costo_unitario: (parseFloat(servicio.costo_unitario) * areaTotal).toString() || "",
           tipo_servicio: servicio.tipo_servicio || "",
-          estado: "1", // "Activo",
           fecha_registro: reFormatDate(servicio.fecha_registro) || "",
         });
       } else {
         setActiveTab(0);
         setFormData({
           id_servicio: servicio.id_servicio || "",
-          descripcion: servicio.descripcion || "",
+          nombre: servicio.nombre || "",
           costo_unitario: servicio.costo_unitario || "",
           tipo_servicio: servicio.tipo_servicio || "",
-          estado: "1", // "Activo",
           fecha_registro: reFormatDate(servicio.fecha_registro) || "",
         });
       }
@@ -230,10 +216,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const limpiarRegistarServicio = () => {
     setFormData({
       id_servicio: "",
-      descripcion: "",
+      nombre: "",
       costo_unitario: "",
       tipo_servicio: "",
-      estado: "1", // "Activo",
       fecha_registro: "",
     });
   };
@@ -241,10 +226,9 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
   const limpiarRegistrarServicioPMC = () => {
     setFormDataPMC({
       id_servicio: "",
-      descripcion: "",
+      nombre: "",
       costo_unitario: "",
       tipo_servicio: "3",
-      estado: "1", // "Activo",
       fecha_registro: "",
     });
     setCostoMetroCuadrado(0);
@@ -252,7 +236,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
 
   const limpiarRegistrarMIA = () => {
     setFormDataMIA({
-      id_socio: "",
+      id_socio: 0,
       id_puesto: "",
       importe: "",
     });
@@ -292,8 +276,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
 
       const response = await apiClient.put(API_ROUTES.servicios.editar(servicio?.id_servicio),dataToSend);
       if (response.status === 200) {
-        const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
-        mostrarAlerta("Actualización exitosa", mensaje, "success");
+        mostrarAlerta(response.data.message);
         handleCloseModal();
       } else {
         mostrarAlerta("Error");
@@ -340,7 +323,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
 
       const response = await apiClient.put(API_ROUTES.servicios.editar(servicio?.id_servicio),dataToSend);
       if (response.status === 200) {
-        const mensaje = `Los datos del servicio: "${dataToSend.descripcion}" fueron actualizados con éxito`;
+        const mensaje = `Los datos del servicio: "${dataToSend.nombre}" fueron actualizados con éxito`;
         mostrarAlerta("Actualización exitosa", mensaje, "success");
         handleCloseModal();
       } else {
@@ -402,8 +385,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                 <TxtFormulario
                   type="text"
                   label="Nombre del servicio"
-                  name="descripcion"
-                  value={formData.descripcion}
+                  name="nombre"
+                  value={formData.nombre}
                   onChange={manejarCambio}
                   icono={<Bolt sx={{ mr: 1, color: "gray" }} />}
                 />
@@ -483,8 +466,8 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                 <TxtFormulario
                   type="text"
                   label="Nombre del servicio"
-                  name="descripcion"
-                  value={formDataPMC.descripcion}
+                  name="nombre"
+                  value={formDataPMC.nombre}
                   onChange={manejarCambioPMC}
                   icono={<Bolt sx={{ mr: 1, color: "gray" }} />}
                 />
@@ -572,15 +555,15 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                 <FormControl sx={{ width: "100%" }}>
                   <Autocomplete
                     options={socios}
-                    getOptionLabel={(socio: Socio) => socio.nombre_completo}
+                    getOptionLabel={(socio: SocioSelect) => socio.nombre_completo}
                     onChange={(event, newValue) => {
                       if (newValue) {
-                        const socioId = String(newValue.id_socio); // Convertimos id_socio a string
+                        const idSocio = newValue.id_socio; // Convertimos id_socio a string
                         setFormDataMIA({
                           ...formDataMIA,
-                          id_socio: socioId
+                          id_socio: idSocio
                         }); // Mantenemos el string en formData
-                        fetchPuestos(socioId); // Pasamos el id_socio como string
+                        fetchPuestosSocio(idSocio); // Pasamos el id_socio como string
                       }
                     }}
                     renderInput={(params) => (
@@ -629,7 +612,7 @@ const RegistrarServicio: React.FC<AgregarProps> = ({
                     }}
                     startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
                   >
-                    {puestos.map((puesto: Puesto) => (
+                    {puestos.map((puesto: PuestoSelect) => (
                       <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
                         {puesto.numero_puesto}
                       </MenuItem>

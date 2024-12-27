@@ -27,15 +27,15 @@ export interface GiroNegocio {
     nombre: string;
 }
 
+export interface PuestoSelect {
+    id_puesto: number;
+    numero_puesto: string;
+}
+
 export interface Column {
     id: keyof Puesto | "accion";
     label: string;
     minWidth?: number;
     align?: "center";
     format?: (value: any) => string;
-}
-
-export interface PuestoSelect {
-    id_puesto: number;
-    numero_puesto: string;
 }

@@ -17,7 +17,7 @@ import {
 import { SaveAs, DeleteForever, Search } from "@mui/icons-material";
 import RegistrarServicio from "./RegistrarServicio";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
-import { Servicio } from "../../interface/Servicios/Servicios"; // se esta importando la interface servicios
+import { Servicio } from "../../interface/Servicios"; // se esta importando la interface servicios
 import { columns } from "../../Columns/Servicios";
 import useServicioState from "../../hooks/Servicios/useServicio";
 import { API_ROUTES } from "../../service/ServicioApi"; // Asegúrate de que la ruta sea correcta
@@ -26,7 +26,7 @@ import ContenedorBotones from "../Shared/ContenedorBotones";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import { handleExport } from "../../Utils/exportUtils";
-import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
+import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from "../Alerts/Registrar";
 import apiClient from "../../Utils/apliClient";
 
 const TablaServicios: React.FC = () => {
@@ -79,9 +79,7 @@ const TablaServicios: React.FC = () => {
     fetchServicios(value); 
   };
 
-  const buscarServicios = () => {
-    fetchServicios(1);
-  };
+  const buscarServicios = () => fetchServicios();
 
   const eliminarServicio = async (item: any) => {
     try {
@@ -257,7 +255,7 @@ const TablaServicios: React.FC = () => {
                                 )
                               }
                             >
-                              {servicio.descripcion} -{" "}
+                              {servicio.nombre} -{" "}
                               {parseInt(servicio.tipo_servicio) === 1
                                 ? "Ordinario"
                                 : parseInt(servicio.tipo_servicio) === 2
@@ -330,9 +328,13 @@ const TablaServicios: React.FC = () => {
                                                 color: "#fff",
                                               }}
                                               onClick={() =>
-                                                alert(
-                                                  "En proceso de actualización. Intentelo más tarde."
-                                                )
+                                                mostrarAlertaConfirmacion(
+                                                  "Eliminar Servicio", "¿Estás seguro de eliminar este servicio?", "Eliminar", "Cancelar"
+                                                ).then((result) => {
+                                                  if (result.isConfirmed) {
+                                                    eliminarServicio(servicio);
+                                                  }
+                                                })
                                               }
                                             >
                                               <DeleteForever sx={{ mr: 1 }} />
@@ -387,7 +389,14 @@ const TablaServicios: React.FC = () => {
                                   <IconButton
                                     aria-label="delete"
                                     sx={{ color: "red" }}
-                                    onClick={() => eliminarServicio(servicio)}
+                                    onClick={() => mostrarAlertaConfirmacion(
+                                        "Eliminar Servicio", "¿Estás seguro de eliminar este servicio?", "Eliminar", "Cancelar"
+                                      ).then((result) => {
+                                        if (result.isConfirmed) {
+                                          eliminarServicio(servicio);
+                                        }
+                                      })
+                                    }
                                   >
                                     <DeleteForever />
                                   </IconButton>

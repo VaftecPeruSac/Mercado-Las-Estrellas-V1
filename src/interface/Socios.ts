@@ -1,11 +1,5 @@
 import { Bloque, GiroNegocio } from "./Puestos";
 
-export interface AgregarProps {
-  open: boolean;
-  handleClose: () => void;
-  socio: Socio | null;
-}
-
 export interface Socio {
   id_socio: number;
   nombre_completo: string;
@@ -31,6 +25,11 @@ interface Puesto {
   nombre_inquilino: string;
 }
 
+export interface SocioSelect {
+  id_socio: number;
+  nombre_completo: string;
+}
+
 export interface Column {
   id: keyof Socio | "nombre_completo" | "bloque" | "numero_puesto" | "giro_negocio" | "inquilino" | "deuda" | "ver_reporte" | "accion";
   label: string;
@@ -39,7 +38,8 @@ export interface Column {
   format?: (value: any) => string;
 }
 
-export interface SocioSelect {
-  id_socio: number;
-  nombre_completo: string;
+export interface AgregarProps {
+  open: boolean;
+  handleClose: () => void;
+  socio: Socio | null;
 }
