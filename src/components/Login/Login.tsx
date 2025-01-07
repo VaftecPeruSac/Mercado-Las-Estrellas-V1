@@ -20,8 +20,8 @@ const Login: React.FC = () => {
   const IniciarSesion = async () => {
     const dataToSend = { usuario: nomUsuario, password };  
     try {
-      // const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login', dataToSend);
-      const response = await axios.post('http://127.0.0.1:8000/v1/login', dataToSend);
+      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login', dataToSend);
+      // const response = await axios.post('http://127.0.0.1:8000/v1/login', dataToSend);
       if (response.status === 200) {
         const { token } = response.data;
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });

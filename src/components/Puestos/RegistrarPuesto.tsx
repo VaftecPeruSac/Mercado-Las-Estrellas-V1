@@ -143,8 +143,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Obtener bloques
   const fetchBloques = async () => {
     try {
-      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
-      const response = await axios.get("http://127.0.0.1:8000/v1/blocks");
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
+      // const response = await axios.get("http://127.0.0.1:8000/v1/blocks");
       setBloques(response.data.data);
     } catch (error) {
       console.error("Error al obtener los bloques", error);
@@ -154,8 +154,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Obtener giro de negocio
   const fechGiroNegocio = async () => {
     try {
-      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios");
-      const response = await axios.get("http://127.0.0.1:8000/v1/giro-negocios");
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/giro-negocios");
+      // const response = await axios.get("http://127.0.0.1:8000/v1/giro-negocios");
       setGirosNegocio(response.data.data);
     } catch (error) {
       console.error("Error al obtener los giro de negocio", error);
@@ -165,8 +165,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Obtener puestos libres (Sin socio)
   const fetchPuestosSinSocio = async (id_block: number) => {
     try {
-      // const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos/sin-socio?id_block=${id_block}`);
-      const response = await axios.get(`http://127.0.0.1:8000/v1/puestos/sin-socio?id_block=${id_block}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos/sin-socio?id_block=${id_block}`);
+      // const response = await axios.get(`http://127.0.0.1:8000/v1/puestos/sin-socio?id_block=${id_block}`);
       setPuestosSinSocio(response.data);
     } catch (error) {
       console.error("Error al obtener los puestos", error);
@@ -176,7 +176,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Obtener puestos libres (Sin inquilino)
   const fetchPuestosSinInquilino = async (id_block: number) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/v1/puestos/sin-inquilino?id_block=${id_block}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos/sin-inquilino?id_block=${id_block}`);
+      // const response = await axios.get(`http://127.0.0.1:8000/v1/puestos/sin-inquilino?id_block=${id_block}`);
       setPuestosSinInquilino(response.data);
     } catch (error) {
       console.error("Error al obtener los puestos", error);
@@ -186,8 +187,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Obtener socios
   const fetchSocios = async () => {
     try {
-      // const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=150");
-      const response = await axios.get("http://127.0.0.1:8000/v1/socios/seleccionar");
+      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=150");
+      // const response = await axios.get("http://127.0.0.1:8000/v1/socios/seleccionar");
       setSocios(response.data.data);
     } catch (error) {
       console.error("Error al obtener el listado de socios", error);
@@ -197,8 +198,8 @@ const RegistrarPuesto: React.FC<AgregarProps> = ({ open, handleClose, puesto }) 
   // Obtener puestos por socio
   const fetchPuestosSocio = async (idSocio: string) => {
     try {
-      // const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
-      const response = await axios.get(`http://127.0.0.1:8000/v1/socios/ver-puestos?id_socio=${idSocio}`);
+      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${idSocio}`);
+      // const response = await axios.get(`http://127.0.0.1:8000/v1/socios/ver-puestos?id_socio=${idSocio}`);
       setPuestosSocios(response.data.data);
     } catch (error) {
       console.error("Error al obtener los puestos", error);

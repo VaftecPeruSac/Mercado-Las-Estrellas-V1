@@ -6,7 +6,7 @@ export const Api_Global_Cuotas = {
     exportar: () => `cuotas/exportar`,
   },
   servicio: {
-    listar: () => `/servicios`,
+    listar: () => `/servicios?per_page=1000`,
    
 },
 };

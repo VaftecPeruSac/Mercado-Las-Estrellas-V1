@@ -33,8 +33,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const token = Cookies.get("token");
       const nombreUsu = usuario?.nombre_usuario;
       if (token && usuario) {
-        // const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",
-        const response = await axios.post("http://127.0.0.1:8000/v1/logout",
+        const response = await axios.post("https://mercadolasestrellas.online/intranet/public/v1/logout",
+        // const response = await axios.post("http://127.0.0.1:8000/v1/logout",
           { usuario: nombreUsu },
         );
         if (response.status === 200) {
@@ -53,8 +53,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const token = Cookies.get("token");
       if (token) {
-        // const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones?token=${token}`);
-        const response = await axios.get(`http://127.0.0.1:8000/v1/validaciones?token=${token}`);
+        const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/validaciones?token=${token}`);
+        // const response = await axios.get(`http://127.0.0.1:8000/v1/validaciones?token=${token}`);
         if (response.status === 200) {
           const user = response.data;
           setUsuario(user);

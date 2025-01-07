@@ -3,8 +3,8 @@ import Cookies from "js-cookie";
 
 //instancia de Axios + config global
 const apiClient = axios.create({
-  // baseURL: "https://mercadolasestrellas.online/intranet/public/v1",
-  baseURL: "http://127.0.0.1:8000/v1",
+  baseURL: "https://mercadolasestrellas.online/intranet/public/v1",
+  // baseURL: "http://127.0.0.1:8000/v1",
   headers: {
     "Content-Type": "application/json",
   },
