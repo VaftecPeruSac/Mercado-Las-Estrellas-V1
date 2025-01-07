@@ -114,8 +114,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
       );
       const data = response.data.data.map((item: Deuda) => ({
         id_deuda: item.id_deuda,
-        total: item.total,
-        servicio_descripcion: item.servicio_descripcion,
+        total: item.por_pagar, // item.total,
+        servicio_descripcion: item.nombre_servicio,
         anio: item.anio,
         mes: item.mes,
         a_cuenta: item.a_cuenta,
@@ -292,6 +292,8 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     // Extraemos los datos necesarios para enviar
     const { nombre_socio, nombre_block, numero_puesto, deudas, ...rest } = formData;
     const filteredDeudas = deudas.map(({ servicio, ...deudaRest }) => deudaRest); // Filtramos el servicio de las deudas
+    // console.log(deudas);
+    // console.log(formData);
     const dataToSend: { 
       id_socio: string;
       deudas: { id_deuda: number; importe: number; }[] // Solo enviamos el id_deuda y el importe
@@ -557,7 +559,9 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                       <TableBody>
                         {deudas.map((deuda) => {
                           // Calculamos el monto a pagar
-                          const montoInicial = parseFloat(deuda.deuda);
+                          // console.log('deuda: ', deuda);
+                          // const montoInicial = parseFloat(deuda.deuda);
+                          const montoInicial = parseFloat(deuda.total) - parseFloat(deuda.a_cuenta);
                           const seleccionado =
                             filasSeleccionadas[deuda.id_deuda] || false;
 

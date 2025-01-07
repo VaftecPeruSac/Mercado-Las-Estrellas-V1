@@ -19,7 +19,9 @@ export interface Puesto {
 export interface Deuda {
   id_deuda: number;
   total: string;
+  por_pagar: string;
   servicio_descripcion: string;
+  nombre_servicio: string;
   anio: string;
   mes: string;
   a_cuenta: string;

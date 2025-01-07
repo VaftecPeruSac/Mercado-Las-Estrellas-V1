@@ -15,6 +15,7 @@ export const Api_Global_Pagos = {
       idSocio: number | string,
       idPuesto: number | string,
       perPage: number = 50
-    ) =>`/cuotas/pendientes?per_page=${perPage}&id_socio=${idSocio}&id_puesto=${idPuesto}`,
+    // ) =>`/cuotas/pendientes?per_page=${perPage}&id_socio=${idSocio}&id_puesto=${idPuesto}`,
+    ) =>`/deudas/pendientes?per_page=${perPage}&id_socio=${idSocio}&id_puesto=${idPuesto}`,
   },
 };
