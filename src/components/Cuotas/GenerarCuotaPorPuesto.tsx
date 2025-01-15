@@ -29,6 +29,8 @@ import { Api_Global_Cuotas } from "../../service/CuotaApi";
 import { ColumnServicios } from "../../interface/Cuota";
 import { Servicio } from "../../interface/Servicios";
 import ContenedorMini from "../Shared/ContenedorMini";
+import { Puesto } from "../../interface/Puestos";
+import { Business } from "@mui/icons-material";
 
 const columns: readonly ColumnServicios[] = [
   { id: "nombre", label: "Servicio", minWidth: 50, align: "center" },
@@ -36,7 +38,7 @@ const columns: readonly ColumnServicios[] = [
   { id: "accion", label: "", minWidth: 50, align: "center" },
 ];
 
-const GenerarCuota: React.FC = () => {
+const GenerarCuotaPorPuesto: React.FC = () => {
 
   // Variables para el diseño responsivo
   const { isLaptop, isTablet, isMobile } = useResponsive();
@@ -57,10 +59,13 @@ const GenerarCuota: React.FC = () => {
   const [fechaEmision, setFechaEmision] = useState("");
   const [fechaVencimiento, setFechaVencimiento] = useState("");
   const [loading, setLoading] = useState(false);
+  const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const [puestoSeleccionado, setPuestoSeleccionado] = useState<{ value: unknown } | "">("");
 
   const [formData, setFormData] = useState({
     fecha_emision: "",
-    fecha_vencimiento: ""
+    fecha_vencimiento: "",
+    id_puesto: ""
   });
 
   // Para calcular la fecha de vencimiento de la cuota (La cuota vence en 30 dias)
@@ -85,6 +90,29 @@ const GenerarCuota: React.FC = () => {
     }
     fetchServicios();
   }, []);
+
+  // Obtener los puestos para el SelectList
+  useEffect(() => {
+    const fetchPuestos = async () => {
+      try {
+        const response = await apiClient.get(Api_Global_Cuotas.puesto.listar());  
+        setPuestos(response.data.data);
+      } catch (error) {
+      }
+    }
+    fetchPuestos();
+  }, []);
+
+  // Para manejar el cambio de seleccion y agregar puestos a la tabla
+  const handlePuestoChange = (event: SelectChangeEvent<{ value: unknown } | "">) => {
+    const puestoId = event.target.value as any;
+    setPuestoSeleccionado(puestoId);
+
+    setFormData({
+      ...formData,
+      id_puesto: puestoId,
+    });
+  };
 
   // Para manejar el cambio de seleccion y agregar servicios a la tabla
   const handleServicioChange = (event: SelectChangeEvent<{ value: unknown } | "">) => {
@@ -114,10 +142,12 @@ const GenerarCuota: React.FC = () => {
   const limpiarCuota = () => {
     setFormData({
       fecha_emision: "",
-      fecha_vencimiento: ""
+      fecha_vencimiento: "",
+      id_puesto: ""
     });
     setFechaEmision("");
     setFechaVencimiento("");
+    setPuestoSeleccionado("");
     setServiciosAgregados([]);
     setServiciosIds([]);
   }
@@ -131,7 +161,7 @@ const GenerarCuota: React.FC = () => {
       servicios: serviciosIds,
     };
     try {
-      const response = await apiClient.post(Api_Global_Cuotas.cuotas.registrar(), dataToSend);
+      const response = await apiClient.post(Api_Global_Cuotas.cuotas.registrarPorPuesto(), dataToSend);
       if (response.status === 200) {
         const mensaje = response.data.message || "La cuota fue registrada con éxito";
         mostrarAlerta("Registro exitoso", mensaje, "success").then(() => {
@@ -207,6 +237,28 @@ const GenerarCuota: React.FC = () => {
                         value={servicio.id_servicio}
                       >
                         {`${servicio.nombre} - S/ ${servicio.costo_unitario}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <FormControl fullWidth required>
+                  <InputLabel id="seleccionar-puesto-label">
+                    Seleccionar Puesto
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-puesto-label"
+                    label="Seleccionar Puesto"
+                    id="select-puesto"
+                    name="id_puesto"
+                    value={puestoSeleccionado}
+                    onChange={handlePuestoChange}
+                    startAdornment={<Business sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {puestos.map((puesto: Puesto) => (
+                      <MenuItem key={puesto.id_puesto} value={puesto.id_puesto}>
+                        {puesto.numero_puesto}
                       </MenuItem>
                     ))}
                   </Select>
@@ -339,4 +391,4 @@ const GenerarCuota: React.FC = () => {
   );
 };
 
-export default GenerarCuota;
+export default GenerarCuotaPorPuesto;

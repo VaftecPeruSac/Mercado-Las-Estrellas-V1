@@ -25,7 +25,8 @@ import {
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
-import GenerarCuota from "./GenerarCuota";
+// import GenerarCuota from "./GenerarCuota";
+import GenerarCuotaTabs from "./GenerarCuotaTabs";
 import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import Contenedor from "../Shared/Contenedor";
@@ -40,6 +41,7 @@ import apiClient from "../../Utils/apliClient";
 import { Cuotas, IMeses } from "../../interface/Cuota";
 
 const optMeses = [
+  { value: "", label: "Mes" },
   { value: "1", label: "Enero" },
   { value: "2", label: "Febrero" },
   { value: "3", label: "Marzo" },
@@ -52,6 +54,24 @@ const optMeses = [
   { value: "10", label: "Octubre" },
   { value: "11", label: "Noviembre" },
   { value: "12", label: "Diciembre" },
+];
+
+const anios: any = [
+  { value: "", label: "Año" },
+  { value: "2025", label: "2025" },
+  { value: "2024", label: "2024" },
+  { value: "2023", label: "2023" },
+  { value: "2022", label: "2022" },
+  { value: "2021", label: "2021" },
+  { value: "2020", label: "2020" },
+  { value: "2019", label: "2019" },
+  { value: "2018", label: "2018" },
+  { value: "2017", label: "2017" },
+  { value: "2016", label: "2016" },
+  { value: "2015", label: "2015" },
+  { value: "2014", label: "2014" },
+  { value: "2013", label: "2013" },
+  { value: "2012", label: "2012" },
 ];
 
 const TablaCuota: React.FC = () => {
@@ -126,7 +146,11 @@ const TablaCuota: React.FC = () => {
           handleAction={handleOpen}
           texto="Generar Cuota"
         />
-        <GenerarCuota
+        {/* <GenerarCuota
+          open={open}
+          handleClose={handleClose}
+        /> */}
+        <GenerarCuotaTabs
           open={open}
           handleClose={handleClose}
         />
@@ -193,9 +217,9 @@ const TablaCuota: React.FC = () => {
             }}
           >
             <InputLabel id="cuota-anio-label">Año</InputLabel>
-            <Select value={anio} onChange={(e) => setAnio(e.target.value)} label="Año">
+            {/* <Select value={anio} onChange={(e) => setAnio(e.target.value)} label="Año">
               {[
-                2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
+                "", 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
                 2014, 2013, 2012,
               ].map((año) => (
                 <MenuItem
@@ -204,6 +228,17 @@ const TablaCuota: React.FC = () => {
                   value={año}
                 >
                   {año}
+                </MenuItem>
+              ))}
+            </Select> */}
+            <Select value={anio} onChange={(e) => setAnio(e.target.value)} label="Año">
+              {anios.map((año: any) => (
+                <MenuItem
+                  sx={{ padding: "10px 25px !important" }}
+                  key={año.value}
+                  value={año.value}
+                >
+                  {año.label}
                 </MenuItem>
               ))}
             </Select>
