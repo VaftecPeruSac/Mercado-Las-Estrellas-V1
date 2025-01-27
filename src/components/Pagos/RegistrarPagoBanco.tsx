@@ -1,4 +1,4 @@
-import { Business } from "@mui/icons-material";
+import { Business, AccountBalance, CardMembership, Event, Abc, AccountCircle } from "@mui/icons-material";
 import {
   Box,
   Typography,
@@ -28,10 +28,11 @@ import {
   mostrarAlerta,
 } from "../Alerts/Registrar";
 import jsPDF from "jspdf";
-import { AvisoFormulario } from "../Shared/ElementosFormulario";
+import { AvisoFormulario, TxtFormulario } from "../Shared/ElementosFormulario";
 import { formatDate, nombreMes } from "../../Utils/dateUtils";
-import { AgregarProps, Column, Data, Deuda, Puesto, Socio, DeudaPendiente } from "../../interface/Pagos/RegistrarPagos";
+import { AgregarProps, Column, Data, Deuda, Puesto, Socio, DeudaPendiente, Banco, BancoCuenta } from "../../interface/Pagos/RegistrarPagos";
 import { Api_Global_Pagos } from "../../service/PagoApi";
+import { Api_Global_Setup } from "../../service/SetupApi";
 import apiClient from "../../Utils/apliClient";
 import ContenedorMini from "../Shared/ContenedorMini";
 import { Api_Global_Cuotas } from "../../service/CuotaApi";
@@ -46,7 +47,7 @@ const columns: readonly Column[] = [
   { id: "accion", label: "", minWidth: 30, align: "center" },
 ];
 
-const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
+const RegistrarPagoBanco: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const { isMobile } = useResponsive();
   const [socios, setSocios] = useState<Socio[]>([]);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
@@ -58,8 +59,12 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   const [totalPagar, setTotalPagar] = useState(0);
   const [totalDeuda, setTotalDeuda] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [valueAC, setValueAC] = React.useState(null);
+  const [bancos, setBancos] = useState<Banco[]>([]);
+  const [bancoCuentas, setBancoCuentas] = useState<BancoCuenta[]>([]);
+  const [idBancoSeleccionado, setIdBancoSeleccionado] = useState("");
+  const [idBancoCuentaSeleccionado, setIdBancoCuentaSeleccionado] = useState("");
 
   // Para registrar el pago
   const [formData, setFormData] = useState({
@@ -67,12 +72,42 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     nombre_socio: "",
     nombre_block: "",
     numero_puesto: "",
+    id_banco: "",
+    id_bancocuenta: "",
+    numero_operacion: "",
+    fecha_operacion: "",
     deudas: [{
       id_deuda_cuota: 0,
       importe: 0,
       servicio: "",
     }]
   });
+
+  // Obtener Lista Bancos
+  const fetchBancos = async () => {
+    try {
+      const response = await apiClient.get(Api_Global_Setup.bancos.listar());
+      const data = response.data.data.map((item: Banco) => ({
+        id_banco: item.id_banco,
+        siglas_nombre: item.siglas_nombre,
+      }));
+      setBancos(data);
+    } catch (error) {
+    }
+  };
+
+  // Obtener Lista Banco Cuentas
+  const fetchBancoCuentas = async (idBanco: string) => {
+    try {
+      const response = await apiClient.get(Api_Global_Setup.bancoCuentas.listar(idBanco));
+      const data = response.data.data.map((item: BancoCuenta) => ({
+        id_bancocuenta: item.id_bancocuenta,
+        numero_cuenta: item.numero_cuenta,
+      }));
+      setBancoCuentas(data);
+    } catch (error) {
+    }
+  };
 
   // Obtener Lista Socios
   useEffect(() => {
@@ -327,7 +362,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     } = { ...rest, deudas: filteredDeudas }; // Retornamos el id_socio y las deudas sin el servicio
 
     try {
-      const response = await apiClient.post(Api_Global_Pagos.pagos.registrar(), dataToSend);
+      const response = await apiClient.post(Api_Global_Pagos.pagos.registrarPorBanco(), dataToSend);
 
       if (response.status === 200) {
         const mensaje = response.data.message || "El pago fue registrado correctamente";
@@ -449,6 +484,10 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
     URL.revokeObjectURL(pdfUrl);
   };
 
+  useEffect(() => {
+    fetchBancos();
+  }, []);
+
   // Contenido del modal
   const renderTabContent = () => {
     switch (activeTab) {
@@ -460,6 +499,116 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
             {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
 
             <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} marginTop={1}
+                display="flex" flexDirection={isMobile ? "column" : "row"} gap={1}>
+                {/* Seleccionar banco */}
+                <FormControl
+                  sx={{ width: isMobile ? "100%" : "50%" }}
+                >
+                  <InputLabel id="seleccionar-banco-label">
+                    Seleccionar Banco
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-banco-label"
+                    label="Seleccionar Banco"
+                    id="select-banco"
+                    value={idBancoSeleccionado}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setIdBancoSeleccionado(value);
+                      setFormData({
+                        ...formData,
+                        id_banco: value,
+                      });
+                      fetchBancoCuentas(value);
+                    }}
+                    startAdornment={<AccountBalance sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {bancos.map((banco: Banco) => (
+                      <MenuItem key={banco.id_banco} value={banco.id_banco}>
+                        {banco.siglas_nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {/* Seleccionar número cuenta */}
+                <FormControl
+                  sx={{ width: isMobile ? "100%" : "50%" }}
+                >
+                  <InputLabel id="seleccionar-numero-cuenta-label">
+                    Seleccionar Número de cuenta
+                  </InputLabel>
+                  <Select
+                    labelId="seleccionar-numero-cuenta-label"
+                    label="Seleccionar Número de cuenta"
+                    id="select-numero-cuenta"
+                    value={idBancoCuentaSeleccionado}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setIdBancoCuentaSeleccionado(value);
+                      setFormData({
+                        ...formData,
+                        id_bancocuenta: value,
+                      });
+                    }}
+                    startAdornment={<CardMembership sx={{ mr: 1, color: "gray" }} />}
+                  >
+                    {bancoCuentas.map((bancoCuenta: BancoCuenta) => (
+                      <MenuItem key={bancoCuenta.id_bancocuenta} value={bancoCuenta.id_bancocuenta}>
+                        {bancoCuenta.numero_cuenta}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={12} marginTop={1}
+                display="flex" flexDirection={isMobile ? "column" : "row"} gap={1}>
+                {/* Ingresar numero operacion */}
+                <FormControl
+                  sx={{
+                    width: isMobile ? "100%" : "50%",
+                    mb: isMobile ? "15px" : "0px",
+                  }}
+                >
+                  <TxtFormulario
+                    label="Número de operación (*)"
+                    name="numero_operacion"
+                    value={formData.numero_operacion}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData({
+                        ...formData,
+                        numero_operacion: value,
+                      });
+                    }}
+                    icono={<AccountCircle sx={{ mr: 1, color: "gray" }} />}
+                  />
+                </FormControl>
+
+                {/* Ingresar fecha operacion */}
+                <FormControl
+                  sx={{ width: isMobile ? "100%" : "50%" }}
+                >
+                  <TxtFormulario
+                    type="date"
+                    label="Fecha de operación"
+                    name="fecha_operacion"
+                    value={formData.fecha_operacion}
+                    // onChange={manejarCambio}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData({
+                        ...formData,
+                        fecha_operacion: value,
+                      });
+                    }}
+                    icono={<Event sx={{ mr: 1, color: "gray" }} />}
+                  />
+                </FormControl>
+              </Grid>
+
               <Grid item xs={12} sm={12} marginTop={1}
                 display="flex" flexDirection={isMobile ? "column" : "row"} gap={1}>
                 {/* Seleccionar socio */}
@@ -496,7 +645,7 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
                           ...params.InputProps,
                           startAdornment: (
                             <>
-                              <Business sx={{ mr: 1, color: "gray" }} />
+                              <AccountCircle sx={{ mr: 1, color: "gray" }} />
                               {params.InputProps.startAdornment}
                             </>
                           ),
@@ -766,4 +915,4 @@ const RegistrarPago: React.FC<AgregarProps> = ({ open, handleClose }) => {
   );
 };
 
-export default RegistrarPago;
+export default RegistrarPagoBanco;

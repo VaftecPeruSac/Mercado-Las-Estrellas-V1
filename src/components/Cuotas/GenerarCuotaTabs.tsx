@@ -48,12 +48,13 @@ const GenerarCuotaTabs: React.FC<AgregarProps> = ({ open, handleClose }) => {
   };
 
   const handleCloseModal = () => {
+    setValue(0);
     handleClose();
   };
 
   return (
     <ContenedorModal
-      ancho="720px"
+      ancho="800px"
       alto="auto"
       abrir={open}
       cerrar={handleCloseModal}

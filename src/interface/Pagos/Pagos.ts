@@ -8,6 +8,7 @@
     total_pago: string;
     total_deuda: string;
     fecha_registro: string;
+    serie_numero: string;
   }
   
  export interface Column {
@@ -27,4 +28,5 @@
     total_pago: string;
     total_deuda: string;
     fecha_registro: string;
+    serie_numero: string;
   }

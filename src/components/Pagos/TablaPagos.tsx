@@ -20,7 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import RegistrarPago from "./RegistrarPago";
+import RegistrarPagoTabs from "./RegistrarPagoTabs";
 import useResponsive from "../../hooks/Responsive/useResponsive";
 import LoadingSpinner from "../PogressBar/ProgressBarV1";
 import * as XLSX from 'xlsx';
@@ -63,6 +63,7 @@ const TablaPago: React.FC = () => {
 
     const data = [
       ["ID", pago.id_pago],
+      ["Serie número", pago.serie_numero],
       ["Puesto", pago.puesto],
       ["Socio", pago.socio],
       ["DNI", pago.dni],
@@ -109,11 +110,6 @@ const TablaPago: React.FC = () => {
 
     e.preventDefault();
 
-    // try {
-    //   alert("En proceso de actualización.");
-    // } catch {
-    //   alert("Error al buscar los pagos del socio. Intentelo nuevamente más tarde.")
-    // }
     listarPagos(1);
 
   }
@@ -131,7 +127,8 @@ const TablaPago: React.FC = () => {
         correo: item.correo,
         total_pago: item.total_pago,
         total_deuda: item.total_deuda,
-        fecha_registro: item.fecha_registro
+        fecha_registro: item.fecha_registro,
+        serie_numero: item.serie_numero,
       }));
       setPagos(data);
       setTotalPages(response.data.meta.last_page); 
@@ -161,8 +158,7 @@ const TablaPago: React.FC = () => {
           texto="Registrar Pago"
         />
 
-        {/* Modal Registrar Pago */}
-        <RegistrarPago open={open} handleClose={handleClose} />
+        <RegistrarPagoTabs open={open} handleClose={handleClose} />
 
         <BotonExportar
           exportFormat={exportFormat}
@@ -221,7 +217,7 @@ const TablaPago: React.FC = () => {
         </Button>
       </Box>
       {isLoading ? (
-        <LoadingSpinner /> // Mostrar el loading mientras se están cargando los datos
+        <LoadingSpinner />
       ) : (
         <>
           {/* Tabla Deudas */}
@@ -407,9 +403,9 @@ const TablaPago: React.FC = () => {
               sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
             >
               <Pagination
-                count={totalPages} // Total de páginas
-                page={paginaActual} // Página actual
-                onChange={CambioDePagina} // Manejar el cambio de página
+                count={totalPages}
+                page={paginaActual}
+                onChange={CambioDePagina}
                 color="primary"
               />
             </Box>

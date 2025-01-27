@@ -17,6 +17,7 @@ export interface Puesto {
 }
 
 export interface Deuda {
+  id_deuda_cuota: number,
   id_deuda: number;
   total: string;
   por_pagar: string;
@@ -44,4 +45,26 @@ export interface Data {
   a_cuenta: string;
   deuda: string;
   pago: string;
+}
+
+export interface DeudaPendiente {
+  id_deuda_cuota: number,
+  id_deuda: number;
+  total: string;
+  servicio_descripcion: string;
+  anio: string;
+  mes: string;
+  a_cuenta: string;
+  deuda: any;
+  pago: string;
+  checked: boolean;
+}
+
+export interface Banco {
+  id_banco: number;
+  siglas_nombre: string;
+}
+export interface BancoCuenta {
+  id_bancocuenta: number;
+  numero_cuenta: string;
 }

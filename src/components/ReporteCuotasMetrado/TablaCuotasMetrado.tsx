@@ -14,7 +14,8 @@ import { mostrarAlerta } from '../Alerts/Registrar';
 
 interface Cuota {
   id_cuota: string;
-  fecha_registro: string;
+  // fecha_registro: string;
+  fecha_emision: string;
 }
 
 interface Data {
@@ -120,7 +121,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
           >
             <Autocomplete
               options={cuotasSelect}
-              getOptionLabel={(cuota) => `${cuota.id_cuota} - ${formatDate(cuota.fecha_registro)}`}
+              getOptionLabel={(cuota) => `${cuota.id_cuota} - ${formatDate(cuota.fecha_emision)}`}
               onChange={(event, value) => {
                 if (value) {
                   setCuotaSeleccionada(Number(value.id_cuota));

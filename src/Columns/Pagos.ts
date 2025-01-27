@@ -1,7 +1,8 @@
 import { Column } from "../interface/Pagos/Pagos";
 
 export const columns: readonly Column[] = [
-    { id: "id_pago", label: "#ID", minWidth: 50, align: "center" },
+    // { id: "id_pago", label: "#ID", minWidth: 50, align: "center" },
+    { id: "serie_numero", label: "#ID", minWidth: 50, align: "center" },
     { id: "puesto", label: "N° Puesto", minWidth: 50, align: "center" },
     { id: "socio", label: "Socio", minWidth: 50, align: "center" },
     { id: "dni", label: "DNI", minWidth: 50, align: "center" },

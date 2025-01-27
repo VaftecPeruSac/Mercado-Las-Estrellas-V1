@@ -2,6 +2,9 @@ export const Api_Global_Pagos = {
   pagos: {
     listar: (page: number = 1) => `/pagos?page=${page}`,
     exportar: () => `/pagos/exportar`,
+    registrar:() => `/pagos`,
+    registrarPorBanco:() => `/pagos/por-bancos`,
+
   },
   socios: {
     listar: (perPage: number = 50) => `/socios?per_page=${perPage}`,
