@@ -298,8 +298,11 @@ const TablaAsociados: React.FC = () => {
                                             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                                               {socio.puestos.map((puesto, index) => (
                                                 <Box key={index} sx={{ display: "flex", gap: 1 }}>
-                                                  <Typography>
+                                                  {/* <Typography>
                                                     {puesto.block.nombre} - {puesto.numero_puesto} - {puesto.gironegocio.nombre}
+                                                  </Typography> */}
+                                                  <Typography>
+                                                    {puesto?.block?.nombre} - {puesto.numero_puesto} - {puesto?.gironegocio?.nombre}
                                                   </Typography>
                                                 </Box>
                                               ))}
@@ -433,7 +436,7 @@ const TablaAsociados: React.FC = () => {
                                     key={index}
                                     sx={{ height: "45px", display: "block", alignContent: "center", justifyContent: "center" }}
                                   >
-                                    {puesto.block.nombre}
+                                    {puesto?.block?.nombre}
                                   </Box>
                                   ) : "No asignado")
                                 : column.id === "numero_puesto" 
@@ -451,7 +454,7 @@ const TablaAsociados: React.FC = () => {
                                     key={index}
                                     sx={{ height: "45px", display: "block", alignContent: "center", justifyContent: "center" }}
                                   >
-                                    {puesto.gironegocio.nombre}
+                                    {puesto?.gironegocio?.nombre}
                                   </Box>
                                   ) : "No asignado")
                                 : column.id === "inquilino" 
