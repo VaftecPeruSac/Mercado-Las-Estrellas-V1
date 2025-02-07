@@ -62,7 +62,7 @@ const TablaReportePagos: React.FC = () => {
     if (usuario && usuario?.rol !== "Socio") {
       const fetchSocios = async () => {
         try {
-          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=100");
+          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=500");
           setSocios(response.data.data);
         } catch (error) {
           console.log("Error:", error);
