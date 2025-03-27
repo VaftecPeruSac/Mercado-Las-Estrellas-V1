@@ -60,10 +60,10 @@ const TablaReporteDeudas: React.FC = () => {
     const fetchPuestos = async () => {
       try {
         if (usuario?.rol !== "Socio") {
-          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
+          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=500");
           setPuestos(response.data.data);
         } else {
-          const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50&id_socio=${usuario.id_usuario}`);
+          const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=500&id_socio=${usuario.id_usuario}`);
           setPuestos(response.data.data);
         }
       } catch (error) {
