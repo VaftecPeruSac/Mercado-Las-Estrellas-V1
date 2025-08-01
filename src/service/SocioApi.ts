@@ -7,6 +7,7 @@ export const Api_Global_Socios = {
     eliminar: (id_socio: number) => `/socios/${id_socio}`, 
     registrar:()=> `/socios`,
     editar: (id_socio: number | undefined) => `/socios/${id_socio}`, 
+    buscar:(page: number, per_page: number) => `/socios?page=${page}&per_page=${per_page}`,
   },
   bloques:{
     obtenerBloques:()=> `/blocks`,

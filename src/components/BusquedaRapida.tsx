@@ -8,6 +8,9 @@ import BotonAgregar from './Shared/BotonAgregar';
 import BotonExportar from './Shared/BotonExportar';
 import { KeyboardReturn } from '@mui/icons-material';
 import ContenedorBotones from './Shared/ContenedorBotones';
+import apiClient from "../Utils/apliClient";
+import { Api_Global_Puestos } from "../service/PuestoApi";
+import { Api_Global_Reportes } from "../service/ReporteApi";
 
 interface Puesto {
   id_puesto: string;
@@ -67,7 +70,7 @@ const BusquedaRapida = () => {
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
+        const response = await apiClient.get(Api_Global_Puestos.puestos.buscar(1, 15, "", "", ""));
         setPuestos(response.data.data);
       } catch (error) {
       }
@@ -79,7 +82,7 @@ const BusquedaRapida = () => {
   const fetchDeudas = async (pagina: number = 1, idPuesto: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/deudas?page=${pagina}&id_puesto=${idPuesto}`);
+      const response = await apiClient.get(Api_Global_Reportes.reportes.deudas(pagina, 15, idPuesto));
       setDeudas(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);
@@ -95,7 +98,7 @@ const BusquedaRapida = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/reporte-deudas/exportar",
+      const response = await apiClient.get(Api_Global_Reportes.reportes.deudasExportar(),
         { responseType: 'blob' }
       );
 

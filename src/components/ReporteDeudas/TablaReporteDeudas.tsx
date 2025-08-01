@@ -9,7 +9,9 @@ import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
 import ContenedorBotones from '../Shared/ContenedorBotones';
 import { Column, Data, Puesto } from '../../interface/ReporteDeudas/deudas';
+import apiClient from "../../Utils/apliClient";
 import { Api_Global_Reportes } from '../../service/ReporteApi';
+import { Api_Global_Puestos } from '../../service/PuestoApi';
 import { handleExport } from '../../Utils/exportUtils';
 import { useAuth } from '../../context/AuthContext';
 import { mostrarAlerta } from '../Alerts/Registrar';
@@ -60,10 +62,10 @@ const TablaReporteDeudas: React.FC = () => {
     const fetchPuestos = async () => {
       try {
         if (usuario?.rol !== "Socio") {
-          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=500");
+          const response = await apiClient.get(Api_Global_Puestos.puestos.buscar(1, 500, "", "", "", ""));
           setPuestos(response.data.data);
         } else {
-          const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=500&id_socio=${usuario.id_usuario}`);
+          const response = await apiClient.get(Api_Global_Puestos.puestos.buscar(1, 500, "", "", "", usuario.id_usuario.toString()));
           setPuestos(response.data.data);
         }
       } catch (error) {
@@ -77,7 +79,7 @@ const TablaReporteDeudas: React.FC = () => {
   const fetchDeudas = async (pagina: number = 1, idPuesto: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/deudas?page=${pagina}&id_puesto=${idPuesto}`);
+      const response = await apiClient.get(Api_Global_Reportes.reportes.deudas(pagina, 15, idPuesto));
       setDeudas(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);

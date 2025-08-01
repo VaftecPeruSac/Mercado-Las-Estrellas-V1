@@ -1,4 +1,3 @@
-// import React from "react";
 import { Box, Typography, Card, CardContent, Stack } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -15,6 +14,9 @@ import useResponsive from "../hooks/Responsive/useResponsive";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { manejarError, mostrarAlerta, mostrarAlertaConfirmacion } from './Alerts/Registrar';
+
+import apiClient from "../Utils/apliClient";
+import { Api_Global_Reportes } from "../service/ReporteApi";
 
 const data = [
   { name: 'Enero', uv: 40, pv: 24, amt: 24 },
@@ -43,10 +45,7 @@ interface PieData {
   value: number;
 }
 
-// const [puestos, setPuestos] = useState<Puesto[]>([]);
 interface Resultado {
-  // id_socio: number;
-  // nombre_completo: string;
   acumulacion_deuda: string;
   acumulacion_pago: string;
   cantidad_socios_activos: string;
@@ -61,12 +60,6 @@ const Dashboard: React.FC = () => {
   const formatTooltipValue = (value: number) => `${value}%`;
   const [resultado, setResultado] = useState<Resultado>();
   const [resultado2, setResultado2] = useState({
-    // id_puesto: "",
-    // id_gironegocio: "",
-    // id_block: "",
-    // numero_puesto: "",
-    // area: "",
-    // fecha_registro: "",
     acumulacion_deuda: "",
     acumulacion_pago: "",
     cantidad_socios_activos: "",
@@ -76,20 +69,10 @@ const Dashboard: React.FC = () => {
   const reporteDashboard = async () => {
     
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/dashboard`, {});
+      const response = await apiClient.get(Api_Global_Reportes.reportes.dashboard());
 
       if (response.status === 200) {
-        // const mensaje = response.data.message || "El puesto se elimino.";
-        // mostrarAlerta("Eliminación exitosa", mensaje, "success");
-        // fetchPuestos();
-        // setResultado2(response);
         setResultado2({
-          // id_puesto: puesto.id_puesto || "",
-          // id_gironegocio: puesto.giro_negocio.id_gironegocio || "",
-          // id_block: puesto.block.id_block || "",
-          // numero_puesto: puesto.numero_puesto || "",
-          // area: puesto.area || "",
-          // fecha_registro: reFormatDate(puesto.fecha_registro) || "",
           acumulacion_deuda: response.data.acumulacion_deuda,
           acumulacion_pago: response.data.acumulacion_pago,
           cantidad_socios_activos: response.data.cantidad_socios_activos,
@@ -100,22 +83,11 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       manejarError(error);
     } finally {
-      // ---
     }
   };
 
   // Obtener datos
   useEffect(() => {
-    // const fetchBloques = async () => {
-    //   try {
-    //     const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/blocks");
-    //     console.log("Bloques obtenidos:", response.data.data);
-    //     setBloques(response.data.data);
-    //   } catch (error) {
-    //     console.error("Error al obtener los bloques", error);
-    //   }
-    // };
-    // fetchBloques();
     reporteDashboard();
   }, []);
 

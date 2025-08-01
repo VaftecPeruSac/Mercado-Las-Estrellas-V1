@@ -7,7 +7,9 @@ import Contenedor from "../Shared/Contenedor";
 import BotonExportar from "../Shared/BotonExportar";
 import BotonAgregar from "../Shared/BotonAgregar";
 import ContenedorBotones from "../Shared/ContenedorBotones";
+import apiClient from "../../Utils/apliClient";
 import { Api_Global_Reportes } from "../../service/ReporteApi";
+import { Api_Global_Puestos } from "../../service/PuestoApi";
 import { handleExport } from "../../Utils/exportUtils";
 import { mostrarAlerta } from "../Alerts/Registrar";
 
@@ -82,7 +84,7 @@ const TablaCuotasPuesto: React.FC = () => {
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/puestos?per_page=50");
+        const response = await apiClient.get(Api_Global_Puestos.puestos.buscar(1, 500, "", "", "", ""));
         setPuestos(response.data.data);
       } catch (error) {
         console.log(error);
@@ -95,7 +97,7 @@ const TablaCuotasPuesto: React.FC = () => {
   const fetchCuotas = async (pagina: number = 1, idPuesto: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-puestos?page=${pagina}&id_puesto=${idPuesto}`);
+      const response = await apiClient.get(Api_Global_Reportes.reportes.cuotaPorPuestos(pagina, 15, idPuesto));
       setCuotas(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);

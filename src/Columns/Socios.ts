@@ -10,7 +10,7 @@ export const columns: readonly Column[] = [
   { id: "giro_negocio", label: "Giro", minWidth: 50 },
   { id: "inquilino", label: "Inquilino", minWidth: 50 },
   { id: "fecha_registro", label: "Fec. Registro", minWidth: 40 },
-  { id: "deuda", label: "Deuda Total", minWidth: 30 },
+  // { id: "deuda", label: "Deuda Total", minWidth: 30 },
   { id: "ver_reporte", label: "Deudas / Pagos", minWidth: 10 },
   { id: "accion", label: "Acción", minWidth: 20 },
 ];

@@ -8,7 +8,9 @@ import Contenedor from '../Shared/Contenedor';
 import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
 import ContenedorBotones from '../Shared/ContenedorBotones';
+import apiClient from "../../Utils/apliClient";
 import { Api_Global_Reportes } from '../../service/ReporteApi';
+import { Api_Global_Socios } from '../../service/SocioApi';
 import { handleExport } from '../../Utils/exportUtils';
 import { Column, Data, Socio } from '../../interface/ReportePagos/pagos';
 import { useAuth } from '../../context/AuthContext';
@@ -62,7 +64,7 @@ const TablaReportePagos: React.FC = () => {
     if (usuario && usuario?.rol !== "Socio") {
       const fetchSocios = async () => {
         try {
-          const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/socios?per_page=500");
+          const response = await apiClient.get(Api_Global_Socios.socios.buscar(1, 500));
           setSocios(response.data.data);
         } catch (error) {
           console.log("Error:", error);
@@ -76,7 +78,7 @@ const TablaReportePagos: React.FC = () => {
   const fetchPagos = async (pagina: number = 1, idSocio: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/pagos?page=${pagina}&id_socio=${idSocio}`);
+      const response = await apiClient.get(Api_Global_Reportes.reportes.pagos(1, 15, idSocio));
       setPagos(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);

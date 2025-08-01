@@ -8,7 +8,9 @@ import BotonExportar from '../Shared/BotonExportar';
 import BotonAgregar from '../Shared/BotonAgregar';
 import { formatDate } from "../../Utils/dateUtils";
 import ContenedorBotones from '../Shared/ContenedorBotones';
+import apiClient from "../../Utils/apliClient";
 import { Api_Global_Reportes } from '../../service/ReporteApi';
+import { Api_Global_Cuotas } from '../../service/CuotaApi';
 import { handleExport } from '../../Utils/exportUtils';
 import { mostrarAlerta } from '../Alerts/Registrar';
 
@@ -65,7 +67,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
   useEffect(() => {
     const fetchCuotas = async () => {
       try {
-        const response = await axios.get("https://mercadolasestrellas.online/intranet/public/v1/cuotas?per_page=50");
+        const response = await apiClient.get(Api_Global_Cuotas.cuotas.buscar(1, 500));
         setCuotasSelect(response.data.data);
       } catch (error) {
         console.log("Error:", error);
@@ -78,7 +80,7 @@ const TablaReporteCuotasMetrado: React.FC = () => {
   const listarCuotas = async (pagina: number = 1, idCuota: number) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://mercadolasestrellas.online/intranet/public/v1/reportes/cuota-por-metros?page=${pagina}&id_cuota=${idCuota}`);
+      const response = await apiClient.get(Api_Global_Reportes.reportes.cuotaPorMetros(1, 500, idCuota));
       setCuotas(response.data.data);
       setTotalPaginas(response.data.meta.last_page);
       setPaginaActual(response.data.meta.current_page);

@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useResponsive from '../../hooks/Responsive/useResponsive';
-import axios from "axios";
 import { manejarError, mostrarAlerta } from "../Alerts/Registrar";
 import Cookies from 'js-cookie';
+import apiClient from "../../Utils/apliClient";
 
 const Login: React.FC = () => {
 
@@ -18,26 +18,28 @@ const Login: React.FC = () => {
   const { isLaptop, isTablet, isMobile, isSmallMobile } = useResponsive();
 
   const IniciarSesion = async () => {
-    const dataToSend = { usuario: nomUsuario, password };  
-    try {
-      const response = await axios.post('https://mercadolasestrellas.online/intranet/public/v1/login', dataToSend);
-      // const response = await axios.post('http://127.0.0.1:8000/v1/login', dataToSend);
-      if (response.status === 200) {
+    const dataToSend = { usuario: nomUsuario, password };
+    apiClient.post("/login", dataToSend)
+      .then((response) => {
         const { token } = response.data;
         Cookies.set('token', token, { path: '/', secure: true, sameSite: 'strict' });
-        if (!usuario) {
-          window.location.replace('/home');
-        } else {
-          login(usuario);
-          window.location.replace('/home');
-          mostrarAlerta('Inicio de sesión', `Bienvenido ${nomUsuario}.`, 'success');
-        }
-      } else {
-        mostrarAlerta("Error");
-      }
-    } catch (error) {
-      manejarError(error);
-    }
+
+        localStorage.setItem("autenticado", JSON.stringify(true));
+        // if (!usuario) {
+        //   window.location.replace('/home');
+        // } else {
+        //   login(usuario);
+        //   window.location.replace('/home');
+        //   mostrarAlerta('Inicio de sesión', `Bienvenido ${nomUsuario}.`, 'success');
+        // }
+        // mostrarAlerta('Inicio de sesión', `Bienvenido ${nomUsuario}.`, 'success');
+        window.location.replace('/home');
+        // navigate("/home");
+        // window.location.href = "/home";
+      })
+      .catch((error) => {
+        manejarError(error.response.data);
+      });
   };
 
   const busquedaRapida = () => {
@@ -85,7 +87,6 @@ const Login: React.FC = () => {
 
           <Box component="form">
 
-            {/* Usuario */}
             <Box sx={{ mb: 2 }}>
               <Typography
                 sx={{
@@ -110,7 +111,6 @@ const Login: React.FC = () => {
               />
             </Box>
 
-            {/* Contraseña */}
             <Box sx={{ mb: 2 }}>
               <Typography
                 sx={{
@@ -136,33 +136,6 @@ const Login: React.FC = () => {
               />
             </Box>
 
-            {/* Seleccionar rol */}
-            {/* <Box>
-              <Typography
-                sx={{
-                  mb: "2px",
-                  fontWeight: "bold",
-                  fontSize: isSmallMobile || isLaptop ? "14px" : "auto",
-                  color: "#0AB544",
-                }}
-              >
-                Rol
-              </Typography>
-              <FormControl fullWidth required>
-                <Select
-                  labelId="rol-label"
-                  value={rol}
-                  inputProps={{ style: { height: "3rem" } }}
-                  onChange={(e) => setRol(e.target.value)}
-                >
-                  <MenuItem value="1">Socio</MenuItem>
-                  <MenuItem value="2">Cajero</MenuItem>
-                  <MenuItem value="3">Administrador</MenuItem>
-                </Select>
-              </FormControl>
-            </Box> */}
-
-            {/* Boton iniciar sesión */}
             <Button
               variant="contained"
               type="button"

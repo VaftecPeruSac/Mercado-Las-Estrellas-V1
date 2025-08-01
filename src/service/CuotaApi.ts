@@ -5,6 +5,7 @@ export const Api_Global_Cuotas = {
     registrar:() => `/cuotas`,
     registrarPorPuesto:() => `/cuotas/por-puestos`,
     exportar: () => `cuotas/exportar`,
+    buscar:(page: number, per_page: number) => `/cuotas?page=${page}&per_page=${per_page}`,
   },
   servicio: {
     listar: () => `/servicios?per_page=1000`,
