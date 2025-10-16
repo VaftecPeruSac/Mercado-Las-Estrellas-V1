@@ -12,4 +12,7 @@ export const Api_Global_Setup = {
     meses: {
         listar: () => `/setup/meses`,
     },
+    modulosWeb: {
+        listar: (id_usuario: any) => `/setup/modulos/web?id_usuario=${id_usuario}`,
+    },
 };

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import emailjs from '@emailjs/browser';
 
@@ -36,6 +36,8 @@ import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from "../context/AuthContext";
 import useResponsive from "../hooks/Responsive/useResponsive";
 import { CustomButton, mostrarAlerta, mostrarAlertaConfirmacion } from "./Alerts/Registrar";
+import apiClient from "../Utils/apliClient";
+import { Api_Global_Setup } from "../service/SetupApi";
 
 interface SidebarProps {
   open: boolean;
@@ -55,6 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [emailUsuario, setEmailUsuario] = useState("");
+  const [modulos, setModulos] = useState<any[]>([]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -130,6 +133,22 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       }
   };
 
+  const handleModulos = async () => {
+    // setIsLoading(true)
+    const idUsuario = usuario?.id_usuario || "";
+    try {
+      const response = await apiClient.get(Api_Global_Setup.modulosWeb.listar(idUsuario));
+      const data = response.data.map((item: any) => ({
+        ...item,
+      }));
+      setModulos(data);
+    } catch (error) {
+      console.error("Error al traer datos", error);
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
   const handleCerrarSesion = () => {
     mostrarAlertaConfirmacion(
       "¿Desea cerrar sesión?", "Por favor confirme su acción.", "Cerrar sesión", "Cancelar"
@@ -141,6 +160,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       }
     });
   };
+
+  useEffect(() => {
+    handleModulos();
+  }, []);
 
   return (
     <Box sx={{
@@ -178,6 +201,30 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           </IconButton>
         )}
       </Box>
+
+      {/* new Menu */}
+      {modulos.map((item, index) => (
+        <>
+          <Box>
+            <List>
+              <ListItemButton component={Link} to="/home" sx={getEstilos("/home", { mt: 2 })}>
+                <ListItemIcon sx={{ color: "inherit" }}><DashboardIcon /></ListItemIcon>
+                <ListItemText primary="Panel de Control" sx={{ ml: -3, }} />
+              </ListItemButton>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="socios" sx={getEstilos("/home/socios", { ml: 2 })}
+                  onClick={isTablet || isMobile ? onClose : undefined}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}><Groups /></ListItemIcon>
+                  <ListItemText primary="Socios" sx={{ ml: -3 }} />
+                </ListItemButton>
+              </List>
+            </List>
+          </Box>
+          <Divider sx={{ bgcolor: "#505155", m: 3 }} />
+        </>
+      ))}
+      {/* new Menu */}
 
       <Box>
 
